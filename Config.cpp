@@ -1439,12 +1439,11 @@ bool Config::loadScheduledFonts() noexcept
 					ImFontConfig cfg;
 					cfg.OversampleH = cfg.OversampleV = 8;
 					cfg.PixelSnapH = false;
-					cfg.RasterizerMultiply = 1.8f;
 
 					Font newFont;
 
 					cfg.SizePixels = FONT_BIG;
-					newFont.big = ImGui::GetIO().Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
+					newFont.big = ImGui::GetIO().Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
 					newFont.tiny = newFont.medium = newFont.big;
 
 					fonts.emplace(fontName, newFont);

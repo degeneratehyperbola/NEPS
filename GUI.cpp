@@ -49,9 +49,8 @@ GUI::GUI() noexcept
         ImFontConfig cfg;
         cfg.OversampleV = cfg.OversampleH = 8;
 		cfg.PixelSnapH = false;
-		cfg.RasterizerMultiply = 1.8f;
 
-        fonts.msgothic = io.Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
+        fonts.msgothic = io.Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
     }
 }
 
@@ -1429,14 +1428,14 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
     ImGui::PushItemWidth(150.0f);
     //if (ImGui::Combo("Menu style", &config->style.menuStyle, "Classic\0One window\0"))
     //    window = { };
-    if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Eastern Sun\0Classic\0Custom\0"))
+    if (ImGui::Combo("Menu colors", &config->style.menuColors, "Frontier\0Eastern Sun\0NEPS\0Custom\0"))
         updateColors();
     ImGui::PopItemWidth();
 
     if (config->style.menuColors == 3) {
         ImGuiStyle& style = ImGui::GetStyle();
         for (int i = 0; i < ImGuiCol_COUNT; i++) {
-            if (i && i & 3) ImGui::SameLine(220.0f * (i & 3));
+            if (i && i & 3) ImGui::SameLine(200.0f * (i & 3));
 
             ImGuiCustom::colorPicker(ImGui::GetStyleColorName(i), (std::array<float, 4>&)style.Colors[i]);
         }
@@ -1635,7 +1634,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
     ImGui::Checkbox("Disable HUD blur", &config->misc.disablePanoramablur);
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
 	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
-    ImGui::SetNextItemWidth(175.0f);
+    ImGui::SetNextItemWidth(190.0f);
 	ImGui::SliderFloat("##angle_delta", &config->misc.maxAngleDelta, 0.0f, 255.0f, "Aimstep %.2f");
 	ImGui::Checkbox("Preserve killfeed", &config->misc.preserveKillfeed.enabled);
     ImGui::SameLine();
