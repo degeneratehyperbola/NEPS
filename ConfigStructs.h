@@ -1,0 +1,156 @@
+#pragma once
+
+#include <array>
+#include <string>
+
+#pragma pack(push, 1)
+struct Color3
+{
+	std::array<float, 3> color{1.0f, 1.0f, 1.0f};
+	bool rainbow{false};
+	float rainbowSpeed{0.6f};
+};
+#pragma pack(pop)
+
+struct Color3Toggle : public Color3
+{
+	bool enabled{false};
+};
+
+#pragma pack(push, 1)
+struct Color4
+{
+	std::array<float, 4> color{1.0f, 1.0f, 1.0f, 1.0f};
+	float rainbowSpeed = 0.6f;
+	bool rainbow = false;
+};
+#pragma pack(pop)
+
+struct Color4Toggle : Color4
+{
+	bool enabled = false;
+};
+
+struct Color4Border : Color4
+{
+	bool border = true;
+};
+
+struct Color4BorderToggle : Color4Border
+{
+	bool enabled = false;
+};
+
+struct Color4BorderToggleThickness : Color4BorderToggle
+{
+	float thickness = 1.0f;
+};
+
+struct Color4ToggleThickness : Color4Toggle
+{
+	Color4ToggleThickness() = default;
+	Color4ToggleThickness(float thickness) : thickness{thickness} {}
+	float thickness = 1.0f;
+};
+
+struct Color4ToggleRounding : Color4Toggle
+{
+	float rounding = 0.0f;
+};
+
+struct Color4ToggleThicknessRounding : Color4ToggleRounding
+{
+	float thickness = 1.0f;
+};
+
+struct Font
+{
+	int index = 0; // do not save
+	std::string name;
+};
+
+struct Snapline : Color4ToggleThickness {
+    enum {
+        Bottom = 0,
+        Top,
+        Crosshair
+    };
+
+    int type = Bottom;
+};
+
+struct Box : Color4ToggleRounding {
+    enum Type {
+        _2d = 0,
+        _2dCorners,
+        _3d,
+        _3dCorners
+    };
+
+    int type = _2d;
+    std::array<float, 3> scale{ 0.25f, 0.25f, 0.25f };
+    Color4Toggle fill{ 1.0f, 0.0f, 0.0f, 0.5f };
+};
+
+struct Shared {
+    bool enabled = false;
+    Font font;
+    Snapline snapline;
+    Box box;
+	Color4Toggle name;
+    float textCullDistance = 0.0f;
+};
+
+struct Bar : Color4ToggleRounding {
+
+};
+
+struct Player : Shared {
+	Color4Toggle weapon;
+	Color4Toggle flashDuration;
+    bool audibleOnly = false;
+    bool spottedOnly = false;
+	Color4Toggle healthBar;
+    Color4ToggleThickness skeleton;
+    Box headBox;
+	Color4Toggle flags;
+
+    using Shared::operator=;
+};
+
+struct Weapon : Shared {
+	Color4Toggle ammo;
+
+    using Shared::operator=;
+};
+
+struct Trail : Color4ToggleThickness {
+    enum Type {
+        Line = 0,
+        Circles,
+        FilledCircles
+    };
+
+    int type = Line;
+    float time = 2.0f;
+};
+
+struct Trails {
+    bool enabled = false;
+
+    Trail localPlayer;
+    Trail allies;
+    Trail enemies;
+};
+
+struct Projectile : Shared {
+    Trails trails;
+
+    using Shared::operator=;
+};
+
+struct KeyBind
+{
+	int key = 0;
+	int keyMode = 0;
+};
