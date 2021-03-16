@@ -66,8 +66,10 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
         const auto localPlayerEyePosition = localPlayer->getEyePosition();
 
-		matrix3x4 *bufferBones = new matrix3x4[MAXSTUDIOBONES];
+		std::array<matrix3x4, MAXSTUDIOBONES> bufferBones;
+		#ifdef MP_DEBUG
 		std::vector<Vector> multipoints;
+		#endif // MP_DEBUG
 
 		GameData::Lock lock;
 		for (auto &player : GameData::players())
@@ -91,7 +93,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				else continue;
 			}
 
-			if (!entity->setupBones(bufferBones, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
+			if (!entity->setupBones(bufferBones.data(), MAXSTUDIOBONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 				continue;
 
 			for (int i = 0; i < player.hitboxSet->numHitboxes; i++)
@@ -123,19 +125,15 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						axis /= axis.length();
 
 						Vector v1 = min.crossProduct(max);
+						v1 /= v1.length();
+						v1 *= r;
 						Vector v2 = v1.rotate(axis, 120.0f);
 						Vector v3 = v2.rotate(axis, 120.0f);
-						v1 /= v1.length();
-						v2 /= v2.length();
-						v3 /= v3.length();
 
 						points.emplace_back(mid);
-						points.emplace_back(min + v1 * r);
-						points.emplace_back(max + v1 * r);
-						points.emplace_back(min + v2 * r);
-						points.emplace_back(max + v2 * r);
-						points.emplace_back(min + v3 * r);
-						points.emplace_back(max + v3 * r);
+						points.emplace_back(max + v1);
+						points.emplace_back(max + v2);
+						points.emplace_back(max + v3);
 						points.emplace_back(max + axis * r);
 						break;
 					}
@@ -152,10 +150,13 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 						Vector v1 = hitbox.bbMin.crossProduct(hitbox.bbMax);
 						v1 /= v1.length();
+						v1 *= r;
 
-						points.emplace_back((midRel + v1 * r).transform(bufferBones[hitbox.bone]));
-						points.emplace_back(max + axis * r);
-						points.emplace_back(min - axis * r);
+						axis *= r;
+
+						points.emplace_back((midRel + v1).transform(bufferBones[hitbox.bone]));
+						points.emplace_back(max + axis);
+						points.emplace_back(min - axis);
 						break;
 					}
 					case Hitbox::Pelvis:
@@ -171,10 +172,13 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 						Vector v1 = hitbox.bbMin.crossProduct(hitbox.bbMax);
 						v1 /= v1.length();
+						v1 *= r;
 
-						points.emplace_back((midRel + v1 * -r).transform(bufferBones[hitbox.bone]));
-						points.emplace_back(max + axis * r);
-						points.emplace_back(min - axis * r);
+						axis *= r;
+
+						points.emplace_back((midRel - v1).transform(bufferBones[hitbox.bone]));
+						points.emplace_back(max + axis);
+						points.emplace_back(min - axis);
 						break;
 					}
 					case Hitbox::Thorax:
@@ -185,10 +189,11 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						Vector mid = (min + max) * 0.5f;
 						Vector axis = max - min;
 						axis /= axis.length();
+						axis *= r;
 
 						points.emplace_back(mid);
-						points.emplace_back(max + axis * r);
-						points.emplace_back(min - axis * r);
+						points.emplace_back(max + axis);
+						points.emplace_back(min - axis);
 						break;
 					}
 					default:
@@ -201,7 +206,9 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
 				}
 
+				#ifdef MP_DEBUG
 				multipoints.insert(multipoints.end(), points.begin(), points.end());
+				#endif // MP_DEBUG
 
 				for (auto &point : points)
 				{
@@ -267,9 +274,11 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				}
 			}
 		}
-
+		
+		#ifdef MP_DEBUG
 		GameData::global().indicators.multipoints.clear();
 		GameData::global().indicators.multipoints = multipoints;
+		#endif // MP_DEBUG
 
 		if (bestTarget.notNull())
 		{
@@ -317,7 +326,5 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 			lastCommand = cmd->commandNumber;
 		}
-
-		delete[] bufferBones;
 	}
 }

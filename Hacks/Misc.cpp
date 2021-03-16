@@ -1521,7 +1521,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	for (auto &p : global.indicators.multipoints)
 	{
 		ImVec2 pos;
-		worldToScreen(p, pos);
+		Helpers::worldToScreen(p, pos);
 
 		drawList->AddCircle(pos, 2.0f, 0xFFFFFFFF);
 	}

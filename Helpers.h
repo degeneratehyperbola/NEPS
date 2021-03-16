@@ -113,4 +113,22 @@ namespace Helpers
 	float approachValSmooth(float target, float value, float fraction);
 
 	bool worldToScreen(const Vector &in, ImVec2 &out, bool floor = true) noexcept;
+
+	// Oh my god this is so mind blowing,
+	// if the next weapon attack == time
+	// it would return false, but aimbot
+	// does fire while it equals,
+	// nibba,
+	// the shit here is, in fact, tested
+	// but epsilon of a floating point
+	// number is just insane for a
+	// genuine difference O_O
+	//
+	// Future me here, NO this is actually
+	// wrong and aimbot was right!
+	//
+	// Future me again, nigga, please
+	//
+	// For local player
+    bool attacking(bool cmdAttack, bool cmdAttack2) noexcept;
 }

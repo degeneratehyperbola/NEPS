@@ -422,3 +422,39 @@ bool Helpers::worldToScreen(const Vector &in, ImVec2 &out, bool floor) noexcept
 		out = ImFloor(out);
 	return true;
 }
+
+bool Helpers::attacking(bool cmdAttack, bool cmdAttack2) noexcept
+{
+	if (!localPlayer) return false;
+	const float time = memory->globalVars->serverTime();
+
+	if (localPlayer->nextAttack() <= time && !localPlayer->waitForNoAttack() && !localPlayer->isDefusing())
+	{
+		const auto activeWeapon = localPlayer->getActiveWeapon();
+		if (activeWeapon)
+		{
+			if (activeWeapon->isGrenade())
+			{
+				return !activeWeapon->pinPulled() && activeWeapon->throwTime() > 0.0f && activeWeapon->throwTime() <= time;
+			}
+
+			if (activeWeapon->burstMode() && activeWeapon->nextBurstShot() > 0.0f && activeWeapon->nextBurstShot() <= time)
+				return true;
+
+			if (activeWeapon->clip() && activeWeapon->nextPrimaryAttack() <= time)
+			{
+				if (activeWeapon->isKnife() && (cmdAttack || cmdAttack2))
+					return true;
+
+				if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
+				{
+					return cmdAttack2 || cmdAttack && activeWeapon->nextPrimaryAttack() < time && activeWeapon->postponeFireReadyTime() < time;
+				}
+
+				return (!localPlayer->shotsFired() || activeWeapon->isFullAuto()) && cmdAttack;
+			}
+		}
+	}
+
+	return false;
+}

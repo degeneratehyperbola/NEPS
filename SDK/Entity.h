@@ -333,64 +333,6 @@ public:
 		return flashDuration() > 75.0f;
 	}
 
-	// Oh my god this is so mind blowing,
-	// if the next weapon attack == time
-	// it would return false, but aimbot
-	// does fire while it equals,
-	// nibba,
-	// the shit here is, in fact, tested
-	// but epsilon of a floating point
-	// number is just insane for a
-	// genuine difference O_O
-	//
-	// Future me here, NO this is actually
-	// wrong and aimbot was right!
-	//
-	// Future me again, nigga, please
-	//
-	// For players
-	bool canAttack(bool cmdAttack, bool cmdAttack2) noexcept
-	{
-		const float time = memory->globalVars->serverTime();
-
-		if (this->nextAttack() <= time && !this->waitForNoAttack() && !this->isDefusing())
-		{
-			const auto activeWeapon = this->getActiveWeapon();
-			if (activeWeapon)
-			{
-				if (activeWeapon->isGrenade())
-				{
-					if(!activeWeapon->pinPulled() && activeWeapon->throwTime() > 0.0f && activeWeapon->throwTime() <= time)
-						return true;
-
-					return false;
-				}
-
-				if (activeWeapon->burstMode() && activeWeapon->nextBurstShot() > 0.0f && activeWeapon->nextBurstShot() <= time)
-					return true;
-
-				if (activeWeapon->clip() && activeWeapon->nextPrimaryAttack() <= time)
-				{
-					if (activeWeapon->isKnife() && (cmdAttack || cmdAttack2))
-						return true;
-
-					if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
-					{
-						if (cmdAttack2 || cmdAttack && activeWeapon->nextPrimaryAttack() < time && activeWeapon->postponeFireReadyTime() < time)
-							return true;
-
-						return false;
-					}
-					
-					if ((!this->shotsFired() || activeWeapon->isFullAuto()) && cmdAttack)
-						return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
 	NETVAR(clientAnimations, "CBaseAnimating", "m_bClientSideAnimation", bool)
     NETVAR(body, "CBaseAnimating", "m_nBody", int)
     NETVAR(hitboxSet, "CBaseAnimating", "m_nHitboxSet", int)
