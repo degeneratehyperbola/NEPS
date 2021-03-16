@@ -478,6 +478,9 @@
     <ClInclude Include="Hacks\Animations.h">
       <Filter>Hacks</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\SoundData.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -24,6 +24,7 @@
 #include "../SDK/LocalPlayer.h"
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/Panorama.h"
+#include "../SDK/Sound.h"
 #include "../SDK/Surface.h"
 #include "../SDK/UserCmd.h"
 #include "../SDK/WeaponData.h"
@@ -1027,28 +1028,28 @@ void Misc::moonwalk(UserCmd* cmd, bool &sendPacket) noexcept
 	}
 }
 
-void Misc::playHitSound(GameEvent& event) noexcept
+void Misc::playHitSound(GameEvent &event) noexcept
 {
-    if (!config->sound.hitSound)
-        return;
+	if (!config->sound.hitSound)
+		return;
 
-    if (!localPlayer)
-        return;
+	if (!localPlayer)
+		return;
 
-    if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
-        return;
+	if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
+		return;
 
-    constexpr std::array hitSounds{
-        "playvol physics/metal/metal_solid_impact_bullet2",
-        "playvol buttons/arena_switch_press_02",
-        "playvol training/timer_bell",
-        "playvol physics/glass/glass_impact_bullet1"
-    };
+	constexpr std::array hitSounds{
+		"playvol physics/metal/metal_solid_impact_bullet2",
+		"playvol buttons/arena_switch_press_02",
+		"playvol training/timer_bell",
+		"playvol physics/glass/glass_impact_bullet1"
+	};
 
-    if (static_cast<std::size_t>(config->sound.hitSound - 1) < hitSounds.size())
-        interfaces->engine->clientCmdUnrestricted((hitSounds[config->sound.hitSound - 1] + ' ' + std::to_string(config->sound.hitSoundVol)).c_str());
-    else if (config->sound.hitSound == 5)
-        interfaces->engine->clientCmdUnrestricted(("playvol " + config->sound.customHitSound + ' ' + std::to_string(config->sound.hitSoundVol)).c_str());
+	if (static_cast<std::size_t>(config->sound.hitSound - 1) < hitSounds.size())
+		interfaces->engine->clientCmdUnrestricted((hitSounds[config->sound.hitSound - 1] + ' ' + std::to_string(config->sound.hitSoundVol)).c_str());
+	else if (config->sound.hitSound == 5)
+		interfaces->engine->clientCmdUnrestricted(("playvol " + config->sound.customHitSound + ' ' + std::to_string(config->sound.hitSoundVol)).c_str());
 }
 
 void Misc::killSound(GameEvent& event) noexcept

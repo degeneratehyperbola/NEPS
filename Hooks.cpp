@@ -67,7 +67,6 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 
 		const bool loaded = config->load(u8"default", false);
 
-		"SteamMatchMaking009";
 		std::string welcomeMsg = "Yep, we don't have a resolver yet :P\nLet's get started!\nTo open UI press ";
 		welcomeMsg += interfaces->inputSystem->virtualKeyToString(config->misc.menuKey);
 		welcomeMsg += " on your keyboard.";
@@ -370,14 +369,15 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 	hooks->client.callOriginal<void, 37>(stage);
 }
 
-struct SoundData {
-    std::byte pad[4];
-    int entityIndex;
-    int channel;
-    const char* soundEntry;
-    std::byte pad1[8];
-    float volume;
-    std::byte pad2[44];
+struct SoundData
+{
+	int filter;
+	int entityIndex;
+	int channel;
+	const char *soundEntry;
+	PAD(8)
+	float volume;
+	PAD(44)
 };
 
 static void __stdcall emitSound(SoundData data) noexcept

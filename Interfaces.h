@@ -7,9 +7,11 @@
 
 class Client;
 class Cvar;
+class Effects;
 class Engine;
 class EngineTrace;
 class EntityList;
+//class FileSystem;
 class GameEventManager;
 class GameMovement;
 class GameUI;
@@ -27,7 +29,7 @@ class Surface;
 class Sound;
 class SoundEmitter;
 class StudioRender;
-class Effects;
+//class SteamMatchMaking;
 
 class Interfaces {
 public:
@@ -36,9 +38,11 @@ type* name = reinterpret_cast<type*>(find(L##module, version));
 
     GAME_INTERFACE(Client, client, "client", "VClient018")
     GAME_INTERFACE(Cvar, cvar, "vstdlib", "VEngineCvar007")
+    GAME_INTERFACE(Effects, effects, "engine", "VEngineEffects001")
     GAME_INTERFACE(Engine, engine, "engine", "VEngineClient014")
     GAME_INTERFACE(EngineTrace, engineTrace, "engine", "EngineTraceClient004")
     GAME_INTERFACE(EntityList, entityList, "client", "VClientEntityList003")
+    //GAME_INTERFACE(FileSystem, fileSystem, "filesystem_stdio", "VFileSystem017")
     GAME_INTERFACE(GameEventManager, gameEventManager, "engine", "GAMEEVENTSMANAGER002")
     GAME_INTERFACE(GameMovement, gameMovement, "client", "GameMovement001")
     GAME_INTERFACE(GameUI, gameUI, "client", "GameUI011")
@@ -56,7 +60,7 @@ type* name = reinterpret_cast<type*>(find(L##module, version));
     GAME_INTERFACE(Sound, sound, "engine", "IEngineSoundClient003")
     GAME_INTERFACE(SoundEmitter, soundEmitter, "soundemittersystem", "VSoundEmitter003")
     GAME_INTERFACE(StudioRender, studioRender, "studiorender", "VStudioRender026")
-    GAME_INTERFACE(Effects, effects, "engine", "VEngineEffects001")
+    //GAME_INTERFACE(SteamMatchMaking, steamMatchMaking, "steam_api", "SteamMatchMaking009")
 
 #undef GAME_INTERFACE
 private:
