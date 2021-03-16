@@ -95,7 +95,8 @@ public:
 		bool yaw = false;
 		float yawAngle = 0.0f;
 		bool desync = false;
-		bool corrected = false;
+		bool corrected = true;
+		bool clamped = false;
 		bool extended = false;
 		int flipKey = 0;
 		KeyBind fakeDuck;

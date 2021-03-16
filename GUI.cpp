@@ -362,7 +362,10 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
     ImGui::Checkbox("Desync", &config->antiAim.desync);
 	if (config->antiAim.desync)
 	{
-		ImGui::Checkbox("Increase clamp", &config->antiAim.corrected);
+		ImGui::Checkbox("Reduce slide", &config->antiAim.corrected);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Turns off AA when moving");
+		ImGui::Checkbox("Increase clamp", &config->antiAim.clamped);
 		ImGui::Checkbox("Extended (experimental)", &config->antiAim.extended);
 		ImGuiCustom::keyBind("Flip key", &config->antiAim.flipKey);
 	}

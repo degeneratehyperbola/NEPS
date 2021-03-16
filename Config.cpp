@@ -370,6 +370,7 @@ static void from_json(const json& j, Config::AntiAim& a)
     read(j, "Yaw angle", a.yawAngle);
     read(j, "Desync", a.desync);
     read(j, "Desync cor", a.corrected);
+    read(j, "Desync clamp", a.clamped);
     read(j, "Desync ext", a.extended);
     read(j, "Flip key", a.flipKey);
 	read<value_t::object>(j, "Fake duck", a.fakeDuck);
@@ -948,6 +949,7 @@ static void to_json(json& j, const Config::AntiAim& o, const Config::AntiAim& du
     WRITE("Yaw angle", yawAngle);
     WRITE("Desync", desync);
     WRITE("Desync cor", corrected);
+    WRITE("Desync clamp", clamped);
     WRITE("Desync ext", extended);
     WRITE("Flip key", flipKey);
 	WRITE("Fake duck", fakeDuck);
