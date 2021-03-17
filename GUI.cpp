@@ -985,6 +985,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
             auto& trails = config->esp.projectiles[currentItem].trails;
 
             ImGui::Checkbox("Trails", &trails.enabled);
+			ImGui::SameLine();
 
             if (ImGui::ArrowButton("esptrails", ImGuiDir_Right))
                 ImGui::OpenPopup("##trails");

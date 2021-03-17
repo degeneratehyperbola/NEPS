@@ -94,112 +94,144 @@ static std::vector<ImVec2> convexHull(std::vector<ImVec2> points) noexcept
 
 static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
 {
-    if (!config.enabled)
+	if (!config.enabled)
+		return;
+
+	const bool shouldDrawFill = config.fill.color[3] != 0.0f;
+	const bool shouldDrawLine = config.color[3] != 0.0f;
+
+    if (!shouldDrawFill && !shouldDrawLine)
         return;
 
     const ImU32 color = Helpers::calculateColor(config);
     const ImU32 fillColor = Helpers::calculateColor(config.fill);
 
-    switch (config.type) {
-    case Box::_2d:
-        if (config.fill.enabled)
-            drawList->AddRectFilled(bbox.min + ImVec2{ 1.0f, 1.0f }, bbox.max - ImVec2{ 1.0f, 1.0f }, fillColor, config.rounding, ImDrawCornerFlags_All);
-		else
+	switch (config.type)
+	{
+	case Box::_2d:
+		if (config.fill.enabled && shouldDrawFill)
+		{
+			drawList->AddRectFilled(bbox.min + ImVec2{1.0f, 1.0f}, bbox.max - ImVec2{1.0f, 1.0f}, fillColor, config.rounding, ImDrawCornerFlags_All);
+		}
+		else if (shouldDrawFill)
 		{
 			drawList->AddRect(bbox.min, bbox.max, fillColor, config.rounding, ImDrawCornerFlags_All, 3.0f);
 		}
-        drawList->AddRect(bbox.min, bbox.max, color, config.rounding, ImDrawCornerFlags_All);
-        break;
-    case Box::_2dCorners:
-        if (config.fill.enabled) {
-            drawList->AddRectFilled(bbox.min + ImVec2{ 1.0f, 1.0f }, bbox.max - ImVec2{ 1.0f, 1.0f }, fillColor, config.rounding, ImDrawCornerFlags_All);
 
-            drawList->AddLine(bbox.min, { bbox.min.x, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f) }, color);
-            drawList->AddLine(bbox.min, { IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.min.y }, color);
+		if (shouldDrawLine)
+		{
+			drawList->AddRect(bbox.min, bbox.max, color, config.rounding, ImDrawCornerFlags_All);
+		}
+		break;
+	case Box::_2dCorners:
+		if (config.fill.enabled && shouldDrawFill)
+		{
+			drawList->AddRectFilled(bbox.min + ImVec2{1.0f, 1.0f}, bbox.max - ImVec2{1.0f, 1.0f}, fillColor, config.rounding, ImDrawCornerFlags_All);
+		}
+		else if (shouldDrawFill)
+		{
+			drawList->AddLine(bbox.min, {bbox.min.x, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f)}, fillColor, 3.0f);
+			drawList->AddLine(bbox.min, {IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.min.y}, fillColor, 3.0f);
 
-            drawList->AddLine({ bbox.max.x, bbox.min.y }, { IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.min.y }, color);
-            drawList->AddLine({ bbox.max.x - 1.0f, bbox.min.y }, { bbox.max.x - 1.0f, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f) }, color);
+			drawList->AddLine({bbox.max.x, bbox.min.y}, {IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.min.y}, fillColor, 3.0f);
+			drawList->AddLine({bbox.max.x - 1.0f, bbox.min.y}, {bbox.max.x - 1.0f, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f)}, fillColor, 3.0f);
 
-            drawList->AddLine({ bbox.min.x, bbox.max.y }, { bbox.min.x, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f) }, color);
-            drawList->AddLine({ bbox.min.x, bbox.max.y - 1.0f }, { IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.max.y - 1.0f }, color);
+			drawList->AddLine({bbox.min.x, bbox.max.y}, {bbox.min.x, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f)}, fillColor, 3.0f);
+			drawList->AddLine({bbox.min.x, bbox.max.y - 1.0f}, {IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.max.y - 1.0f}, fillColor, 3.0f);
 
-            drawList->AddLine(bbox.max - ImVec2{ 0.5f, 1.0f }, { IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.max.y - 1.0f }, color);
-            drawList->AddLine(bbox.max - ImVec2{ 1.0f, 0.0f }, { bbox.max.x - 1.0f, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f) }, color);
-        } else {
-			drawList->AddLine(bbox.min, { bbox.min.x, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f) }, fillColor, 3.0f);
-			drawList->AddLine(bbox.min, { IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.min.y }, fillColor, 3.0f);
+			drawList->AddLine(bbox.max - ImVec2{0.5f, 1.0f}, {IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.max.y - 1.0f}, fillColor, 3.0f);
+			drawList->AddLine(bbox.max - ImVec2{1.0f, 0.0f}, {bbox.max.x - 1.0f, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f)}, fillColor, 3.0f);
+		}
 
-			drawList->AddLine({ bbox.max.x, bbox.min.y }, { IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.min.y }, fillColor, 3.0f);
-			drawList->AddLine({ bbox.max.x - 1.0f, bbox.min.y }, { bbox.max.x - 1.0f, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f) }, fillColor, 3.0f);
+		if (shouldDrawLine)
+		{
+			drawList->AddLine(bbox.min, {bbox.min.x, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f)}, color);
+			drawList->AddLine(bbox.min, {IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.min.y}, color);
 
-			drawList->AddLine({ bbox.min.x, bbox.max.y }, { bbox.min.x, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f) }, fillColor, 3.0f);
-			drawList->AddLine({ bbox.min.x, bbox.max.y - 1.0f }, { IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.max.y - 1.0f }, fillColor, 3.0f);
+			drawList->AddLine({bbox.max.x, bbox.min.y}, {IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.min.y}, color);
+			drawList->AddLine({bbox.max.x - 1.0f, bbox.min.y}, {bbox.max.x - 1.0f, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f)}, color);
 
-			drawList->AddLine(bbox.max - ImVec2{ 0.5f, 1.0f }, { IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.max.y - 1.0f }, fillColor, 3.0f);
-			drawList->AddLine(bbox.max - ImVec2{ 1.0f, 0.0f }, { bbox.max.x - 1.0f, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f) }, fillColor, 3.0f);
+			drawList->AddLine({bbox.min.x, bbox.max.y}, {bbox.min.x, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f)}, color);
+			drawList->AddLine({bbox.min.x, bbox.max.y - 1.0f}, {IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.max.y - 1.0f}, color);
 
-			drawList->AddLine(bbox.min, { bbox.min.x, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f) }, color);
-			drawList->AddLine(bbox.min, { IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.min.y }, color);
+			drawList->AddLine(bbox.max - ImVec2{0.5f, 1.0f}, {IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.max.y - 1.0f}, color);
+			drawList->AddLine(bbox.max - ImVec2{1.0f, 0.0f}, {bbox.max.x - 1.0f, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f)}, color);
+		}
+		break;
+	case Box::_3d:
+		if (config.fill.enabled && shouldDrawFill)
+		{
+			const auto hull = convexHull({std::begin(bbox.vertices), std::end(bbox.vertices)});
+			drawList->AddConvexPolyFilled(hull.data(), hull.size(), fillColor);
+		}
+		else if (shouldDrawFill)
+		{
+			for (int i = 0; i < 8; ++i)
+			{
+				for (int j = 1; j <= 4; j <<= 1)
+				{
+					if (!(i & j))
+						drawList->AddLine(bbox.vertices[i], bbox.vertices[i + j], fillColor, 3.0f);
+				}
+			}
+		}
 
-			drawList->AddLine({ bbox.max.x, bbox.min.y }, { IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.min.y }, color);
-			drawList->AddLine({ bbox.max.x - 1.0f, bbox.min.y }, { bbox.max.x - 1.0f, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f) }, color);
+		if (shouldDrawLine)
+		{
+			for (int i = 0; i < 8; ++i)
+			{
+				for (int j = 1; j <= 4; j <<= 1)
+				{
+					if (!(i & j))
+						drawList->AddLine(bbox.vertices[i], bbox.vertices[i + j], color);
+				}
+			}
+		}
+		break;
+	case Box::_3dCorners:
+		if (config.fill.enabled && shouldDrawFill)
+		{
+			const auto hull = convexHull({std::begin(bbox.vertices), std::end(bbox.vertices)});
+			drawList->AddConvexPolyFilled(hull.data(), hull.size(), fillColor);
+		}
+		else if (shouldDrawFill)
+		{
+			for (int i = 0; i < 8; ++i)
+			{
+				for (int j = 1; j <= 4; j <<= 1)
+				{
+					if (!(i & j))
+					{
+						drawList->AddLine(bbox.vertices[i], ImVec2{bbox.vertices[i].x * 0.75f + bbox.vertices[i + j].x * 0.25f, bbox.vertices[i].y * 0.75f + bbox.vertices[i + j].y * 0.25f}, fillColor, 3.0f);
+						drawList->AddLine(ImVec2{bbox.vertices[i].x * 0.25f + bbox.vertices[i + j].x * 0.75f, bbox.vertices[i].y * 0.25f + bbox.vertices[i + j].y * 0.75f}, bbox.vertices[i + j], fillColor, 3.0f);
+					}
+				}
+			}
+		}
 
-			drawList->AddLine({ bbox.min.x, bbox.max.y }, { bbox.min.x, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f) }, color);
-			drawList->AddLine({ bbox.min.x, bbox.max.y - 1.0f }, { IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.max.y - 1.0f }, color);
-
-			drawList->AddLine(bbox.max - ImVec2{ 0.5f, 1.0f }, { IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.max.y - 1.0f }, color);
-			drawList->AddLine(bbox.max - ImVec2{ 1.0f, 0.0f }, { bbox.max.x - 1.0f, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f) }, color);
-        }
-        break;
-    case Box::_3d:
-        if (config.fill.enabled) {
-            const auto hull = convexHull({ std::begin(bbox.vertices), std::end(bbox.vertices) });
-            drawList->AddConvexPolyFilled(hull.data(), hull.size(), fillColor);
-        } else {
-            for (int i = 0; i < 8; ++i) {
-                for (int j = 1; j <= 4; j <<= 1) {
-                    if (!(i & j))
-                        drawList->AddLine(bbox.vertices[i], bbox.vertices[i + j], fillColor, 3.0f);
-                }
-            }
-        }
-
-        for (int i = 0; i < 8; ++i) {
-            for (int j = 1; j <= 4; j <<= 1) {
-                if (!(i & j))
-                    drawList->AddLine(bbox.vertices[i], bbox.vertices[i + j], color);
-            }
-        }
-        break;
-    case Box::_3dCorners:
-        if (config.fill.enabled) {
-            const auto hull = convexHull({ std::begin(bbox.vertices), std::end(bbox.vertices) });
-            drawList->AddConvexPolyFilled(hull.data(), hull.size(), fillColor);
-        } else {
-            for (int i = 0; i < 8; ++i) {
-                for (int j = 1; j <= 4; j <<= 1) {
-                    if (!(i & j)) {
-                        drawList->AddLine(bbox.vertices[i], ImVec2{ bbox.vertices[i].x * 0.75f + bbox.vertices[i + j].x * 0.25f, bbox.vertices[i].y * 0.75f + bbox.vertices[i + j].y * 0.25f }, fillColor, 3.0f);
-                        drawList->AddLine(ImVec2{ bbox.vertices[i].x * 0.25f + bbox.vertices[i + j].x * 0.75f, bbox.vertices[i].y * 0.25f + bbox.vertices[i + j].y * 0.75f }, bbox.vertices[i + j], fillColor, 3.0f);
-                    }
-                }
-            }
-        }
-
-        for (int i = 0; i < 8; ++i) {
-            for (int j = 1; j <= 4; j <<= 1) {
-                if (!(i & j)) {
-                    drawList->AddLine(bbox.vertices[i], { bbox.vertices[i].x * 0.75f + bbox.vertices[i + j].x * 0.25f, bbox.vertices[i].y * 0.75f + bbox.vertices[i + j].y * 0.25f }, color);
-                    drawList->AddLine({ bbox.vertices[i].x * 0.25f + bbox.vertices[i + j].x * 0.75f, bbox.vertices[i].y * 0.25f + bbox.vertices[i + j].y * 0.75f }, bbox.vertices[i + j], color);
-                }
-            }
-        }
-        break;
-    }
+		if (shouldDrawLine)
+		{
+			for (int i = 0; i < 8; ++i)
+			{
+				for (int j = 1; j <= 4; j <<= 1)
+				{
+					if (!(i & j))
+					{
+						drawList->AddLine(bbox.vertices[i], {bbox.vertices[i].x * 0.75f + bbox.vertices[i + j].x * 0.25f, bbox.vertices[i].y * 0.75f + bbox.vertices[i + j].y * 0.25f}, color);
+						drawList->AddLine({bbox.vertices[i].x * 0.25f + bbox.vertices[i + j].x * 0.75f, bbox.vertices[i].y * 0.25f + bbox.vertices[i + j].y * 0.75f}, bbox.vertices[i + j], color);
+					}
+				}
+			}
+		}
+		break;
+	}
 }
 
-static ImVec2 renderText(float distance, float cullDistance, const Color4 &textCfg, const char *text, const ImVec2 &pos, bool centered = true, bool adjustHeight = true, bool outline = true) noexcept
+static ImVec2 renderText(float distance, float cullDistance, const Color4Border &textCfg, const char *text, const ImVec2 &pos, bool centered = true, bool adjustHeight = true) noexcept
 {
+	if (textCfg.color[3] == 0.0f)
+		return {};
+
 	if (cullDistance > 0 && distance > cullDistance)
 		return {};
 	else if (cullDistance < 0 && distance < cullDistance)
@@ -211,7 +243,7 @@ static ImVec2 renderText(float distance, float cullDistance, const Color4 &textC
     const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
 
     const auto color = Helpers::calculateColor(textCfg);
-	if (outline)
+	if (textCfg.border)
 	{
 		drawList->AddText({ pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f }, color & IM_COL32_A_MASK, text);
 		drawList->AddText({ pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f }, color & IM_COL32_A_MASK, text);
@@ -279,7 +311,7 @@ struct FontPush {
     }
 };
 
-static void drawHealthBar(const ImVec2& pos, float height, int health, Color4 text, float distance, float cull) noexcept
+static void drawHealthBar(const ImVec2& pos, float height, int health, Color4Border text, float distance, float cull) noexcept
 {
 	int originalHealth = health;
 	health = std::clamp(health, 0, 100);
@@ -289,7 +321,8 @@ static void drawHealthBar(const ImVec2& pos, float height, int health, Color4 te
     ImVec2 min = pos;
 	ImVec2 max = min + ImVec2{width, height / 2.0f};
 
-    drawList->AddRectFilled(min - ImVec2{ 1.0f, 1.0f }, pos + ImVec2{ width + 1.0f, height + 1.0f }, Helpers::calculateColor(0, 0, 0, 255));
+	if (text.border)
+		drawList->AddRectFilled(min - ImVec2{ 1.0f, 1.0f }, pos + ImVec2{ width + 1.0f, height + 1.0f }, Helpers::calculateColor(0, 0, 0, 255));
     
 	drawList->PushClipRect(pos + ImVec2{ -1.0f, (100 - health) / 100.0f * height - 1.0f }, pos + ImVec2{ width + 1.0f, height + 1.0f });
 
@@ -356,8 +389,8 @@ static void renderPlayerBox(const PlayerData& playerData, const Player& config) 
 		const auto color = Helpers::calculateColor(config.flashDuration);
 		constexpr float pi = std::numbers::pi_v<float>;
 		drawList->PathArcTo(flashDurationPos, radius, pi / 2 - (playerData.flashDuration / 255.0f * pi), pi / 2 + (playerData.flashDuration / 255.0f * pi), 40);
-		drawList->PathStroke(color & IM_COL32_A_MASK, false, 3.0f);
-		drawList->PathArcTo(flashDurationPos, radius, pi / 2 - (playerData.flashDuration / 255.0f * pi), pi / 2 + (playerData.flashDuration / 255.0f * pi), 40);
+		if (config.flashDuration.border)
+			drawList->AddPolyline(drawList->_Path.Data, drawList->_Path.Size, color & IM_COL32_A_MASK, false, 3.0f);
 		drawList->PathStroke(color, false);
 
 		offsetMins.y -= radius * 2.5f;
@@ -425,47 +458,52 @@ static void drawProjectileTrajectory(const Trail& config, const std::vector<std:
                 points.emplace_back(pos);
                 shadowPoints.emplace_back(pos);
             } else if (config.type == Trail::Circles) {
-                drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color & IM_COL32_A_MASK, 12, config.thickness + 2.0f);
+				if (config.border)
+					drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color & IM_COL32_A_MASK, 12, config.thickness + 2.0f);
                 drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color, 12, config.thickness);
             } else if (config.type == Trail::FilledCircles) {
-                drawList->AddCircleFilled(pos, 5.0f - point.distTo(GameData::local().origin) / 700.0f, color & IM_COL32_A_MASK);
+				if (config.border)
+					drawList->AddCircleFilled(pos, 5.0f - point.distTo(GameData::local().origin) / 700.0f, color & IM_COL32_A_MASK);
                 drawList->AddCircleFilled(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color);
             }
         }
     }
 
     if (config.type == Trail::Line) {
-        drawList->AddPolyline(shadowPoints.data(), shadowPoints.size(), color & IM_COL32_A_MASK, false, config.thickness + 2.0f);
+		if (config.border)
+			drawList->AddPolyline(shadowPoints.data(), shadowPoints.size(), color & IM_COL32_A_MASK, false, config.thickness + 2.0f);
         drawList->AddPolyline(points.data(), points.size(), color, false, config.thickness);
     }
 }
 
-static void drawPlayerSkeleton(const Color4ToggleThickness& config, const PlayerData& playerData) noexcept
+static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const PlayerData &playerData) noexcept
 {
-    if (!config.enabled)
-        return;
+	if (!config.enabled)
+		return;
 
-    const auto color = Helpers::calculateColor(config);
+	const auto color = Helpers::calculateColor(config);
 
-    std::vector<std::pair<ImVec2, ImVec2>> points, shadowPoints;
+	std::vector<std::pair<ImVec2, ImVec2>> points, shadowPoints;
 
-    for (const auto& [bone, parent] : playerData.bones) {
-        ImVec2 bonePoint;
-        if (!Helpers::worldToScreen(bone, bonePoint))
-            continue;
+	for (const auto &[bone, parent] : playerData.bones)
+	{
+		ImVec2 bonePoint;
+		if (!Helpers::worldToScreen(bone, bonePoint))
+			continue;
 
-        ImVec2 parentPoint;
-        if (!Helpers::worldToScreen(parent, parentPoint))
-            continue;
+		ImVec2 parentPoint;
+		if (!Helpers::worldToScreen(parent, parentPoint))
+			continue;
 
-        points.emplace_back(bonePoint, parentPoint);
-        shadowPoints.emplace_back(bonePoint, parentPoint);
-    }
+		points.emplace_back(bonePoint, parentPoint);
+		shadowPoints.emplace_back(bonePoint, parentPoint);
+	}
 
-	for (const auto& [bonePoint, parentPoint] : shadowPoints)
-		drawList->AddLine(bonePoint, parentPoint, color & IM_COL32_A_MASK, config.thickness + 2.0f);
+	if (config.border)
+		for (const auto &[bonePoint, parentPoint] : shadowPoints)
+			drawList->AddLine(bonePoint, parentPoint, color & IM_COL32_A_MASK, config.thickness + 2.0f);
 
-	for (const auto& [bonePoint, parentPoint] : points)
+	for (const auto &[bonePoint, parentPoint] : points)
 		drawList->AddLine(bonePoint, parentPoint, color, config.thickness);
 }
 

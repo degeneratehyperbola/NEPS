@@ -763,7 +763,7 @@ static void camDist(FrameStage stage)
 		static auto distVar = interfaces->cvar->findVar("cam_idealdist");
 		static auto curDist = 0.0f;
 		if (memory->input->isCameraInThirdPerson)
-			curDist = Helpers::approachValSmooth(static_cast<float>(config->visuals.thirdpersonDistance), curDist, 0.15f);
+			curDist = Helpers::approachValSmooth(static_cast<float>(config->visuals.thirdpersonDistance), curDist, memory->globalVars->frametime * 7.0f);
 		else
 			curDist = 0.0f;
 

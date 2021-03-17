@@ -64,11 +64,11 @@ void ImGuiCustom::colorPicker(const char *name, std::array<float, 4> &color, boo
 				if (thickness)
 				{
 					ImGui::InputFloat("Thickness", thickness, 0.0f, 0.0f, "%.1f");
-					*thickness = std::fmaxf(*thickness, 1.0f);
+					*thickness = std::fmaxf(*thickness, 0.0f);
 				}
 
 				if (border)
-					ImGui::Checkbox("Border", border);
+					ImGui::Checkbox("Outline", border);
 
 				ImGui::PopItemWidth();
 				ImGui::EndChild();

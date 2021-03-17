@@ -461,7 +461,9 @@ static void __stdcall overrideView(ViewSetup *setup) noexcept
     const float zoomFov = fov * (1.0f - (static_cast<float>(config->visuals.zoomFac) / 100.0f));
 	static float curFov = fov;
 	static Helpers::KeyBindState zoom;
-	curFov = zoom[config->visuals.zoom] ? Helpers::approachValSmooth(zoomFov, curFov, 0.2f) : Helpers::approachValSmooth(fov, curFov, 0.2f);
+	curFov = zoom[config->visuals.zoom] ?
+		Helpers::approachValSmooth(zoomFov, curFov, memory->globalVars->frametime * 10.0f) :
+		Helpers::approachValSmooth(fov, curFov, memory->globalVars->frametime * 10.0f);
 
 	if (localPlayer)
 	{

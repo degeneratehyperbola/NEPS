@@ -264,7 +264,7 @@ static void from_json(const json& j, Weapon& w)
 
 static void from_json(const json& j, Trail& t)
 {
-    from_json(j, static_cast<Color4ToggleThickness&>(t));
+    from_json(j, static_cast<Color4BorderToggleThickness&>(t));
 
     read(j, "Type", t.type);
     read(j, "Time", t.time);
@@ -858,7 +858,7 @@ static void to_json(json& j, const Weapon& o, const Weapon& dummy = {})
 
 static void to_json(json& j, const Trail& o, const Trail& dummy = {})
 {
-    to_json(j, static_cast<const Color4ToggleThickness&>(o), dummy);
+    to_json(j, static_cast<const Color4BorderToggleThickness&>(o), dummy);
     WRITE("Type", type);
     WRITE("Time", time);
 }

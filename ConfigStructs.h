@@ -97,34 +97,35 @@ struct Shared {
     Font font;
     Snapline snapline;
     Box box;
-	Color4Toggle name;
+	Color4BorderToggle name;
     float textCullDistance = 0.0f;
 };
 
 struct Bar : Color4ToggleRounding {
-
+	// What
 };
 
 struct Player : Shared {
-	Color4Toggle weapon;
-	Color4Toggle flashDuration;
+	Color4BorderToggle weapon;
+	Color4BorderToggle flashDuration;
     bool audibleOnly = false;
     bool spottedOnly = false;
-	Color4Toggle healthBar;
-    Color4ToggleThickness skeleton;
+	Color4BorderToggle healthBar;
+	Color4BorderToggleThickness skeleton;
     Box headBox;
-	Color4Toggle flags;
+	Color4BorderToggle flags;
 
     using Shared::operator=;
 };
 
 struct Weapon : Shared {
-	Color4Toggle ammo;
+	Color4BorderToggle ammo;
 
     using Shared::operator=;
 };
 
-struct Trail : Color4ToggleThickness {
+struct Trail : Color4BorderToggleThickness
+{
     enum Type {
         Line = 0,
         Circles,

@@ -403,6 +403,7 @@ void Helpers::feetYaw(AnimState *state, float pursue, float &hold, float &curren
 float Helpers::approachValSmooth(float target, float value, float fraction)
 {
 	float delta = target - value;
+	fraction = std::clamp(fraction, 0.0f, 1.0f);
 	delta *= fraction;
 	return value + delta;
 }
