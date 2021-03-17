@@ -334,7 +334,7 @@ void ImGui::StyleColorsLight(ImGuiStyle* dst)
 	colors[ImGuiCol_PlotHistogram] = {1.000000f, 0.000000f, 0.000000f, 1.000000f};
 	colors[ImGuiCol_PlotHistogramHovered] = {1.000000f, 0.600000f, 0.000000f, 1.000000f};
 	colors[ImGuiCol_TextSelectedBg] = {1.000000f, 0.000000f, 0.000000f, 0.237288f};
-	colors[ImGuiCol_DragDropTarget] = {1.000000f, 0.515337f, 0.000000f, 1.000000f};
+	colors[ImGuiCol_DragDropTarget] = {1.000000f, 0.000000f, 0.000000f, 1.000000f};
 	colors[ImGuiCol_NavHighlight] = {0.450000f, 0.450000f, 0.900000f, 0.800000f};
 	colors[ImGuiCol_NavWindowingHighlight] = {1.000000f, 1.000000f, 1.000000f, 0.700000f};
 	colors[ImGuiCol_NavWindowingDimBg] = {0.800000f, 0.800000f, 0.800000f, 0.200000f};
