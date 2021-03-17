@@ -977,7 +977,7 @@ void Misc::autoStrafe(UserCmd* cmd) noexcept
 	if (!localPlayer || localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
 		return;
 
-	if (~cmd->buttons & UserCmd::IN_JUMP)
+	if (~cmd->buttons & UserCmd::IN_JUMP || localPlayer->flags() & Entity::FL_ONGROUND)
 		return;
 
 	const float curSpeed = localPlayer->velocity().length2D();
