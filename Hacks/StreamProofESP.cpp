@@ -213,10 +213,6 @@ static ImVec2 renderText(float distance, float cullDistance, const Color4 &textC
     const auto color = Helpers::calculateColor(textCfg);
 	if (outline)
 	{
-		drawList->AddText({ pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset + 1.0f }, color & IM_COL32_A_MASK, text);
-		drawList->AddText({ pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset - 1.0f }, color & IM_COL32_A_MASK, text);
-		drawList->AddText({ pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset + 1.0f }, color & IM_COL32_A_MASK, text);
-		drawList->AddText({ pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset - 1.0f }, color & IM_COL32_A_MASK, text);
 		drawList->AddText({ pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f }, color & IM_COL32_A_MASK, text);
 		drawList->AddText({ pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f }, color & IM_COL32_A_MASK, text);
 		drawList->AddText({ pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset }, color & IM_COL32_A_MASK, text);
