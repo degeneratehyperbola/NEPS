@@ -466,11 +466,11 @@ void Misc::fastPlant(UserCmd* cmd) noexcept
     if (plantAnywhere->getInt())
         return;
 
-    if (!localPlayer || !localPlayer->isAlive() || (localPlayer->inBombZone() && localPlayer->flags() & 1))
+    if (!localPlayer || !localPlayer->isAlive() || (localPlayer->inBombZone() && localPlayer->flags() & Entity::FL_ONGROUND))
         return;
 
     const auto activeWeapon = localPlayer->getActiveWeapon();
-    if (!activeWeapon || activeWeapon->getClientClass()->classId != ClassId::C4)
+    if (!activeWeapon || !activeWeapon->isC4())
         return;
 
     cmd->buttons &= ~UserCmd::IN_ATTACK;
