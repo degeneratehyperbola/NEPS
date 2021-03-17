@@ -634,14 +634,14 @@ void Misc::quickReload(UserCmd* cmd) noexcept
             reloadedWeapon = nullptr;
         }
 
-        if (auto activeWeapon{ localPlayer->getActiveWeapon() }; activeWeapon && activeWeapon->isInReload() && activeWeapon->clip() == activeWeapon->getWeaponData()->maxClip) {
+        if (auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && activeWeapon->isInReload() && activeWeapon->clip() == activeWeapon->getWeaponData()->maxClip) {
             reloadedWeapon = activeWeapon;
 
             for (auto weaponHandle : localPlayer->weapons()) {
                 if (weaponHandle == -1)
                     break;
 
-                if (auto weapon{ interfaces->entityList->getEntityFromHandle(weaponHandle) }; weapon && weapon != reloadedWeapon) {
+                if (auto weapon = interfaces->entityList->getEntityFromHandle(weaponHandle); weapon && weapon != reloadedWeapon) {
                     cmd->weaponselect = weapon->index();
                     cmd->weaponsubtype = weapon->getWeaponSubType();
                     break;

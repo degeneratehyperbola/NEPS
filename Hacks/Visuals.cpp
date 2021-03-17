@@ -37,7 +37,7 @@ void Visuals::playerModel(FrameStage stage) noexcept
         return;
     }
 
-    constexpr auto getModel = [](int team) constexpr noexcept -> const char* {
+    constexpr auto getModel = [](Team team) constexpr noexcept -> const char* {
         constexpr std::array models{
         //"models/player/custom_player/legacy/anime/astolfo/astolfo_v1.mdl", // proof that all cheaters are femboys
         "models/player/custom_player/legacy/ctm_fbi_variantb.mdl",
@@ -105,8 +105,8 @@ void Visuals::playerModel(FrameStage stage) noexcept
         };
 
         switch (team) {
-        case 2: return static_cast<std::size_t>(config->visuals.playerModelT - 1) < models.size() ? models[config->visuals.playerModelT - 1] : nullptr;
-        case 3: return static_cast<std::size_t>(config->visuals.playerModelCT - 1) < models.size() ? models[config->visuals.playerModelCT - 1] : nullptr;
+		case Team::TT: return static_cast<std::size_t>(config->visuals.playerModelT - 1) < models.size() ? models[config->visuals.playerModelT - 1] : nullptr;
+		case Team::CT: return static_cast<std::size_t>(config->visuals.playerModelCT - 1) < models.size() ? models[config->visuals.playerModelCT - 1] : nullptr;
         default: return nullptr;
         }
     };
