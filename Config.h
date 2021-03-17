@@ -365,7 +365,7 @@ public:
 		bool fixTabletSignal = false;
 		Color4Toggle noscopeCrosshair;
 		Color4Toggle recoilCrosshair;
-		Color3Toggle bombTimer = {1.0f, 0.55f, 0.0f};
+		bool bombTimer = false;
 		Color4Toggle offscreenEnemies;
 		bool nadePredict = false;
 		bool spamUse = false;

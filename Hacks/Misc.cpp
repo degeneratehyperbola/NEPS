@@ -515,7 +515,7 @@ void Misc::fastStop(UserCmd* cmd) noexcept
 
 void Misc::drawBombTimer() noexcept
 {
-	if (!config->misc.bombTimer.enabled)
+	if (!config->misc.bombTimer)
 		return;
 
 	GameData::Lock lock;
@@ -532,59 +532,56 @@ void Misc::drawBombTimer() noexcept
 		ImGui::SetNextWindowSize({windowWidth, 0});
 
 	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
-	ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | (gui->open ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize));
-
-	std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
-
-	ImGuiCustom::textUnformattedCentered(ss.str().c_str());
-
-	ImGui::PushStyleColor(ImGuiCol_PlotHistogram, Helpers::calculateColor(config->misc.bombTimer));
-	ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4{0.2f, 0.2f, 0.2f, 1.0f});
-	ImGuiCustom::progressBarFullWidth((plantedC4.blowTime - memory->globalVars->currenttime) / plantedC4.timerLength);
-
-	if (plantedC4.defuserHandle != -1)
+	if (ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | (gui->open ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize)))
 	{
-		const bool canDefuse = plantedC4.blowTime >= plantedC4.defuseCountDown;
+		std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
 
-		if (plantedC4.defuserHandle == GameData::local().handle)
+		ImGuiCustom::textUnformattedCentered(ss.str().c_str());
+
+		ImGuiCustom::progressBarFullWidth((plantedC4.blowTime - memory->globalVars->currenttime) / plantedC4.timerLength);
+
+		if (plantedC4.defuserHandle != -1)
 		{
-			std::ostringstream ss; ss << "Defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
+			const bool canDefuse = plantedC4.blowTime >= plantedC4.defuseCountDown;
 
-			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
+			if (plantedC4.defuserHandle == GameData::local().handle)
+			{
+				std::ostringstream ss; ss << "Defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
 
-			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, canDefuse ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255));
-			ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
-			ImGui::PopStyleColor();
+				ImGuiCustom::textUnformattedCentered(ss.str().c_str());
 
-			ImGui::PopStyleColor();
-		} else if (const auto defusingPlayer = std::find_if(GameData::players().cbegin(), GameData::players().cend(), [handle = plantedC4.defuserHandle](const auto &playerData) { return playerData.handle == handle; }); defusingPlayer != GameData::players().cend())
-		{
-			std::ostringstream ss; ss << defusingPlayer->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
+				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, canDefuse ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255));
+				ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
+				ImGui::PopStyleColor();
 
-			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
+				ImGui::PopStyleColor();
+			} else if (const auto defusingPlayer = std::find_if(GameData::players().cbegin(), GameData::players().cend(), [handle = plantedC4.defuserHandle](const auto &playerData) { return playerData.handle == handle; }); defusingPlayer != GameData::players().cend())
+			{
+				std::ostringstream ss; ss << defusingPlayer->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
 
-			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, canDefuse ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255));
-			ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
-			ImGui::PopStyleColor();
+				ImGuiCustom::textUnformattedCentered(ss.str().c_str());
+
+				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, canDefuse ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255));
+				ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
+				ImGui::PopStyleColor();
+			}
+
+			if (canDefuse)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+				ImGuiCustom::textUnformattedCentered("CAN DEFUSE");
+				ImGui::PopStyleColor();
+			} else
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+				ImGuiCustom::textUnformattedCentered("CANNOT DEFUSE");
+				ImGui::PopStyleColor();
+			}
 		}
 
-		if (canDefuse)
-		{
-			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-			ImGuiCustom::textUnformattedCentered("CAN DEFUSE");
-			ImGui::PopStyleColor();
-		} else
-		{
-			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-			ImGuiCustom::textUnformattedCentered("CANNOT DEFUSE");
-			ImGui::PopStyleColor();
-		}
+		windowWidth = ImGui::GetCurrentWindow()->SizeFull.x;
+		ImGui::End();
 	}
-
-	windowWidth = ImGui::GetCurrentWindow()->SizeFull.x;
-
-	ImGui::PopStyleColor(2);
-	ImGui::End();
 }
 
 void Misc::stealNames() noexcept

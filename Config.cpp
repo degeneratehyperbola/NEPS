@@ -629,7 +629,7 @@ static void from_json(const json& j, Config::Misc& m)
 	read<value_t::object>(j, "Noscope crosshair", m.noscopeCrosshair);
 	read<value_t::object>(j, "Recoil crosshair", m.recoilCrosshair);
 	read<value_t::object>(j, "Offscreen Enemies", m.offscreenEnemies);
-	read<value_t::object>(j, "Bomb timer", m.bombTimer);
+	read(j, "Bomb timer", m.bombTimer);
 	read(j, "Grenade predict", m.nadePredict);
 	read(j, "Spam use", m.spamUse);
 	read(j, "Indicators", m.indicators);

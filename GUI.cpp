@@ -1618,7 +1618,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGuiCustom::colorPicker("Recoil crosshair", config->misc.recoilCrosshair);
 	ImGuiCustom::colorPicker("Offscreen Enemies", config->misc.offscreenEnemies);
 	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
-	ImGuiCustom::colorPicker("Bomb timer", config->misc.bombTimer);
+	ImGui::Checkbox("Bomb timer", &config->misc.bombTimer);
     ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
     ImGui::Checkbox("Fix bone matrix", &config->misc.fixBoneMatrix);
     ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
