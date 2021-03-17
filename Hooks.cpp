@@ -72,10 +72,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 		welcomeMsg += " on your keyboard.";
 		if (loaded)
 			welcomeMsg += " Config \"default\" has been automatically loaded.";
-		welcomeMsg += R"msg(
-
-We also added IRC!
-To access it click "Social" button on the right end of the menu bar.
+		welcomeMsg += R"_msg(
 
 RECENT CHANGELOG:
   - Added PBR pipeline chams
@@ -84,7 +81,6 @@ RECENT CHANGELOG:
   - Added extended desync (very broken, don't use it)
   - Improved desync visualisation
   - Improved keybinds
-  - Added IRC
   - Added smoothness to zoom and third person
   - Added kill effects
   - Added smoothness to kill and hit effects
@@ -94,8 +90,7 @@ RECENT FIXES:
   - Fixed chams not showing thrown weapons
   - Fixed string loading issues
   - Fixed custom font crash
-  - Revised GUI labels
-			)msg";
+  - Revised GUI labels)_msg";
 
 		interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.c_str());
 
