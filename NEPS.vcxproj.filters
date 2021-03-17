@@ -478,7 +478,10 @@
     <ClInclude Include="Hacks\Animations.h">
       <Filter>Hacks</Filter>
     </ClInclude>
-    <ClInclude Include="SDK\SoundData.h">
+    <ClInclude Include="SDK\SteamMatchMaking.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\SteamID.h">
       <Filter>SDK</Filter>
     </ClInclude>
   </ItemGroup>

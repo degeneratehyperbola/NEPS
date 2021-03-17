@@ -140,11 +140,11 @@ void Chams::renderPlayer(Entity* player) noexcept
 			if (record.size())
 				if (config->chams["Backtrack"].trailBacktrack)
 				{
-					for (std::size_t recordId = 0; recordId < record.size(); recordId++)
-						if (Backtrack::valid(record.at(recordId).simulationTime) && record.at(recordId).origin != player->origin())
+					for (auto &snapshot : record)
+						if (Backtrack::valid(snapshot.simulationTime) && snapshot.origin != player->origin())
 						{
 							if (!appliedChams) hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);
-							applyChams(config->chams["Backtrack"].materials, health, record.at(recordId).matrix);
+							applyChams(config->chams["Backtrack"].materials, health, snapshot.matrix);
 							interfaces->studioRender->forcedMaterialOverride(nullptr);
 						}
 				}

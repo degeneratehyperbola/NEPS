@@ -609,7 +609,7 @@ void Misc::stealNames() noexcept
             continue;
 
         if (changeName(false, (std::string{ playerInfo.name } + '\x1').c_str(), 1.0f))
-            stolenIds.push_back(playerInfo.userId);
+            stolenIds.emplace_back(playerInfo.userId);
 
         return;
     }
@@ -1236,7 +1236,7 @@ void Misc::runReportbot() noexcept
         if (!report.empty()) {
             memory->submitReport(std::to_string(playerInfo.xuid).c_str(), report.c_str());
             lastReportTime = memory->globalVars->realtime;
-            reportedPlayers.push_back(playerInfo.xuid);
+            reportedPlayers.emplace_back(playerInfo.xuid);
         }
         return;
     }

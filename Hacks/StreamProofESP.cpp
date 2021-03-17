@@ -86,7 +86,7 @@ static std::vector<ImVec2> convexHull(std::vector<ImVec2> points) noexcept
     for (const auto& p : points) {
         while (hull.size() >= 2 && orientation(hull[hull.size() - 2], hull[hull.size() - 1], p) < 0.0f)
             hull.pop_back();
-        hull.push_back(p);
+        hull.emplace_back(p);
     }
 
     return hull;
@@ -426,8 +426,8 @@ static void drawProjectileTrajectory(const Trail& config, const std::vector<std:
     for (const auto& [time, point] : trajectory) {
         if (ImVec2 pos; time + config.time >= memory->globalVars->realtime && Helpers::worldToScreen(point, pos, false)) {
             if (config.type == Trail::Line) {
-                points.push_back(pos);
-                shadowPoints.push_back(pos);
+                points.emplace_back(pos);
+                shadowPoints.emplace_back(pos);
             } else if (config.type == Trail::Circles) {
                 drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color & IM_COL32_A_MASK, 12, config.thickness + 2.0f);
                 drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color, 12, config.thickness);

@@ -129,7 +129,7 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 					break;
 
 			const auto m = std::strstr(weaponData->name, "Taser") ? 1.0f : HitGroup::getDamageMultiplier(trace.hitgroup);
-			damage = m * damage * powf(weaponData->rangeModifier, trace.fraction * traveled / 500.0f);
+			damage = m * damage * std::powf(weaponData->rangeModifier, trace.fraction * traveled / 500.0f);
 
 			if (float armorRatio{weaponData->armorRatio / 2.0f}; HitGroup::isArmored(trace.hitgroup, trace.entity->hasHelmet()))
 				damage -= (trace.entity->armor() < damage * armorRatio / 2.0f ? trace.entity->armor() * 4.0f : damage) * (1.0f - armorRatio);
@@ -187,7 +187,7 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 					break;
 
 			const auto m = std::strstr(weaponData->name, "Taser") ? 1.0f : HitGroup::getDamageMultiplier(trace.hitgroup);
-			damage = m * damage * powf(weaponData->rangeModifier, trace.fraction * traveled / 500.0f);
+			damage = m * damage * std::powf(weaponData->rangeModifier, trace.fraction * traveled / 500.0f);
 
 			if (float armorRatio{weaponData->armorRatio / 2.0f}; HitGroup::isArmored(trace.hitgroup, trace.entity->hasHelmet()))
 				damage -= (trace.entity->armor() < damage * armorRatio / 2.0f ? trace.entity->armor() * 4.0f : damage) * (1.0f - armorRatio);
