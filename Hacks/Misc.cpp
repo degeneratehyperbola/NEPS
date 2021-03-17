@@ -1410,6 +1410,14 @@ void Misc::useSpam(UserCmd *cmd)
 	if (!config->misc.spamUse)
 		return;
 
+	static auto plantAnywhere = interfaces->cvar->findVar("mp_plant_c4_anywhere");
+
+	if (plantAnywhere->getInt())
+		return;
+
+	if (localPlayer->inBombZone() && localPlayer->flags() & Entity::FL_ONGROUND)
+		return;
+
 	if (cmd->buttons & UserCmd::IN_USE)
 	{
 		static bool flag = false;
