@@ -1458,7 +1458,6 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 			if (draw)
 			{
-				drawList->AddLine(pos, dir, color & IM_COL32_A_MASK, 3.0f);
 				drawList->AddLine(pos, dir, color);
 			}
 
@@ -1469,11 +1468,6 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 			if (draw)
 			{
-				drawList->AddLine(points[0], points[1], color & IM_COL32_A_MASK, 3.0f);
-				drawList->AddLine(points[1], points[2], color & IM_COL32_A_MASK, 3.0f);
-				drawList->AddLine(points[2], points[3], color & IM_COL32_A_MASK, 3.0f);
-				drawList->AddLine(points[3], points[0], color & IM_COL32_A_MASK, 3.0f);
-
 				drawList->AddLine(points[0], points[1], color, 1.0f);
 				drawList->AddLine(points[1], points[2], color, 1.0f);
 				drawList->AddLine(points[2], points[3], color, 1.0f);
@@ -1495,7 +1489,6 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 		if (draw)
 		{
 			const auto color = Helpers::calculateColor(config->visuals.playerVel);
-			drawList->AddLine(pos, dir, color & IM_COL32_A_MASK, 3.0f);
 			drawList->AddLine(pos, dir, color);
 		}
 	}
@@ -1516,11 +1509,6 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 		if (draw)
 		{
 			const auto color = Helpers::calculateColor(config->visuals.playerBounds);
-			drawList->AddLine(points[0], points[1], color & IM_COL32_A_MASK, 3.0f);
-			drawList->AddLine(points[1], points[2], color & IM_COL32_A_MASK, 3.0f);
-			drawList->AddLine(points[2], points[3], color & IM_COL32_A_MASK, 3.0f);
-			drawList->AddLine(points[3], points[0], color & IM_COL32_A_MASK, 3.0f);
-
 			drawList->AddLine(points[0], points[1], color, 1.0f);
 			drawList->AddLine(points[1], points[2], color, 1.0f);
 			drawList->AddLine(points[2], points[3], color, 1.0f);

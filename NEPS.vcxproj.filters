@@ -152,9 +152,6 @@
     <ClCompile Include="Helpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hacks\Exploits.cpp">
-      <Filter>Hacks</Filter>
-    </ClCompile>
     <ClCompile Include="Hacks\Animations.cpp">
       <Filter>Hacks</Filter>
     </ClCompile>
@@ -459,9 +456,6 @@
     </ClInclude>
     <ClInclude Include="SDK\ViewSetup.h">
       <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="Hacks\Exploits.h">
-      <Filter>Hacks</Filter>
     </ClInclude>
     <ClInclude Include="SDK\PlayerResource.h">
       <Filter>SDK</Filter>
