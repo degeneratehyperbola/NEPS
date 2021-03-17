@@ -505,10 +505,10 @@ void Misc::fastStop(UserCmd* cmd) noexcept
     if (speed < 15.0f)
         return;
     
-    Vector direction = velocity.toAngle();
-    direction.y = cmd->viewangles.y - direction.y;
+    float direction = velocity.toAngle2D();
+    direction = cmd->viewangles.y - direction;
 
-    const auto negatedDirection = Vector::fromAngle(direction) * -speed;
+    const auto negatedDirection = Vector::fromAngle2D(direction) * -speed;
     cmd->forwardmove = negatedDirection.x;
     cmd->sidemove = negatedDirection.y;
 }
