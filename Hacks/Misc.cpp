@@ -553,7 +553,7 @@ void Misc::drawBombTimer() noexcept
 			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
 
 			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, canDefuse ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255));
-			ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength, 2.0f);
+			ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
 			ImGui::PopStyleColor();
 
 			ImGui::PopStyleColor();
@@ -564,7 +564,7 @@ void Misc::drawBombTimer() noexcept
 			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
 
 			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, canDefuse ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255));
-			ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength, 2.0f);
+			ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
 			ImGui::PopStyleColor();
 		}
 
@@ -572,10 +572,12 @@ void Misc::drawBombTimer() noexcept
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
 			ImGuiCustom::textUnformattedCentered("CAN DEFUSE");
+			ImGui::PopStyleColor();
 		} else
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 			ImGuiCustom::textUnformattedCentered("CANNOT DEFUSE");
+			ImGui::PopStyleColor();
 		}
 	}
 

@@ -1876,7 +1876,6 @@ void GUI::renderGuiStyle2() noexcept
 
 void GUI::debug() noexcept
 {
-	#define DEBUG_UI
 	#ifdef DEBUG_UI
 
 	static bool egg = false;
