@@ -652,12 +652,13 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 
 void GUI::renderESPWindow(bool contentOnly) noexcept
 {
-    if (!contentOnly) {
-        if (!window.streamProofESP)
-            return;
-        ImGui::SetNextWindowSize({ 0.0f, 0.0f });
-        ImGui::Begin("ESP", &window.streamProofESP, windowFlags);
-    }
+	if (!contentOnly)
+	{
+		if (!window.streamProofESP)
+			return;
+		ImGui::SetNextWindowSize({0.0f, 0.0f});
+		ImGui::Begin("ESP", &window.streamProofESP, windowFlags);
+	}
 
     static std::size_t currentCategory;
     static auto currentItem = "All";
@@ -908,19 +909,22 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
         ImGui::Checkbox("Enabled", &sharedConfig.enabled);
         ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 260.0f);
         ImGui::SetNextItemWidth(220.0f);
-        if (ImGui::BeginCombo("Font", config->getSystemFonts()[sharedConfig.font.index].c_str())) {
-            for (size_t i = 0; i < config->getSystemFonts().size(); i++) {
-                bool isSelected = config->getSystemFonts()[i] == sharedConfig.font.name;
-                if (ImGui::Selectable(config->getSystemFonts()[i].c_str(), isSelected, 0, { 250.0f, 0.0f })) {
-                    sharedConfig.font.index = i;
-                    sharedConfig.font.name = config->getSystemFonts()[i];
-                    config->scheduleFontLoad(sharedConfig.font.name);
-                }
-                if (isSelected)
-                    ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
+		if (ImGui::BeginCombo("Font", config->getSystemFonts()[sharedConfig.font.index].c_str()))
+		{
+			for (size_t i = 0; i < config->getSystemFonts().size(); i++)
+			{
+				bool isSelected = config->getSystemFonts()[i] == sharedConfig.font.name;
+				if (ImGui::Selectable(config->getSystemFonts()[i].c_str(), isSelected, 0, {250.0f, 0.0f}))
+				{
+					sharedConfig.font.index = i;
+					sharedConfig.font.name = config->getSystemFonts()[i];
+					config->scheduleFontLoad(sharedConfig.font.name);
+				}
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
 
         ImGui::Separator();
 
@@ -936,14 +940,15 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
         if (ImGui::ArrowButton("espbox", ImGuiDir_Right))
             ImGui::OpenPopup("##box");
 
-        if (ImGui::BeginPopup("##box")) {
-            ImGui::SetNextItemWidth(95.0f);
-            ImGui::Combo("Type", &sharedConfig.box.type, "2D\0" "2D corners\0" "3D\0" "3D corners\0");
-            ImGui::SetNextItemWidth(275.0f);
-            ImGui::SliderFloat3("Scale", sharedConfig.box.scale.data(), 0.0f, 0.50f, "%.2f");
-            ImGuiCustom::colorPicker("Fill / outline", sharedConfig.box.fill);
-            ImGui::EndPopup();
-        }
+		if (ImGui::BeginPopup("##box"))
+		{
+			ImGui::SetNextItemWidth(95.0f);
+			ImGui::Combo("Type", &sharedConfig.box.type, "2D\0" "2D corners\0" "3D\0" "3D corners\0");
+			ImGui::SetNextItemWidth(275.0f);
+			ImGui::SliderFloat3("Scale", sharedConfig.box.scale.data(), 0.0f, 0.50f, "%.2f");
+			ImGuiCustom::colorPicker("Fill / outline", sharedConfig.box.fill);
+			ImGui::EndPopup();
+		}
 
         ImGuiCustom::colorPicker("Name", sharedConfig.name);
         ImGui::SameLine(spacing);
@@ -981,39 +986,42 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
         } else if (currentCategory == 2) {
             auto& weaponConfig = config->esp.weapons[currentItem];
             ImGuiCustom::colorPicker("Ammo", weaponConfig.ammo);
-        } else if (currentCategory == 3) {
-            auto& trails = config->esp.projectiles[currentItem].trails;
+		} else if (currentCategory == 3)
+		{
+			auto &trails = config->esp.projectiles[currentItem].trails;
 
-            ImGui::Checkbox("Trails", &trails.enabled);
+			ImGui::Checkbox("Trails", &trails.enabled);
 			ImGui::SameLine();
 
-            if (ImGui::ArrowButton("esptrails", ImGuiDir_Right))
-                ImGui::OpenPopup("##trails");
+			if (ImGui::ArrowButton("esptrails", ImGuiDir_Right))
+				ImGui::OpenPopup("##trails");
 
-            if (ImGui::BeginPopup("##trails")) {
-                constexpr auto trailPicker = [](const char* name, Trail& trail) noexcept {
-                    ImGui::PushID(name);
-                    ImGuiCustom::colorPicker(name, trail);
-                    ImGui::SameLine(150.0f);
-                    ImGui::SetNextItemWidth(95.0f);
-                    ImGui::Combo("", &trail.type, "Line\0Circles\0Filled Circles\0");
-                    ImGui::SameLine();
-                    ImGui::SetNextItemWidth(95.0f);
-                    ImGui::InputFloat("Time", &trail.time, 0.1f, 0.5f, "%.1fs");
-                    trail.time = std::clamp(trail.time, 1.0f, 60.0f);
-                    ImGui::PopID();
-                };
+			if (ImGui::BeginPopup("##trails"))
+			{
+				constexpr auto trailPicker = [](const char *name, Trail &trail) noexcept
+				{
+					ImGui::PushID(name);
+					ImGuiCustom::colorPicker(name, trail);
+					ImGui::SameLine(150.0f);
+					ImGui::SetNextItemWidth(95.0f);
+					ImGui::Combo("", &trail.type, "Line\0Circles\0Filled Circles\0");
+					ImGui::SameLine();
+					ImGui::SetNextItemWidth(95.0f);
+					ImGui::InputFloat("Time", &trail.time, 0.1f, 0.5f, "%.1fs");
+					trail.time = std::clamp(trail.time, 1.0f, 60.0f);
+					ImGui::PopID();
+				};
 
-                trailPicker("Local player", trails.localPlayer);
-                trailPicker("Allies", trails.allies);
-                trailPicker("Enemies", trails.enemies);
-                ImGui::EndPopup();
-            }
-        }
+				trailPicker("Local player", trails.localPlayer);
+				trailPicker("Allies", trails.allies);
+				trailPicker("Enemies", trails.enemies);
+				ImGui::EndPopup();
+			}
+		}
 
 		ImGui::SetNextItemWidth(95.0f);
         ImGui::InputFloat("Text cull", &sharedConfig.textCullDistance, 1.0f, 10.0f, "%.0fu");
-    }
+	}
 
     ImGui::EndChild();
 
