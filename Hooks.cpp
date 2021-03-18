@@ -67,7 +67,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 		const char *loaded = config->load(u8"default", false) ? "\n\nConfig \"default\" has been automatically loaded." : "";
 		
 		std::string welcomeMsg =
-R"_msg(Yep, we don't have a resolver yet :P
+R"_msg(We do have a resolver now >:)
 
 Let's get started!
 To open UI press %button on your keyboard.%loaded
