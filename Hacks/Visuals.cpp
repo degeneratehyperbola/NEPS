@@ -623,12 +623,12 @@ void Visuals::bBeams(GameEvent *event)
 	info.green = col[1] * 255.0f;
 	info.blue = col[2] * 255.0f;
 	info.brightness = col[3] * 255.0f;
-	info.segments = static_cast<int>(distance) / 15;
+	info.segments = noise > 0.0f ? static_cast<int>(distance) / 15 : -1;
 	info.renderable = true;
 	info.end = pos;
 	info.start = player->getEyePosition();
 	info.flags = FBEAM_SHADEIN;
-	if (railgun || noiseOnce || info.amplitude == 0.0f)
+	if (railgun || noiseOnce || noise == 0.0f)
 		info.flags |= FBEAM_ONLYNOISEONCE;
 	if (railgun)
 		info.flags |= FBEAM_SINENOISE;
