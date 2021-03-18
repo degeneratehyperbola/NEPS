@@ -84,7 +84,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			}
 		} else
 		{
-			const float add = config->antiAim.clamped ? 30.0f : 0.0f;
+			const float add = config->antiAim.clamped ? (cmd->tickCount & 1 ? 34.25f : 28.75f) : 0.0f;
 			const float desyncAngle = flip ? localPlayer->getMaxDesyncAngle() - add : -localPlayer->getMaxDesyncAngle() + add;
 
 			if (!sendPacket && (!config->antiAim.corrected || localPlayer->velocity().length2D() < 30.0f))
