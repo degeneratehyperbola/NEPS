@@ -64,14 +64,13 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
         config = std::make_unique<Config>("NEPS");
         gui = std::make_unique<GUI>();
 
-		const bool loaded = config->load(u8"default", false);
+		const char *loaded = config->load(u8"default", false) ? "\n\nConfig \"default\" has been automatically loaded." : "";
+		
+		std::string welcomeMsg =
+R"_msg(Yep, we don't have a resolver yet :P
 
-		std::string welcomeMsg = "Yep, we don't have a resolver yet :P\nLet's get started!\nTo open UI press ";
-		welcomeMsg += interfaces->inputSystem->virtualKeyToString(config->misc.menuKey);
-		welcomeMsg += " on your keyboard.";
-		if (loaded)
-			welcomeMsg += " Config \"default\" has been automatically loaded.";
-		welcomeMsg += R"_msg(
+Let's get started!
+To open UI press %button on your keyboard.%loaded
 
 RECENT CHANGELOG:
   - Added PBR pipeline chams
@@ -90,6 +89,9 @@ RECENT FIXES:
   - Fixed string loading issues
   - Fixed custom font crash
   - Revised GUI labels)_msg";
+
+		Helpers::replace(welcomeMsg, "%button", interfaces->inputSystem->virtualKeyToString(config->misc.menuKey));
+		Helpers::replace(welcomeMsg, "%loaded", loaded);
 
 		interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.c_str());
 
@@ -187,9 +189,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	static auto previousViewAngles{cmd->viewangles};
 	const auto currentViewAngles{cmd->viewangles};
 
-	auto &global = GameData::global();
-	global.indicators.resetKeyBinds();
-
 	memory->globalVars->serverTime(cmd);
 	Misc::changeConVarsTick();
 	Misc::antiAfkKick(cmd);
@@ -243,6 +242,9 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	cmd->sidemove = std::clamp(cmd->sidemove, -450.0f, 450.0f);
 
 	previousViewAngles = cmd->viewangles;
+
+	GameData::Lock lock;
+	auto &global = GameData::global();
 
 	global.sentPacket = sendPacket;
 	global.lastCmd = *cmd;

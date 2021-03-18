@@ -110,11 +110,12 @@ void Chams::renderPlayer(Entity* player) noexcept
 	{
 		applyChams(config->chams["Local player"].materials, health);
 
-		auto &client = GameData::global();
+		GameData::Lock lock;
+		auto &global = GameData::global();
 
 		if (config->antiAim.desync) {
 			matrix3x4 fakeBones[MAXSTUDIOBONES];
-			std::copy(std::begin(client.lerpedBones), std::end(client.lerpedBones), fakeBones);
+			std::copy(std::begin(global.lerpedBones), std::end(global.lerpedBones), fakeBones);
 
 			const auto &origin = localPlayer->getRenderOrigin();
 

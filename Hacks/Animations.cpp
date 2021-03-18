@@ -81,6 +81,7 @@ bool Animations::clientLerped(matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Ve
 		auto fakeFeetYaw = Helpers::angleDiffDeg(lerpedState->feetYaw, cmd->viewangles.y);
 		auto deltaFeetYaw = Helpers::angleDiffDeg(realFeetYaw, fakeFeetYaw);
 
+		GameData::Lock lock;
 		auto &global = GameData::global();
 		global.indicators.realLby = realFeetYaw;
 		global.indicators.fakeLby = fakeFeetYaw;

@@ -459,3 +459,12 @@ bool Helpers::attacking(bool cmdAttack, bool cmdAttack2) noexcept
 
 	return false;
 }
+
+bool Helpers::replace(std::string &str, const std::string &from, const std::string &to) noexcept
+{
+	size_t startPos = str.find(from);
+	if (startPos == std::string::npos)
+		return false;
+	str.replace(startPos, from.length(), to);
+	return true;
+}

@@ -58,8 +58,6 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			cmd->buttons |= UserCmd::IN_DUCK;
 		else
 			cmd->buttons &= ~UserCmd::IN_DUCK;
-
-		GameData::global().indicators.fakeDuck = true;
 	}
 
 	static bool flip = true;

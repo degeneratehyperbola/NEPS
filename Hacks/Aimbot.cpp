@@ -49,8 +49,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
     if (!config->aimbot[weaponIndex].ignoreFlash && localPlayer->isFlashed())
         return;
 
-	GameData::global().indicators.aimbot = true;
-
     if ((cmd->buttons & UserCmd::IN_ATTACK || config->aimbot[weaponIndex].autoShot || config->aimbot[weaponIndex].aimlock) && activeWeapon->getInaccuracy() <= config->aimbot[weaponIndex].maxAimInaccuracy) {
 
         if (config->aimbot[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped())

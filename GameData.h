@@ -57,7 +57,6 @@ namespace GameData
     const PlayerData *playerByHandle(int handle) noexcept;
 	const BombData &plantedC4() noexcept;
 	const std::vector<InfernoData> &infernos() noexcept;
-	// Not this, this one is for globals
 	Global &global() noexcept;
 }
 
@@ -70,19 +69,6 @@ struct Indicators
 	float fakeLby = 0.0f;
 	float realLby = 0.0f;
 	float deltaLby = 0.0f;
-
-	bool aimbot = false;
-	bool triggerbot = false;
-	bool blockbot = false;
-	bool fakeDuck = false;
-
-	void resetKeyBinds()
-	{
-		this->aimbot = false;
-		this->triggerbot = false;
-		this->blockbot = false;
-		this->fakeDuck = false;
-	}
 };
 
 struct Global

@@ -131,4 +131,6 @@ namespace Helpers
 	//
 	// For local player
     bool attacking(bool cmdAttack, bool cmdAttack2) noexcept;
+
+	bool replace(std::string &, const std::string &, const std::string &) noexcept;
 }

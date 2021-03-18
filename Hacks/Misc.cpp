@@ -1286,9 +1286,10 @@ void Misc::preserveKillfeed(bool roundStart) noexcept
 
 void Misc::fixAnimation() noexcept
 {
-	auto &client = GameData::global();
+	GameData::Lock lock;
+	auto &global = GameData::global();
 
-	Animations::animSync(&client.lastCmd, client.sentPacket, &client.indicators.serverHead);
+	Animations::animSync(&global.lastCmd, global.sentPacket, &global.indicators.serverHead);
 }
 
 void Misc::drawOffscreenEnemies(ImDrawList *drawList) noexcept
@@ -1337,13 +1338,11 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 		return;
 
 	GameData::Lock lock;
-	auto &client = GameData::global();
+	auto &global = GameData::global();
 
 	float best = 60.0f;
 	if (static Helpers::KeyBindState flag; flag[config->griefing.bbTar])
 	{
-		GameData::global().indicators.blockbot = true;
-
 		for (auto &player : GameData::players())
 		{
 			Entity *entity = interfaces->entityList->getEntityFromHandle(player.handle);
@@ -1357,14 +1356,14 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 			if (fov < best)
 			{
 				best = fov;
-				client.indicators.blockTarget = entity->handle();
+				global.indicators.blockTarget = entity->handle();
 			}
 		}
 	}
 
 	if (static Helpers::KeyBindState flag; !flag[config->griefing.bb]) return;
 
-	const auto target = interfaces->entityList->getEntityFromHandle(client.indicators.blockTarget);
+	const auto target = interfaces->entityList->getEntityFromHandle(global.indicators.blockTarget);
 	if (target && target != localPlayer.get() && !target->isDormant() && target->isAlive() && !localPlayer->isOtherEnemy(target))
 	{
 		const auto targetVec = (target->getAbsOrigin() + target->velocity() * memory->globalVars->intervalPerTick * config->griefing.bbTrajFac - localPlayer->getAbsOrigin()) * config->griefing.bbDistFac;
@@ -1539,8 +1538,6 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 		ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(GameData::local().velocity.length2D())) + "u").c_str());
 
-		const auto &global = GameData::global();
-
 		#ifdef DESYNC_DEBUG
 		ImGui::TextUnformatted(("Max desync on " + std::to_string(localPlayer->getMaxDesyncAngle()) + "deg").c_str());
 		#endif // DESYNC_DEBUG
@@ -1571,18 +1568,6 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 					ImGui::TextUnformatted("Desync ok");
 			}
 		}
-
-		if (global.indicators.aimbot)
-			ImGui::TextUnformatted("Aimbot active");
-
-		if (global.indicators.triggerbot)
-			ImGui::TextUnformatted("Triggerbot active");
-
-		if (global.indicators.blockbot)
-			ImGui::TextUnformatted("Blockbot targetting");
-
-		if (global.indicators.fakeDuck)
-			ImGui::TextUnformatted("Fake duck active");
 
 		ImGui::End();
 	}

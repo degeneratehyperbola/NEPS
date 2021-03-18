@@ -45,8 +45,6 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 	if (!cfg.hitgroup)
 		return;
 
-	GameData::global().indicators.triggerbot = true;
-
     static auto lastTime = 0.0f;
     static auto lastContact = 0.0f;
 
