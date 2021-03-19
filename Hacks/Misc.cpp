@@ -1418,8 +1418,8 @@ void Misc::useSpam(UserCmd *cmd)
 void Misc::indicators(ImDrawList *drawList) noexcept
 {
 	GameData::Lock lock;
-	auto &global = GameData::global();
 	auto &local = GameData::local();
+	const auto &global = GameData::global();
 
 	if (!local.exists || !local.alive)
 		return;
@@ -1543,8 +1543,6 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 				const auto deltaA = std::fabsf(global.indicators.deltaLby);
 
 				#ifdef DESYNC_DEBUG
-				ImGui::TextUnformatted(("Real LBY " + std::to_string(global.indicators.realLby) + "deg").c_str());
-				ImGui::TextUnformatted(("Fake LBY " + std::to_string(global.indicators.fakeLby) + "deg").c_str());
 				ImGui::TextUnformatted(("Delta LBY " + std::to_string(global.indicators.deltaLby) + "deg").c_str());
 				ImGui::TextUnformatted(("Desync " + std::to_string(deltaU) + "u").c_str());
 				ImGui::TextUnformatted(("Desync " + std::to_string(deltaA) + "deg").c_str());

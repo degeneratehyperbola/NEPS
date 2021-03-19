@@ -32,7 +32,7 @@ static std::list<ProjectileData> projectileData;
 static BombData bombData;
 static std::vector<InfernoData> infernoData;
 
-static Global clientData;
+GlobalData globalData;
 
 static auto playerByHandleWritable(int handle) noexcept
 {
@@ -191,9 +191,9 @@ const Matrix4x4& GameData::toScreenMatrix() noexcept
     return viewMatrix;
 }
 
-Global& GameData::global() noexcept
+GlobalData &GameData::global() noexcept
 {
-	return clientData;
+	return globalData;
 }
 
 const LocalPlayerData& GameData::local() noexcept

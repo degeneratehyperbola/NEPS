@@ -27,7 +27,7 @@ struct InfernoData;
 
 struct Indicators;
 
-struct Global;
+struct GlobalData;
 
 struct StudioHitboxSet;
 struct Matrix4x4;
@@ -46,6 +46,7 @@ namespace GameData
     };
 
     // You have to acquire lock before using these getters
+    // Do not aquire lock twice :)
     const Matrix4x4& toScreenMatrix() noexcept;
     const LocalPlayerData& local() noexcept;
     const std::vector<PlayerData>& players() noexcept;
@@ -57,7 +58,7 @@ namespace GameData
     const PlayerData *playerByHandle(int handle) noexcept;
 	const BombData &plantedC4() noexcept;
 	const std::vector<InfernoData> &infernos() noexcept;
-	Global &global() noexcept;
+	GlobalData &global() noexcept;
 }
 
 struct Indicators
@@ -66,17 +67,14 @@ struct Indicators
 	Vector serverHead = Vector{};
 	Vector desyncHead = Vector{};
 	std::vector<Vector> multipoints;
-	float fakeLby = 0.0f;
-	float realLby = 0.0f;
 	float deltaLby = 0.0f;
 };
 
-struct Global
+struct GlobalData
 {
 	UserCmd lastCmd = UserCmd{};
 	bool sentPacket = true;
 	matrix3x4 lerpedBones[MAXSTUDIOBONES];
-	//matrix3x4 shotBones[MAXSTUDIOBONES];
 
 	Indicators indicators;
 };

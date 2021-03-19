@@ -111,7 +111,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 		applyChams(config->chams["Local player"].materials, health);
 
 		GameData::Lock lock;
-		auto &global = GameData::global();
+		const auto &global = GameData::global();
 
 		if (config->antiAim.desync) {
 			matrix3x4 fakeBones[MAXSTUDIOBONES];
@@ -126,12 +126,6 @@ void Chams::renderPlayer(Entity* player) noexcept
 			applyChams(config->chams["Desync"].materials, health, fakeBones);
 			interfaces->studioRender->forcedMaterialOverride(nullptr);
 		}
-
-		#ifdef SHOT_DEBUG
-		if (!appliedChams) hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);
-		applyChams(config->chams["Desync"].materials, player->health(), GameData::global().shotBones);
-		interfaces->studioRender->forcedMaterialOverride(nullptr);
-		#endif // SHOT_DEBUG
     } else if (localPlayer->isOtherEnemy(player))
 	{
         applyChams(config->chams["Enemies"].materials, health);

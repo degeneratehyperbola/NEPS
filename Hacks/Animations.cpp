@@ -20,7 +20,7 @@
 #include "../Interfaces.h"
 #include "../Memory.h"
 
-bool Animations::clientLerped(matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Vector *headPos) noexcept
+bool Animations::clientLerped(matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Vector *headPos, float *feetYawDelta) noexcept
 {
 	bool matrixUpdated = false;
 
@@ -77,16 +77,6 @@ bool Animations::clientLerped(matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Ve
 		//lerpedState->feetYaw = currentYaw;
 		// XD
 
-		auto realFeetYaw = Helpers::angleDiffDeg(localPlayer->getAnimState()->feetYaw, cmd->viewangles.y);
-		auto fakeFeetYaw = Helpers::angleDiffDeg(lerpedState->feetYaw, cmd->viewangles.y);
-		auto deltaFeetYaw = Helpers::angleDiffDeg(realFeetYaw, fakeFeetYaw);
-
-		GameData::Lock lock;
-		auto &global = GameData::global();
-		global.indicators.realLby = realFeetYaw;
-		global.indicators.fakeLby = fakeFeetYaw;
-		global.indicators.deltaLby = deltaFeetYaw;
-
 		memory->updateState(lerpedState, NULL, NULL, cmd->viewangles.y, cmd->viewangles.x, NULL);
 		memory->invalidateBoneCache(localPlayer.get());
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, lerpedState->feetYaw, 0.0f});
@@ -97,6 +87,13 @@ bool Animations::clientLerped(matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Ve
 		matrixUpdated = localPlayer->setupBones(out, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 		if (headPos) *headPos = localPlayer->getBonePosition(8);
+
+		if (feetYawDelta)
+		{
+			auto real = Helpers::angleDiffDeg(localPlayer->getAnimState()->feetYaw, cmd->viewangles.y);
+			auto fake = Helpers::angleDiffDeg(lerpedState->feetYaw, cmd->viewangles.y);
+			*feetYawDelta = Helpers::angleDiffDeg(real, fake);
+		}
 
 		const auto &origin = localPlayer->getRenderOrigin();
 		if (matrixUpdated)

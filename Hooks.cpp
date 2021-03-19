@@ -97,6 +97,17 @@ RECENT FIXES:
 
         hooks->install();
 
+		//if (interfaces->cvar->findVar("sv_cheats"))
+		//	MessageBoxA(nullptr, "svcheats ok", "NEPS.PP", MB_OK | MB_ICONINFORMATION);
+		//if (interfaces->engine)
+		//	MessageBoxA(nullptr, "engine ok", "NEPS.PP", MB_OK | MB_ICONINFORMATION);
+		//if (interfaces->panel)
+		//	MessageBoxA(nullptr, "panel ok", "NEPS.PP", MB_OK | MB_ICONINFORMATION);
+		if (!interfaces->surface)
+			//MessageBoxA(window, "surface ok", "NEPS.PP", MB_OK | MB_ICONINFORMATION);
+		//else
+			MessageBoxA(window, "surface error", "NEPS.PP", MB_OK | MB_ICONERROR);
+
         return true;
     }(window);
 
@@ -243,14 +254,13 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	previousViewAngles = cmd->viewangles;
 
-	GameData::Lock lock;
 	auto &global = GameData::global();
 
 	global.sentPacket = sendPacket;
 	global.lastCmd = *cmd;
 
 	if (config->antiAim.desync)
-		Animations::clientLerped(global.lerpedBones, cmd, sendPacket, &global.indicators.desyncHead);
+		Animations::clientLerped(global.lerpedBones, cmd, sendPacket, &global.indicators.desyncHead, &global.indicators.deltaLby);
 
 	if (interfaces->engine->isInGame())
 	{
@@ -697,7 +707,7 @@ void Hooks::install() noexcept
 	sound.hookAt(5, emitSound);
 	surface.hookAt(15, setDrawColor);
 	surface.hookAt(67, lockCursor);
-	//svCheats.hookAt(13, svCheatsGetBool);
+	svCheats.hookAt(13, svCheatsGetBool);
 	viewRender.hookAt(39, render2dEffectsPreHud);
 	viewRender.hookAt(41, renderSmokeOverlay);
 

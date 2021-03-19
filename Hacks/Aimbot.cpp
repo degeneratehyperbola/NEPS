@@ -274,8 +274,11 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		}
 		
 		#ifdef MP_DEBUG
-		GameData::global().indicators.multipoints.clear();
-		GameData::global().indicators.multipoints = multipoints;
+		{
+			GameData::Lock lock;
+			GameData::global().indicators.multipoints.clear();
+			GameData::global().indicators.multipoints = multipoints;
+		}
 		#endif // MP_DEBUG
 
 		if (bestTarget.notNull())
