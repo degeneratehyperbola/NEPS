@@ -239,7 +239,7 @@ void ImGui::StyleColorsClassic(ImGuiStyle* dst)
 	colors[ImGuiCol_WindowBg] = {0.171779f, 0.167564f, 0.167564f, 0.901841f};
 	colors[ImGuiCol_ChildBg] = {0.000000f, 0.000000f, 0.000000f, 0.000000f};
 	colors[ImGuiCol_PopupBg] = {0.134969f, 0.134968f, 0.134968f, 0.901841f};
-	colors[ImGuiCol_Border] = {1.000000f, 0.515337f, 0.000000f, 1.000000f};
+	colors[ImGuiCol_Border] = {1.000000f, 1.000000f, 1.000000f, 0.219607f};
 	colors[ImGuiCol_BorderShadow] = {0.000001f, 0.000001f, 0.000001f, 0.404908f};
 	colors[ImGuiCol_FrameBg] = {0.134969f, 0.134968f, 0.134968f, 0.484663f};
 	colors[ImGuiCol_FrameBgHovered] = {1.000000f, 0.515337f, 0.000000f, 0.220859f};
