@@ -697,7 +697,7 @@ void Hooks::install() noexcept
 	sound.hookAt(5, emitSound);
 	surface.hookAt(15, setDrawColor);
 	surface.hookAt(67, lockCursor);
-	svCheats.hookAt(13, svCheatsGetBool);
+	//svCheats.hookAt(13, svCheatsGetBool);
 	viewRender.hookAt(39, render2dEffectsPreHud);
 	viewRender.hookAt(41, renderSmokeOverlay);
 
