@@ -111,12 +111,12 @@ RECENT FIXES:
         }
     }
 
-    LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-    ImGui_ImplWin32_WndProcHandler(window, msg, wParam, lParam);
+	LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	ImGui_ImplWin32_WndProcHandler(window, msg, wParam, lParam);
 
-    interfaces->inputSystem->enableInput(!gui->open);
+	interfaces->inputSystem->enableInput(!gui->open);
 
-    return CallWindowProcW(hooks->originalWndProc, window, msg, wParam, lParam);
+	return CallWindowProcW(hooks->originalWndProc, window, msg, wParam, lParam);
 }
 
 static HRESULT __stdcall present(IDirect3DDevice9* device, const RECT* src, const RECT* dest, HWND windowOverride, const RGNDATA* dirtyRegion) noexcept

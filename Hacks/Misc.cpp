@@ -47,7 +47,7 @@ void Misc::edgejump(UserCmd* cmd) noexcept
     if (!localPlayer || !localPlayer->isAlive())
         return;
 
-    if (const auto mt = localPlayer->moveType(); mt == MoveType::LADDER || mt == MoveType::NOCLIP)
+    if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
         return;
 
     if ((EnginePrediction::getFlags() & Entity::FL_ONGROUND) && !(localPlayer->flags() & Entity::FL_ONGROUND))
@@ -443,8 +443,7 @@ void Misc::prepareRevolver(UserCmd *cmd) noexcept
 	static float readyTime;
 	if (static Helpers::KeyBindState flag; flag[config->misc.prepareRevolver])
 	{
-		const auto activeWeapon = localPlayer->getActiveWeapon();
-		if (activeWeapon && activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
+		if (auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
 		{
 			if (!readyTime) readyTime = memory->globalVars->serverTime() + revolverPrepareTime;
 			auto ticksToReady = Helpers::timeToTicks(readyTime - memory->globalVars->serverTime() - interfaces->engine->getNetworkChannel()->getLatency(0));
@@ -519,7 +518,6 @@ void Misc::drawBombTimer() noexcept
 		return;
 
 	GameData::Lock lock;
-
 	const auto &plantedC4 = GameData::plantedC4();
 	if (plantedC4.blowTime == 0.0f && !gui->open)
 		return;
@@ -549,22 +547,14 @@ void Misc::drawBombTimer() noexcept
 				std::ostringstream ss; ss << "Defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
 
 				ImGuiCustom::textUnformattedCentered(ss.str().c_str());
-
-				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, canDefuse ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255));
-				ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
-				ImGui::PopStyleColor();
-
-				ImGui::PopStyleColor();
-			} else if (const auto defusingPlayer = std::find_if(GameData::players().cbegin(), GameData::players().cend(), [handle = plantedC4.defuserHandle](const auto &playerData) { return playerData.handle == handle; }); defusingPlayer != GameData::players().cend())
+			} else if (auto playerData = GameData::playerByHandle(plantedC4.defuserHandle))
 			{
-				std::ostringstream ss; ss << defusingPlayer->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
+				std::ostringstream ss; ss << playerData->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
 
 				ImGuiCustom::textUnformattedCentered(ss.str().c_str());
-
-				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, canDefuse ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255));
-				ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
-				ImGui::PopStyleColor();
 			}
+
+			ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
 
 			if (canDefuse)
 			{
@@ -1427,15 +1417,17 @@ void Misc::useSpam(UserCmd *cmd)
 
 void Misc::indicators(ImDrawList *drawList) noexcept
 {
-	if (!localPlayer || !localPlayer->isAlive()) return;
-
 	GameData::Lock lock;
 	auto &global = GameData::global();
+	auto &local = GameData::local();
+
+	if (!local.exists || !local.alive)
+		return;
 
 	if (config->griefing.bb.keyMode)
 	{
-		const auto target = interfaces->entityList->getEntityFromHandle(global.indicators.blockTarget);
-		const auto targetData = GameData::playerByHandle(global.indicators.blockTarget);
+		auto target = interfaces->entityList->getEntityFromHandle(global.indicators.blockTarget);
+		auto targetData = GameData::playerByHandle(global.indicators.blockTarget);
 		if (target && target != localPlayer.get() && !target->isDormant() && target->isAlive() && !localPlayer->isOtherEnemy(target))
 		{
 			Vector curDir = targetData->velocity * 0.12f;
@@ -1474,13 +1466,13 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 	if (config->visuals.playerVel.enabled)
 	{
-		Vector curDir = GameData::local().velocity * 0.12f;
+		Vector curDir = local.velocity * 0.12f;
 		curDir.z = 0.0f;
 
 		ImVec2 pos, dir;
 
-		bool draw = Helpers::worldToScreen(GameData::local().origin, pos);
-		draw = draw && Helpers::worldToScreen(curDir + GameData::local().origin, dir);
+		bool draw = Helpers::worldToScreen(local.origin, pos);
+		draw = draw && Helpers::worldToScreen(curDir + local.origin, dir);
 
 		if (draw)
 		{
@@ -1491,9 +1483,9 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 	if (config->visuals.playerBounds.enabled)
 	{
-		Vector max = localPlayer->getCollideable()->obbMaxs() + GameData::local().origin;
-		Vector min = localPlayer->getCollideable()->obbMins() + GameData::local().origin;
-		const auto z = GameData::local().origin.z;
+		Vector max = localPlayer->getCollideable()->obbMaxs() + local.origin;
+		Vector min = localPlayer->getCollideable()->obbMins() + local.origin;
+		const auto z = local.origin.z;
 
 		ImVec2 points[4];
 
