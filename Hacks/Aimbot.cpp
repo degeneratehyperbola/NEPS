@@ -65,9 +65,9 @@ void Aimbot::run(UserCmd *cmd) noexcept
         const auto localPlayerEyePosition = localPlayer->getEyePosition();
 
 		std::array<matrix3x4, MAXSTUDIOBONES> bufferBones;
-		#ifdef MP_DEBUG
+		#ifdef _DEBUG_NEPS
 		std::vector<Vector> multipoints;
-		#endif // MP_DEBUG
+		#endif // _DEBUG_NEPS
 
 		GameData::Lock lock;
 		for (auto &player : GameData::players())
@@ -204,9 +204,9 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
 				}
 
-				#ifdef MP_DEBUG
+				#ifdef _DEBUG_NEPS
 				multipoints.insert(multipoints.end(), points.begin(), points.end());
-				#endif // MP_DEBUG
+				#endif // _DEBUG_NEPS
 
 				for (auto &point : points)
 				{
@@ -273,13 +273,13 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			}
 		}
 		
-		#ifdef MP_DEBUG
+		#ifdef _DEBUG_NEPS
 		{
 			GameData::Lock lock;
 			GameData::global().indicators.multipoints.clear();
 			GameData::global().indicators.multipoints = multipoints;
 		}
-		#endif // MP_DEBUG
+		#endif // _DEBUG_NEPS
 
 		if (bestTarget.notNull())
 		{

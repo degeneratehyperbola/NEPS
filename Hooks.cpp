@@ -418,14 +418,14 @@ static bool __stdcall shouldDrawFog() noexcept
 {
 	if constexpr (std::is_same_v<HookType, MinHook>)
 	{
-		#ifdef FOGDRAW_DEBUG
+		#ifdef _DEBUG_NEPS
 		// Check if we always get the same return address
 		if (*static_cast<std::uint32_t *>(_ReturnAddress()) == 0x6274C084)
 		{
 			static const auto returnAddress = std::uintptr_t(_ReturnAddress());
 			assert(returnAddress == std::uintptr_t(_ReturnAddress()));
 		}
-		#endif // FOGDRAW_DEBUG
+		#endif // _DEBUG_NEPS
 
 		if (*static_cast<std::uint32_t *>(_ReturnAddress()) != 0x6274C084)
 			return hooks->clientMode.callOriginal<bool, 17>();
@@ -450,7 +450,7 @@ static void __stdcall lockCursor() noexcept
 
 static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 {
-#ifdef SETDRAWCOL_DEBUG
+#ifdef _DEBUG_NEPS
     // Check if we always get the same return address
     if (*static_cast<std::uint32_t*>(_ReturnAddress()) == 0x20244C8B) {
         static const auto returnAddress = std::uintptr_t(_ReturnAddress());
@@ -460,7 +460,7 @@ static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
         static const auto returnAddress = std::uintptr_t(_ReturnAddress());
         assert(returnAddress == std::uintptr_t(_ReturnAddress()));
     }
-#endif // SETDRAWCOL_DEBUG
+#endif // _DEBUG_NEPS
 
     if (config->visuals.noScopeOverlay && (*static_cast<std::uint32_t*>(_ReturnAddress()) == 0x20244C8B || *reinterpret_cast<std::uint32_t*>(std::uintptr_t(_ReturnAddress()) + 6) == 0x01ACB7FF))
         a = 0;
@@ -584,13 +584,13 @@ static const DemoPlaybackParameters* __stdcall getDemoPlaybackParameters() noexc
 {
     const auto params = hooks->engine.callOriginal<const DemoPlaybackParameters*, 218>();
 
-#ifdef _DEBUG
+#ifdef _DEBUG_NEPS
     // Check if we always get the same return address
     if (*static_cast<std::uint64_t*>(_ReturnAddress()) == 0x79801F74C985C88B) {
         static const auto returnAddress = std::uintptr_t(_ReturnAddress());
         assert(returnAddress == std::uintptr_t(_ReturnAddress()));
     }
-#endif
+#endif // _DEBUG_NEPS
 
     if (params && config->misc.revealSuspect && *static_cast<std::uint64_t*>(_ReturnAddress()) != 0x79801F74C985C88B) { // client.dll : 8B C8 85 C9 74 1F 80 79 10 00 , there game decides whether to show overwatch panel
         static DemoPlaybackParameters customParams;
@@ -604,14 +604,14 @@ static const DemoPlaybackParameters* __stdcall getDemoPlaybackParameters() noexc
 
 static bool __stdcall isPlayingDemo() noexcept
 {
-#ifdef _DEBUG
+#ifdef _DEBUG_NEPS
     // Check if we always get the same return address
     if (*static_cast<std::uintptr_t*>(_ReturnAddress()) == 0x0975C084
         && **reinterpret_cast<std::uintptr_t**>(std::uintptr_t(_AddressOfReturnAddress()) + 4) == 0x0C75C084) {
         static const auto returnAddress = std::uintptr_t(_ReturnAddress());
         assert(returnAddress == std::uintptr_t(_ReturnAddress()));
     }
-#endif
+#endif // _DEBUG_NEPS
 
     if (config->misc.revealMoney
         && *static_cast<uintptr_t*>(_ReturnAddress()) == 0x0975C084 // client.dll : 84 C0 75 09 38 05

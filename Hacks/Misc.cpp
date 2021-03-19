@@ -1504,7 +1504,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 		}
 	}
 
-	#ifdef MP_DEBUG
+	#ifdef _DEBUG_NEPS
 	for (auto &p : global.indicators.multipoints)
 	{
 		ImVec2 pos;
@@ -1512,7 +1512,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 		drawList->AddCircle(pos, 2.0f, 0xFFFFFFFF);
 	}
-	#endif // MP_DEBUG
+	#endif // _DEBUG_NEPS
 
 	if (!config->misc.indicators) return;
 
@@ -1530,9 +1530,9 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 		ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(GameData::local().velocity.length2D())) + "u").c_str());
 
-		#ifdef DESYNC_DEBUG
+		#ifdef _DEBUG_NEPS
 		ImGui::TextUnformatted(("Max desync on " + std::to_string(localPlayer->getMaxDesyncAngle()) + "deg").c_str());
-		#endif // DESYNC_DEBUG
+		#endif // _DEBUG_NEPS
 
 		if (memory->input->isCameraInThirdPerson)
 		{
@@ -1542,11 +1542,11 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 				const auto deltaU = global.indicators.serverHead.distTo(global.indicators.desyncHead);
 				const auto deltaA = std::fabsf(global.indicators.deltaLby);
 
-				#ifdef DESYNC_DEBUG
+				#ifdef _DEBUG_NEPS
 				ImGui::TextUnformatted(("Delta LBY " + std::to_string(global.indicators.deltaLby) + "deg").c_str());
 				ImGui::TextUnformatted(("Desync " + std::to_string(deltaU) + "u").c_str());
 				ImGui::TextUnformatted(("Desync " + std::to_string(deltaA) + "deg").c_str());
-				#endif // DESYNC_DEBUG
+				#endif // _DEBUG_NEPS
 
 				if (deltaU < 3.5f)
 					ImGui::TextColored(ImVec4{1.0f, 0.0f, 0.0f, 1.0f}, "Desync overlap!");

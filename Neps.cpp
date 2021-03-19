@@ -15,11 +15,11 @@ BOOL APIENTRY DllEntryPoint(HMODULE moduleHandle, DWORD reason, LPVOID reserved)
 
 	if (reason & DLL_PROCESS_ATTACH)
 	{
-		#ifdef SIG_DEBUG
+		#ifdef _DEBUG_NEPS
 		if (true)
 		#else
 		if (reason & SIGNATURE)
-		#endif // SIG_DEBUG
+		#endif // _DEBUG_NEPS
 		{
 			std::setlocale(LC_CTYPE, ".utf8");
 			hooks = std::make_unique<Hooks>(moduleHandle);
