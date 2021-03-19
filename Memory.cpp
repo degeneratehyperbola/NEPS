@@ -61,7 +61,7 @@ Memory::Memory() noexcept
 	//sendMove = reinterpret_cast<decltype(sendMove)>(findPattern("engine", "\x55\x8B\xEC\xA1????\x81\xEC????\xB9????\x53\x8B\x98"));
 	//writeUserCmdDeltaToBufferReturn = *(reinterpret_cast<void **>(findPattern("engine", "\x84\xC0\x74\x04\xB0\x01\xEB\x02\x32\xC0\x8B\xFE\x46\x3B\xF3\x7E\xC9\x84\xC0\x0F\x84????")));
 	//writeUserCmd = reinterpret_cast<decltype(writeUserCmd)>(findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x51\x53\x56\x8B\xD9\x8B\x0D"));
-	clientState = **reinterpret_cast<ClientState***>(findPattern("engine", "\xA1????\x8B\x80????\xC3") + 1);
+	//clientState = **reinterpret_cast<ClientState***>(findPattern("engine", "\xA1????\x8B\x80????\xC3") + 1);
 	scopeDust = findPattern("client", "\xFF\x50\x3C\x8B\x4C\x24\x20") + 3;
 	scopeArc = findPattern("client", "\x8B\x0D????\xFF\xB7????\x8B\x01\xFF\x90????\x8B\x7C\x24\x1C");
 	demoOrHLTV = findPattern("client", "\x84\xC0\x75\x09\x38\x05");

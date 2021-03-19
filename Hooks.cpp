@@ -65,7 +65,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
         gui = std::make_unique<GUI>();
 
 		const char *loaded = config->load(u8"default", false) ? "\n\nConfig \"default\" has been automatically loaded." : "";
-		
+
 		std::string welcomeMsg =
 R"_msg(We do have a resolver now >:)
 
