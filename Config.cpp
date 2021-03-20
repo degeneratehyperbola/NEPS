@@ -8,8 +8,7 @@
 
 #include "Config.h"
 #include "Helpers.h"
-#include "Hooks.h"
-#include "Resources/Resource.h"
+#include "Resources/Fonts.h"
 
 #ifdef _WIN32
 int CALLBACK fontCallback(const LOGFONTW* lpelfe, const TEXTMETRICW*, DWORD, LPARAM lParam)
@@ -1435,11 +1434,6 @@ bool Config::loadScheduledFonts() noexcept
 		{
 			if (fonts.find("Default") == fonts.cend())
 			{
-				HMODULE moduleHandle = hooks->getDllHandle();
-				HRSRC resourceInfo = FindResourceA(moduleHandle, MAKEINTRESOURCEA(IDR_FONT1), "Font");
-				void *buffer = LoadResource(moduleHandle, resourceInfo);
-				unsigned long size = SizeofResource(moduleHandle, resourceInfo);
-
 				ImFontConfig cfg;
 				cfg.OversampleH = cfg.OversampleV = 8;
 				cfg.PixelSnapH = false;
@@ -1447,7 +1441,7 @@ bool Config::loadScheduledFonts() noexcept
 				Font newFont;
 
 				cfg.SizePixels = FONT_BIG;
-				newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(buffer, size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
+				newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(NEPS_GOTHIC_compressed_data, NEPS_GOTHIC_compressed_size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
 				newFont.tiny = newFont.medium = newFont.big;
 
 				fonts.emplace(fontName, newFont);

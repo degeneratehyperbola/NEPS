@@ -96,6 +96,7 @@
     <ClInclude Include="nSkinz\item_definitions.hpp" />
     <ClInclude Include="nSkinz\Utilities\Platform.hpp" />
     <ClInclude Include="nSkinz\Utilities\vmt_smart_hook.hpp" />
+    <ClInclude Include="Resources\Fonts.h" />
     <ClInclude Include="Resources\Resource.h" />
     <ClInclude Include="SDK\AnimState.h" />
     <ClInclude Include="SDK\Beam.h" />
@@ -184,7 +185,6 @@
     <Font Include="Resources\NepsGothic.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="LogoA.png" />
     <Image Include="Resources\LogoA.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

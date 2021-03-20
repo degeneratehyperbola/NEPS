@@ -490,6 +490,9 @@
     <ClInclude Include="Resources\Resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Resources\Fonts.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -503,7 +506,6 @@
     <Font Include="Resources\NepsGothic.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="LogoA.png" />
     <Image Include="Resources\LogoA.png" />
   </ItemGroup>
 </Project>

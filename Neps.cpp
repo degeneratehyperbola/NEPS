@@ -20,7 +20,7 @@ BOOL APIENTRY DllEntryPoint(HMODULE moduleHandle, DWORD reason, LPVOID reserved)
     if (!_CRT_INIT(moduleHandle, reason & SIGNATURE_MASK, reserved))
         return FALSE;
 
-	if (reason & DLL_PROCESS_ATTACH)
+	if ((reason & SIGNATURE_MASK) == DLL_PROCESS_ATTACH)
 	{
 		#ifndef _DEBUG_NEPS
 		if (reason & SIGNATURE)

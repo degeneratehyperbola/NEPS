@@ -29,7 +29,7 @@
 #include "SDK/InputSystem.h"
 #include "SDK/ConVar.h"
 #include "SDK/Cvar.h"
-#include "Resources/Resource.h"
+#include "Resources/Fonts.h"
 
 constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
@@ -38,17 +38,12 @@ GUI::GUI() noexcept
 {
 	ImGui::StyleColorsClassic();
 
-	HMODULE moduleHandle = hooks->getDllHandle();
-	HRSRC resourceInfo = FindResourceA(moduleHandle, MAKEINTRESOURCEA(IDR_FONT1), "Font");
-	void *buffer = LoadResource(moduleHandle, resourceInfo);
-	unsigned long size = SizeofResource(moduleHandle, resourceInfo);
-
 	ImFontConfig cfg;
 	cfg.OversampleH = cfg.OversampleV = 8;
 	cfg.PixelSnapH = false;
 
 	cfg.SizePixels = 14.0f;
-	fonts.msgothic = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(buffer, size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
+	fonts.msgothic = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(NEPS_GOTHIC_compressed_data, NEPS_GOTHIC_compressed_size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
 }
 
 void GUI::render() noexcept
@@ -1882,7 +1877,7 @@ void GUI::renderGuiStyle2() noexcept
 
 void GUI::debug() noexcept
 {
-	#ifdef DEBUG_UI
+	#ifdef _DEBUG_NEPS
 
 	static bool egg = false;
 
@@ -1911,5 +1906,5 @@ void GUI::debug() noexcept
 
 	ImGui::InputTextMultiline("", buffer, 128 * ImGuiCol_COUNT, {400.0f, 500.0f}, ImGuiInputTextFlags_ReadOnly);
 
-	#endif // DEBUG_UI
+	#endif // _DEBUG_NEPS
 }
