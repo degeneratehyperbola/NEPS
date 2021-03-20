@@ -96,6 +96,7 @@
     <ClInclude Include="nSkinz\item_definitions.hpp" />
     <ClInclude Include="nSkinz\Utilities\Platform.hpp" />
     <ClInclude Include="nSkinz\Utilities\vmt_smart_hook.hpp" />
+    <ClInclude Include="Resources\Resource.h" />
     <ClInclude Include="SDK\AnimState.h" />
     <ClInclude Include="SDK\Beam.h" />
     <ClInclude Include="SDK\Client.h" />
@@ -175,6 +176,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\Font.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

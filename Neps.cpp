@@ -22,22 +22,19 @@ BOOL APIENTRY DllEntryPoint(HMODULE moduleHandle, DWORD reason, LPVOID reserved)
 
 	if (reason & DLL_PROCESS_ATTACH)
 	{
-		#ifdef _DEBUG_NEPS
-		if (true)
-		#else
+		#ifndef _DEBUG_NEPS
 		if (reason & SIGNATURE)
 		#endif // _DEBUG_NEPS
 		{
 			std::setlocale(LC_CTYPE, ".utf8");
 			hooks = std::make_unique<Hooks>(moduleHandle);
+			return TRUE;
 		}
-		else
-		{
-			MessageBoxA(nullptr, "Oh no! Somehow DLL got injected outside of loader. I'm sorry about that.", "NEPS.PP", MB_OK | MB_ICONERROR);
-			if (HANDLE thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(unload), moduleHandle, 0, nullptr))
-				CloseHandle(thread);
-		}
+
+		MessageBoxA(nullptr, "Oh no! Somehow DLL got injected outside of loader. I'm sorry about that.", "NEPS.PP", MB_OK | MB_ICONERROR);
+		if (HANDLE thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(unload), moduleHandle, 0, nullptr))
+			CloseHandle(thread);
 	}
 
-    return TRUE;
+    return FALSE;
 }

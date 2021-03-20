@@ -30,6 +30,9 @@
     <Filter Include="nlohmann">
       <UniqueIdentifier>{44d5d3e3-0072-4a5a-b725-1b9807c24a06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{dc2dfc23-a5f7-4c52-b439-b75bdab747c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
@@ -484,8 +487,16 @@
     <ClInclude Include="SDK\ClientState.h">
       <Filter>SDK</Filter>
     </ClInclude>
+    <ClInclude Include="Resources\Resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\Font.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
