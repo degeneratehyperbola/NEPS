@@ -219,10 +219,9 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::quickHealthshot(cmd);
 	Misc::fixTabletSignal();
 	Misc::slowwalk(cmd);
+	Misc::blockBot(cmd);
 
 	EnginePrediction::run(cmd);
-
-	Misc::blockBot(cmd);
 
 	Aimbot::run(cmd);
 	Triggerbot::run(cmd);
