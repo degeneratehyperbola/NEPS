@@ -274,11 +274,8 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		}
 		
 		#ifdef _DEBUG_NEPS
-		{
-			GameData::Lock lock;
-			GameData::global().indicators.multipoints.clear();
-			GameData::global().indicators.multipoints = multipoints;
-		}
+		GameData::global().indicators.multipoints.clear();
+		GameData::global().indicators.multipoints = multipoints;
 		#endif // _DEBUG_NEPS
 
 		if (bestTarget.notNull())
