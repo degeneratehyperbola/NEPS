@@ -495,8 +495,15 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resources\Font.rc">
+    <ResourceCompile Include="Resources\Resource.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Resources\NepsGothic.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="LogoA.png" />
+    <Image Include="Resources\LogoA.png" />
   </ItemGroup>
 </Project>

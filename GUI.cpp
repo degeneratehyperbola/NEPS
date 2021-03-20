@@ -29,6 +29,7 @@
 #include "SDK/InputSystem.h"
 #include "SDK/ConVar.h"
 #include "SDK/Cvar.h"
+#include "Resources/Resource.h"
 
 constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
@@ -37,21 +38,17 @@ GUI::GUI() noexcept
 {
 	ImGui::StyleColorsClassic();
 
-	ImGuiIO& io = ImGui::GetIO();
-	io.IniFilename = nullptr;
-	io.LogFilename = nullptr;
-	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
-	
-	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts))) {
-		const std::filesystem::path path{ pathToFonts };
-		CoTaskMemFree(pathToFonts);
+	HMODULE moduleHandle = hooks->getDllHandle();
+	HRSRC resourceInfo = FindResourceA(moduleHandle, MAKEINTRESOURCEA(IDR_FONT1), "Font");
+	void *buffer = LoadResource(moduleHandle, resourceInfo);
+	unsigned long size = SizeofResource(moduleHandle, resourceInfo);
 
-        ImFontConfig cfg;
-        cfg.OversampleV = cfg.OversampleH = 8;
-		cfg.PixelSnapH = false;
+	ImFontConfig cfg;
+	cfg.OversampleH = cfg.OversampleV = 8;
+	cfg.PixelSnapH = false;
 
-        fonts.msgothic = io.Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
-    }
+	cfg.SizePixels = 14.0f;
+	fonts.msgothic = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(buffer, size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
 }
 
 void GUI::render() noexcept

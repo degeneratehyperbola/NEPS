@@ -8,6 +8,8 @@
 
 #include "Config.h"
 #include "Helpers.h"
+#include "Hooks.h"
+#include "Resources/Resource.h"
 
 #ifdef _WIN32
 int CALLBACK fontCallback(const LOGFONTW* lpelfe, const TEXTMETRICW*, DWORD, LPARAM lParam)
@@ -1433,24 +1435,23 @@ bool Config::loadScheduledFonts() noexcept
 		{
 			if (fonts.find("Default") == fonts.cend())
 			{
-				if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts)))
-				{
-					const std::filesystem::path path{pathToFonts};
-					CoTaskMemFree(pathToFonts);
+				HMODULE moduleHandle = hooks->getDllHandle();
+				HRSRC resourceInfo = FindResourceA(moduleHandle, MAKEINTRESOURCEA(IDR_FONT1), "Font");
+				void *buffer = LoadResource(moduleHandle, resourceInfo);
+				unsigned long size = SizeofResource(moduleHandle, resourceInfo);
 
-					ImFontConfig cfg;
-					cfg.OversampleH = cfg.OversampleV = 8;
-					cfg.PixelSnapH = false;
+				ImFontConfig cfg;
+				cfg.OversampleH = cfg.OversampleV = 8;
+				cfg.PixelSnapH = false;
 
-					Font newFont;
+				Font newFont;
 
-					cfg.SizePixels = FONT_BIG;
-					newFont.big = ImGui::GetIO().Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
-					newFont.tiny = newFont.medium = newFont.big;
+				cfg.SizePixels = FONT_BIG;
+				newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(buffer, size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
+				newFont.tiny = newFont.medium = newFont.big;
 
-					fonts.emplace(fontName, newFont);
-					result = true;
-				}
+				fonts.emplace(fontName, newFont);
+				result = true;
 			}
 			continue;
 		}

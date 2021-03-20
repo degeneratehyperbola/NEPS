@@ -178,7 +178,14 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resources\Font.rc" />
+    <ResourceCompile Include="Resources\Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Resources\NepsGothic.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="LogoA.png" />
+    <Image Include="Resources\LogoA.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
