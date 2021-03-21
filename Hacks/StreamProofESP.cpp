@@ -364,7 +364,7 @@ static void renderPlayerBox(const PlayerData& playerData, const Player& config) 
 
 	if (config.flags.enabled)
 	{
-		std::string flags = std::to_string(playerData.uid) + "uid\n";
+		std::string flags = "";
 
 		if (playerData.isBot)
 			flags += "BOT\n";

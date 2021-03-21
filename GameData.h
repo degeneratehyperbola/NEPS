@@ -152,7 +152,6 @@ struct PlayerData : BaseData {
 	bool spotted;
 	bool inViewFrustum;
 	bool alive;
-	int uid;
 	bool isBot;
 	bool hasBomb;
 	bool hasDefuser;

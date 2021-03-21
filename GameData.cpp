@@ -387,7 +387,6 @@ void PlayerData::update(Entity* entity) noexcept
     health = entity->health();
     armor = entity->armor();
 
-	uid = entity->getUserId();
 	isBot = entity->isBot();
 	hasBomb = entity->hasC4();
 	hasDefuser = entity->hasDefuser();
