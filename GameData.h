@@ -75,7 +75,7 @@ struct GlobalData
 	UserCmd lastCmd = UserCmd{};
 	bool sentPacket = true;
 	matrix3x4 lerpedBones[MAXSTUDIOBONES];
-
+	
 	Indicators indicators;
 };
 

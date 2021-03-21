@@ -97,17 +97,6 @@ RECENT FIXES:
 
         hooks->install();
 
-		//if (interfaces->cvar->findVar("sv_cheats"))
-		//	MessageBoxA(nullptr, "svcheats ok", "NEPS.PP", MB_OK | MB_ICONINFORMATION);
-		//if (interfaces->engine)
-		//	MessageBoxA(nullptr, "engine ok", "NEPS.PP", MB_OK | MB_ICONINFORMATION);
-		//if (interfaces->panel)
-		//	MessageBoxA(nullptr, "panel ok", "NEPS.PP", MB_OK | MB_ICONINFORMATION);
-		if (!interfaces->surface)
-			//MessageBoxA(window, "surface ok", "NEPS.PP", MB_OK | MB_ICONINFORMATION);
-		//else
-			MessageBoxA(window, "surface error", "NEPS.PP", MB_OK | MB_ICONERROR);
-
         return true;
     }(window);
 
@@ -319,7 +308,7 @@ static bool __fastcall svCheatsGetBool(void* _this) noexcept
 	if (uintptr_t(_ReturnAddress()) == memory->cameraThink && config->visuals.thirdPerson.keyMode)
 		return true;
 
-	return hooks->svCheats.callOriginal<bool, 13>(_this);
+	return hooks->svCheats.getOriginal<bool, 13>()(_this);
 }
 
 static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept
