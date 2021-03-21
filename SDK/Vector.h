@@ -202,6 +202,22 @@ struct Vector {
         return Helpers::radiansToDegrees(std::atan2f(y, x));
     }
 
+	auto snapTo4() const noexcept
+	{
+		const float l = length2D();
+		bool xp = x >= 0.0f;
+		bool yp = y >= 0.0f;
+		bool xy = std::fabsf(x) >= std::fabsf(y);
+		if (xp && xy)
+			return Vector{l, 0.0f, 0.0f};
+		if (!xp && xy)
+			return Vector{-l, 0.0f, 0.0f};
+		if (yp && !xy)
+			return Vector{0.0f, l, 0.0f};
+		if (!yp && !xy)
+			return Vector{0.0f, -l, 0.0f};
+	}
+
 	static auto fromAngle(const Vector& angle) noexcept
     {
 		return Vector{std::cos(Helpers::degreesToRadians(angle.x)) * std::cos(Helpers::degreesToRadians(angle.y)),
@@ -214,6 +230,36 @@ struct Vector {
 		return Vector{std::cos(Helpers::degreesToRadians(angle)),
 					  std::sin(Helpers::degreesToRadians(angle)),
 					  0.0f};
+	}
+
+	static auto up() noexcept
+	{
+		return Vector{0.0f, 0.0f, 1.0f};
+	}
+
+	static auto down() noexcept
+	{
+		return Vector{0.0f, 0.0f, -1.0f};
+	}
+
+	static auto forward() noexcept
+	{
+		return Vector{1.0f, 0.0f, 0.0f};
+	}
+
+	static auto back() noexcept
+	{
+		return Vector{-1.0f, 0.0f, 0.0f};
+	}
+
+	static auto left() noexcept
+	{
+		return Vector{0.0f, 1.0f, 0.0f};
+	}
+
+	static auto right() noexcept
+	{
+		return Vector{0.0f, -1.0f, 0.0f};
 	}
 
     float x, y, z;

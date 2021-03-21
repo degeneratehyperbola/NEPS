@@ -1357,33 +1357,34 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 	if (target && target != localPlayer.get() && !target->isDormant() && target->isAlive() && !localPlayer->isOtherEnemy(target))
 	{
 		const auto targetVec = (target->getAbsOrigin() + target->velocity() * memory->globalVars->intervalPerTick * config->griefing.bbTrajFac - localPlayer->getAbsOrigin()) * config->griefing.bbDistFac;
-		const auto z = target->getAbsOrigin().z - localPlayer->getEyePosition().z;
-		const auto zEye = target->getEyePosition().z - localPlayer->getAbsOrigin().z;
-		if (zEye <= 0.0f || z >= 0.0f)
+		const auto z1 = target->getAbsOrigin().z - localPlayer->getEyePosition().z;
+		const auto z2 = target->getEyePosition().z - localPlayer->getAbsOrigin().z;
+		if (z1 >= 0.0f || z2 <= 0.0f)
 		{
-			const float yaw = Helpers::degreesToRadians(cmd->viewangles.y);
-			const float sin = std::sinf(yaw);
-			const float cos = std::cosf(yaw);
-			const float fwd[2] = {cos, sin};
-			const float side[2] = {sin, -cos};
-			float dot[2] = {side[0] * targetVec.x + side[1] * targetVec.y, fwd[0] * targetVec.x + fwd[1] * targetVec.y};
-			dot[0] *= 50.0f;
-			dot[1] *= 50.0f;
-			const float l = std::sqrtf(dot[0] * dot[0] + dot[1] * dot[1]);
+			Vector fwd = Vector::fromAngle2D(cmd->viewangles.y);
+			Vector side = fwd.crossProduct(Vector::up());
+			Vector move = Vector{fwd.dotProduct2D(targetVec), side.dotProduct2D(targetVec), 0.0f};
+			move *= 45.0f;
+			const float l = move.length2D();
 			if (l > 450.0f)
-			{
-				dot[0] *= 450.0f / l;
-				dot[1] *= 450.0f / l;
-			}
-			cmd->sidemove = dot[0];
-			cmd->forwardmove = dot[1];
+				move *= 450.0f / l;
+			cmd->forwardmove = move.x;
+			cmd->sidemove = move.y;
 		}
 		else
 		{
-			const float yaw = Helpers::degreesToRadians(cmd->viewangles.y - 90.0f);
-			const float side[2] = {std::cosf(yaw), std::sinf(yaw)};
-			const float dot = side[0] * targetVec.x + side[1] * targetVec.y;
-			cmd->sidemove = std::clamp(dot * 50.0f, -450.0f, 450.0f);
+			Vector fwd = Vector::fromAngle2D(cmd->viewangles.y);
+			Vector side = fwd.crossProduct(Vector::up());
+			Vector tar = (targetVec / targetVec.length2D()).crossProduct(Vector::up());
+			tar = tar.snapTo4();
+			tar *= tar.dotProduct2D(targetVec);
+			Vector move = Vector{fwd.dotProduct2D(tar), side.dotProduct2D(tar), 0.0f};
+			move *= 45.0f;
+			const float l = move.length2D();
+			if (l > 450.0f)
+				move *= 450.0f / l;
+			cmd->forwardmove = move.x;
+			cmd->sidemove = move.y;
 		}
 	}
 }
@@ -1420,6 +1421,8 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 	auto &local = GameData::local();
 	const auto &global = GameData::global();
+
+	if (!localPlayer) return;
 
 	if (!local.exists || !local.alive)
 		return;
