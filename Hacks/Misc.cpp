@@ -1428,7 +1428,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	{
 		auto target = interfaces->entityList->getEntityFromHandle(global.indicators.blockTarget);
 		auto targetData = GameData::playerByHandle(global.indicators.blockTarget);
-		if (target && target != localPlayer.get() && !target->isDormant() && target->isAlive() && !localPlayer->isOtherEnemy(target))
+		if (target && target != localPlayer.get() && !targetData->dormant && targetData->alive && !targetData->enemy)
 		{
 			Vector curDir = targetData->velocity * 0.12f;
 			curDir.z = 0.0f;
@@ -1528,7 +1528,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 			ImGuiCustom::progressBarFullWidth((float)netCh->chokedPackets / (float)config->antiAim.chokedPackets);
 		}
 
-		ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(GameData::local().velocity.length2D())) + "u").c_str());
+		ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(local.velocity.length2D())) + "u").c_str());
 
 		#ifdef _DEBUG_NEPS
 		ImGui::TextUnformatted(("Max desync on " + std::to_string(localPlayer->getMaxDesyncAngle()) + "deg").c_str());

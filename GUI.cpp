@@ -4,6 +4,7 @@
 #include <string>
 #include <ShlObj.h>
 #include <Windows.h>
+#include <shellapi.h>
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_win32.h"
@@ -142,6 +143,8 @@ void GUI::renderMenuBar() noexcept
 				hooks->uninstall();
 			ImGui::EndMenu();
 		}
+		if (ImGui::MenuItem("My GitHub"))
+			ShellExecuteA(nullptr, nullptr, "https://github.com/degeneratehyperbola/NEPS", nullptr, nullptr, SW_SHOW);
         ImGui::EndMainMenuBar();
     }
 }
