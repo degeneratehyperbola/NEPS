@@ -309,8 +309,8 @@ static bool __fastcall svCheatsGetBool(void* _this) noexcept
 		return true;
 
 	auto original = hooks->svCheats.getOriginal<bool, 13>();
-	if (original)
-		original(_this);
+	if (original) return original(_this);
+	else return false;
 }
 
 static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept

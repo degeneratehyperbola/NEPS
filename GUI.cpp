@@ -362,6 +362,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SetTooltip("Turns off AA when moving");
 		ImGui::Checkbox("Increase clamp", &config->antiAim.clamped);
 		ImGui::Checkbox("Extended (experimental)", &config->antiAim.extended);
+		ImGui::Checkbox("Flip on verlap", &config->antiAim.avoidOverlap);
 		ImGuiCustom::keyBind("Flip key", &config->antiAim.flipKey);
 	}
 	ImGuiCustom::keyBind("Fake duck", config->antiAim.fakeDuck);

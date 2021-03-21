@@ -65,6 +65,14 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (config->antiAim.flipKey && GetAsyncKeyState(config->antiAim.flipKey) & 1)
 		flip = !flip;
 
+	{
+		GameData::Lock lock;
+		auto &global = GameData::global();
+
+		if (config->antiAim.avoidOverlap && global.indicators.serverHead.distTo(global.indicators.desyncHead) < 5.0f)
+			flip = !flip;
+	}
+
 	if (config->antiAim.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = config->antiAim.pitchAngle;
 
