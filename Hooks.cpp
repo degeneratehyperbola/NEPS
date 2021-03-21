@@ -319,7 +319,7 @@ static bool __fastcall svCheatsGetBool(void* _this) noexcept
 	if (uintptr_t(_ReturnAddress()) == memory->cameraThink && config->visuals.thirdPerson.keyMode)
 		return true;
 
-	return hooks->svCheats.getOriginal<bool, 13>()(_this);
+	return hooks->svCheats.callOriginal<bool, 13>(_this);
 }
 
 static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept
