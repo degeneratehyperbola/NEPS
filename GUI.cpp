@@ -55,7 +55,7 @@ GUI::GUI() noexcept
 		cfg.PixelSnapH = false;
 		cfg.SizePixels = 14.0f;
 
-		fonts.msgothic = io.Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
+		font = io.Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
 	}
 }
 

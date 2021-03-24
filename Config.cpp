@@ -10,6 +10,7 @@
 
 #include "Config.h"
 #include "Helpers.h"
+#include "Gui.h"
 
 #ifdef _WIN32
 int CALLBACK fontCallback(const LOGFONTW* lpelfe, const TEXTMETRICW*, DWORD, LPARAM lParam)
@@ -1449,25 +1450,12 @@ bool Config::loadScheduledFonts() noexcept
 		{
 			if (fonts.find("Default") == fonts.cend())
 			{
-				#ifdef _WIN32
-				if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts)))
-				{
-					const std::filesystem::path path = pathToFonts;
-					CoTaskMemFree(pathToFonts);
+				Font newFont;
+				newFont.big = gui->getFont();
+				newFont.tiny = newFont.medium = newFont.big;
 
-					ImFontConfig cfg;
-					cfg.OversampleH = cfg.OversampleV = 8;
-					cfg.PixelSnapH = false;
-					cfg.SizePixels = FONT_BIG;
-
-					Font newFont;
-					newFont.big = ImGui::GetIO().Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
-					newFont.tiny = newFont.medium = newFont.big;
-
-					fonts.emplace(fontName, newFont);
-					result = true;
-				}
-				#endif
+				fonts.emplace(fontName, newFont);
+				result = true;
 			}
 			continue;
 		}
