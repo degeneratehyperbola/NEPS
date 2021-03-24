@@ -10,7 +10,6 @@
 
 #include "Config.h"
 #include "Helpers.h"
-#include "Gui.h"
 
 #ifdef _WIN32
 int CALLBACK fontCallback(const LOGFONTW* lpelfe, const TEXTMETRICW*, DWORD, LPARAM lParam)
