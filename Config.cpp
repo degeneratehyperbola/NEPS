@@ -10,7 +10,7 @@
 
 #include "Config.h"
 #include "Helpers.h"
-#include "Resources/Fonts.h"
+#include "Gui.h"
 
 #ifdef _WIN32
 int CALLBACK fontCallback(const LOGFONTW* lpelfe, const TEXTMETRICW*, DWORD, LPARAM lParam)
@@ -1467,8 +1467,6 @@ bool Config::loadScheduledFonts() noexcept
 					fonts.emplace(fontName, newFont);
 					result = true;
 				}
-
-				//newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(NEPS_GOTHIC_compressed_data, NEPS_GOTHIC_compressed_size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
 			}
 			continue;
 		}

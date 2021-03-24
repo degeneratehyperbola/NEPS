@@ -58,8 +58,6 @@ GUI::GUI() noexcept
 
 		fonts.msgothic = io.Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
 	}
-
-	//fonts.msgothic = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(NEPS_GOTHIC_compressed_data, NEPS_GOTHIC_compressed_size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
 }
 
 void GUI::render() noexcept
