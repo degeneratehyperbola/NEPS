@@ -1450,6 +1450,7 @@ bool Config::loadScheduledFonts() noexcept
 		{
 			if (fonts.find("Default") == fonts.cend())
 			{
+				#ifdef _WIN32
 				if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts)))
 				{
 					const std::filesystem::path path = pathToFonts;
@@ -1461,12 +1462,13 @@ bool Config::loadScheduledFonts() noexcept
 					cfg.SizePixels = FONT_BIG;
 
 					Font newFont;
-					newFont.big = ImGui::GetIO().Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
+					newFont.big = ImGui::GetIO().Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
 					newFont.tiny = newFont.medium = newFont.big;
 
 					fonts.emplace(fontName, newFont);
 					result = true;
 				}
+				#endif
 			}
 			continue;
 		}
@@ -1481,7 +1483,9 @@ bool Config::loadScheduledFonts() noexcept
 			const auto ranges = Helpers::getFontGlyphRanges();
 			ImFontConfig cfg;
 			cfg.FontDataOwnedByAtlas = false;
-			cfg.RasterizerMultiply = 1.7f;
+			cfg.OversampleH = cfg.OversampleV = 8;
+			cfg.PixelSnapH = false;
+			cfg.SizePixels = FONT_BIG;
 
 			Font newFont;
 			newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.get(), fontDataSize, FONT_BIG, &cfg, ranges);

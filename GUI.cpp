@@ -31,7 +31,6 @@
 #include "SDK/InputSystem.h"
 #include "SDK/ConVar.h"
 #include "SDK/Cvar.h"
-#include "Resources/Fonts.h"
 
 constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
