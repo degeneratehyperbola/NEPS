@@ -47,15 +47,18 @@ public:
 		float fov = 1.0f;
 		float distance = 0.0f;
 		int minDamage = 0;
+		int minDamageAutoWall = 0;
+		int killshot = 10;
+		int killshotAutoWall = 10;
 		float shotHitchance = 0.0f;
 		float maxAimInaccuracy = 1.0f;
 		int interpolation = 0;
 		float smooth = 0.0f;
 		float linearSpeed = 255.0f;
 		int hitgroup = (1 << 7) - 1;
-		bool killshot = false;
 		bool betweenShots = true;
 		KeyBind safeOnly;
+		int safeHitgroup = 0;
 		bool onShot = false;
 		bool onMove = false;
 	};
@@ -69,13 +72,15 @@ public:
 		bool scopedOnly = true;
 		bool ignoreFlash = false;
 		bool ignoreSmoke = false;
-		bool killshot = false;
 		int hitgroup = (1 << 7) - 1;
 		int shotDelay = 0;
 		float maxShotInaccuracy = 1.0f;
 		float hitchance = 0.0f;
 		float distance = 0.0f;
 		int minDamage = 0;
+		int minDamageAutoWall = 0;
+		int killshot = 10;
+		int killshotAutoWall = 10;
 		float burstTime = 0.0f;
 	};
 	std::array<Triggerbot, 40> triggerbot;
@@ -282,6 +287,7 @@ public:
 		bool nameStealer = false;
 		bool killMessage = false;
 		bool fakePrime = false;
+		bool revealVotes = false;
 		char clanTag[16] = "\0";
 		int animatedClanTag = 0;
 		bool clocktag = false;
@@ -377,6 +383,7 @@ public:
 	bool loadScheduledFonts() noexcept;
 	const auto &getSystemFonts() noexcept { return systemFonts; }
 	const auto &getFonts() noexcept { return fonts; }
+	const auto &getPath() noexcept { return path; }
 private:
 	std::vector<std::string> scheduledFonts{"Default"};
 	std::vector<std::string> systemFonts{"Default"};

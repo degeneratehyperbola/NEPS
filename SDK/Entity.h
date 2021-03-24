@@ -257,19 +257,19 @@ public:
 
     Vector getBonePosition(int bone) noexcept
     {
-        if (matrix3x4 boneMatrices[256]; setupBones(boneMatrices, 256, BONE_USED_BY_ANYTHING, 0.0f))
+        if (matrix3x4 boneMatrices[MAXSTUDIOBONES]; setupBones(boneMatrices, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, 0.0f))
             return boneMatrices[bone].origin();
         else
-            return Vector{ };
+            return Vector{};
     }
 
-    bool isVisible(const Vector& position = { }) noexcept
+    bool isVisible(const Vector& position = {}) noexcept
     {
         if (!localPlayer)
             return false;
 
         Trace trace;
-        interfaces->engineTrace->traceRay({ localPlayer->getEyePosition(), position.notNull() ? position : getBonePosition(8) }, 0x46004009, { localPlayer.get() }, trace);
+        interfaces->engineTrace->traceRay({localPlayer->getEyePosition(), position.notNull() ? position : getBonePosition(8)}, 0x46004009, localPlayer.get(), trace);
         return trace.entity == this || trace.fraction > 0.97f;
     }
     
@@ -281,20 +281,20 @@ public:
     }
 
 	// For players
-    float getMaxDesyncAngle() noexcept
-    {
-        const auto animState = getAnimState();
+	float getMaxDesyncAngle() noexcept
+	{
+		const auto animState = getAnimState();
 
-        if (!animState)
-            return 0.0f;
+		if (!animState)
+			return 0.0f;
 
-        float yawModifier = (animState->stopToFullRunningFraction * -0.3f - 0.2f) * std::clamp(animState->feetSpeedForwardsOrSideWays, 0.0f, 1.0f) + 1.0f;
+		float yawModifier = (animState->stopToFullRunningFraction * -0.3f - 0.2f) * std::clamp(animState->feetSpeedForwardsOrSideWays, 0.0f, 1.0f) + 1.0f;
 
-        if (animState->duckAmount > 0.0f)
-            yawModifier += (animState->duckAmount * std::clamp(animState->feetSpeedUnknownForwardsOrSideways, 0.0f, 1.0f) * (0.5f - yawModifier));
+		if (animState->duckAmount > 0.0f)
+			yawModifier += (animState->duckAmount * std::clamp(animState->feetSpeedUnknownForwardsOrSideways, 0.0f, 1.0f) * (0.5f - yawModifier));
 
-        return animState->velocitySubtract.y * yawModifier;
-    }
+		return animState->velocitySubtract.y * yawModifier;
+	}
 
 	// For players
     bool isInReload() noexcept

@@ -302,3 +302,62 @@ void ImGuiCustom::keyBind(const char *name, KeyBind &bind) noexcept
 {
 	keyBind(name, &bind.key, &bind.keyMode);
 }
+
+static bool SingleStringGetter(void *data, int idx, const char **out_text)
+{
+	const char *items_separated_by_zeros = (const char *)data;
+	int items_count = 0;
+	const char *p = items_separated_by_zeros;
+	while (*p)
+	{
+		if (idx == items_count)
+			break;
+		p += strlen(p) + 1;
+		items_count++;
+	}
+	if (!*p)
+		return false;
+	if (out_text)
+		*out_text = p;
+	return true;
+}
+
+void ImGuiCustom::multiCombo(const char *name, int &flagValue, const char *items) noexcept
+{
+	int count = 0;
+	const char *p = items;
+	while (*p)
+	{
+		p += std::strlen(p) + 1;
+		count++;
+	}
+
+	const char *preview = "...";
+	if (flagValue == (1 << count) - 1)
+		preview = "All";
+	else if (!flagValue)
+		preview = "None";
+
+	void *data = (void *)items;
+
+	if (ImGui::BeginCombo(name, preview))
+	{
+		for (int i = 0; i < count; i++)
+		{
+			bool selected = flagValue & (1 << i);
+
+			const char *item;
+			SingleStringGetter(data, i, &item);
+
+			ImGui::PushID(i);
+			ImGui::Selectable(item, &selected, ImGuiSelectableFlags_DontClosePopups);
+			ImGui::PopID();
+
+			if (selected)
+				flagValue |= (1 << i);
+			else
+				flagValue &= ~(1 << i);
+		}
+		ImGui::EndCombo();
+	}
+}

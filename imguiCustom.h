@@ -26,4 +26,5 @@ namespace ImGuiCustom
 	void textUnformattedCentered(const char *text) noexcept;
     void keyBind(const char *name, int *key, int *keyMode = nullptr) noexcept;
     void keyBind(const char *name, KeyBind &bind) noexcept;
+    void multiCombo(const char *name, int &flagValue, const char *items) noexcept;
 }

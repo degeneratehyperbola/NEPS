@@ -7,12 +7,12 @@
 
 struct Ray {
     Ray(const Vector& src, const Vector& dest) : start(src), delta(dest - src) { isSwept = delta.x || delta.y || delta.z; }
-    Vector start{ };
-    float pad{ };
-    Vector delta{ };
-    std::byte pad2[40]{ };
-    bool isRay{ true };
-    bool isSwept{ };
+    Vector start;
+    PAD(4)
+    Vector delta;
+    PAD(40)
+    bool isRay = true;
+    bool isSwept;
 };
 
 class Entity;
@@ -74,13 +74,13 @@ struct Trace
 {
 	Vector startpos;
 	Vector endpos;
-	std::byte pad[20];
+	PAD(20)
 	float fraction;
 	int contents;
 	unsigned short dispFlags;
 	bool allSolid;
 	bool startSolid;
-	std::byte pad1[4];
+	PAD(4)
 	struct Surface
 	{
 		const char *name;
@@ -88,7 +88,7 @@ struct Trace
 		unsigned short flags;
 	} surface;
 	int hitgroup;
-	std::byte pad2[4];
+	PAD(4)
 	Entity *entity;
 	int hitbox;
 };

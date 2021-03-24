@@ -36,8 +36,10 @@ namespace Helpers
 
 	float handleBulletPenetration(SurfaceData *enterSurfaceData, const Trace &enterTrace, const Vector &direction, Vector &result, float penetration, float damage) noexcept;
 
-	int findDamage(const Vector &destination, const WeaponInfo *weaponData, bool allowFriendlyFire = false, int hitgroupFlags = 1 << 7, bool visibleOnly = false) noexcept;
-	int findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire = false, int hitgroupFlags = 1 << 7, bool visibleOnly = false) noexcept;
+	#define AUTOWALL_CALC_DEPTH 4
+	#define AUTOWALL_MIN_PENETRATION 0.1f
+	int findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire = false, int hitgroupFlags = 1 << 7, bool *goesThroughWall = nullptr) noexcept;
+    bool canHit(const Vector &destination, Trace &trace, bool allowFriendlyFire, bool *goesThroughWall) noexcept;
 
 	float findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept;
 

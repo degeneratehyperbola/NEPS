@@ -248,7 +248,7 @@ void Misc::spectatorList(ImDrawList *drawList) noexcept
 
 	if (!observers.empty() || gui->open)
 	{
-		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 140.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_Once);
+		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 140.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowSizeConstraints(ImVec2{140.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 		if (ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
@@ -341,7 +341,7 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 	if (!config->misc.watermark.enabled)
 		return;
 
-	ImGui::SetNextWindowPos(ImVec2{0.0f, 0.0f}, ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2{0.0f, 0.0f}, ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Welcome to NEPS", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
 	{
 		const auto watermark = "Welcome to NEPS";
@@ -523,8 +523,8 @@ void Misc::drawBombTimer() noexcept
 		return;
 
 	static float windowWidth = 500.0f;
-	ImGui::SetNextWindowPos({(ImGui::GetIO().DisplaySize.x - 500.0f) / 2.0f, 160.0f}, ImGuiCond_Once);
-	ImGui::SetNextWindowSize({windowWidth, 0}, ImGuiCond_Once);
+	ImGui::SetNextWindowPos({(ImGui::GetIO().DisplaySize.x - 500.0f) / 2.0f, 160.0f}, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize({windowWidth, 0}, ImGuiCond_FirstUseEver);
 
 	if (!gui->open)
 		ImGui::SetNextWindowSize({windowWidth, 0});
@@ -643,9 +643,9 @@ void Misc::quickReload(UserCmd* cmd) noexcept
 
 bool Misc::changeName(bool reconnect, const char* newName, float delay) noexcept
 {
-    static auto exploitInitialized{ false };
+    static auto exploitInitialized = false;
 
-    static auto name{ interfaces->cvar->findVar("name") };
+    static auto name = interfaces->cvar->findVar("name");
 
     if (reconnect) {
         exploitInitialized = false;
@@ -964,7 +964,9 @@ void Misc::autoStrafe(UserCmd* cmd) noexcept
 	if (!localPlayer || localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
 		return;
 
-	if (~cmd->buttons & UserCmd::IN_JUMP || localPlayer->flags() & Entity::FL_ONGROUND)
+	static auto wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
+
+	if (~cmd->buttons & UserCmd::IN_JUMP || localPlayer->flags() & Entity::FL_ONGROUND && wasLastTimeOnGround)
 		return;
 
 	const float curSpeed = localPlayer->velocity().length2D();
@@ -988,6 +990,7 @@ void Misc::autoStrafe(UserCmd* cmd) noexcept
 	cmd->sidemove = -std::sinf(move) * 450.0f;
 
 	prevVel = curVel;
+	wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
 }
 
 void Misc::removeCrouchCooldown(UserCmd* cmd) noexcept
@@ -1121,56 +1124,56 @@ void Misc::purchaseList(GameEvent* event) noexcept
 		if ((!interfaces->engine->isInGame() || freezeEnd != 0.0f && memory->globalVars->realtime > freezeEnd + (!config->misc.purchaseList.onlyDuringFreezeTime ? mp_buytime->getFloat() : 0.0f) || playerPurchases.empty() || purchaseTotal.empty()) && !gui->open)
 			return;
 
-		ImGui::SetNextWindowSize({200.0f, 200.0f}, ImGuiCond_Once);
-
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
 		if (!gui->open)
 			windowFlags |= ImGuiWindowFlags_NoInputs;
 		if (config->misc.purchaseList.noTitleBar)
 			windowFlags |= ImGuiWindowFlags_NoTitleBar;
 
+		ImGui::SetNextWindowSize({200.0f, 200.0f}, ImGuiCond_FirstUseEver);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-		ImGui::Begin("Purchases", nullptr, windowFlags);
-		ImGui::PopStyleVar();
-
-		if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Details)
+		if (ImGui::Begin("Purchases", nullptr, windowFlags))
 		{
-			GameData::Lock lock;
-
-			for (const auto &[handle, purchases] : playerPurchases)
+			if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Details)
 			{
-				std::string s;
-				s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto &p) { return length + p.first.length() + 2; }));
-				for (const auto &purchasedItem : purchases.items)
+				GameData::Lock lock;
+
+				for (const auto &[handle, purchases] : playerPurchases)
 				{
-					if (purchasedItem.second > 1)
-						s += std::to_string(purchasedItem.second) + "x ";
-					s += purchasedItem.first + ", ";
+					std::string s;
+					s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto &p) { return length + p.first.length() + 2; }));
+					for (const auto &purchasedItem : purchases.items)
+					{
+						if (purchasedItem.second > 1)
+							s += std::to_string(purchasedItem.second) + "x ";
+						s += purchasedItem.first + ", ";
+					}
+
+					if (s.length() >= 2)
+						s.erase(s.length() - 2);
+
+					if (const auto it = std::find_if(GameData::players().cbegin(), GameData::players().cend(), [handle = handle](const auto &playerData) { return playerData.handle == handle; }); it != GameData::players().cend())
+					{
+						if (config->misc.purchaseList.showPrices)
+							ImGui::TextWrapped("%s $%d: %s", it->name, purchases.totalCost, s.c_str());
+						else
+							ImGui::TextWrapped("%s: %s", it->name, s.c_str());
+					}
 				}
+			} else if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Summary)
+			{
+				for (const auto &purchase : purchaseTotal)
+					ImGui::TextWrapped("%d x %s", purchase.second, purchase.first.c_str());
 
-				if (s.length() >= 2)
-					s.erase(s.length() - 2);
-
-				if (const auto it = std::find_if(GameData::players().cbegin(), GameData::players().cend(), [handle = handle](const auto &playerData) { return playerData.handle == handle; }); it != GameData::players().cend())
+				if (config->misc.purchaseList.showPrices && totalCost > 0)
 				{
-					if (config->misc.purchaseList.showPrices)
-						ImGui::TextWrapped("%s $%d: %s", it->name, purchases.totalCost, s.c_str());
-					else
-						ImGui::TextWrapped("%s: %s", it->name, s.c_str());
+					ImGui::Separator();
+					ImGui::TextWrapped("Total: $%d", totalCost);
 				}
 			}
-		} else if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Summary)
-		{
-			for (const auto &purchase : purchaseTotal)
-				ImGui::TextWrapped("%d x %s", purchase.second, purchase.first.c_str());
-
-			if (config->misc.purchaseList.showPrices && totalCost > 0)
-			{
-				ImGui::Separator();
-				ImGui::TextWrapped("Total: $%d", totalCost);
-			}
+			ImGui::End();
 		}
-		ImGui::End();
+		ImGui::PopStyleVar();
 	}
 }
 
@@ -1422,30 +1425,27 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	auto &local = GameData::local();
 	const auto &global = GameData::global();
 
-	if (!localPlayer) return;
-
 	if (!local.exists || !local.alive)
 		return;
 
 	if (config->griefing.bb.keyMode)
 	{
-		auto target = interfaces->entityList->getEntityFromHandle(global.indicators.blockTarget);
-		auto targetData = GameData::playerByHandle(global.indicators.blockTarget);
-		if (target && target != localPlayer.get() && !targetData->dormant && targetData->alive && !targetData->enemy)
+		auto target = GameData::playerByHandle(global.indicators.blockTarget);
+		if (target && !target->dormant && target->alive && !target->enemy)
 		{
-			Vector curDir = targetData->velocity * 0.12f;
+			Vector curDir = target->velocity * 0.12f;
 			curDir.z = 0.0f;
-			Vector max = target->getCollideable()->obbMaxs() + targetData->origin;
-			Vector min = target->getCollideable()->obbMins() + targetData->origin;
-			const auto z = target->getAbsOrigin().z;
+			Vector max = target->colMaxs + target->origin;
+			Vector min = target->colMins + target->origin;
+			const auto z = target->origin.z;
 
 			ImVec2 pos, dir;
 			ImVec2 points[4];
 
 			const auto color = Helpers::calculateColor(config->griefing.bbCol);
 
-			bool draw = Helpers::worldToScreen(targetData->origin, pos);
-			draw = draw && Helpers::worldToScreen(curDir + targetData->origin, dir);
+			bool draw = Helpers::worldToScreen(target->origin, pos);
+			draw = draw && Helpers::worldToScreen(curDir + target->origin, dir);
 
 			if (draw)
 			{
@@ -1486,8 +1486,8 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 	if (config->visuals.playerBounds.enabled)
 	{
-		Vector max = localPlayer->getCollideable()->obbMaxs() + local.origin;
-		Vector min = localPlayer->getCollideable()->obbMins() + local.origin;
+		Vector max = local.colMaxs + local.origin;
+		Vector min = local.colMins + local.origin;
 		const auto z = local.origin.z;
 
 		ImVec2 points[4];
@@ -1520,22 +1520,18 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	if (!config->misc.indicators) return;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-	ImGui::SetNextWindowPos(ImVec2{0.0f, 50.0f}, ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2{0.0f, 50.0f}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{200.0f, FLT_MAX});
 	if (ImGui::Begin("Indicators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		const auto netCh = interfaces->engine->getNetworkChannel();
-		if (netCh)
+		const auto netChannel = interfaces->engine->getNetworkChannel();
+		if (netChannel)
 		{
 			ImGui::TextUnformatted("Choke");
-			ImGuiCustom::progressBarFullWidth((float)netCh->chokedPackets / (float)config->antiAim.chokedPackets);
+			ImGuiCustom::progressBarFullWidth(static_cast<float>(netChannel->chokedPackets) / static_cast<float>(config->antiAim.chokedPackets));
 		}
 
 		ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(local.velocity.length2D())) + "u").c_str());
-
-		#ifdef _DEBUG_NEPS
-		ImGui::TextUnformatted(("Max desync on " + std::to_string(localPlayer->getMaxDesyncAngle()) + "deg").c_str());
-		#endif // _DEBUG_NEPS
 
 		if (memory->input->isCameraInThirdPerson)
 		{
@@ -1565,4 +1561,22 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 		ImGui::End();
 	}
 	ImGui::PopStyleVar();
+}
+
+void Misc::voteRevealer(GameEvent &event) noexcept
+{
+	if (!config->griefing.revealVotes)
+		return;
+
+	const auto entity = interfaces->entityList->getEntity(event.getInt("entityid"));
+	if (!entity || !entity->isPlayer())
+		return;
+
+	memory->conColorMsg({120, 0, 255, 255}, "[NEPS]: ");
+	memory->debugMsg("%s -> ", entity->getPlayerName().c_str());
+
+	if (event.getInt("vote_option"))
+		memory->conColorMsg({255, 0, 0, 255}, "NO\n");
+	else
+		memory->conColorMsg({0, 255, 0, 255}, "YES\n");
 }

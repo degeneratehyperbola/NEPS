@@ -95,6 +95,7 @@ struct LocalPlayerData {
     Vector aimPunchAngle;
     Vector origin;
     Vector velocity;
+	Vector colMaxs, colMins;
 };
 
 class Entity;
@@ -164,11 +165,12 @@ struct PlayerData : BaseData {
 	int handle;
 	char name[128];
 	Vector headMins, headMaxs;
+	Vector colMins, colMaxs;
 	Vector origin;
 	Vector velocity;
 	std::string activeWeapon;
 	std::vector<std::pair<Vector, Vector>> bones;
-	StudioHitboxSet *hitboxSet;
+	StudioHitboxSet *hitboxSet = nullptr;
 };
 
 struct WeaponData : BaseData {

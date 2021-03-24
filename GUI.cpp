@@ -5,6 +5,7 @@
 #include <ShlObj.h>
 #include <Windows.h>
 #include <shellapi.h>
+#include <ShlObj.h>
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_win32.h"
@@ -39,12 +40,26 @@ GUI::GUI() noexcept
 {
 	ImGui::StyleColorsClassic();
 
-	ImFontConfig cfg;
-	cfg.OversampleH = cfg.OversampleV = 8;
-	cfg.PixelSnapH = false;
+	ImGuiIO &io = ImGui::GetIO();
+	// We do be wanting to save window positions
+	io.IniFilename = "neps_gui_layout.ini";
+	io.LogFilename = nullptr;
+	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
-	cfg.SizePixels = 14.0f;
-	fonts.msgothic = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(NEPS_GOTHIC_compressed_data, NEPS_GOTHIC_compressed_size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
+	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts)))
+	{
+		const std::filesystem::path path = pathToFonts;
+		CoTaskMemFree(pathToFonts);
+
+		ImFontConfig cfg;
+		cfg.OversampleH = cfg.OversampleV = 8;
+		cfg.PixelSnapH = false;
+		cfg.SizePixels = 14.0f;
+
+		fonts.msgothic = io.Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
+	}
+
+	//fonts.msgothic = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(NEPS_GOTHIC_compressed_data, NEPS_GOTHIC_compressed_size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
 }
 
 void GUI::render() noexcept
@@ -89,6 +104,11 @@ void GUI::render() noexcept
 			hooks->uninstall();
 		ImGui::EndPopup();
 	}
+
+	#ifdef _DEBUG_NEPS
+	ImGui::ShowDemoWindow();
+	ImGui::ShowMetricsWindow();
+	#endif // _DEBUG_NEPS
 }
 
 void GUI::updateColors() const noexcept
@@ -144,7 +164,7 @@ void GUI::renderMenuBar() noexcept
 			ImGui::EndMenu();
 		}
 		if (ImGui::MenuItem("My GitHub"))
-			ShellExecuteA(nullptr, nullptr, "https://github.com/degeneratehyperbola/NEPS", nullptr, nullptr, SW_SHOW);
+			ShellExecuteW(nullptr, nullptr, L"https://github.com/degeneratehyperbola/NEPS", nullptr, nullptr, SW_SHOW);
         ImGui::EndMainMenuBar();
     }
 }
@@ -264,36 +284,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 	ImGui::SetNextItemWidth(85.0f);
     ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
-
-	const char *hitgroupNames[7] = {"Head", "Chest", "Stomach", "Left arm", "Right arm", "Left leg", "Right leg"};
-	const char *selectedBones;
-	if (config->aimbot[currentWeapon].hitgroup == (1 << 7) - 1)
-		selectedBones = "All";
-	else if (!config->aimbot[currentWeapon].hitgroup)
-		selectedBones = "None";
-	else
-		selectedBones = "...";
-
 	ImGui::SetNextItemWidth(85.0f);
-	if (ImGui::BeginCombo("Hitgroup", selectedBones))
-	{
-		for (int i = 0; i < 7; i++)
-		{
-			bool selected = config->aimbot[currentWeapon].hitgroup & (1 << i);
-
-			ImGui::PushID(i);
-			ImGui::Selectable(hitgroupNames[i], &selected, ImGuiSelectableFlags_DontClosePopups);
-			ImGui::PopID();
-
-			if (selected)
-				config->aimbot[currentWeapon].hitgroup |= (1 << i);
-			else
-				config->aimbot[currentWeapon].hitgroup &= ~(1 << i);
-		}
-		ImGui::EndPopup();
-	}
-
-	config->aimbot[currentWeapon].hitgroup = std::clamp(config->aimbot[currentWeapon].hitgroup, 0, (1 << 7) - 1);
+	ImGuiCustom::multiCombo("Hitgroup", config->aimbot[currentWeapon].hitgroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
 
     ImGui::NextColumn();
     ImGui::Checkbox("Multipoint", &config->aimbot[currentWeapon].multipoint);
@@ -312,30 +304,50 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 	ImGui::SetNextItemWidth(95.0f);
     ImGui::InputInt("Min damage", &config->aimbot[currentWeapon].minDamage);
     config->aimbot[currentWeapon].minDamage = max(config->aimbot[currentWeapon].minDamage, 0);
-    ImGui::Checkbox("Health + min damage", &config->aimbot[currentWeapon].killshot);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("damage_ab", ImGuiDir_Right))
+		ImGui::OpenPopup("##damage_ab");
+
+	if (ImGui::BeginPopup("##damage_ab"))
+	{
+		ImGui::SetNextItemWidth(95.0f);
+		ImGui::InputInt("Min damage auto-wall", &config->aimbot[currentWeapon].minDamageAutoWall);
+		config->aimbot[currentWeapon].minDamageAutoWall = max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
+		ImGui::SetNextItemWidth(95.0f);
+		ImGui::InputInt("Damage threshold", &config->aimbot[currentWeapon].killshot);
+		config->aimbot[currentWeapon].killshot = max(config->aimbot[currentWeapon].killshot, 0);
+		ImGui::SetNextItemWidth(95.0f);
+		ImGui::InputInt("Damage threshold auto-wall", &config->aimbot[currentWeapon].killshotAutoWall);
+		config->aimbot[currentWeapon].killshotAutoWall = max(config->aimbot[currentWeapon].killshotAutoWall, 0);
+		ImGui::EndPopup();
+	}
+
 	ImGui::SetNextItemWidth(100.0f);
-	ImGui::Combo("Interpolation", &config->aimbot[currentWeapon].interpolation, "None\0Linear\0Quadratic\0");
+	ImGui::Combo("Interpolation", &config->aimbot[currentWeapon].interpolation, "None\0Linear\0Quadratic\0Both\0");
 	switch (config->aimbot[currentWeapon].interpolation)
 	{
 	case 0:
 		break;
 	case 1:
-		ImGui::PushID("linear_speed");
-		ImGui::SliderFloat("", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Speed %.4fdeg", ImGuiSliderFlags_Logarithmic);
-		ImGui::PopID();
+		ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
 		break;
 	case 2:
-		ImGui::PushID("smoothness");
-		ImGui::SliderFloat("", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
-		ImGui::PopID();
+		ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
+		break;
+	case 3:
+		ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Linear speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
 		break;
 	}
     ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
 
-	ImGuiCustom::keyBind("Safety mode", config->aimbot[currentWeapon].safeOnly);
-    ImGui::Checkbox("On shot", &config->aimbot[currentWeapon].onShot);
+	ImGuiCustom::keyBind("Safe only", config->aimbot[currentWeapon].safeOnly);
+	ImGui::SetNextItemWidth(85.0f);
+	ImGuiCustom::multiCombo("Safe hitgroup", config->aimbot[currentWeapon].safeHitgroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+	ImGui::Checkbox("On shot", &config->aimbot[currentWeapon].onShot);
 	ImGui::SameLine();
 	ImGui::Checkbox("On move", &config->aimbot[currentWeapon].onMove);
+
     if (!contentOnly)
         ImGui::End();
 }
@@ -377,17 +389,18 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 
 void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 {
-    if (!contentOnly) {
-        if (!window.triggerbot)
-            return;
-        ImGui::SetNextWindowSize({ 0.0f, 0.0f });
-        ImGui::Begin("Triggerbot", &window.triggerbot, windowFlags);
-    }
-    static int currentCategory{ 0 };
+	if (!contentOnly)
+	{
+		if (!window.triggerbot)
+			return;
+		ImGui::SetNextWindowSize({0.0f, 0.0f});
+		ImGui::Begin("Triggerbot", &window.triggerbot, windowFlags);
+	}
+	static int currentCategory{0};
     ImGui::PushItemWidth(110.0f);
     ImGui::Combo("##category", &currentCategory, "All\0Pistols\0Heavy\0SMGs\0Rifles\0Zeus x27\0");
     ImGui::SameLine();
-    static int currentWeapon{ 0 };
+	static int currentWeapon{0};
     switch (currentCategory) {
     case 0:
         currentWeapon = 0;
@@ -480,36 +493,8 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
     ImGui::Checkbox("Scoped only", &config->triggerbot[currentWeapon].scopedOnly);
     ImGui::Checkbox("Ignore flash", &config->triggerbot[currentWeapon].ignoreFlash);
     ImGui::Checkbox("Ignore smoke", &config->triggerbot[currentWeapon].ignoreSmoke);
-
-	const char *hitgroupNames[7] = {"Head", "Chest", "Stomach", "Left arm", "Right arm", "Left leg", "Right leg"};
-	const char *selectedBones;
-	if (config->triggerbot[currentWeapon].hitgroup == (1 << 7) - 1)
-		selectedBones = "All";
-	else if (!config->triggerbot[currentWeapon].hitgroup)
-		selectedBones = "None";
-	else
-		selectedBones = "...";
-
 	ImGui::SetNextItemWidth(85.0f);
-	if (ImGui::BeginCombo("Hitgroup", selectedBones))
-	{
-		for (int i = 0; i < 7; i++)
-		{
-			bool selected = config->triggerbot[currentWeapon].hitgroup & (1 << i);
-
-			ImGui::PushID(i);
-			ImGui::Selectable(hitgroupNames[i], &selected, ImGuiSelectableFlags_DontClosePopups);
-			ImGui::PopID();
-
-			if (selected)
-				config->triggerbot[currentWeapon].hitgroup |= (1 << i);
-			else
-				config->triggerbot[currentWeapon].hitgroup &= ~(1 << i);
-		}
-		ImGui::EndPopup();
-	}
-
-	config->triggerbot[currentWeapon].hitgroup = std::clamp(config->triggerbot[currentWeapon].hitgroup, 0, (1 << 7) - 1);
+	ImGuiCustom::multiCombo("Hitgroup", config->triggerbot[currentWeapon].hitgroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
 
     ImGui::PushItemWidth(300.0f);
     ImGui::SliderInt("##delay", &config->triggerbot[currentWeapon].shotDelay, 0, 300, "Shot delay %dms", ImGuiSliderFlags_Logarithmic);
@@ -520,8 +505,25 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 	config->triggerbot[currentWeapon].distance = max(config->triggerbot[currentWeapon].distance, 0);
 	ImGui::SetNextItemWidth(95.0f);
 	ImGui::InputInt("Min damage", &config->triggerbot[currentWeapon].minDamage);
-    config->triggerbot[currentWeapon].minDamage = std::clamp(config->triggerbot[currentWeapon].minDamage, 0, 250);
-    ImGui::Checkbox("Health + min damage", &config->triggerbot[currentWeapon].killshot);
+	config->triggerbot[currentWeapon].minDamage = max(config->triggerbot[currentWeapon].minDamage, 0);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("damage_tb", ImGuiDir_Right))
+		ImGui::OpenPopup("##damage_tb");
+
+	if (ImGui::BeginPopup("##damage_tb"))
+	{
+		ImGui::SetNextItemWidth(95.0f);
+		ImGui::InputInt("Min damage auto-wall", &config->triggerbot[currentWeapon].minDamageAutoWall);
+		config->triggerbot[currentWeapon].minDamageAutoWall = max(config->triggerbot[currentWeapon].minDamageAutoWall, 0);
+		ImGui::SetNextItemWidth(95.0f);
+		ImGui::InputInt("Damage threshold", &config->triggerbot[currentWeapon].killshot);
+		config->triggerbot[currentWeapon].killshot = max(config->triggerbot[currentWeapon].killshot, 0);
+		ImGui::SetNextItemWidth(95.0f);
+		ImGui::InputInt("Damage threshold auto-wall", &config->triggerbot[currentWeapon].killshotAutoWall);
+		config->triggerbot[currentWeapon].killshotAutoWall = max(config->triggerbot[currentWeapon].killshotAutoWall, 0);
+		ImGui::EndPopup();
+	}
+
     ImGui::SliderFloat("##burst", &config->triggerbot[currentWeapon].burstTime, 0.0f, 1.0f, "Burst time %.3fs");
 
     if (!contentOnly)
@@ -1239,7 +1241,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
         ImGui::InputInt("Seed", &selected_entry.seed);
         ImGui::InputInt("StatTrak", &selected_entry.stat_trak);
         selected_entry.stat_trak = (std::max)(selected_entry.stat_trak, -1);
-        ImGui::SliderFloat("Wear", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", ImGuiSliderFlags_Logarithmic);
+        ImGui::SliderFloat("Wear", &selected_entry.wear, FLT_MIN, 1.f, "%.10f");
 
         static std::string filter;
         ImGui::PushID("Search");
@@ -1347,7 +1349,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
             ImGui::ListBoxFooter();
         }
 
-        ImGui::SliderFloat("Wear", &selected_sticker.wear, FLT_MIN, 1.0f, "%.10f", ImGuiSliderFlags_Logarithmic);
+        ImGui::SliderFloat("Wear", &selected_sticker.wear, FLT_MIN, 1.0f, "%.10f");
         ImGui::SliderFloat("Scale", &selected_sticker.scale, 0.1f, 5.0f);
         ImGui::SliderFloat("Rotation", &selected_sticker.rotation, 0.0f, 360.0f);
 
@@ -1506,6 +1508,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 		Misc::fakeBan(true);
 
 	ImGui::Checkbox("Fake prime", &config->griefing.fakePrime);
+	ImGui::Checkbox("Vote reveal", &config->griefing.revealVotes);
 	ImGui::Checkbox("Name stealer", &config->griefing.nameStealer);
 	ImGui::Checkbox("Clock tag", &config->griefing.clocktag);
 

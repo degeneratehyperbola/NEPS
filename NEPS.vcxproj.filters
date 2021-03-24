@@ -503,9 +503,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Font Include="Resources\NepsGothic.ttf" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="Resources\LogoA.png" />
   </ItemGroup>
 </Project>

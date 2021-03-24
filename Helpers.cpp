@@ -89,25 +89,22 @@ Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &desti
 	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
-#define AUTOWALL_CALC_DEPTH 4
-#define AUTOWALL_MIN_PENETRATION 0.02f
-int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData, bool allowFriendlyFire, int hitgroupFlags, bool visibleOnly) noexcept
+int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire, int hitgroupFlags, bool *goesThroughWall) noexcept
 {
 	if (!localPlayer)
 		return -1;
 
 	float damage{static_cast<float>(weaponData->damage)};
 
-	Vector start{localPlayer->getEyePosition()};
-	Vector direction{destination - start};
+	Vector start = localPlayer->getEyePosition();
+	Vector direction = destination - start;
 	float traveled = direction.length();
 	direction /= traveled;
 
-	auto calcDepth{AUTOWALL_CALC_DEPTH};
+	auto calcDepth = AUTOWALL_CALC_DEPTH;
 
 	while (damage >= 1.0f && calcDepth)
 	{
-		Trace trace;
 		interfaces->engineTrace->traceRay({start, destination}, 0x4600400B, localPlayer.get(), trace);
 
 		if (trace.fraction == 1.0f)
@@ -137,8 +134,8 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 			return static_cast<int>(damage);
 		}
 
-		if (visibleOnly)
-			break;
+		if (goesThroughWall)
+			*goesThroughWall = true;
 
 		const auto surfaceData = interfaces->physicsSurfaceProps->getSurfaceData(trace.surface.surfaceProps);
 
@@ -148,23 +145,21 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 		damage = handleBulletPenetration(surfaceData, trace, direction, start, weaponData->penetration, damage);
 		calcDepth--;
 	}
+
 	return -1;
 }
-int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire, int hitgroupFlags, bool visibleOnly) noexcept
+bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendlyFire, bool *goesThroughWall) noexcept
 {
 	if (!localPlayer)
-		return -1;
+		return false;
 
-	float damage{static_cast<float>(weaponData->damage)};
+	Vector start = localPlayer->getEyePosition();
+	Vector direction = destination - start;
+	direction /= direction.length();
 
-	Vector start{localPlayer->getEyePosition()};
-	Vector direction{destination - start};
-	float traveled = direction.length();
-	direction /= traveled;
+	auto calcDepth = AUTOWALL_CALC_DEPTH;
 
-	auto calcDepth{AUTOWALL_CALC_DEPTH};
-
-	while (damage >= 1.0f && calcDepth)
+	while (calcDepth)
 	{
 		interfaces->engineTrace->traceRay({start, destination}, 0x4600400B, localPlayer.get(), trace);
 
@@ -182,31 +177,27 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 			if (trace.entity->gunGameImmunity())
 				break;
 
-			if (hitgroupFlags != (1 << 7) - 1)
-				if (!(hitgroupFlags & (1 << (trace.hitgroup - 1))))
-					break;
-
-			const auto m = std::strstr(weaponData->name, "Taser") ? 1.0f : HitGroup::getDamageMultiplier(trace.hitgroup);
-			damage = m * damage * std::powf(weaponData->rangeModifier, trace.fraction * traveled / 500.0f);
-
-			if (float armorRatio{weaponData->armorRatio / 2.0f}; HitGroup::isArmored(trace.hitgroup, trace.entity->hasHelmet()))
-				damage -= (trace.entity->armor() < damage * armorRatio / 2.0f ? trace.entity->armor() * 4.0f : damage) * (1.0f - armorRatio);
-
-			return static_cast<int>(damage);
+			return true;
 		}
 
-		if (visibleOnly)
-			break;
+		if (goesThroughWall)
+			*goesThroughWall = true;
 
 		const auto surfaceData = interfaces->physicsSurfaceProps->getSurfaceData(trace.surface.surfaceProps);
 
 		if (surfaceData->penetrationmodifier < AUTOWALL_MIN_PENETRATION)
 			break;
 
-		damage = handleBulletPenetration(surfaceData, trace, direction, start, weaponData->penetration, damage);
+		Vector end;
+		Trace exitTrace;
+		if (!traceToExit(trace, trace.endpos, direction, end, exitTrace))
+			break;
+
+		start = exitTrace.endpos;
 		calcDepth--;
 	}
-	return -1;
+
+	return false;
 }
 
 float Helpers::findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept

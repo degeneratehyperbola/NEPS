@@ -10,7 +10,6 @@ namespace Misc
 {
     void edgejump(UserCmd* cmd) noexcept;
     void slowwalk(UserCmd* cmd) noexcept;
-    void inverseRagdollGravity() noexcept;
     void updateClanTag() noexcept;
     void spectatorList() noexcept;
     void spectatorList(ImDrawList *drawList) noexcept;
@@ -53,4 +52,5 @@ namespace Misc
     void blockBot(UserCmd *cmd) noexcept;
     void useSpam(UserCmd *cmd);
     void indicators(ImDrawList *drawList) noexcept;
+	void voteRevealer(GameEvent &event) noexcept;
 }

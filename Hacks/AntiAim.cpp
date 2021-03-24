@@ -69,8 +69,13 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		GameData::Lock lock;
 		auto &global = GameData::global();
 
-		if (config->antiAim.avoidOverlap && global.indicators.serverHead.distTo(global.indicators.desyncHead) < 5.0f)
+		static float lastTime = memory->globalVars->currenttime;
+
+		if (lastTime + 1.0f < memory->globalVars->currenttime && config->antiAim.avoidOverlap && global.indicators.serverHead.distTo(global.indicators.desyncHead) < 5.0f)
+		{
 			flip = !flip;
+			lastTime = memory->globalVars->currenttime;
+		}
 	}
 
 	if (config->antiAim.pitch && cmd->viewangles.x == currentViewAngles.x)
@@ -90,10 +95,10 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			}
 		} else
 		{
-			const float add = config->antiAim.clamped ? (cmd->tickCount & 1 ? 34.25f : 28.75f) : 0.0f;
+			const float add = config->antiAim.clamped ? (cmd->tickCount & 1 ? 33.0f : 27.0f) : 0.0f;
 			const float desyncAngle = flip ? localPlayer->getMaxDesyncAngle() - add : -localPlayer->getMaxDesyncAngle() + add;
 
-			if (!sendPacket && (!config->antiAim.corrected || localPlayer->velocity().length2D() < 30.0f))
+			if (!sendPacket && (!config->antiAim.corrected || localPlayer->velocity().length2D() < 0.1f))
 			{
 				cmd->viewangles.y += desyncAngle;
 			}

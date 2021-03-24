@@ -269,11 +269,25 @@ void LocalPlayerData::update() noexcept
 	{
 		origin = obs->getAbsOrigin();
 		velocity = obs->velocity();
+
+		const auto collidable = obs->getCollideable();
+		if (!collidable)
+			return;
+
+		colMaxs = collidable->obbMaxs();
+		colMins = collidable->obbMins();
 	}
 	else
 	{
 		origin = localPlayer->getAbsOrigin();
 		velocity = localPlayer->velocity();
+
+		const auto collidable = localPlayer->getCollideable();
+		if (!collidable)
+			return;
+
+		colMaxs = collidable->obbMaxs();
+		colMins = collidable->obbMins();
 	}
 }
 
@@ -404,6 +418,13 @@ void PlayerData::update(Entity* entity) noexcept
         if (const auto weaponInfo = weapon->getWeaponData())
             activeWeapon = interfaces->localize->findAsUTF8(weaponInfo->name);
     }
+
+	const auto collidable = entity->getCollideable();
+	if (!collidable)
+		return;
+
+	colMaxs = collidable->obbMaxs();
+	colMins = collidable->obbMins();
 
     const auto model = entity->getModel();
     if (!model)

@@ -22,20 +22,11 @@ public:
     void install() noexcept;
     void uninstall() noexcept;
 
-	HMODULE getDllHandle() noexcept
-	{
-		return moduleHandle;
-	}
+	HMODULE getDllHandle() noexcept { return moduleHandle; }
 
-	HWND getProcessWindow() noexcept
-	{
-		return window;
-	}
+	HWND getProcessWindow() noexcept { return window; }
 
-	HMODULE getProcessHandle() noexcept
-	{
-		return GetModuleHandle(nullptr);
-	}
+	HMODULE getProcessHandle() noexcept { return GetModuleHandleA(nullptr); }
 
     WNDPROC originalWndProc;
     std::add_pointer_t<HRESULT __stdcall(IDirect3DDevice9*, const RECT*, const RECT*, HWND, const RGNDATA*)> originalPresent;

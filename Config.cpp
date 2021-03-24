@@ -1,6 +1,8 @@
 #include <fstream>
 
 #ifdef _WIN32
+#include <Windows.h>
+#include <shellapi.h>
 #include <ShlObj.h>
 #endif
 
@@ -330,9 +332,12 @@ static void from_json(const json& j, Config::Aimbot& a)
     read(j, "Max aim inaccuracy", a.maxAimInaccuracy);
     read(j, "Hitchance", a.shotHitchance);
     read(j, "Min damage", a.minDamage);
+    read(j, "Min damage auto-wall", a.minDamageAutoWall);
     read(j, "Killshot", a.killshot);
+    read(j, "Killshot auto-wall", a.killshotAutoWall);
     read(j, "Between shots", a.betweenShots);
     read<value_t::object>(j, "Safe only", a.safeOnly);
+    read(j, "Safe mode", a.safeHitgroup);
     read(j, "On shot", a.onShot);
     read(j, "On move", a.onMove);
 }
@@ -351,7 +356,9 @@ static void from_json(const json& j, Config::Triggerbot& t)
     read(j, "Shot delay", t.shotDelay);
     read(j, "Max inaccuracy", t.maxShotInaccuracy);
     read(j, "Min damage", t.minDamage);
+    read(j, "Min damage auto-wall", t.minDamageAutoWall);
     read(j, "Killshot", t.killshot);
+    read(j, "Killshot auto-wall", t.killshotAutoWall);
     read(j, "Burst Time", t.burstTime);
 }
 
@@ -661,6 +668,7 @@ static void from_json(const json &j, Config::Griefing &s)
 	read<value_t::string>(j, "Ban text", s.banText);
 	read<value_t::object>(j, "Reportbot", s.reportbot);
 	read(j, "Fake prime", s.fakePrime);
+	read(j, "Vote reveal", s.revealVotes);
 	read<value_t::object>(j, "Blockbot", s.bb);
 	read<value_t::object>(j, "Blockbot target", s.bbTar);
 	read(j, "Blockbot factor", s.bbTrajFac);
@@ -910,9 +918,12 @@ static void to_json(json& j, const Config::Aimbot& o, const Config::Aimbot& dumm
     WRITE("Max aim inaccuracy", maxAimInaccuracy);
     WRITE("Hitchance", shotHitchance);
     WRITE("Min damage", minDamage);
+    WRITE("Min damage auto-wall", minDamageAutoWall);
     WRITE("Killshot", killshot);
+    WRITE("Killshot auto-wall", killshotAutoWall);
     WRITE("Between shots", betweenShots);
 	WRITE("Safe only", safeOnly);
+	WRITE("Safe mode", safeHitgroup);
 	WRITE("On shot", onShot);
 	WRITE("On move", onMove);
 }
@@ -931,7 +942,9 @@ static void to_json(json& j, const Config::Triggerbot& o, const Config::Triggerb
     WRITE("Shot delay", shotDelay);
     WRITE("Max inaccuracy", maxShotInaccuracy);
     WRITE("Min damage", minDamage);
+    WRITE("Min damage auto-wall", minDamageAutoWall);
     WRITE("Killshot", killshot);
+    WRITE("Killshot auto-wall", killshotAutoWall);
     WRITE("Burst Time", burstTime);
 }
 
@@ -1119,6 +1132,7 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Kill message", killMessage);
 	WRITE("Kill message string", killMessageString);
 	WRITE("Fake prime", fakePrime);
+	WRITE("Vote reveal", revealVotes);
 	WRITE("Ban color", banColor);
 	WRITE("Ban text", banText);
 	WRITE("Reportbot", reportbot);
@@ -1380,7 +1394,7 @@ void Config::openConfigDir() const noexcept
 {
 	std::error_code ec;
 	std::filesystem::create_directory(path, ec);
-	int ret = std::system(("explorer \"" + path.string() + "\"").c_str());
+	ShellExecuteW(nullptr, L"open", path.wstring().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void Config::scheduleFontLoad(const std::string &name) noexcept
@@ -1436,18 +1450,25 @@ bool Config::loadScheduledFonts() noexcept
 		{
 			if (fonts.find("Default") == fonts.cend())
 			{
-				ImFontConfig cfg;
-				cfg.OversampleH = cfg.OversampleV = 8;
-				cfg.PixelSnapH = false;
+				if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts)))
+				{
+					const std::filesystem::path path = pathToFonts;
+					CoTaskMemFree(pathToFonts);
 
-				Font newFont;
+					ImFontConfig cfg;
+					cfg.OversampleH = cfg.OversampleV = 8;
+					cfg.PixelSnapH = false;
+					cfg.SizePixels = FONT_BIG;
 
-				cfg.SizePixels = FONT_BIG;
-				newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(NEPS_GOTHIC_compressed_data, NEPS_GOTHIC_compressed_size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
-				newFont.tiny = newFont.medium = newFont.big;
+					Font newFont;
+					newFont.big = ImGui::GetIO().Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
+					newFont.tiny = newFont.medium = newFont.big;
 
-				fonts.emplace(fontName, newFont);
-				result = true;
+					fonts.emplace(fontName, newFont);
+					result = true;
+				}
+
+				//newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(NEPS_GOTHIC_compressed_data, NEPS_GOTHIC_compressed_size, 14.0f, &cfg, Helpers::getFontGlyphRanges());
 			}
 			continue;
 		}

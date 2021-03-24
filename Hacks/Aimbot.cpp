@@ -51,14 +51,14 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
     if ((cmd->buttons & UserCmd::IN_ATTACK || config->aimbot[weaponIndex].autoShot || config->aimbot[weaponIndex].aimlock) && activeWeapon->getInaccuracy() <= config->aimbot[weaponIndex].maxAimInaccuracy) {
 
-        if (config->aimbot[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
+        if (config->aimbot[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !config->aimbot[weaponIndex].autoScope)
             return;
 
 		const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{ };
 
         auto bestFov = config->aimbot[weaponIndex].fov;
         auto bestDistance = config->aimbot[weaponIndex].distance ? config->aimbot[weaponIndex].distance : INFINITY;
-        auto bestDamage = config->aimbot[weaponIndex].minDamage;
+        auto bestDamage = min(config->aimbot[weaponIndex].minDamage, config->aimbot[weaponIndex].minDamageAutoWall);
         auto bestHitchance = config->aimbot[weaponIndex].shotHitchance;
         Vector bestTarget{ };
 
@@ -83,35 +83,54 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			if (!entity || entity->gunGameImmunity() || entity->isDormant())
 				continue;
 
-			if (static Helpers::KeyBindState flag; flag[config->aimbot[weaponIndex].safeOnly])
+			auto allowedHitgroup = config->aimbot[weaponIndex].hitgroup;
+
+			if (static Helpers::KeyBindState flag; flag[config->aimbot[weaponIndex].safeOnly] && !entity->isBot())
 			{
 				const auto remoteActiveWep = entity->getActiveWeapon();
 				if (remoteActiveWep && config->aimbot[weaponIndex].onShot && remoteActiveWep->lastShotTime() == entity->simulationTime());
-				else if (config->aimbot[weaponIndex].onMove && entity->velocity().length2D() > 90.0f);
-				else continue;
+				else if (config->aimbot[weaponIndex].onMove && (entity->velocity().length2D() > 0.1f || ~entity->flags() & Entity::FL_ONGROUND));
+				else
+				{
+					allowedHitgroup = config->aimbot[weaponIndex].safeHitgroup;
+				}
 			}
 
-			if (!entity->setupBones(bufferBones.data(), MAXSTUDIOBONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
+			if (!allowedHitgroup)
 				continue;
 
-			for (int i = 0; i < player.hitboxSet->numHitboxes; i++)
+			if (!entity->setupBones(bufferBones.data(), MAXSTUDIOBONES, BONE_USED_BY_HITBOX, 0.0f))
+				continue;
+
+			if (config->aimbot[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
 			{
-				if (i == Hitbox::LeftFoot ||
-					i == Hitbox::RightFoot ||
-					i == Hitbox::LeftHand ||
-					i == Hitbox::RightHand ||
-					i == Hitbox::Neck ||
-					i == Hitbox::LowerChest ||
-					i == Hitbox::Belly)
+				bool goesThroughWall = false;
+				Trace trace;
+				auto origin = bufferBones[0].origin();
+				//auto origin = (entity->getEyePosition() + entity->getAbsOrigin()) * 0.5f;
+				bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
+				if (canHit && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
+					cmd->buttons |= UserCmd::IN_ATTACK2;
+			}
+
+			for (int hitboxIdx = 0; hitboxIdx < player.hitboxSet->numHitboxes; hitboxIdx++)
+			{
+				if (hitboxIdx == Hitbox::LeftFoot ||
+					hitboxIdx == Hitbox::RightFoot ||
+					hitboxIdx == Hitbox::LeftHand ||
+					hitboxIdx == Hitbox::RightHand ||
+					hitboxIdx == Hitbox::Neck ||
+					hitboxIdx == Hitbox::LowerChest ||
+					hitboxIdx == Hitbox::Belly)
 					continue;
 
-				const auto hitbox = *player.hitboxSet->getHitbox(i);
+				const auto hitbox = *player.hitboxSet->getHitbox(hitboxIdx);
 
 				std::vector<Vector> points;
 
 				if (config->aimbot[weaponIndex].multipoint)
 				{
-					switch (i)
+					switch (hitboxIdx)
 					{
 					case Hitbox::Head:
 					{
@@ -157,6 +176,21 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						points.emplace_back(min - axis);
 						break;
 					}
+					case Hitbox::Thorax:
+					{
+						const float r = hitbox.capsuleRadius * config->aimbot[weaponIndex].multipointScale;
+						const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
+						const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
+						Vector mid = (min + max) * 0.5f;
+						Vector axis = max - min;
+						axis /= axis.length();
+						axis *= r;
+
+						points.emplace_back(mid);
+						points.emplace_back(max + axis);
+						points.emplace_back(min - axis);
+						break;
+					}
 					case Hitbox::Pelvis:
 					{
 						const float r = hitbox.capsuleRadius * config->aimbot[weaponIndex].multipointScale;
@@ -179,34 +213,48 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						points.emplace_back(min - axis);
 						break;
 					}
-					case Hitbox::Thorax:
-					{
-						const float r = hitbox.capsuleRadius * config->aimbot[weaponIndex].multipointScale;
-						const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
-						const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
-						Vector mid = (min + max) * 0.5f;
-						Vector axis = max - min;
-						axis /= axis.length();
-						axis *= r;
-
-						points.emplace_back(mid);
-						points.emplace_back(max + axis);
-						points.emplace_back(min - axis);
-						break;
-					}
 					default:
-						const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
-						points.emplace_back(max);
+						points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
 						break;
 					}
 				} else
 				{
-					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
+					switch (hitboxIdx)
+					{
+					case Hitbox::Head:
+					case Hitbox::UpperChest:
+					case Hitbox::Thorax:
+					case Hitbox::Pelvis:
+						points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
+						break;
+					default:
+						points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
+						break;
+					}
 				}
 
 				#ifdef _DEBUG_NEPS
 				multipoints.insert(multipoints.end(), points.begin(), points.end());
 				#endif // _DEBUG_NEPS
+
+				float add = 0.0f;
+				switch (hitboxIdx)
+				{
+				case Hitbox::Thorax:
+					add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.4f;
+					break;
+				case Hitbox::UpperChest:
+				case Hitbox::Pelvis:
+					add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.1f;
+					break;
+				case Hitbox::Head:
+					break;
+				default:
+					add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.05f;
+					break;
+				}
+				
+				const float radius = hitbox.capsuleRadius + add;
 
 				for (auto &point : points)
 				{
@@ -217,23 +265,34 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						continue;
 
 					const auto distance = localPlayerEyePosition.distTo(point);
-					if (distance >= bestDistance)
+					if (distance >= bestDistance || distance > activeWeapon->getWeaponData()->range)
 						continue;
 
-					const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), hitbox.capsuleRadius, distance);
+					const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), radius, distance);
 					if (hitchance <= bestHitchance)
 						continue;
 
+					bool goesThroughWall = false;
 					Trace trace;
-					const auto damage = Helpers::findDamage(point, activeWeapon->getWeaponData(), trace, config->aimbot
-						[weaponIndex].friendlyFire, config->aimbot[weaponIndex].hitgroup, config->aimbot[weaponIndex].visibleOnly);
+					const auto damage = Helpers::findDamage(point, activeWeapon->getWeaponData(), trace, config->aimbot[weaponIndex].friendlyFire, allowedHitgroup, &goesThroughWall);
+
+					if (config->aimbot[weaponIndex].visibleOnly && goesThroughWall) continue;
 
 					if (trace.entity != entity) continue;
 
-					if (damage <= bestDamage)
-						continue;
-					if (config->aimbot[weaponIndex].killshot && (damage < (player.health + config->aimbot[weaponIndex].minDamage)))
-						continue;
+					if (!goesThroughWall)
+					{
+						if (damage <= min(config->aimbot[weaponIndex].minDamage, player.health + config->aimbot[weaponIndex].killshot))
+							continue;
+						if (damage <= min(bestDamage, player.health + config->aimbot[weaponIndex].killshot))
+							continue;
+					} else
+					{
+						if (damage <= min(config->aimbot[weaponIndex].minDamageAutoWall, player.health + config->aimbot[weaponIndex].killshotAutoWall))
+							continue;
+						if (damage <= min(bestDamage, player.health + config->aimbot[weaponIndex].killshotAutoWall))
+							continue;
+					}
 
 					if (!config->aimbot[weaponIndex].ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, point, 1))
 						continue;
@@ -289,9 +348,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, bestTarget, cmd->viewangles + aimPunch);
 			bool clamped = false;
 
-			if (config->aimbot[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
-				cmd->buttons |= UserCmd::IN_ATTACK2;
-
 			if (std::abs(angle.x) > config->misc.maxAngleDelta || std::abs(angle.y) > config->misc.maxAngleDelta)
 			{
 				angle.x = std::clamp(angle.x, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
@@ -299,9 +355,10 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				clamped = true;
 			}
 
-			if (config->aimbot[weaponIndex].interpolation == 2)
+			if (config->aimbot[weaponIndex].interpolation == 2 || config->aimbot[weaponIndex].interpolation == 3)
 				angle = angle * (1.0f - config->aimbot[weaponIndex].smooth);
-			else if (config->aimbot[weaponIndex].interpolation == 1 && angle.length() > config->aimbot[weaponIndex].linearSpeed)
+
+			if ((config->aimbot[weaponIndex].interpolation == 1 || config->aimbot[weaponIndex].interpolation == 3) && angle.length() > config->aimbot[weaponIndex].linearSpeed)
 			{
 				angle /= angle.length();
 				angle = angle * config->aimbot[weaponIndex].linearSpeed;

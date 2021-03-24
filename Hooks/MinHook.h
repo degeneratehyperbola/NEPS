@@ -12,7 +12,7 @@ public:
     template<typename T, std::size_t Idx, typename ...Args>
     constexpr auto getOriginal(Args... args) const noexcept
     {
-        return reinterpret_cast<T(__thiscall*)(void*, Args...)>(originals[Idx]);
+        return reinterpret_cast<T(__thiscall *)(void *, Args...)>(originals[Idx]);
     }
 
     template<typename T, std::size_t Idx, typename ...Args>

@@ -75,23 +75,34 @@ void Triggerbot::run(UserCmd* cmd) noexcept
     if (!cfg.ignoreSmoke && memory->lineGoesThroughSmoke(startPos, endPos, 1))
         return;
 
+	bool goesThroughWall = false;
 	Trace trace;
-	const int damage = Helpers::findDamage(endPos, weaponData, trace, cfg.friendlyFire, cfg.hitgroup, cfg.visibleOnly);
+	const int damage = Helpers::findDamage(endPos, weaponData, trace, cfg.friendlyFire, cfg.hitgroup, &goesThroughWall);
+
+	if (cfg.visibleOnly && goesThroughWall)
+		return;
 
 	if (!trace.entity)
 		return;
 
-	const auto distance = startPos.distTo(trace.endpos);
+	const auto distance = trace.fraction * weaponData->range;
 	if (cfg.distance && cfg.distance < distance)
 		return;
 
-	const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), 5.0f, distance);
-	if (cfg.hitchance && cfg.hitchance > hitchance)
-		return;
+	if (cfg.hitchance)
+	{
+		const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), 8.0f, distance);
+		if (cfg.hitchance > hitchance)
+			return;
+	}
 
 	lastTime = now;
 
-    if (damage >= (cfg.killshot ? (trace.entity->health() + cfg.minDamage) : cfg.minDamage)) {
+	auto minDamage = goesThroughWall ?
+		min(cfg.minDamageAutoWall, trace.entity->health() + cfg.killshotAutoWall) :
+		min(cfg.minDamage, trace.entity->health() + cfg.killshot);
+
+    if (damage >= minDamage) {
         cmd->buttons |= UserCmd::IN_ATTACK;
         lastTime = 0.0f;
         lastContact = now;

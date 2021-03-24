@@ -64,6 +64,8 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
         config = std::make_unique<Config>("NEPS");
         gui = std::make_unique<GUI>();
 
+		hooks->install();
+
 		const char *loaded = config->load(u8"default", false) ? "\n\nConfig \"default\" has been automatically loaded." : "";
 
 		std::string welcomeMsg =
@@ -94,8 +96,6 @@ RECENT FIXES:
 		Helpers::replace(welcomeMsg, "%loaded", loaded);
 
 		interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.c_str());
-
-        hooks->install();
 
         return true;
     }(window);
@@ -186,8 +186,8 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	__asm mov framePointer, ebp;
 	bool &sendPacket = *reinterpret_cast<bool *>(*framePointer - 0x1C);
 
-	static auto previousViewAngles{cmd->viewangles};
-	const auto currentViewAngles{cmd->viewangles};
+	static auto previousViewAngles = cmd->viewangles;
+	const auto currentViewAngles = cmd->viewangles;
 
 	memory->globalVars->serverTime(cmd);
 	Misc::changeConVarsTick();
@@ -250,19 +250,19 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	if (config->antiAim.desync)
 		Animations::clientLerped(global.lerpedBones, cmd, sendPacket, &global.indicators.desyncHead, &global.indicators.deltaLby);
 
-	if (interfaces->engine->isInGame())
-	{
-		static NetworkChannel *old = nullptr;
-		NetworkChannel *current = interfaces->engine->getNetworkChannel();
-		if (current && old != current)
-		{
-			netChInitialized = false;
-			old = current;
-			hooks->networkChannel.init(current);
-			hooks->networkChannel.hookAt(42, sendNetMsg);
-			netChInitialized = true;
-		}
-	}
+	//if (interfaces->engine->isInGame())
+	//{
+	//	static NetworkChannel *old = nullptr;
+	//	NetworkChannel *current = interfaces->engine->getNetworkChannel();
+	//	if (current && old != current)
+	//	{
+	//		netChInitialized = false;
+	//		old = current;
+	//		hooks->networkChannel.init(current);
+	//		hooks->networkChannel.hookAt(42, sendNetMsg);
+	//		netChInitialized = true;
+	//	}
+	//}
 
 	return false;
 }
@@ -308,9 +308,7 @@ static bool __fastcall svCheatsGetBool(void* _this) noexcept
 	if (uintptr_t(_ReturnAddress()) == memory->cameraThink && config->visuals.thirdPerson.keyMode)
 		return true;
 
-	auto original = hooks->svCheats.getOriginal<bool, 13>();
-	if (original) return original(_this);
-	else return false;
+	return hooks->svCheats.getOriginal<bool, 13>()(_this);
 }
 
 static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept
@@ -651,7 +649,7 @@ Hooks::Hooks(HMODULE moduleHandle) noexcept
 
     this->moduleHandle = moduleHandle;
 
-    // interfaces and memory shouldn't be initialized in wndProc because they show MessageBox on error which would cause deadlock
+    // Interfaces and memory shouldn't be initialized in wndProc because they show MessageBox on error which would cause deadlock
     interfaces = std::make_unique<const Interfaces>();
     memory = std::make_unique<const Memory>();
 
@@ -716,52 +714,54 @@ extern "C" BOOL WINAPI _CRT_INIT(HMODULE moduleHandle, DWORD reason, LPVOID rese
 
 static DWORD WINAPI unload(HMODULE moduleHandle) noexcept
 {
-    Sleep(100);
+	Sleep(100);
 
-    interfaces->inputSystem->enableInput(true);
-    eventListener->remove();
+	interfaces->inputSystem->enableInput(true);
+	eventListener->remove();
 
-    ImGui_ImplDX9_Shutdown();
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
+	ImGui_ImplDX9_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 
-    _CRT_INIT(moduleHandle, DLL_PROCESS_DETACH, nullptr);
+	_CRT_INIT(moduleHandle, DLL_PROCESS_DETACH, nullptr);
 
-    FreeLibraryAndExitThread(moduleHandle, 0);
+	FreeLibraryAndExitThread(moduleHandle, 0);
 }
 
 void Hooks::uninstall() noexcept
 {
-    if constexpr (std::is_same_v<HookType, MinHook>) {
-        MH_DisableHook(MH_ALL_HOOKS);
-        MH_Uninitialize();
-    }
+	if constexpr (std::is_same_v<HookType, MinHook>)
+	{
+		MH_DisableHook(MH_ALL_HOOKS);
+		MH_Uninitialize();
+	}
 
-    bspQuery.restore();
-    panel.restore();
-    client.restore();
-    clientMode.restore();
-    engine.restore();
-    modelRender.restore();
-    sound.restore();
-    surface.restore();
-    svCheats.restore();
-    viewRender.restore();
+	bspQuery.restore();
+	panel.restore();
+	client.restore();
+	clientMode.restore();
+	engine.restore();
+	modelRender.restore();
+	sound.restore();
+	surface.restore();
+	svCheats.restore();
+	viewRender.restore();
 	if (netChInitialized) networkChannel.restore();
 
-    netvars->restore();
+	netvars->restore();
 
-    Glow::clearCustomObjects();
+	Glow::clearCustomObjects();
 
-    SetWindowLongPtrW(window, GWLP_WNDPROC, LONG_PTR(originalWndProc));
-    **reinterpret_cast<void***>(memory->present) = originalPresent;
-    **reinterpret_cast<void***>(memory->reset) = originalReset;
+	SetWindowLongPtrW(window, GWLP_WNDPROC, LONG_PTR(originalWndProc));
+	**reinterpret_cast<void ***>(memory->present) = originalPresent;
+	**reinterpret_cast<void ***>(memory->reset) = originalReset;
 
-    if (DWORD oldProtection; VirtualProtect(memory->dispatchSound, 4, PAGE_EXECUTE_READWRITE, &oldProtection)) {
-        *memory->dispatchSound = uintptr_t(originalDispatchSound) - uintptr_t(memory->dispatchSound + 1);
-        VirtualProtect(memory->dispatchSound, 4, oldProtection, nullptr);
-    }
+	if (DWORD oldProtection; VirtualProtect(memory->dispatchSound, 4, PAGE_EXECUTE_READWRITE, &oldProtection))
+	{
+		*memory->dispatchSound = uintptr_t(originalDispatchSound) - uintptr_t(memory->dispatchSound + 1);
+		VirtualProtect(memory->dispatchSound, 4, oldProtection, nullptr);
+	}
 
-    if (HANDLE thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(unload), moduleHandle, 0, nullptr))
-        CloseHandle(thread);
+	if (HANDLE thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(unload), moduleHandle, 0, nullptr))
+		CloseHandle(thread);
 }

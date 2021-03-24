@@ -2,6 +2,7 @@
 
 enum class ClassId {
     BaseCSGrenadeProjectile = 9,
+	BaseViewModel = 21,
     BreachChargeProjectile = 29,
     BumpMineProjectile = 33,
     C4,

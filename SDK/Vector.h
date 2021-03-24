@@ -216,6 +216,8 @@ struct Vector {
 			return Vector{0.0f, l, 0.0f};
 		if (!yp && !xy)
 			return Vector{0.0f, -l, 0.0f};
+
+		return Vector{};
 	}
 
 	static auto fromAngle(const Vector& angle) noexcept

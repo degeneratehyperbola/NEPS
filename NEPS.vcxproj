@@ -96,7 +96,9 @@
     <ClInclude Include="nSkinz\item_definitions.hpp" />
     <ClInclude Include="nSkinz\Utilities\Platform.hpp" />
     <ClInclude Include="nSkinz\Utilities\vmt_smart_hook.hpp" />
-    <ClInclude Include="Resources\Fonts.h" />
+    <ClInclude Include="Resources\Fonts.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugMin|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Resources\Resource.h" />
     <ClInclude Include="SDK\AnimState.h" />
     <ClInclude Include="SDK\Beam.h" />
@@ -180,9 +182,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources\Resource.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="Resources\NepsGothic.ttf" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\LogoA.png" />
