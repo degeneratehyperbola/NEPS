@@ -68,6 +68,9 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 
 		const char *loaded = config->load(u8"default", false) ? "\n\nConfig \"default\" has been automatically loaded." : "";
 
+		gui->updateColors();
+		SkinChanger::scheduleHudUpdate();
+
 		std::string welcomeMsg =
 R"_msg(We do have a resolver now >:)
 

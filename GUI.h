@@ -15,8 +15,8 @@ public:
 	void render() noexcept;
 	bool open = false;
 	const auto &getFont() noexcept { return font; };
-private:
 	void updateColors() const noexcept;
+private:
 	void renderMenuBar() noexcept;
 	void debug() noexcept;
 	void renderAimbotWindow(bool contentOnly = false) noexcept;
