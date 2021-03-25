@@ -1281,9 +1281,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
                 return true;
                 }, nullptr, game_data::glove_names.size(), 5);
         } else {
-            static auto unused_value = 0;
             selected_entry.definition_override_vector_index = 0;
-            ImGui::Combo("Unavailable", &unused_value, "For knives or gloves\0");
         }
 
         ImGui::InputText("Name tag", selected_entry.custom_name, 32);
