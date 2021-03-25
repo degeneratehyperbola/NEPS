@@ -44,7 +44,6 @@ public:
     }
 
     VIRTUAL_METHOD(void, unlockCursor, 66, (), (this))
-    VIRTUAL_METHOD(void, playSound, 30, (const char *filename), (this, filename))
     VIRTUAL_METHOD(unsigned, createFont, 71, (), (this))
     VIRTUAL_METHOD(bool, setFontGlyphSet, 72, (unsigned font, const char* fontName, int tall, int weight, int blur, int scanlines, int flags, int rangeMin = 0, int rangeMax = 0), (this, font, fontName, tall, weight, blur, scanlines, flags, rangeMin, rangeMax))
 
