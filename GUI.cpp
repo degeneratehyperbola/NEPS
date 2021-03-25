@@ -1731,7 +1731,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
             ImGui::OpenPopup("Config to reset");
 
         if (ImGui::BeginPopup("Config to reset")) {
-            static constexpr const char* names[]{ "Whole", "Aimbot", "Triggerbot", "Backtrack", "Anti-aim", "Chams", "Glow", "ESP", "Visuals", "Skin changer", "Sound", "Players", "Exploits", "Movement", "Misc", "Style" };
+            static constexpr const char* names[]{ "Whole", "Aimbot", "Triggerbot", "Backtrack", "Anti-aim", "Chams", "Glow", "ESP", "Visuals", "Skin changer", "Sound", "Griefing", "Exploits", "Movement", "Misc", "Style" };
             for (int i = 0; i < IM_ARRAYSIZE(names); i++) {
                 if (i == 1) ImGui::Separator();
 
