@@ -7,12 +7,12 @@
 #include "Memory.h"
 #include "SDK/GlobalVars.h"
 
+class Entity;
 struct SurfaceData;
 struct Trace;
 struct Vector;
 struct ImVec2;
 struct WeaponInfo;
-class Entity;
 struct Color4;
 struct AnimState;
 struct StudioBbox;

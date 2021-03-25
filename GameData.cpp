@@ -451,7 +451,6 @@ void PlayerData::update(Entity* entity) noexcept
     }
 
     const auto set = studioModel->getHitboxSet(entity->hitboxSet());
-	hitboxSet = set;
 
     if (!set)
         return;

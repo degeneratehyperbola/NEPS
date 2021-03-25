@@ -170,7 +170,6 @@ struct PlayerData : BaseData {
 	Vector velocity;
 	std::string activeWeapon;
 	std::vector<std::pair<Vector, Vector>> bones;
-	StudioHitboxSet *hitboxSet = nullptr;
 };
 
 struct WeaponData : BaseData {

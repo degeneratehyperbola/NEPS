@@ -9,6 +9,7 @@
 #include "../SDK/UserCmd.h"
 #include "../SDK/WeaponData.h"
 #include "../SDK/WeaponId.h"
+#include "../SDK/StudioRender.h"
 #include "Triggerbot.h"
 
 void Triggerbot::run(UserCmd* cmd) noexcept
@@ -91,8 +92,9 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 
 	if (cfg.hitchance)
 	{
-		GameData::Lock lock;
-		const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), Helpers::approxRadius(*GameData::playerByHandle(trace.entity->handle())->hitboxSet->getHitbox(trace.hitbox)), distance);
+		const auto hitbox = trace.entity->getHitbox(trace.hitbox);
+		if (!hitbox) return;
+		const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), Helpers::approxRadius(*hitbox), distance);
 		if (cfg.hitchance > hitchance)
 			return;
 	}

@@ -1,7 +1,9 @@
 #include "Aimbot.h"
 #include "../Config.h"
 #include "../Interfaces.h"
+#ifdef _DEBUG_NEPS
 #include "../GameData.h"
+#endif // _DEBUG_NEPS
 #include "../Memory.h"
 #include "../SDK/Entity.h"
 #include "../SDK/UserCmd.h"
@@ -69,18 +71,16 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		std::vector<Vector> multipoints;
 		#endif // _DEBUG_NEPS
 
-		GameData::Lock lock;
-		for (auto &player : GameData::players())
+		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 		{
-			if (!player.hitboxSet)
+			auto entity = interfaces->entityList->getEntity(i);
+
+			if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || entity->gunGameImmunity() || !config->aimbot[weaponIndex].friendlyFire && !entity->isOtherEnemy(localPlayer.get()))
 				continue;
 
-			if (player.dormant || !player.alive || !player.enemy && !config->aimbot[weaponIndex].friendlyFire)
-				continue;
+			const auto hitboxSet = entity->getHitboxSet();
 
-			auto entity = interfaces->entityList->getEntityFromHandle(player.handle);
-
-			if (!entity || entity->gunGameImmunity() || entity->isDormant())
+			if (!hitboxSet)
 				continue;
 
 			auto allowedHitgroup = config->aimbot[weaponIndex].hitgroup;
@@ -113,7 +113,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					cmd->buttons |= UserCmd::IN_ATTACK2;
 			}
 
-			for (int hitboxIdx = 0; hitboxIdx < player.hitboxSet->numHitboxes; hitboxIdx++)
+			for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
 			{
 				if (hitboxIdx == Hitbox::LeftFoot ||
 					hitboxIdx == Hitbox::RightFoot ||
@@ -124,7 +124,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					hitboxIdx == Hitbox::Belly)
 					continue;
 
-				const auto hitbox = *player.hitboxSet->getHitbox(hitboxIdx);
+				const auto hitbox = *hitboxSet->getHitbox(hitboxIdx);
 
 				std::vector<Vector> points;
 
@@ -219,24 +219,24 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					}
 				} else
 				{
-					switch (hitboxIdx)
-					{
-					case Hitbox::Head:
-					case Hitbox::UpperChest:
-					case Hitbox::Thorax:
-					case Hitbox::Pelvis:
-						points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
-						break;
-					default:
-						points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
-						break;
-					}
+				switch (hitboxIdx)
+				{
+				case Hitbox::Head:
+				case Hitbox::UpperChest:
+				case Hitbox::Thorax:
+				case Hitbox::Pelvis:
+					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
+					break;
+				default:
+					points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
+					break;
+				}
 				}
 
 				#ifdef _DEBUG_NEPS
 				multipoints.insert(multipoints.end(), points.begin(), points.end());
 				#endif // _DEBUG_NEPS
-				
+
 				const float radius = Helpers::approxRadius(hitbox);
 
 				for (auto &point : points)
@@ -265,15 +265,15 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 					if (!goesThroughWall)
 					{
-						if (damage <= min(config->aimbot[weaponIndex].minDamage, player.health + config->aimbot[weaponIndex].killshot))
+						if (damage <= min(config->aimbot[weaponIndex].minDamage, entity->health() + config->aimbot[weaponIndex].killshot))
 							continue;
-						if (damage <= min(bestDamage, player.health + config->aimbot[weaponIndex].killshot))
+						if (damage <= min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshot))
 							continue;
 					} else
 					{
-						if (damage <= min(config->aimbot[weaponIndex].minDamageAutoWall, player.health + config->aimbot[weaponIndex].killshotAutoWall))
+						if (damage <= min(config->aimbot[weaponIndex].minDamageAutoWall, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
 							continue;
-						if (damage <= min(bestDamage, player.health + config->aimbot[weaponIndex].killshotAutoWall))
+						if (damage <= min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
 							continue;
 					}
 
@@ -314,10 +314,13 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				}
 			}
 		}
-		
+
 		#ifdef _DEBUG_NEPS
-		GameData::global().indicators.multipoints.clear();
-		GameData::global().indicators.multipoints = multipoints;
+		{
+			GameData::Lock lock;
+			GameData::global().indicators.multipoints.clear();
+			GameData::global().indicators.multipoints = multipoints;
+		}
 		#endif // _DEBUG_NEPS
 
 		if (bestTarget.notNull())
