@@ -137,5 +137,5 @@ namespace Helpers
 
 	bool replace(std::string &, const std::string &, const std::string &) noexcept;
 
-	float approxRadius(const StudioBbox &hitbox) noexcept;
+	float approxRadius(const StudioBbox &hitbox, int i) noexcept;
 }

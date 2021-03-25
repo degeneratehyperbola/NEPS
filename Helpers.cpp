@@ -462,25 +462,27 @@ bool Helpers::replace(std::string &str, const std::string &from, const std::stri
 	return true;
 }
 
-float Helpers::approxRadius(const StudioBbox &hitbox) noexcept
+float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept
 {
-	float add = 0.0f;
-
-	switch (hitbox.hitboxNameIndex)
+	float r = 1.0f;
+	switch (i)
 	{
 	case Hitbox::Thorax:
-		add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.4f;
+		r = 0.5f;
 		break;
 	case Hitbox::UpperChest:
+		r = 0.6f;
+		break;
 	case Hitbox::Pelvis:
-		add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.1f;
+		r = 0.8f;
 		break;
 	case Hitbox::Head:
+		r = 0.5f;
 		break;
 	default:
-		add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.05f;
+		r = 0.9f;
 		break;
 	}
 
-	return hitbox.capsuleRadius + add;
+	return r * hitbox.capsuleRadius + (1.0f - r) * hitbox.bbMin.distTo(hitbox.bbMax);
 }

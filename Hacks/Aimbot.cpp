@@ -237,7 +237,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				multipoints.insert(multipoints.end(), points.begin(), points.end());
 				#endif // _DEBUG_NEPS
 
-				const float radius = Helpers::approxRadius(hitbox);
+				const float radius = Helpers::approxRadius(hitbox, hitboxIdx);
 
 				for (auto &point : points)
 				{

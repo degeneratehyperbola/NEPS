@@ -94,7 +94,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 	{
 		const auto hitbox = trace.entity->getHitbox(trace.hitbox);
 		if (!hitbox) return;
-		const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), Helpers::approxRadius(*hitbox), distance);
+		const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), Helpers::approxRadius(*hitbox, trace.hitbox), distance);
 		if (cfg.hitchance > hitchance)
 			return;
 	}
