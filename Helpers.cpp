@@ -464,25 +464,17 @@ bool Helpers::replace(std::string &str, const std::string &from, const std::stri
 
 float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept
 {
-	float r = 1.0f;
 	switch (i)
 	{
 	case Hitbox::Thorax:
-		r = 0.5f;
-		break;
+		return 7.89f;
 	case Hitbox::UpperChest:
-		r = 0.6f;
-		break;
+		return 6.75f;
 	case Hitbox::Pelvis:
-		r = 0.8f;
-		break;
+		return 6.08f;
 	case Hitbox::Head:
-		r = 0.5f;
-		break;
-	default:
-		r = 0.9f;
-		break;
+		return 4.17f;
 	}
 
-	return r * hitbox.capsuleRadius + (1.0f - r) * hitbox.bbMin.distTo(hitbox.bbMax);
+	return hitbox.capsuleRadius;
 }
