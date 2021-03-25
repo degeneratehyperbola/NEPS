@@ -498,43 +498,6 @@ void Visuals::skybox(FrameStage stage) noexcept
     }
 }
 
-void Visuals::viewmodelXyz() noexcept
-{
-	if (!localPlayer) return;
-
-	static const std::array<ConVar *, 3> posVars{ interfaces->cvar->findVar("viewmodel_offset_x"), interfaces->cvar->findVar("viewmodel_offset_y"), interfaces->cvar->findVar("viewmodel_offset_z") };
-
-	const std::array<float, 3> positions{ config->visuals.viewmodel.x, config->visuals.viewmodel.y, config->visuals.viewmodel.z };
-	static const std::array<float, 3> posOld{ posVars[0]->getFloat(), posVars[1]->getFloat(), posVars[2]->getFloat()};
-	
-	if (!localPlayer->isAlive())
-	{
-		if (!localPlayer->getObserverTarget())
-			return;
-
-		if (localPlayer->getObserverMode() != ObsMode::InEye)
-			return;
-	}
-
-	if (!config->visuals.viewmodel.enabled)
-	{
-		posVars[0]->setValue(posOld[0]);
-		posVars[1]->setValue(posOld[1]);
-		posVars[2]->setValue(posOld[2]);
-	}
-	else
-	{
-		posVars[0]->onChangeCallbacks.size = 0;
-		posVars[1]->onChangeCallbacks.size = 0;
-		posVars[2]->onChangeCallbacks.size = 0;
-
-
-		if (posVars[0]->getFloat() != positions[0]) posVars[0]->setValue(positions[0]);
-		if (posVars[1]->getFloat() != positions[1]) posVars[1]->setValue(positions[1]);
-		if (posVars[2]->getFloat() != positions[2]) posVars[2]->setValue(positions[2]);
-	}
-}
-
 void Visuals::bBeams(GameEvent *event)
 {
 	if (!config->visuals.self.enabled && !config->visuals.ally.enabled && !config->visuals.enemy.enabled || !localPlayer || !interfaces->engine->isInGame()) return;
@@ -643,22 +606,6 @@ void Visuals::bBeams(GameEvent *event)
 	}
 }
 
-static bool worldToScreen(const Vector &in, ImVec2 &out, bool floor = false) noexcept
-{
-	const auto &matrix = GameData::toScreenMatrix();
-
-	const auto w = matrix._41 * in.x + matrix._42 * in.y + matrix._43 * in.z + matrix._44;
-	if (w < 0.001f)
-		return false;
-
-	out = ImGui::GetIO().DisplaySize / 2.0f;
-	out.x *= 1.0f + (matrix._11 * in.x + matrix._12 * in.y + matrix._13 * in.z + matrix._14) / w;
-	out.y *= 1.0f - (matrix._21 * in.x + matrix._22 * in.y + matrix._23 * in.z + matrix._24) / w;
-	if (floor)
-		out = ImFloor(out);
-	return true;
-}
-
 void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 {
 	if (!config->visuals.molotovHull.enabled)
@@ -690,7 +637,7 @@ void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 
 			for (const auto &point : flameCircumference)
 			{
-				if (worldToScreen(pos + point, screenPoints[count]))
+				if (Helpers::worldToScreen(pos + point, screenPoints[count]))
 					++count;
 			}
 

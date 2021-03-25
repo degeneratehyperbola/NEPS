@@ -342,7 +342,6 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::fakePrime();
-		Visuals::viewmodelXyz();
 		Misc::fixAnimation();
 	}
 
@@ -475,11 +474,18 @@ static void __stdcall overrideView(ViewSetup *setup) noexcept
 			if (static Helpers::KeyBindState fakeDuck; fakeDuck[config->antiAim.fakeDuck])
 				setup->origin.z = localPlayer->origin().z + PLAYER_EYE_HEIGHT;
 
-			if (config->visuals.viewmodel.enabled)
+			if (config->visuals.viewmodel.enabled && !localPlayer->isScoped() && !memory->input->isCameraInThirdPerson)
 			{
 				const auto viewModel = interfaces->entityList->getEntityFromHandle(localPlayer->viewModel());
 				if (viewModel)
-					memory->setAbsAngle(viewModel, setup->angles + Vector{0.f, 0.f, config->visuals.viewmodel.roll});
+				{
+					Vector forward = Vector::fromAngle(setup->angles);
+					Vector up = Vector::fromAngle(setup->angles - Vector{-90.0f, 0.0f, 0.0f});
+					Vector side = forward.crossProduct(up);
+					Vector offset = forward * config->visuals.viewmodel.x + side * config->visuals.viewmodel.y + up * config->visuals.viewmodel.z;
+					memory->setAbsOrigin(viewModel, viewModel->getRenderOrigin() + offset);
+					memory->setAbsAngle(viewModel, setup->angles + Vector{0.0f, 0.0f, config->visuals.viewmodel.roll});
+				}
 			}
 		}
 		else if (auto observed = localPlayer->getObserverTarget(); observed && localPlayer->getObserverMode() == ObsMode::InEye)
@@ -487,11 +493,18 @@ static void __stdcall overrideView(ViewSetup *setup) noexcept
 			if ((!observed->isScoped() || config->visuals.forceFov))
 				setup->fov = curFov;
 
-			if (config->visuals.viewmodel.enabled)
+			if (config->visuals.viewmodel.enabled && !observed->isScoped())
 			{
 				const auto viewModel = interfaces->entityList->getEntityFromHandle(observed->viewModel());
 				if (viewModel)
-					memory->setAbsAngle(viewModel, setup->angles + Vector{0.f, 0.f, config->visuals.viewmodel.roll});
+				{
+					Vector forward = Vector::fromAngle(setup->angles);
+					Vector up = Vector::fromAngle(setup->angles - Vector{-90.0f, 0.0f, 0.0f});
+					Vector side = forward.crossProduct(up);
+					Vector offset = forward * config->visuals.viewmodel.x + side * config->visuals.viewmodel.y + up * config->visuals.viewmodel.z;
+					memory->setAbsOrigin(viewModel, viewModel->getRenderOrigin() + offset);
+					memory->setAbsAngle(viewModel, setup->angles + Vector{0.0f, 0.0f, config->visuals.viewmodel.roll});
+				}
 			}
 		}
 		else
