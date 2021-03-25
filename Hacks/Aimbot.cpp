@@ -60,7 +60,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
         auto bestDistance = config->aimbot[weaponIndex].distance ? config->aimbot[weaponIndex].distance : INFINITY;
         auto bestDamage = min(config->aimbot[weaponIndex].minDamage, config->aimbot[weaponIndex].minDamageAutoWall);
         auto bestHitchance = config->aimbot[weaponIndex].shotHitchance;
-        Vector bestTarget{ };
+        Vector bestTarget = Vector{};
 
         const auto localPlayerEyePosition = localPlayer->getEyePosition();
 
@@ -236,25 +236,8 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				#ifdef _DEBUG_NEPS
 				multipoints.insert(multipoints.end(), points.begin(), points.end());
 				#endif // _DEBUG_NEPS
-
-				float add = 0.0f;
-				switch (hitboxIdx)
-				{
-				case Hitbox::Thorax:
-					add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.4f;
-					break;
-				case Hitbox::UpperChest:
-				case Hitbox::Pelvis:
-					add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.1f;
-					break;
-				case Hitbox::Head:
-					break;
-				default:
-					add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.05f;
-					break;
-				}
 				
-				const float radius = hitbox.capsuleRadius + add;
+				const float radius = Helpers::approxRadius(hitbox);
 
 				for (auto &point : points)
 				{

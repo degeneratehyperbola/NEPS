@@ -392,7 +392,7 @@ static void __stdcall emitSound(SoundData data) noexcept
         modulateVolume([](int index) { return config->sound.players[index].weaponVolume; });
     } else if (config->misc.autoAccept && !strcmp(data.soundEntry, "UIPanorama.popup_accept_match_beep")) {
         memory->acceptMatch("");
-        auto window = FindWindowW(L"Valve001", NULL);
+		auto window = hooks->getProcessWindow();
         FLASHWINFO flash{ sizeof(FLASHWINFO), window, FLASHW_TRAY | FLASHW_TIMERNOFG, 0, 0 };
         FlashWindowEx(&flash);
         ShowWindow(window, SW_RESTORE);

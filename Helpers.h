@@ -15,6 +15,7 @@ struct WeaponInfo;
 class Entity;
 struct Color4;
 struct AnimState;
+struct StudioBbox;
 
 #define PI std::numbers::pi_v<float>
 const static inline float PI2 = 2.0f * PI;
@@ -135,4 +136,6 @@ namespace Helpers
     bool attacking(bool cmdAttack, bool cmdAttack2) noexcept;
 
 	bool replace(std::string &, const std::string &, const std::string &) noexcept;
+
+	float approxRadius(const StudioBbox &hitbox) noexcept;
 }

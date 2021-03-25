@@ -8,7 +8,7 @@
 
 class Surface {
 public:
-    static constexpr unsigned font{ 0x1d }; // builtin font from vgui_spew_fonts
+    static constexpr unsigned font = 0x1d; // built-in font from vgui_spew_fonts
 
     VIRTUAL_METHOD(void, setDrawColor, 15, (int r, int g, int b, int a = 255), (this, r, g, b, a))
     VIRTUAL_METHOD(void, setDrawColor, 15, (const std::array<float, 3>& color, int a = 255), (this, static_cast<int>(color[0] * 255), static_cast<int>(color[1] * 255), static_cast<int>(color[2] * 255), a))
@@ -44,6 +44,7 @@ public:
     }
 
     VIRTUAL_METHOD(void, unlockCursor, 66, (), (this))
+    VIRTUAL_METHOD(void, playSound, 30, (const char *filename), (this, filename))
     VIRTUAL_METHOD(unsigned, createFont, 71, (), (this))
     VIRTUAL_METHOD(bool, setFontGlyphSet, 72, (unsigned font, const char* fontName, int tall, int weight, int blur, int scanlines, int flags, int rangeMin = 0, int rangeMax = 0), (this, font, fontName, tall, weight, blur, scanlines, flags, rangeMin, rangeMax))
 

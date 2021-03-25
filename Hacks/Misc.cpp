@@ -1031,7 +1031,7 @@ void Misc::playHitSound(GameEvent &event) noexcept
 	if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
 		return;
 
-	constexpr std::array hitSounds{
+	constexpr std::array hitSounds = {
 		"physics/metal/metal_solid_impact_bullet2",
 		"buttons/arena_switch_press_02",
 		"training/timer_bell",
@@ -1055,7 +1055,7 @@ void Misc::killSound(GameEvent& event) noexcept
     if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
         return;
 
-    constexpr std::array killSounds{
+    constexpr std::array killSounds = {
         "physics/metal/metal_solid_impact_bullet2",
         "buttons/arena_switch_press_02",
         "training/timer_bell",

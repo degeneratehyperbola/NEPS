@@ -1883,8 +1883,7 @@ void GUI::debug() noexcept
 
 	static bool egg = false;
 
-	if (ImGui::Button("Gay button"))
-		egg = !egg;
+	ImGui::Checkbox("Gay", &egg);
 
 	if (!egg) return;
 

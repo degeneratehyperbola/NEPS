@@ -15,6 +15,7 @@
 #include "SDK/AnimState.h"
 #include "SDK/Entity.h"
 #include "SDK/PhysicsSurfaceProps.h"
+#include "SDK/StudioRender.h"
 
 std::tuple<float, float, float> Helpers::rainbowColor(float speed) noexcept
 {
@@ -459,4 +460,27 @@ bool Helpers::replace(std::string &str, const std::string &from, const std::stri
 		return false;
 	str.replace(startPos, from.length(), to);
 	return true;
+}
+
+float Helpers::approxRadius(const StudioBbox &hitbox) noexcept
+{
+	float add = 0.0f;
+
+	switch (hitbox.hitboxNameIndex)
+	{
+	case Hitbox::Thorax:
+		add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.4f;
+		break;
+	case Hitbox::UpperChest:
+	case Hitbox::Pelvis:
+		add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.1f;
+		break;
+	case Hitbox::Head:
+		break;
+	default:
+		add = hitbox.bbMin.distTo(hitbox.bbMax) * 0.05f;
+		break;
+	}
+
+	return hitbox.capsuleRadius + add;
 }
