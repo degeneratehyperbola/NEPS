@@ -215,8 +215,8 @@ public:
 		Beams ally;
 		Beams enemy;
 		Color4Toggle molotovHull = {1.0f, 0.5f, 0.0f, 0.3f};
-		Color4Toggle playerBounds = {1.0f, 1.0f, 1.0f, 1.0f};
-		Color4Toggle playerVel = {1.0f, 1.0f, 1.0f, 1.0f};
+		Color4ToggleThickness playerBounds = {1.0f, 1.0f, 1.0f, 1.0f};
+		Color4ToggleThickness playerVel = {1.0f, 1.0f, 1.0f, 1.0f};
 		Color4Toggle consoleCol = {1.0f, 1.0f, 1.0f, 1.0f};
 
 		struct ColorCorrection
@@ -373,7 +373,7 @@ public:
 		Color4Toggle noscopeCrosshair;
 		Color4Toggle recoilCrosshair;
 		bool bombTimer = false;
-		Color4Toggle offscreenEnemies;
+		Color4Toggle offscreenEnemies = {1.0f, 0.0f, 0.0f, 0.2f};
 		bool nadePredict = false;
 		bool spamUse = false;
 		bool indicators = false;

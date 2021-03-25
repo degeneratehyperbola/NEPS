@@ -248,8 +248,8 @@ void Misc::spectatorList(ImDrawList *drawList) noexcept
 
 	if (!observers.empty() || gui->open)
 	{
-		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 140.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSizeConstraints(ImVec2{140.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
+		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 		if (ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
 		{
@@ -1480,7 +1480,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 		if (draw)
 		{
 			const auto color = Helpers::calculateColor(config->visuals.playerVel);
-			drawList->AddLine(pos, dir, color);
+			drawList->AddLine(pos, dir, color, config->visuals.playerVel.thickness);
 		}
 	}
 
@@ -1500,10 +1500,10 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 		if (draw)
 		{
 			const auto color = Helpers::calculateColor(config->visuals.playerBounds);
-			drawList->AddLine(points[0], points[1], color, 1.0f);
-			drawList->AddLine(points[1], points[2], color, 1.0f);
-			drawList->AddLine(points[2], points[3], color, 1.0f);
-			drawList->AddLine(points[3], points[0], color, 1.0f);
+			drawList->AddLine(points[0], points[1], color, config->visuals.playerBounds.thickness);
+			drawList->AddLine(points[1], points[2], color, config->visuals.playerBounds.thickness);
+			drawList->AddLine(points[2], points[3], color, config->visuals.playerBounds.thickness);
+			drawList->AddLine(points[3], points[0], color, config->visuals.playerBounds.thickness);
 		}
 	}
 

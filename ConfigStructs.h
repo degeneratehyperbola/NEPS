@@ -48,8 +48,6 @@ struct Color4BorderToggleThickness : Color4BorderToggle
 
 struct Color4ToggleThickness : Color4Toggle
 {
-	Color4ToggleThickness() = default;
-	Color4ToggleThickness(float thickness) : thickness{thickness} {}
 	float thickness = 1.0f;
 };
 

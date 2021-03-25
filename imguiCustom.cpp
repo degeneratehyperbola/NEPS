@@ -14,7 +14,7 @@ void ImGuiCustom::colorPicker(const char *name, std::array<float, 4> &color, boo
 		ImGui::Checkbox("##check", enable);
 		ImGui::SameLine(0.0f, 5.0f);
 	}
-	bool openPopup = ImGui::ColorButton("##btn", color, ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_AlphaPreview);
+	bool openPopup = ImGui::ColorButton("##btn", color, ImGuiColorEditFlags_AlphaPreviewHalf);
 	if (ImGui::BeginDragDropTarget())
 	{
 		if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_4F))
@@ -39,36 +39,36 @@ void ImGuiCustom::colorPicker(const char *name, std::array<float, 4> &color, boo
 
 	if (ImGui::BeginPopup("##popup"))
 	{
-		ImGui::ColorPicker4("##picker", color.data(), ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_AlphaBar);
+		ImGui::ColorPicker4("##picker", color.data(), ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_Float);
 
 		if (rainbow || rainbowSpeed || thickness || rounding)
 		{
 			ImGui::SameLine();
-			if (ImGui::BeginChild("##child", {150.0f, 0.0f}))
+			if (ImGui::BeginChild("##child", {86.0f, 0.0f}))
 			{
 				if (rainbow)
+				{
 					ImGui::Checkbox("Rainbow", rainbow);
+				}
 				ImGui::PushItemWidth(85.0f);
 				if (rainbowSpeed)
-					ImGui::InputFloat("Speed", rainbowSpeed, 0.0f, 0.0f, "%.2f");
-
-				if (rounding || thickness || border)
-					ImGui::Separator();
-
+				{
+					ImGui::DragFloat("##speed", rainbowSpeed, 0.1f, -100.0f, 100.0f, "Speed %.1f");
+				}
 				if (rounding)
 				{
-					ImGui::InputFloat("Rounding", rounding, 0.0f, 0.0f, "%.1f");
+					ImGui::DragFloat("##rounding", rounding, 0.1f, 0.0f, 100.0f, "Corner %.1f");
 					*rounding = std::fmaxf(*rounding, 0.0f);
 				}
-
 				if (thickness)
 				{
-					ImGui::InputFloat("Thickness", thickness, 0.0f, 0.0f, "%.1f");
-					*thickness = std::fmaxf(*thickness, 0.0f);
+					ImGui::DragFloat("##thickness", thickness, 0.1f, 1.0f, 100.0f, "Thick %.1f");
+					*thickness = std::fmaxf(*thickness, 1.0f);
 				}
-
 				if (border)
+				{
 					ImGui::Checkbox("Outline", border);
+				}
 
 				ImGui::PopItemWidth();
 				ImGui::EndChild();
@@ -87,7 +87,7 @@ void ImGuiCustom::colorPicker(const char *name, std::array<float, 3> &color, boo
 		ImGui::Checkbox("##check", enable);
 		ImGui::SameLine(0.0f, 5.0f);
 	}
-	bool openPopup = ImGui::ColorButton("##btn", color.data(), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoAlpha);
+	bool openPopup = ImGui::ColorButton("##btn", color.data(), ImGuiColorEditFlags_NoAlpha);
 	if (ImGui::BeginDragDropTarget())
 	{
 		if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_4F))
@@ -103,17 +103,23 @@ void ImGuiCustom::colorPicker(const char *name, std::array<float, 3> &color, boo
 
 	if (ImGui::BeginPopup("##popup"))
 	{
-		ImGui::ColorPicker3("##picker", color.data(), ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoSidePreview);
+		ImGui::ColorPicker3("##picker", color.data(), ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_Float);
 
 		if (rainbow && rainbowSpeed)
 		{
 			ImGui::SameLine();
-
-			if (ImGui::BeginChild("##child", {100.0f, 0.0f}))
+			if (ImGui::BeginChild("##child", {86.0f, 0.0f}))
 			{
-				ImGui::Checkbox("Rainbow", rainbow);
-				ImGui::SetNextItemWidth(50.0f);
-				ImGui::InputFloat("Speed", rainbowSpeed, 0.0f, 0.0f, "%.1f");
+				if (rainbow)
+				{
+					ImGui::Checkbox("Rainbow", rainbow);
+				}
+				if (rainbowSpeed)
+				{
+					ImGui::SetNextItemWidth(85.0f);
+					ImGui::DragFloat("##speed", rainbowSpeed, 0.1f, -100.0f, 100.0f, "Speed %.1f");
+				}
+
 				ImGui::EndChild();
 			}
 		}
