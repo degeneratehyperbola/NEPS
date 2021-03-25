@@ -160,8 +160,10 @@ void GUI::renderMenuBar() noexcept
 				hooks->uninstall();
 			ImGui::EndMenu();
 		}
-		if (ImGui::MenuItem("My GitHub"))
+		if (ImGui::MenuItem("Our GitHub"))
 			ShellExecuteW(nullptr, nullptr, L"https://github.com/degeneratehyperbola/NEPS", nullptr, nullptr, SW_SHOW);
+		if (ImGui::MenuItem("Our Discord"))
+			ShellExecuteW(nullptr, nullptr, L"https://discord.gg/pwB3XBppVr", nullptr, nullptr, SW_SHOW);
         ImGui::EndMainMenuBar();
     }
 }
@@ -283,6 +285,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
     ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
 	ImGui::SetNextItemWidth(85.0f);
 	ImGuiCustom::multiCombo("Hitgroup", config->aimbot[currentWeapon].hitgroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+	ImGui::Checkbox("Stop on reach", &config->aimbot[currentWeapon].targetStop);
 
     ImGui::NextColumn();
     ImGui::Checkbox("Multipoint", &config->aimbot[currentWeapon].multipoint);
@@ -1374,11 +1377,11 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 
     ImGui::PushItemWidth(110.0f);
 	ImGui::Combo("Hit Sound", &config->sound.hitSound, "None\0Metal\0Gamesense\0Bell\0Glass\0Custom\0");
-	if (config->sound.hitSound)
-	{
-		ImGui::SetNextItemWidth(200.0f);
-		ImGui::SliderFloat("##hitvol", &config->sound.hitSoundVol, 0.0f, 1.0f, "Volume %.3f");
-	}
+	//if (config->sound.hitSound)
+	//{
+	//	ImGui::SetNextItemWidth(200.0f);
+	//	ImGui::SliderFloat("##hitvol", &config->sound.hitSoundVol, 0.0f, 1.0f, "Volume %.3f");
+	//}
 	if (config->sound.hitSound == 5)
 	{
 		ImGui::PushID("hitfile");
@@ -1388,11 +1391,11 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 			ImGui::SetTooltip("Audio file must be put in csgo/sound/ directory");
 	}
 	ImGui::Combo("Kill sound", &config->sound.killSound, "None\0Metal\0Gamesense\0Bell\0Glass\0Custom\0");
-	if (config->sound.killSound)
-	{
-		ImGui::SetNextItemWidth(200.0f);
-		ImGui::SliderFloat("##killvol", &config->sound.killSoundVol, 0.0f, 1.0f, "Volume %.3f");
-	}
+	//if (config->sound.killSound)
+	//{
+	//	ImGui::SetNextItemWidth(200.0f);
+	//	ImGui::SliderFloat("##killvol", &config->sound.killSoundVol, 0.0f, 1.0f, "Volume %.3f");
+	//}
 	if (config->sound.killSound == 5)
 	{
 		ImGui::PushID("killfile");
