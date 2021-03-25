@@ -214,7 +214,10 @@ void Visuals::thirdperson() noexcept
 	if (localPlayer->isAlive())
 		memory->input->isCameraInThirdPerson = thirdPerson[config->visuals.thirdPerson];
 	else if (localPlayer->getObserverTarget() && (localPlayer->observerMode() == ObsMode::InEye || localPlayer->observerMode() == ObsMode::Chase))
+	{ 
+		memory->input->isCameraInThirdPerson = false;
 		localPlayer->observerMode() = thirdPerson[config->visuals.thirdPerson] ? ObsMode::InEye : ObsMode::Chase;
+	}
 }
 
 void Visuals::removeVisualRecoil(FrameStage stage) noexcept
