@@ -90,7 +90,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			{
 				const auto remoteActiveWep = entity->getActiveWeapon();
 				if (remoteActiveWep && config->aimbot[weaponIndex].onShot && remoteActiveWep->lastShotTime() == entity->simulationTime());
-				else if (config->aimbot[weaponIndex].onMove && (entity->velocity().length2D() > 0.1f || ~entity->flags() & Entity::FL_ONGROUND));
+				else if (config->aimbot[weaponIndex].onMove && (entity->velocity().length2D() > 90.0f || ~entity->flags() & Entity::FL_ONGROUND));
 				else
 				{
 					allowedHitgroup = config->aimbot[weaponIndex].safeHitgroup;
