@@ -645,5 +645,8 @@ InfernoData::InfernoData(Entity *inferno) noexcept
 
 void MatchData::update() noexcept
 {
+	if (!interfaces->engine->isInGame() || !localPlayer)
+		return;
+
 	levelName = interfaces->engine->getLevelName();
 }

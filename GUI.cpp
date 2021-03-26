@@ -84,7 +84,7 @@ void GUI::render() noexcept
         renderGuiStyle2();
     }
 
-	if (!ImGui::GetIO().WantCaptureMouse && ImGui::GetIO().MouseDown[1])
+	if (!ImGui::GetIO().WantCaptureMouse && ImGui::GetIO().MouseClicked[1])
 		ImGui::OpenPopup("##contxt_m");
 
 	if (ImGui::BeginPopup("##contxt_m"))

@@ -50,7 +50,7 @@ void EventListener::fireGameEvent(GameEvent* event)
         SkinChanger::overrideHudIcon(*event);
         Visuals::killEffect(event);
         Misc::killMessage(*event);
-        Misc::killSound(*event);
+        Misc::playKillSound(*event);
         break;
     case fnv::hash("player_hurt"):
         Misc::playHitSound(*event);

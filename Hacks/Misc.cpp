@@ -251,7 +251,7 @@ void Misc::spectatorList(ImDrawList *drawList) noexcept
 		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-		if (ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs))
 		{
 
 			for (auto &observer : observers)
@@ -341,9 +341,43 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 	if (!config->misc.watermark.enabled)
 		return;
 
-	ImGui::SetNextWindowPos(ImVec2{0.0f, 0.0f}, ImGuiCond_FirstUseEver);
-	if (ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
+	ImGui::SetNextWindowBgAlpha(0.4f);
+	if (ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove))
 	{
+		int &pos = config->misc.watermarkPos;
+
+		switch (pos)
+		{
+		case 0:
+			ImGui::SetWindowPos(ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
+			break;
+		case 1:
+			ImGui::SetWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - ImGui::GetWindowSize().x - 10.0f, 10.0f}, ImGuiCond_Always);
+			break;
+		case 2:
+			ImGui::SetWindowPos(ImGui::GetIO().DisplaySize - ImGui::GetWindowSize() - ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
+			break;
+		case 3:
+			ImGui::SetWindowPos(ImVec2{10.0f, ImGui::GetIO().DisplaySize.y - ImGui::GetWindowSize().y - 10.0f}, ImGuiCond_Always);
+			break;
+		}
+
+		if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseClicked[1])
+			ImGui::OpenPopup("##pos_sel");
+
+		if (ImGui::BeginPopup("##pos_sel") && gui->open)
+		{
+			bool selected = pos == 0;
+			if (ImGui::Selectable("Top left", &selected)) pos = 0;
+			selected = pos == 1;
+			if (ImGui::Selectable("Top right", &selected)) pos = 1;
+			selected = pos == 2;
+			if (ImGui::Selectable("Bottom right", &selected)) pos = 2;
+			selected = pos == 3;
+			if (ImGui::Selectable("Bottom left", &selected)) pos = 3;
+			ImGui::EndPopup();
+		}
+
 		const auto watermark = "NEPS > neverlose";
 		static float frameRate = 1.0f;
 		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
@@ -361,14 +395,14 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 				tickrate = 1 / memory->globalVars->intervalPerTick;
 			}
 
-			ImGui::SameLine();
+			ImGui::SameLine(55.0f);
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
 			ImGui::TextUnformatted((std::to_string(static_cast<int>(latency)) + "ms").c_str());
-			ImGui::SameLine();
+			ImGui::SameLine(105.0f);
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
-			ImGui::TextUnformatted((std::to_string(static_cast<int>(tickrate)) + "tick").c_str());
+			ImGui::TextUnformatted((std::to_string(static_cast<int>(tickrate)) + "tps").c_str());
 			ImGui::SameLine();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
@@ -535,7 +569,7 @@ void Misc::drawBombTimer() noexcept
 		ImGui::SetNextWindowSize({windowWidth, 0});
 
 	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
-	if (ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | (gui->open ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize)))
+	if (ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize)))
 	{
 		std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
 
@@ -1051,7 +1085,7 @@ void Misc::playHitSound(GameEvent &event) noexcept
 		interfaces->engine->clientCmdUnrestricted(("play " + config->sound.customHitSound).c_str());
 }
 
-void Misc::killSound(GameEvent& event) noexcept
+void Misc::playKillSound(GameEvent& event) noexcept
 {
     if (!config->sound.killSound)
         return;
@@ -1133,7 +1167,7 @@ void Misc::purchaseList(GameEvent* event) noexcept
 		if ((!interfaces->engine->isInGame() || freezeEnd != 0.0f && memory->globalVars->realtime > freezeEnd + (!config->misc.purchaseList.onlyDuringFreezeTime ? mp_buytime->getFloat() : 0.0f) || playerPurchases.empty() || purchaseTotal.empty()) && !gui->open)
 			return;
 
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		if (!gui->open)
 			windowFlags |= ImGuiWindowFlags_NoInputs;
 		if (config->misc.purchaseList.noTitleBar)
@@ -1531,13 +1565,13 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 	ImGui::SetNextWindowPos(ImVec2{0.0f, 50.0f}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{200.0f, FLT_MAX});
-	if (ImGui::Begin("Indicators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::Begin("Indicators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
 	{
-		const auto netChannel = interfaces->engine->getNetworkChannel();
-		if (netChannel)
+		const auto networkChannel = interfaces->engine->getNetworkChannel();
+		if (networkChannel)
 		{
 			ImGui::TextUnformatted("Choke");
-			ImGuiCustom::progressBarFullWidth(static_cast<float>(netChannel->chokedPackets) / static_cast<float>(config->antiAim.chokedPackets));
+			ImGuiCustom::progressBarFullWidth(static_cast<float>(networkChannel->chokedPackets) / static_cast<float>(config->antiAim.chokedPackets));
 		}
 
 		ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(local.velocity.length2D())) + "u").c_str());

@@ -346,6 +346,7 @@ public:
 		Color3Toggle spectatorList;
 		Color4 specBg = {0.0f, 0.0f, 0.0f, 0.5f};
 		Color3Toggle watermark;
+		int watermarkPos;
 		Color4 bg = {0.0f, 0.0f, 0.0f, 0.5f};
 		KeyBind prepareRevolver;
 		int quickHealthshotKey = 0;
