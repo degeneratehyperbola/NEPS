@@ -7,10 +7,10 @@
 
 struct Ray {
     Ray(const Vector& src, const Vector& dest) : start(src), delta(dest - src) { isSwept = delta.x || delta.y || delta.z; }
-    Vector start;
-    PAD(4)
+	Vector start;
+	INIT_PAD(4)
     Vector delta;
-    PAD(40)
+	INIT_PAD(40)
     bool isRay = true;
     bool isSwept;
 };

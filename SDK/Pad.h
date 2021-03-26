@@ -8,3 +8,7 @@
 private: \
     std::byte ___PASTE_TOKENS_I(_pad, __COUNTER__)[size]; \
 public:
+#define INIT_PAD(size) \
+private: \
+    std::byte ___PASTE_TOKENS_I(_pad, __COUNTER__)[size]{}; \
+public:
