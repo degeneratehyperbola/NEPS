@@ -63,6 +63,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
         auto bestDamage = min(config->aimbot[weaponIndex].minDamage, config->aimbot[weaponIndex].minDamageAutoWall);
         auto bestHitchance = config->aimbot[weaponIndex].shotHitchance;
         Vector bestTarget = Vector{};
+        Entity *targetEntity = nullptr;
 
         const auto localPlayerEyePosition = localPlayer->getEyePosition();
 
@@ -107,9 +108,8 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				bool goesThroughWall = false;
 				Trace trace;
 				auto origin = bufferBones[0].origin();
-				//auto origin = (entity->getEyePosition() + entity->getAbsOrigin()) * 0.5f;
 				bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
-				if (canHit && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
+				if (trace.entity == entity && canHit && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
 					cmd->buttons |= UserCmd::IN_ATTACK2;
 			}
 
@@ -287,6 +287,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						{
 							bestFov = fov;
 							bestTarget = point;
+							targetEntity = entity;
 						}
 						break;
 					case 1:
@@ -294,6 +295,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						{
 							bestDamage = damage;
 							bestTarget = point;
+							targetEntity = entity;
 						}
 						break;
 					case 2:
@@ -301,6 +303,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						{
 							bestHitchance = hitchance;
 							bestTarget = point;
+							targetEntity = entity;
 						}
 						break;
 					case 3:
@@ -308,6 +311,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						{
 							bestDistance = distance;
 							bestTarget = point;
+							targetEntity = entity;
 						}
 						break;
 					}
@@ -323,10 +327,10 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		}
 		#endif // _DEBUG_NEPS
 
-		if (bestTarget.notNull())
+		if (bestTarget.notNull() && targetEntity)
 		{
-			static Vector lastAngles{cmd->viewangles};
-			static int lastCommand{ };
+			static Vector lastAngles = cmd->viewangles;
+			static int lastCommand = 0;
 
 			if (lastCommand == cmd->commandNumber - 1 && lastAngles.notNull() && config->aimbot[weaponIndex].silent)
 				cmd->viewangles = lastAngles;
@@ -344,17 +348,27 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			if (config->aimbot[weaponIndex].interpolation == 2 || config->aimbot[weaponIndex].interpolation == 3)
 				angle = angle * (1.0f - config->aimbot[weaponIndex].smooth);
 
-			if ((config->aimbot[weaponIndex].interpolation == 1 || config->aimbot[weaponIndex].interpolation == 3) && angle.length() > config->aimbot[weaponIndex].linearSpeed)
+			const auto l = angle.length();
+			if ((config->aimbot[weaponIndex].interpolation == 1 || config->aimbot[weaponIndex].interpolation == 3) && l > config->aimbot[weaponIndex].linearSpeed)
+				angle *= config->aimbot[weaponIndex].linearSpeed / l;
+
+			if (config->aimbot[weaponIndex].targetStop && !config->aimbot[weaponIndex].silent)
 			{
-				angle /= angle.length();
-				angle = angle * config->aimbot[weaponIndex].linearSpeed;
-				clamped = true;
+				Vector looking = localPlayerEyePosition + Vector::fromAngle(cmd->viewangles) * activeWeapon->getWeaponData()->range;
+				bool goesThroughWall = false;
+				Trace trace;
+				bool reached = Helpers::canHit(looking, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
+				if (trace.entity == targetEntity && reached && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
+					angle = Vector{};
 			}
 
-			cmd->viewangles += angle;
+			if (angle.notNull())
+			{
+				cmd->viewangles += angle;
 
-			if (!config->aimbot[weaponIndex].silent)
-				interfaces->engine->setViewAngles(cmd->viewangles);
+				if (!config->aimbot[weaponIndex].silent)
+					interfaces->engine->setViewAngles(cmd->viewangles);
+			}
 
 			if (config->aimbot[weaponIndex].autoShot && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime() && !clamped)
 				cmd->buttons |= UserCmd::IN_ATTACK;

@@ -340,6 +340,7 @@ static void from_json(const json& j, Config::Aimbot& a)
     read(j, "Safe mode", a.safeHitgroup);
     read(j, "On shot", a.onShot);
     read(j, "On move", a.onMove);
+    read(j, "Target stop", a.targetStop);
 }
 
 static void from_json(const json& j, Config::Triggerbot& t)
@@ -926,6 +927,7 @@ static void to_json(json& j, const Config::Aimbot& o, const Config::Aimbot& dumm
 	WRITE("Safe mode", safeHitgroup);
 	WRITE("On shot", onShot);
 	WRITE("On move", onMove);
+	WRITE("Target stop", targetStop);
 }
 
 static void to_json(json& j, const Config::Triggerbot& o, const Config::Triggerbot& dummy = {})
