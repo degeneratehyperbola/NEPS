@@ -481,12 +481,6 @@
     <ClInclude Include="SDK\SteamID.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="SDK\NetEventInfo.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\ClientState.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
     <ClInclude Include="Resources\Resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
