@@ -275,7 +275,6 @@ static int __stdcall doPostScreenEffects(int param) noexcept
     if (interfaces->engine->isInGame()) {
 		Visuals::thirdperson();
         Visuals::reduceFlashEffect();
-        Visuals::updateBrightness();
         Glow::render();
     }
     return hooks->clientMode.callOriginal<int, 44>(param);
@@ -285,7 +284,7 @@ static float __stdcall getViewModelFov() noexcept
 {
     float additionalFov = static_cast<float>(config->visuals.viewmodel.fov);
     if (localPlayer) {
-        if (const auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classId == ClassId::Tablet || !config->visuals.viewmodel.enabled)
+        if (const auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classId == ClassId::Tablet || !config->visuals.viewmodel.enabled || localPlayer->isScoped())
             additionalFov = 0.0f;
     }
 

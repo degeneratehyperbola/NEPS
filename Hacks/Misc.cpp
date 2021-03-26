@@ -13,6 +13,7 @@
 
 #include "../SDK/AnimState.h"
 #include "../SDK/Client.h"
+#include "../SDK/ClientMode.h"
 #include "../SDK/ConVar.h"
 #include "../SDK/Entity.h"
 #include "../SDK/FrameStage.h"
@@ -834,6 +835,8 @@ void Misc::changeConVarsFrame(FrameStage stage)
 	case FrameStage::RENDER_END:
 		static auto sky = interfaces->cvar->findVar("r_3dsky");
 		sky->setValue(!config->visuals.no3dSky);
+		static auto brightness = interfaces->cvar->findVar("mat_force_tonemap_scale");
+		brightness->setValue(config->visuals.brightness);
 		break;
 	}
 
@@ -1615,11 +1618,8 @@ void Misc::voteRevealer(GameEvent &event) noexcept
 	if (!entity || !entity->isPlayer())
 		return;
 
-	memory->conColorMsg({120, 0, 255, 255}, "[NEPS]: ");
-	memory->debugMsg("%s -> ", entity->getPlayerName().c_str());
+	const auto votedYes = event.getInt("vote_option") == 0;
+	const char color = votedYes ? '\x04' : '\x02';
 
-	if (event.getInt("vote_option"))
-		memory->conColorMsg({255, 0, 0, 255}, "NO\n");
-	else
-		memory->conColorMsg({0, 255, 0, 255}, "YES\n");
+	memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s voted %c%s\x01", entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
 }

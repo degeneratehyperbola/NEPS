@@ -253,12 +253,6 @@ void Visuals::removeBlur(FrameStage stage) noexcept
     blur->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noBlur);
 }
 
-void Visuals::updateBrightness() noexcept
-{
-    static auto brightness = interfaces->cvar->findVar("mat_force_tonemap_scale");
-    brightness->setValue(config->visuals.brightness);
-}
-
 void Visuals::removeGrass(FrameStage stage) noexcept
 {
     if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)

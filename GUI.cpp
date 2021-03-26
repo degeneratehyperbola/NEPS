@@ -24,13 +24,15 @@
 #include "Hacks/Visuals.h"
 #include "Hacks/SkinChanger.h"
 #include "Hacks/Aimbot.h"
+
+#include "SDK/ConVar.h"
+#include "SDK/Cvar.h"
+#include "SDK/ClientMode.h"
 #include "SDK/Engine.h"
 #include "SDK/Entity.h"
 #include "SDK/EntityList.h"
 #include "SDK/Input.h"
 #include "SDK/InputSystem.h"
-#include "SDK/ConVar.h"
-#include "SDK/Cvar.h"
 
 constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
@@ -61,28 +63,29 @@ GUI::GUI() noexcept
 
 void GUI::render() noexcept
 {
-    if (!config->style.menuStyle) {
-        renderMenuBar();
-        renderAimbotWindow();
-        renderAntiAimWindow();
-        renderTriggerbotWindow();
-        renderBacktrackWindow();
-        renderGlowWindow();
-        renderChamsWindow();
-        renderESPWindow();
-        renderVisualsWindow();
-        renderSkinChangerWindow();
-        renderSoundWindow();
-        renderStyleWindow();
-        renderExploitsWindow();
-        renderGriefingWindow();
-        renderMovementWindow();
-        renderMiscWindow();
-        renderConfigWindow();
-		debug();
-    } else {
-        renderGuiStyle2();
-    }
+	if (!config->style.menuStyle)
+	{
+		renderMenuBar();
+		renderAimbotWindow();
+		renderAntiAimWindow();
+		renderTriggerbotWindow();
+		renderBacktrackWindow();
+		renderGlowWindow();
+		renderChamsWindow();
+		renderESPWindow();
+		renderVisualsWindow();
+		renderSkinChangerWindow();
+		renderSoundWindow();
+		renderStyleWindow();
+		renderExploitsWindow();
+		renderGriefingWindow();
+		renderMovementWindow();
+		renderMiscWindow();
+		renderConfigWindow();
+	} else
+	{
+		renderGuiStyle2();
+	}
 
 	if (!ImGui::GetIO().WantCaptureMouse && ImGui::GetIO().MouseClicked[1])
 		ImGui::OpenPopup("##context_menu");
@@ -103,6 +106,7 @@ void GUI::render() noexcept
 	}
 
 	#ifdef _DEBUG_NEPS
+	debug();
 	ImGui::ShowDemoWindow();
 	ImGui::ShowMetricsWindow();
 	#endif // _DEBUG_NEPS
@@ -1641,7 +1645,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Reveal ranks", &config->misc.revealRanks);
 	ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
-    ImGui::Checkbox("Disable HUD blur", &config->misc.disablePanoramablur);
+    ImGui::Checkbox("No panorama blur", &config->misc.disablePanoramablur);
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
 	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
     ImGui::SetNextItemWidth(190.0f);
@@ -1883,15 +1887,20 @@ void GUI::renderGuiStyle2() noexcept
 
 void GUI::debug() noexcept
 {
-	#ifdef _DEBUG_NEPS
+	if (ImGui::Button("Test chat hook"))
+	{
+		memory->clientMode->getHudChat()->printf(0, "\x01N \x02N \x03N \x04N \x05N \x06N \x07N \x08N \x09N \x0AN \x0BN \x0CN \x0DN \x0EN \x0FN \x10N");
+		memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s voted %c%s\x01", "River", '\x04', "YES");
+		memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s voted %c%s\x01", "Hyperbola", '\x02', "NO");
+	}
 
-	static bool egg = false;
+	static bool dumpColors = false;
 
-	ImGui::Checkbox("Gay", &egg);
+	ImGui::Checkbox("Style colors code", &dumpColors);
 
-	if (!egg) return;
+	if (!dumpColors) return;
 
-	static auto &colors = ImGui::GetStyle().Colors;
+	const auto &colors = ImGui::GetStyle().Colors;
 	char buffer[128 * ImGuiCol_COUNT] = "";
 
 	for (int i = 0; i < ImGuiCol_COUNT; i++)
@@ -1910,6 +1919,4 @@ void GUI::debug() noexcept
 	}
 
 	ImGui::InputTextMultiline("", buffer, 128 * ImGuiCol_COUNT, {400.0f, 500.0f}, ImGuiInputTextFlags_ReadOnly);
-
-	#endif // _DEBUG_NEPS
 }

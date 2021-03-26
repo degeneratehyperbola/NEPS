@@ -13,7 +13,6 @@ namespace Visuals
     void thirdperson() noexcept;
     void removeVisualRecoil(FrameStage stage) noexcept;
     void removeBlur(FrameStage stage) noexcept;
-    void updateBrightness() noexcept;
     void removeGrass(FrameStage stage) noexcept;
     void applyScreenEffects() noexcept;
     void hitEffect(GameEvent* event = nullptr) noexcept;
