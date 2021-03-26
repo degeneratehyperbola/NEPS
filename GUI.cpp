@@ -85,9 +85,9 @@ void GUI::render() noexcept
     }
 
 	if (!ImGui::GetIO().WantCaptureMouse && ImGui::GetIO().MouseClicked[1])
-		ImGui::OpenPopup("##contxt_m");
+		ImGui::OpenPopup("##context_menu");
 
-	if (ImGui::BeginPopup("##contxt_m"))
+	if (ImGui::BeginPopup("##context_menu", ImGuiWindowFlags_NoMove))
 	{
 		if (ImGui::Selectable("Close all"))
 			window = {};
@@ -160,9 +160,10 @@ void GUI::renderMenuBar() noexcept
 				hooks->uninstall();
 			ImGui::EndMenu();
 		}
-		if (ImGui::MenuItem("Our GitHub"))
+		ImGui::Separator();
+		if (ImGui::MenuItem("My GitHub"))
 			ShellExecuteW(nullptr, nullptr, L"https://github.com/degeneratehyperbola/NEPS", nullptr, nullptr, SW_SHOW);
-		if (ImGui::MenuItem("Our Discord"))
+		if (ImGui::MenuItem("My Discord"))
 			ShellExecuteW(nullptr, nullptr, L"https://discord.gg/pwB3XBppVr", nullptr, nullptr, SW_SHOW);
         ImGui::EndMainMenuBar();
     }
@@ -299,11 +300,11 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
     ImGui::SliderFloat("##hitchance", &config->aimbot[currentWeapon].shotHitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
 	ImGui::SetNextItemWidth(95.0f);
     ImGui::InputFloat("Distance", &config->aimbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
-    config->aimbot[currentWeapon].distance = max(config->aimbot[currentWeapon].distance, 0);
+    config->aimbot[currentWeapon].distance = std::max(config->aimbot[currentWeapon].distance, 0.0f);
 
 	ImGui::SetNextItemWidth(95.0f);
     ImGui::InputInt("Min damage", &config->aimbot[currentWeapon].minDamage);
-    config->aimbot[currentWeapon].minDamage = max(config->aimbot[currentWeapon].minDamage, 0);
+    config->aimbot[currentWeapon].minDamage = std::max(config->aimbot[currentWeapon].minDamage, 0);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("damage_ab", ImGuiDir_Right))
 		ImGui::OpenPopup("##damage_ab");
@@ -312,13 +313,13 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 	{
 		ImGui::SetNextItemWidth(95.0f);
 		ImGui::InputInt("Min damage auto-wall", &config->aimbot[currentWeapon].minDamageAutoWall);
-		config->aimbot[currentWeapon].minDamageAutoWall = max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
+		config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
 		ImGui::SetNextItemWidth(95.0f);
 		ImGui::InputInt("Damage threshold", &config->aimbot[currentWeapon].killshot);
-		config->aimbot[currentWeapon].killshot = max(config->aimbot[currentWeapon].killshot, 0);
+		config->aimbot[currentWeapon].killshot = std::max(config->aimbot[currentWeapon].killshot, 0);
 		ImGui::SetNextItemWidth(95.0f);
 		ImGui::InputInt("Damage threshold auto-wall", &config->aimbot[currentWeapon].killshotAutoWall);
-		config->aimbot[currentWeapon].killshotAutoWall = max(config->aimbot[currentWeapon].killshotAutoWall, 0);
+		config->aimbot[currentWeapon].killshotAutoWall = std::max(config->aimbot[currentWeapon].killshotAutoWall, 0);
 		ImGui::EndPopup();
 	}
 
@@ -502,10 +503,10 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 	ImGui::SliderFloat("##hitchance", &config->triggerbot[currentWeapon].hitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
 	ImGui::SetNextItemWidth(95.0f);
 	ImGui::InputFloat("Distance", &config->triggerbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
-	config->triggerbot[currentWeapon].distance = max(config->triggerbot[currentWeapon].distance, 0);
+	config->triggerbot[currentWeapon].distance = std::max(config->triggerbot[currentWeapon].distance, 0.0f);
 	ImGui::SetNextItemWidth(95.0f);
 	ImGui::InputInt("Min damage", &config->triggerbot[currentWeapon].minDamage);
-	config->triggerbot[currentWeapon].minDamage = max(config->triggerbot[currentWeapon].minDamage, 0);
+	config->triggerbot[currentWeapon].minDamage = std::max(config->triggerbot[currentWeapon].minDamage, 0);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("damage_tb", ImGuiDir_Right))
 		ImGui::OpenPopup("##damage_tb");
@@ -514,13 +515,13 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 	{
 		ImGui::SetNextItemWidth(95.0f);
 		ImGui::InputInt("Min damage auto-wall", &config->triggerbot[currentWeapon].minDamageAutoWall);
-		config->triggerbot[currentWeapon].minDamageAutoWall = max(config->triggerbot[currentWeapon].minDamageAutoWall, 0);
+		config->triggerbot[currentWeapon].minDamageAutoWall = std::max(config->triggerbot[currentWeapon].minDamageAutoWall, 0);
 		ImGui::SetNextItemWidth(95.0f);
 		ImGui::InputInt("Damage threshold", &config->triggerbot[currentWeapon].killshot);
-		config->triggerbot[currentWeapon].killshot = max(config->triggerbot[currentWeapon].killshot, 0);
+		config->triggerbot[currentWeapon].killshot = std::max(config->triggerbot[currentWeapon].killshot, 0);
 		ImGui::SetNextItemWidth(95.0f);
 		ImGui::InputInt("Damage threshold auto-wall", &config->triggerbot[currentWeapon].killshotAutoWall);
-		config->triggerbot[currentWeapon].killshotAutoWall = max(config->triggerbot[currentWeapon].killshotAutoWall, 0);
+		config->triggerbot[currentWeapon].killshotAutoWall = std::max(config->triggerbot[currentWeapon].killshotAutoWall, 0);
 		ImGui::EndPopup();
 	}
 

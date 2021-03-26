@@ -31,6 +31,9 @@ namespace Helpers
 
 	constexpr auto timeToTicks = [](float time) noexcept { return static_cast<int>(0.5f + time / memory->globalVars->intervalPerTick); };
 
+	std::tuple<float, float, float> rgbToHsv(float r, float g, float b) noexcept;
+	std::tuple<float, float, float> hsvToRgb(float h, float s, float v) noexcept;
+
 	std::tuple<float, float, float> rainbowColor(float speed) noexcept;
 
 	Vector calculateRelativeAngle(const Vector &source, const Vector &destination, const Vector &viewAngles) noexcept;

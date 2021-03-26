@@ -66,7 +66,7 @@ bool Animations::clientLerped(matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Ve
 		//float deltaYaw = Helpers::angleDiffDeg(currentYaw, cmd->viewangles.y);
 
 		//if (config->antiAim.chokedPackets && config->antiAim.desync && !config->antiAim.extended)
-		//	currentYaw = Helpers::approachAngleDeg(pursue, currentYaw, std::fmaxf(0.0f, memory->globalVars->currenttime - lerpedState->lastClientSideAnimationUpdateTime) * 100.0f);
+		//	currentYaw = Helpers::approachAngleDeg(pursue, currentYaw, std::max(0.0f, memory->globalVars->currenttime - lerpedState->lastClientSideAnimationUpdateTime) * 100.0f);
 		//else
 		//	Helpers::feetYaw(lerpedState, pursue, yawTarget, currentYaw);
 
@@ -115,8 +115,6 @@ void Animations::animSync(UserCmd *cmd, bool &sendPacket, Vector *headPos) noexc
 
 	if (!memory->input->isCameraInThirdPerson || !config->misc.fixAnimation)
 		return;
-
-	localPlayer->getAnimState()->feetYaw = std::fmodf(localPlayer->getAnimState()->feetYaw, 360.0f);
 
 	static auto bPoseParam = localPlayer->poseParam();
 	static auto bAbsYaw = localPlayer->getAnimState()->feetYaw;

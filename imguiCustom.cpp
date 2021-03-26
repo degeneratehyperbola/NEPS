@@ -58,12 +58,12 @@ void ImGuiCustom::colorPicker(const char *name, std::array<float, 4> &color, boo
 				if (rounding)
 				{
 					ImGui::DragFloat("##rounding", rounding, 0.1f, 0.0f, 100.0f, "Corner %.1f");
-					*rounding = std::fmaxf(*rounding, 0.0f);
+					*rounding = std::max(*rounding, 0.0f);
 				}
 				if (thickness)
 				{
 					ImGui::DragFloat("##thickness", thickness, 0.1f, 1.0f, 100.0f, "Thick %.1f");
-					*thickness = std::fmaxf(*thickness, 1.0f);
+					*thickness = std::max(*thickness, 1.0f);
 				}
 				if (border)
 				{
@@ -186,7 +186,7 @@ void ImGuiCustom::progressBarFullWidth(float fraction, float height) noexcept
 	const ImGuiStyle &style = g.Style;
 
 	ImVec2 pos = window->DC.CursorPos;
-	ImVec2 size = ImGui::CalcItemSize(ImVec2{-1, 0}, ImGui::CalcItemWidth(), std::fmaxf(height, style.FrameRounding * 2.0f));
+	ImVec2 size = ImGui::CalcItemSize(ImVec2{-1, 0}, ImGui::CalcItemWidth(), std::max(height, style.FrameRounding * 2.0f));
 	ImRect bb(pos, pos + size);
 	ImGui::ItemSize(size, style.FramePadding.y);
 	if (!ImGui::ItemAdd(bb, 0))

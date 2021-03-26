@@ -22,6 +22,5 @@ namespace Backtrack {
     const std::deque<Record>& getRecords(std::size_t index) noexcept;
     float getLerp() noexcept;
     bool valid(float simtime) noexcept;
-    int timeToTicks(float time) noexcept;
     void init() noexcept;
 }

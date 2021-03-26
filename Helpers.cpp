@@ -17,12 +17,64 @@
 #include "SDK/PhysicsSurfaceProps.h"
 #include "SDK/StudioRender.h"
 
+std::tuple<float, float, float> Helpers::rgbToHsv(float r, float g, float b) noexcept
+{
+	r = std::clamp(r, 0.0f, 1.0f);
+	g = std::clamp(g, 0.0f, 1.0f);
+	b = std::clamp(b, 0.0f, 1.0f);
+	const auto max = std::max({r, g, b});
+	const auto min = std::min({r, g, b});
+	const auto delta = max - min;
+
+	float hue = 0.0f, sat = 0.0f;
+
+	if (delta != 0.0f)
+	{
+		if (max == r)
+			hue = std::fmodf((g - b) / delta, 6.0f) / 6.0f;
+		else if (max == g)
+			hue = ((b - r) / delta + 2.0f) / 6.0f;
+		else if (max == b)
+			hue = ((r - g) / delta + 4.0f) / 6.0f;
+	}
+
+	if (max != 0.0f)
+		sat = delta / max;
+
+	return {hue, sat, max};
+}
+
+std::tuple<float, float, float> Helpers::hsvToRgb(float h, float s, float v) noexcept
+{
+	h = std::remainder(h, 1.0f) + 0.5f;
+	s = std::clamp(s, 0.0f, 1.0f);
+	v = std::clamp(v, 0.0f, 1.0f);
+	const auto c = s * v;
+	const auto x = c * (1.0f - std::fabsf(std::fmodf(h * 6.0f, 2.0f) - 1.0f));
+	const auto m = v - c;
+
+	//constexpr std::array hues = {0.0f, 1.0f / 6.0f, 1.0f / 3.0f, 0.5f, 1.0f / 3.0f * 2.0f, 1.0f / 6.0f * 5.0f, 1.0f};
+	float r = 0.0f, g = 0.0f, b = 0.0f;
+
+	if (0.0f <= h && h < 1.0f / 6.0f)
+		r = c, g = x;
+	else if (1.0f / 6.0f <= h && h < 1.0f / 3.0f)
+		r = x, g = c;
+	else if (1.0f / 3.0f <= h && h < 0.5f)
+		g = c, b = x;
+	else if (0.5f <= h && h < 1.0f / 3.0f * 2.0f)
+		g = x, b = c;
+	else if (1.0f / 3.0f * 2.0f <= h && h < 1.0f / 6.0f * 5.0f)
+		r = x, b = c;
+	else if (1.0f / 6.0f * 5.0f <= h && h < 1.0f)
+		r = c, b = x;
+
+	return {r + m, g + m, b + m};
+}
+
 std::tuple<float, float, float> Helpers::rainbowColor(float speed) noexcept
 {
-	constexpr float pi = std::numbers::pi_v<float>;
-	return std::make_tuple(std::sin(speed * memory->globalVars->realtime) * 0.5f + 0.5f,
-						   std::sin(speed * memory->globalVars->realtime + 2 * pi / 3) * 0.5f + 0.5f,
-						   std::sin(speed * memory->globalVars->realtime + 4 * pi / 3) * 0.5f + 0.5f);
+	return hsvToRgb(speed * memory->globalVars->realtime * 0.1f, 1.0f, 1.0f);
 }
 
 static bool traceToExit(const Trace &enterTrace, const Vector &start, const Vector &direction, Vector &end, Trace &exitTrace)
@@ -282,7 +334,7 @@ float Helpers::angleDiffDeg(float a1, float a2) noexcept
 
 	float delta;
 
-	delta = std::fmodf(a1 - a2, 360.0f);
+	delta = std::remainder(a1 - a2, 360.0f);
 	if (a1 > a2)
 	{
 		if (delta >= 180)
@@ -299,7 +351,7 @@ float Helpers::angleDiffRad(float a1, float a2) noexcept
 {
 	float delta;
 
-	delta = std::fmodf(a1 - a2, PI2);
+	delta = std::remainder(a1 - a2, PI2);
 	if (a1 > a2)
 	{
 		if (delta >= PI)
@@ -314,8 +366,8 @@ float Helpers::angleDiffRad(float a1, float a2) noexcept
 
 float Helpers::approachAngleDeg(float target, float value, float speed) noexcept
 {
-	target = std::fmodf(target, 360.0f);
-	value = std::fmodf(value, 360.0f);
+	target = std::remainder(target, 360.0f);
+	value = std::remainder(value, 360.0f);
 
 	float delta = target - value;
 
@@ -340,8 +392,8 @@ float Helpers::approachAngleDeg(float target, float value, float speed) noexcept
 
 float Helpers::approachAngleRad(float target, float value, float speed) noexcept
 {
-	target = std::fmodf(target, PI2);
-	value = std::fmodf(value, PI2);
+	target = std::remainder(target, PI2);
+	value = std::remainder(value, PI2);
 
 	float delta = target - value;
 
@@ -372,7 +424,7 @@ void Helpers::feetYaw(AnimState *state, float pursue, float &hold, float &curren
 
 		if (state->horizontalSpeed > 0.1f)
 		{
-			const float deltaTime = std::fmaxf(0.0f, memory->globalVars->currenttime - state->lastClientSideAnimationUpdateTime);
+			const float deltaTime = std::max(0.0f, memory->globalVars->currenttime - state->lastClientSideAnimationUpdateTime);
 
 			current = approachAngleDeg(pursue, current, deltaTime * (30.0f + 20.0f * state->stopToFullRunningFraction));
 
@@ -380,7 +432,7 @@ void Helpers::feetYaw(AnimState *state, float pursue, float &hold, float &curren
 			hold = pursue;
 		} else
 		{
-			const float deltaTime = std::fmaxf(0.0f, memory->globalVars->currenttime - state->lastClientSideAnimationUpdateTime);
+			const float deltaTime = std::max(0.0f, memory->globalVars->currenttime - state->lastClientSideAnimationUpdateTime);
 
 			current = approachAngleDeg(hold, current, deltaTime * 100.0f);
 

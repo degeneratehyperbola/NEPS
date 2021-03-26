@@ -60,7 +60,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
         auto bestFov = config->aimbot[weaponIndex].fov;
         auto bestDistance = config->aimbot[weaponIndex].distance ? config->aimbot[weaponIndex].distance : INFINITY;
-        auto bestDamage = min(config->aimbot[weaponIndex].minDamage, config->aimbot[weaponIndex].minDamageAutoWall);
+        auto bestDamage = std::min(config->aimbot[weaponIndex].minDamage, config->aimbot[weaponIndex].minDamageAutoWall);
         auto bestHitchance = config->aimbot[weaponIndex].shotHitchance;
         Vector bestTarget = Vector{};
         Entity *targetEntity = nullptr;
@@ -265,15 +265,15 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 					if (!goesThroughWall)
 					{
-						if (damage <= min(config->aimbot[weaponIndex].minDamage, entity->health() + config->aimbot[weaponIndex].killshot))
+						if (damage <= std::min(config->aimbot[weaponIndex].minDamage, entity->health() + config->aimbot[weaponIndex].killshot))
 							continue;
-						if (damage <= min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshot))
+						if (damage <= std::min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshot))
 							continue;
 					} else
 					{
-						if (damage <= min(config->aimbot[weaponIndex].minDamageAutoWall, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
+						if (damage <= std::min(config->aimbot[weaponIndex].minDamageAutoWall, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
 							continue;
-						if (damage <= min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
+						if (damage <= std::min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
 							continue;
 					}
 

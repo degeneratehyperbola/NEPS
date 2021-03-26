@@ -293,7 +293,7 @@ void Misc::watermark() noexcept
 		else
 			interfaces->surface->setDrawColor(static_cast<int>(config->misc.bg.color[0] * 255), static_cast<int>(config->misc.bg.color[1] * 255), static_cast<int>(config->misc.bg.color[2] * 255), static_cast<int>(config->misc.bg.color[3] * 255));
 
-		interfaces->surface->drawFilledRect(screenWidth - max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
+		interfaces->surface->drawFilledRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
 
 		interfaces->surface->setTextPosition(screenWidth - pingWidth - 5, fpsHeight + 6);
 		interfaces->surface->printText(ping.c_str());
@@ -331,7 +331,7 @@ void Misc::watermark() noexcept
 		else
 			interfaces->surface->setDrawColor(static_cast<int>(config->misc.watermark.color[0] * 255), static_cast<int>(config->misc.watermark.color[1] * 255), static_cast<int>(config->misc.watermark.color[2] * 255), 255);
 
-		interfaces->surface->drawOutlinedRect(screenWidth - max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
+		interfaces->surface->drawOutlinedRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
 		interfaces->surface->drawOutlinedRect(0, 0, waterWidth + 14, waterHeight + 11);
     }
 }
@@ -365,7 +365,7 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 		if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseClicked[1])
 			ImGui::OpenPopup("##pos_sel");
 
-		if (ImGui::BeginPopup("##pos_sel") && gui->open)
+		if (gui->open && ImGui::BeginPopup("##pos_sel", ImGuiWindowFlags_NoMove))
 		{
 			bool selected = pos == 0;
 			if (ImGui::Selectable("Top left", &selected)) pos = 0;

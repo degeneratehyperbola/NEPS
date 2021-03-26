@@ -1,4 +1,3 @@
-#define NOMINMAX
 #include "StreamProofESP.h"
 
 #include "../imgui/imgui.h"
