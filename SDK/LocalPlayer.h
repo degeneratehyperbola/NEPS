@@ -4,33 +4,34 @@
 
 class Entity;
 
-class LocalPlayer {
+class LocalPlayer
+{
 public:
-    void init(Entity** entity) noexcept
-    {
-        assert(!localEntity);
-        localEntity = entity;
-    }
+	void init(Entity **entity) noexcept
+	{
+		assert(!localEntity);
+		localEntity = entity;
+	}
 
-    constexpr operator bool() noexcept
-    {
-        assert(localEntity);
-        return *localEntity != nullptr;
-    }
+	constexpr operator bool() noexcept
+	{
+		assert(localEntity);
+		return *localEntity != nullptr;
+	}
 
-    constexpr auto operator->() noexcept
-    {
-        assert(localEntity && *localEntity);
-        return *localEntity;
-    }
+	constexpr auto operator->() noexcept
+	{
+		assert(localEntity && *localEntity);
+		return *localEntity;
+	}
 
-    constexpr auto get() noexcept
-    {
-        assert(localEntity && *localEntity);
-        return *localEntity;
-    }
+	constexpr auto get() noexcept
+	{
+		assert(localEntity && *localEntity);
+		return *localEntity;
+	}
 private:
-    Entity** localEntity = nullptr;
+	Entity **localEntity = nullptr;
 };
 
 inline LocalPlayer localPlayer;

@@ -5,7 +5,8 @@
 class Entity;
 class MoveData;
 
-class GameMovement {
+class GameMovement
+{
 public:
-    VIRTUAL_METHOD(void, processMovement, 1, (Entity* localPlayer, MoveData* moveData), (this, localPlayer, moveData))
+	VIRTUAL_METHOD(void, processMovement, 1, (Entity *localPlayer, MoveData *moveData), (this, localPlayer, moveData))
 };

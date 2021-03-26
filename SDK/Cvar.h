@@ -4,7 +4,8 @@
 
 struct ConVar;
 
-class Cvar {
+class Cvar
+{
 public:
-    VIRTUAL_METHOD(ConVar*, findVar, 15, (const char* name), (this, name))
+	VIRTUAL_METHOD(ConVar *, findVar, 15, (const char *name), (this, name))
 };
