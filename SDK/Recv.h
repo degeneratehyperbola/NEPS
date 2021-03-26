@@ -4,7 +4,7 @@
 #include <type_traits>
 #include "Vector.h"
 
-struct recvProxyData {
+struct RecvProxyData {
     int pad;
     union {
         float _float;
@@ -16,7 +16,7 @@ struct recvProxyData {
     } value;
 };
 
-using recvProxy = std::add_pointer_t<void __cdecl(recvProxyData&, void*, void*)>;
+using RecvProxy = std::add_pointer_t<void __cdecl(RecvProxyData&, void*, void*)>;
 
 struct RecvProp {
     char* name;
@@ -27,7 +27,7 @@ struct RecvProp {
     const void* extraData;
     RecvProp* arrayProp;
     void* arrayLengthProxy;
-    recvProxy proxy;
+    RecvProxy proxy;
     void* dataTableProxy;
     struct RecvTable* dataTable;
     int offset;

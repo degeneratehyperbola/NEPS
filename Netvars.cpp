@@ -12,9 +12,9 @@ static int random(int min, int max) noexcept
     return rand() % (max - min + 1) + min;
 }
 
-static std::unordered_map<uint32_t, std::pair<recvProxy, recvProxy*>> proxies;
+static std::unordered_map<uint32_t, std::pair<RecvProxy, RecvProxy*>> proxies;
 
-static void __cdecl spottedHook(recvProxyData& data, void* arg2, void* arg3) noexcept
+static void __cdecl spottedHook(RecvProxyData& data, void* arg2, void* arg3) noexcept
 {
     if (config->misc.radarHack)
         data.value._int = 1;
@@ -162,7 +162,7 @@ static int get_new_animation(const uint32_t model, const int sequence) noexcept
     }
 }
 
-static void __cdecl viewModelSequence(recvProxyData& data, void* arg2, void* arg3) noexcept
+static void __cdecl viewModelSequence(RecvProxyData& data, void* arg2, void* arg3) noexcept
 {
     if (localPlayer) {
         if (const auto activeWeapon = localPlayer->getActiveWeapon()) {
@@ -215,7 +215,7 @@ void Netvars::walkTable(const char* networkName, RecvTable* recvTable, const std
 
         const auto hash{ fnv::hashRuntime((networkName + std::string{ "->" } + prop.name).c_str()) };
 
-        constexpr auto getHook{ [](uint32_t hash) noexcept -> recvProxy {
+        constexpr auto getHook{ [](uint32_t hash) noexcept -> RecvProxy {
              switch (hash) {
              case fnv::hash("CBaseEntity->m_bSpotted"):
                  return spottedHook;
@@ -228,7 +228,7 @@ void Netvars::walkTable(const char* networkName, RecvTable* recvTable, const std
 
         offsets.emplace_back(hash, uint16_t(offset + prop.offset));
 
-        constexpr auto hookProperty{ [](uint32_t hash, recvProxy& originalProxy, recvProxy proxy) noexcept {
+        constexpr auto hookProperty{ [](uint32_t hash, RecvProxy& originalProxy, RecvProxy proxy) noexcept {
             if (originalProxy != proxy) {
                 proxies[hash].first = originalProxy;
                 proxies[hash].second = &originalProxy;
