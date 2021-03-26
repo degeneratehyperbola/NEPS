@@ -1032,18 +1032,18 @@ void Misc::playHitSound(GameEvent &event) noexcept
 		return;
 
 	constexpr std::array hitSounds = {
-		"physics/metal/metal_solid_impact_bullet2",
-		"buttons/arena_switch_press_02",
-		"training/timer_bell",
-		"physics/glass/glass_impact_bullet1"
+		"play physics/metal/metal_solid_impact_bullet2",
+		"play buttons/arena_switch_press_02",
+		"play training/timer_bell",
+		"play physics/glass/glass_impact_bullet1"
 	};
 
 	if (static_cast<std::size_t>(config->sound.hitSound - 1) < hitSounds.size())
 		//interfaces->engine->clientCmdUnrestricted((std::string("playvol ") + hitSounds[config->sound.hitSound - 1] + ' ' + std::to_string(config->sound.hitSoundVol)).c_str(), true);
-		interfaces->engine->clientCmdUnrestricted((std::string("play ") + hitSounds[config->sound.hitSound - 1]).c_str(), true);
+		interfaces->engine->clientCmdUnrestricted(hitSounds[config->sound.hitSound - 1]);
 	else if (config->sound.hitSound == 5)
 		//interfaces->engine->clientCmdUnrestricted((std::string("playvol ") + config->sound.customHitSound + ' ' + std::to_string(config->sound.hitSoundVol)).c_str(), true);
-		interfaces->engine->clientCmdUnrestricted((std::string("play ") + config->sound.customHitSound).c_str(), true);
+		interfaces->engine->clientCmdUnrestricted(("play " + config->sound.customHitSound).c_str());
 }
 
 void Misc::killSound(GameEvent& event) noexcept
@@ -1058,18 +1058,18 @@ void Misc::killSound(GameEvent& event) noexcept
         return;
 
     constexpr std::array killSounds = {
-        "physics/metal/metal_solid_impact_bullet2",
-        "buttons/arena_switch_press_02",
-        "training/timer_bell",
-        "physics/glass/glass_impact_bullet1"
+        "play physics/metal/metal_solid_impact_bullet2",
+        "play buttons/arena_switch_press_02",
+        "play training/timer_bell",
+        "play physics/glass/glass_impact_bullet1"
     };
 
     if (static_cast<std::size_t>(config->sound.killSound - 1) < killSounds.size())
         //interfaces->engine->clientCmdUnrestricted((std::string("playvol ") + killSounds[config->sound.killSound - 1] + ' ' + std::to_string(config->sound.killSoundVol)).c_str(), true);
-        interfaces->engine->clientCmdUnrestricted((std::string("play ") + killSounds[config->sound.killSound - 1]).c_str(), true);
+        interfaces->engine->clientCmdUnrestricted(killSounds[config->sound.killSound - 1]);
 	else if (config->sound.killSound == 5)
         //interfaces->engine->clientCmdUnrestricted((std::string("playvol ") + config->sound.customKillSound + ' ' + std::to_string(config->sound.killSoundVol)).c_str(), true);
-        interfaces->engine->clientCmdUnrestricted((std::string("play ") + config->sound.customKillSound).c_str(), true);
+        interfaces->engine->clientCmdUnrestricted(("play " + config->sound.customKillSound).c_str());
 }
 
 void Misc::purchaseList(GameEvent* event) noexcept
