@@ -342,9 +342,9 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 		return;
 
 	ImGui::SetNextWindowPos(ImVec2{0.0f, 0.0f}, ImGuiCond_FirstUseEver);
-	if (ImGui::Begin("Welcome to NEPS", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
+	if (ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
 	{
-		const auto watermark = "Welcome to NEPS";
+		const auto watermark = "NEPS > neverlose";
 		static float frameRate = 1.0f;
 		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 
@@ -369,6 +369,11 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
 			ImGui::TextUnformatted((std::to_string(static_cast<int>(tickrate)) + "tick").c_str());
+			ImGui::SameLine();
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+			ImGui::SameLine();
+			GameData::Lock lock;
+			ImGui::TextUnformatted(GameData::match().levelName.c_str());
 		}
 		ImGui::End();
 	}

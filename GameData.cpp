@@ -31,6 +31,7 @@ static std::vector<LootCrateData> lootCrateData;
 static std::list<ProjectileData> projectileData;
 static BombData bombData;
 static std::vector<InfernoData> infernoData;
+static MatchData matchData;
 
 GlobalData globalData;
 
@@ -59,6 +60,7 @@ void GameData::update() noexcept
 
     localPlayerData.update();
 	bombData.update();
+	matchData.update();
 
     if (!localPlayer) {
         playerData.clear();
@@ -239,6 +241,11 @@ const BombData &GameData::plantedC4() noexcept
 const std::vector<InfernoData> &GameData::infernos() noexcept
 {
 	return infernoData;
+}
+
+const MatchData &GameData::match() noexcept
+{
+	return matchData;
 }
 
 void LocalPlayerData::update() noexcept
@@ -634,4 +641,9 @@ InfernoData::InfernoData(Entity *inferno) noexcept
 		if (inferno->fireIsBurning()[i])
 			points.emplace_back(inferno->fireXDelta()[i] + origin.x, inferno->fireYDelta()[i] + origin.y, inferno->fireZDelta()[i] + origin.z);
 	}
+}
+
+void MatchData::update() noexcept
+{
+	levelName = interfaces->engine->getLevelName();
 }

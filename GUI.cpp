@@ -1376,7 +1376,7 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
     }
 
     ImGui::PushItemWidth(110.0f);
-	ImGui::Combo("Hit Sound", &config->sound.hitSound, "None\0Metal\0Gamesense\0Bell\0Glass\0Custom\0");
+	ImGui::Combo("Hit Sound", &config->sound.hitSound, "None\0Metal\0Switch press\0Bell\0Glass\0Custom\0");
 	//if (config->sound.hitSound)
 	//{
 	//	ImGui::SetNextItemWidth(200.0f);
@@ -1390,7 +1390,7 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Audio file must be put in csgo/sound/ directory");
 	}
-	ImGui::Combo("Kill sound", &config->sound.killSound, "None\0Metal\0Gamesense\0Bell\0Glass\0Custom\0");
+	ImGui::Combo("Kill sound", &config->sound.killSound, "None\0Metal\0Switch press\0Bell\0Glass\0Custom\0");
 	//if (config->sound.killSound)
 	//{
 	//	ImGui::SetNextItemWidth(200.0f);

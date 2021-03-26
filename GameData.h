@@ -24,6 +24,7 @@ struct LootCrateData;
 struct ProjectileData;
 struct BombData;
 struct InfernoData;
+struct MatchData;
 
 struct Indicators;
 
@@ -34,30 +35,32 @@ struct Matrix4x4;
 
 namespace GameData
 {
-    void update() noexcept;
-    void clearProjectileList() noexcept;
+	void update() noexcept;
+	void clearProjectileList() noexcept;
 
-    class Lock {
-    public:
-        Lock() noexcept : lock{ mutex } {};
-    private:
-        std::scoped_lock<std::mutex> lock;
-        static inline std::mutex mutex;
-    };
+	class Lock
+	{
+	public:
+		Lock() noexcept : lock{mutex} {};
+	private:
+		std::scoped_lock<std::mutex> lock;
+		static inline std::mutex mutex;
+	};
 
-    // You have to acquire lock before using these getters
-    // Do not aquire lock twice :)
-    const Matrix4x4& toScreenMatrix() noexcept;
-    const LocalPlayerData& local() noexcept;
-    const std::vector<PlayerData>& players() noexcept;
-    const std::vector<ObserverData>& observers() noexcept;
-    const std::vector<WeaponData>& weapons() noexcept;
-    const std::vector<EntityData>& entities() noexcept;
-    const std::vector<LootCrateData>& lootCrates() noexcept;
-    const std::list<ProjectileData>& projectiles() noexcept;
-    const PlayerData *playerByHandle(int handle) noexcept;
+	// You have to acquire lock before using these getters
+	// Do not aquire lock twice :)
+	const Matrix4x4 &toScreenMatrix() noexcept;
+	const LocalPlayerData &local() noexcept;
+	const std::vector<PlayerData> &players() noexcept;
+	const std::vector<ObserverData> &observers() noexcept;
+	const std::vector<WeaponData> &weapons() noexcept;
+	const std::vector<EntityData> &entities() noexcept;
+	const std::vector<LootCrateData> &lootCrates() noexcept;
+	const std::list<ProjectileData> &projectiles() noexcept;
+	const PlayerData *playerByHandle(int handle) noexcept;
 	const BombData &plantedC4() noexcept;
 	const std::vector<InfernoData> &infernos() noexcept;
+	const MatchData &match() noexcept;
 	GlobalData &global() noexcept;
 }
 
@@ -79,72 +82,77 @@ struct GlobalData
 	Indicators indicators;
 };
 
-struct LocalPlayerData {
-    void update() noexcept;
+struct LocalPlayerData
+{
+	void update() noexcept;
 
-    bool exists = false;
-    bool alive = false;
-    bool inReload = false;
-    bool shooting = false;
-    bool noScope = false;
-    float nextWeaponAttack = 0.0f;
-    int fov;
+	bool exists = false;
+	bool alive = false;
+	bool inReload = false;
+	bool shooting = false;
+	bool noScope = false;
+	float nextWeaponAttack = 0.0f;
+	int fov;
 	int handle;
-    float flashDuration;
-    Vector aimPunch;
-    Vector aimPunchAngle;
-    Vector origin;
-    Vector velocity;
+	float flashDuration;
+	Vector aimPunch;
+	Vector aimPunchAngle;
+	Vector origin;
+	Vector velocity;
 	Vector colMaxs, colMins;
 };
 
 class Entity;
 
-struct BaseData {
-    BaseData(Entity* entity) noexcept;
+struct BaseData
+{
+	BaseData(Entity *entity) noexcept;
 
-    constexpr auto operator<(const BaseData& other) const
-    {
-        return distanceToLocal > other.distanceToLocal;
-    }
+	constexpr auto operator<(const BaseData &other) const
+	{
+		return distanceToLocal > other.distanceToLocal;
+	}
 
-    float distanceToLocal;
-    Vector obbMins, obbMaxs;
-    matrix3x4 coordinateFrame;
+	float distanceToLocal;
+	Vector obbMins, obbMaxs;
+	matrix3x4 coordinateFrame;
 };
 
-struct EntityData final : BaseData {
-    EntityData(Entity* entity) noexcept;
-   
-    const char* name;
+struct EntityData final : BaseData
+{
+	EntityData(Entity *entity) noexcept;
+
+	const char *name;
 };
 
-struct ProjectileData : BaseData {
-    ProjectileData(Entity* projectile) noexcept;
+struct ProjectileData : BaseData
+{
+	ProjectileData(Entity *projectile) noexcept;
 
-    void update(Entity* projectile) noexcept;
+	void update(Entity *projectile) noexcept;
 
-    constexpr auto operator==(int otherHandle) const noexcept
-    {
-        return handle == otherHandle;
-    }
+	constexpr auto operator==(int otherHandle) const noexcept
+	{
+		return handle == otherHandle;
+	}
 
-    bool exploded = false;
-    bool thrownByLocalPlayer = false;
-    bool thrownByEnemy = false;
-    int handle;
-    const char* name = nullptr;
-    std::vector<std::pair<float, Vector>> trajectory;
+	bool exploded = false;
+	bool thrownByLocalPlayer = false;
+	bool thrownByEnemy = false;
+	int handle;
+	const char *name = nullptr;
+	std::vector<std::pair<float, Vector>> trajectory;
 };
 
-struct PlayerData : BaseData {
-	PlayerData(Entity* entity) noexcept;
-	PlayerData(const PlayerData&) = delete;
-	PlayerData& operator=(const PlayerData&) = delete;
-	PlayerData(PlayerData&&) = default;
-	PlayerData& operator=(PlayerData&&) = default;
+struct PlayerData : BaseData
+{
+	PlayerData(Entity *entity) noexcept;
+	PlayerData(const PlayerData &) = delete;
+	PlayerData &operator=(const PlayerData &) = delete;
+	PlayerData(PlayerData &&) = default;
+	PlayerData &operator=(PlayerData &&) = default;
 
-	void update(Entity* entity) noexcept;
+	void update(Entity *entity) noexcept;
 
 	bool dormant;
 	bool enemy = false;
@@ -172,29 +180,32 @@ struct PlayerData : BaseData {
 	std::vector<std::pair<Vector, Vector>> bones;
 };
 
-struct WeaponData : BaseData {
-    WeaponData(Entity* entity) noexcept;
+struct WeaponData : BaseData
+{
+	WeaponData(Entity *entity) noexcept;
 
-    int clip;
-    int reserveAmmo;
-    const char* group = "All";
-    const char* name = "All";
-    std::string displayName;
+	int clip;
+	int reserveAmmo;
+	const char *group = "All";
+	const char *name = "All";
+	std::string displayName;
 };
 
-struct LootCrateData : BaseData {
-    LootCrateData(Entity* entity) noexcept;
+struct LootCrateData : BaseData
+{
+	LootCrateData(Entity *entity) noexcept;
 
-    const char* name = nullptr;
+	const char *name = nullptr;
 };
 
-struct ObserverData {
-    ObserverData(Entity* entity, Entity* obs, bool targetIsLocalPlayer, bool targetIsObservedByLocalPlayer) noexcept;
+struct ObserverData
+{
+	ObserverData(Entity *entity, Entity *obs, bool targetIsLocalPlayer, bool targetIsObservedByLocalPlayer) noexcept;
 
-    char name[128];
-    char target[128];
-    bool targetIsLocalPlayer;
-    bool targetIsObservedByLocalPlayer;
+	char name[128];
+	char target[128];
+	bool targetIsLocalPlayer;
+	bool targetIsObservedByLocalPlayer;
 };
 
 struct BombData
@@ -214,4 +225,11 @@ struct InfernoData
 	InfernoData(Entity *inferno) noexcept;
 
 	std::vector<Vector> points;
+};
+
+struct MatchData
+{
+	void update() noexcept;
+
+	std::string levelName;
 };

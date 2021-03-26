@@ -254,7 +254,6 @@ public:
         }
         return VirtualMethod::call<bool, 13>(this + 4, out, maxBones, boneMask, currentTime);
     }
-
     Vector getBonePosition(int bone) noexcept
     {
         if (matrix3x4 boneMatrices[MAXSTUDIOBONES]; setupBones(boneMatrices, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, 0.0f))
@@ -271,7 +270,6 @@ public:
 		if (!studioModel) return nullptr;
 		return studioModel->getHitboxSet(hitboxSet());
 	}
-
 	StudioBbox *getHitbox(int i)
 	{
 		const auto set = getHitboxSet();
