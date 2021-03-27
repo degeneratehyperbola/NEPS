@@ -5,6 +5,7 @@
 // Last digit is always 0. Free byte for actual info
 #define SIGNATURE 0xEAC8FC70
 #define SIGNATURE_MASK 0x0000000F
+//#define SIGNATURE_ENABLE // Uncomment this to enable signature verification
 
 extern "C" BOOL WINAPI _CRT_INIT(HMODULE moduleHandle, DWORD reason, LPVOID reserved);
 
@@ -22,7 +23,7 @@ BOOL APIENTRY DllEntryPoint(HMODULE moduleHandle, DWORD reason, LPVOID reserved)
 
 	if ((reason & SIGNATURE_MASK) == DLL_PROCESS_ATTACH)
 	{
-		#ifndef _DEBUG_NEPS
+		#if defined SIGNATURE_ENABLE && !defined _DEBUG_NEPS
 		if ((reason & ~SIGNATURE_MASK) == SIGNATURE)
 		#endif // _DEBUG_NEPS
 		{
