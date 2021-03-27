@@ -147,6 +147,9 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 	if (!localPlayer)
 		return -1;
 
+	if (!weaponData)
+		return -1;
+
 	float damage{static_cast<float>(weaponData->damage)};
 
 	Vector start = localPlayer->getEyePosition();
@@ -351,15 +354,15 @@ float Helpers::angleDiffRad(float a1, float a2) noexcept
 {
 	float delta;
 
-	delta = std::remainder(a1 - a2, PI2);
+	delta = std::remainder(a1 - a2, PI * 2);
 	if (a1 > a2)
 	{
 		if (delta >= PI)
-			delta -= PI2;
+			delta -= PI * 2;
 	} else
 	{
 		if (delta <= -PI)
-			delta += PI2;
+			delta += PI * 2;
 	}
 	return delta;
 }
@@ -392,8 +395,8 @@ float Helpers::approachAngleDeg(float target, float value, float speed) noexcept
 
 float Helpers::approachAngleRad(float target, float value, float speed) noexcept
 {
-	target = std::remainder(target, PI2);
-	value = std::remainder(value, PI2);
+	target = std::remainder(target, PI * 2);
+	value = std::remainder(value, PI * 2);
 
 	float delta = target - value;
 
@@ -402,9 +405,9 @@ float Helpers::approachAngleRad(float target, float value, float speed) noexcept
 		speed = -speed;
 
 	if (delta < -PI)
-		delta += PI2;
+		delta += PI * 2;
 	else if (delta > PI)
-		delta -= PI2;
+		delta -= PI * 2;
 
 	if (delta > speed)
 		value += speed;

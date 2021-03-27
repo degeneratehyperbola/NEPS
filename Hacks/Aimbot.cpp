@@ -40,6 +40,10 @@ void Aimbot::run(UserCmd *cmd) noexcept
 	if (!config->aimbot[weaponIndex].bind.keyMode)
 		weaponIndex = 0;
 
+	const auto weaponData = activeWeapon->getWeaponData();
+	if (!weaponData)
+		return;
+
 	if (static Helpers::KeyBindState flag; !flag[config->aimbot[weaponIndex].bind]) return;
 
 	if (!config->aimbot[weaponIndex].hitgroup)
@@ -248,7 +252,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						continue;
 
 					const auto distance = localPlayerEyePosition.distTo(point);
-					if (distance >= bestDistance || distance > activeWeapon->getWeaponData()->range)
+					if (distance >= bestDistance || distance > weaponData->range)
 						continue;
 
 					const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), radius, distance);
@@ -257,7 +261,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 					bool goesThroughWall = false;
 					Trace trace;
-					const auto damage = Helpers::findDamage(point, activeWeapon->getWeaponData(), trace, config->aimbot[weaponIndex].friendlyFire, allowedHitgroup, &goesThroughWall);
+					const auto damage = Helpers::findDamage(point, weaponData, trace, config->aimbot[weaponIndex].friendlyFire, allowedHitgroup, &goesThroughWall);
 
 					if (config->aimbot[weaponIndex].visibleOnly && goesThroughWall) continue;
 
@@ -354,7 +358,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 			if (config->aimbot[weaponIndex].targetStop && !config->aimbot[weaponIndex].silent)
 			{
-				Vector looking = localPlayerEyePosition + Vector::fromAngle(cmd->viewangles) * activeWeapon->getWeaponData()->range;
+				Vector looking = localPlayerEyePosition + Vector::fromAngle(cmd->viewangles) * weaponData->range;
 				bool goesThroughWall = false;
 				Trace trace;
 				bool reached = Helpers::canHit(looking, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
