@@ -18,9 +18,6 @@ struct AnimState;
 struct StudioBbox;
 
 #define PI std::numbers::pi_v<float>
-const static inline float PI2 = 2.0f * PI;
-const static inline float RAD90 = 0.5f * PI;
-const static inline float RAD45 = 0.25f * PI;
 
 namespace Helpers
 {

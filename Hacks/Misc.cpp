@@ -40,48 +40,51 @@
 #include "../imgui/imgui_internal.h"
 #include "../imguiCustom.h"
 
-void Misc::edgejump(UserCmd* cmd) noexcept
+void Misc::edgejump(UserCmd *cmd) noexcept
 {
-    if (static Helpers::KeyBindState flag; !flag[config->movement.edgeJump])
-        return;
+	if (static Helpers::KeyBindState flag; !flag[config->movement.edgeJump])
+		return;
 
-    if (!localPlayer || !localPlayer->isAlive())
-        return;
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
-    if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
-        return;
+	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
+		return;
 
-    if ((EnginePrediction::getFlags() & Entity::FL_ONGROUND) && !(localPlayer->flags() & Entity::FL_ONGROUND))
-        cmd->buttons |= UserCmd::IN_JUMP;
+	if ((EnginePrediction::getFlags() & Entity::FL_ONGROUND) && !(localPlayer->flags() & Entity::FL_ONGROUND))
+		cmd->buttons |= UserCmd::IN_JUMP;
 }
 
-void Misc::slowwalk(UserCmd* cmd) noexcept
+void Misc::slowwalk(UserCmd *cmd) noexcept
 {
 	if (static Helpers::KeyBindState flag; !flag[config->exploits.slowwalk])
 		return;
 
-    if (!localPlayer || !localPlayer->isAlive())
-        return;
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
-    const auto activeWeapon = localPlayer->getActiveWeapon();
-    if (!activeWeapon)
-        return;
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+	if (!activeWeapon)
+		return;
 
-    const auto weaponData = activeWeapon->getWeaponData();
-    if (!weaponData)
-        return;
+	const auto weaponData = activeWeapon->getWeaponData();
+	if (!weaponData)
+		return;
 
-    const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 3;
+	const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 3;
 
-    if (cmd->forwardmove && cmd->sidemove) {
-        const float maxSpeedRoot = maxSpeed * static_cast<float>(M_SQRT1_2);
-        cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
-        cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
-    } else if (cmd->forwardmove) {
-        cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeed : maxSpeed;
-    } else if (cmd->sidemove) {
-        cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeed : maxSpeed;
-    }
+	if (cmd->forwardmove && cmd->sidemove)
+	{
+		const float maxSpeedRoot = maxSpeed * static_cast<float>(M_SQRT1_2);
+		cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
+		cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
+	} else if (cmd->forwardmove)
+	{
+		cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeed : maxSpeed;
+	} else if (cmd->sidemove)
+	{
+		cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeed : maxSpeed;
+	}
 }
 
 void Misc::updateClanTag() noexcept
@@ -979,23 +982,24 @@ void Misc::revealRanks(UserCmd* cmd) noexcept
         interfaces->client->dispatchUserMessage(50, 0, 0, nullptr);
 }
 
-static float idealAngleDelta2(float speed, bool crouch)
+static float idealAngleDelta2(float speed)
 {
-	// TODO: account server constants into calculation
-	//static const auto airaccelVar = interfaces->cvar->findVar("sv_airaccelerate");
-	//static const auto speedVar = interfaces->cvar->findVar("sv_maxspeed");
+	if (!localPlayer) return 0.0f;
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+	if (!activeWeapon) return 0.0f;
+	const auto weaponData = activeWeapon->getWeaponData();
+	if (!weaponData) return 0.0f;
 
-	//const float accel = crouch ? airaccelVar->getFloat() * 0.33333333f : airaccelVar->getFloat();
-	//const float max = std::fminf(speedVar->getFloat(), 30.0f);
-
-	//return std::fminf(std::asinf(std::fminf(accel, max) / speed), RAD90) * 0.8f;
-	float steer = crouch ? config->movement.steerSpeed * 0.33333333f : config->movement.steerSpeed;
-	return std::fminf(std::asinf(steer / speed), RAD90);
+	float steer = localPlayer->flags() & Entity::FL_DUCKING ? config->movement.steerSpeed / 3 : config->movement.steerSpeed;
+	steer *= localPlayer->isScoped() ? weaponData->maxSpeed / 250 : weaponData->maxSpeedAlt / 250;
+	return std::fminf(std::asinf(steer / speed), PI / 2);
 }
 
 static float idealAngleDelta3(float speed)
 {
-	return std::fminf(std::atanf(30.0f / speed), RAD90);
+	static const auto maxWishSpeedVar = interfaces->cvar->findVar("sv_air_max_wishspeed");
+
+	return std::fminf(std::atanf(maxWishSpeedVar->getFloat() / speed), PI / 2);
 }
 
 void Misc::autoStrafe(UserCmd* cmd) noexcept
@@ -1012,7 +1016,7 @@ void Misc::autoStrafe(UserCmd* cmd) noexcept
 		return;
 
 	const float curSpeed = localPlayer->velocity().length2D();
-	const float idealDelta = idealAngleDelta2(curSpeed, localPlayer->flags() & Entity::FL_DUCKING);
+	const float idealDelta = idealAngleDelta2(curSpeed);
 	const float deltaAt90 = idealAngleDelta3(curSpeed);
 
 	if (idealDelta == 0.0f)
@@ -1026,7 +1030,7 @@ void Misc::autoStrafe(UserCmd* cmd) noexcept
 	const float wishSpeed = Vector{-cmd->sidemove, cmd->forwardmove, cmd->upmove}.length();
 
 	const float angleDelta = Helpers::angleDiffRad(curVel, wishAng);
-	float move = angleDelta < 0.0f ? curVel + RAD90 - deltaAt90 + idealDelta : curVel - RAD90 + deltaAt90 - idealDelta;
+	float move = angleDelta < 0.0f ? curVel + PI / 2 - deltaAt90 + idealDelta : curVel - PI / 2 + deltaAt90 - idealDelta;
 
 	cmd->forwardmove = std::cosf(move) * 450.0f;
 	cmd->sidemove = -std::sinf(move) * 450.0f;
