@@ -423,7 +423,7 @@ void Visuals::hitMarker(GameEvent *event, ImDrawList *drawList) noexcept
 
 	const auto timeSinceHit = memory->globalVars->realtime - lastHitTime;
 
-	if (timeSinceHit > config->visuals.hitEffectTime)
+	if (timeSinceHit > config->visuals.hitMarkerTime)
 		return;
 
 	switch (config->visuals.hitMarker)
@@ -431,7 +431,7 @@ void Visuals::hitMarker(GameEvent *event, ImDrawList *drawList) noexcept
 	case 1:
 	{
 		const auto &mid = ImGui::GetIO().DisplaySize / 2.0f;
-		const auto color = Helpers::calculateColor(1.0f, 1.0f, 1.0f, 1.0f - timeSinceHit / config->visuals.hitEffectTime);
+		const auto color = Helpers::calculateColor(1.0f, 1.0f, 1.0f, 1.0f - timeSinceHit / config->visuals.hitMarkerTime);
 		drawList->AddLine({mid.x - 10, mid.y - 10}, {mid.x - 4, mid.y - 4}, color);
 		drawList->AddLine({mid.x + 10.5f, mid.y - 10.5f}, {mid.x + 4.5f, mid.y - 4.5f}, color);
 		drawList->AddLine({mid.x + 10.5f, mid.y + 10.5f}, {mid.x + 4.5f, mid.y + 4.5f}, color);
@@ -441,7 +441,7 @@ void Visuals::hitMarker(GameEvent *event, ImDrawList *drawList) noexcept
 	case 2:
 	{
 		const auto &mid = ImGui::GetIO().DisplaySize / 2.0f;
-		const auto color = Helpers::calculateColor(1.0f, 1.0f, 1.0f, 1.0f - timeSinceHit / config->visuals.hitEffectTime);
+		const auto color = Helpers::calculateColor(1.0f, 1.0f, 1.0f, 1.0f - timeSinceHit / config->visuals.hitMarkerTime);
 		drawList->AddCircle(mid, 17.0f, color);
 		break;
 	}
