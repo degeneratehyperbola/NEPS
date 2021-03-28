@@ -385,7 +385,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SetTooltip("Turns off AA when moving");
 		ImGui::Checkbox("Increase clamp", &config->antiAim.clamped);
 		ImGui::Checkbox("Extended (experimental)", &config->antiAim.extended);
-		ImGui::Checkbox("Flip on verlap", &config->antiAim.avoidOverlap);
+		ImGui::Checkbox("Flip on overlap", &config->antiAim.avoidOverlap);
 		ImGuiCustom::keyBind("Flip key", &config->antiAim.flipKey);
 	}
 	ImGuiCustom::keyBind("Fake duck", config->antiAim.fakeDuck);
@@ -1063,7 +1063,6 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
     ImGui::Checkbox("No grass", &config->visuals.noGrass);
     ImGui::Checkbox("No shadows", &config->visuals.noShadows);
     ImGui::Checkbox("Wireframe smoke", &config->visuals.wireframeSmoke);
-	ImGui::Checkbox("Model names", &config->visuals.modelNames);
 
 	ImGuiCustom::colorPicker("Molotov radius", config->visuals.molotovHull);
 	ImGuiCustom::colorPicker("Player bounds", config->visuals.playerBounds);
@@ -1475,7 +1474,7 @@ void GUI::renderExploitsWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Anti AFK kick", &config->exploits.antiAfkKick);
 	ImGui::Checkbox("Fast duck", &config->exploits.fastDuck);
-	ImGui::Checkbox("Moonewalk", &config->exploits.moonwalk);
+	ImGui::Checkbox("Moonwalk", &config->exploits.moonwalk);
 	ImGuiCustom::keyBind("Slowwalk", config->exploits.slowwalk);
 
 	ImGui::Checkbox("Bypass sv_pure", &config->exploits.bypassPure);
