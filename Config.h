@@ -200,7 +200,6 @@ public:
 		bool oppositeHandKnife = false;
 		int bulletImpacts = 0;
 		int accuracyTracers = 0;
-		bool modelNames = false;
 		struct Beams
 		{
 			bool enabled;

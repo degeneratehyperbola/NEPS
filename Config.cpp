@@ -508,7 +508,6 @@ static void from_json(const json& j, Config::Visuals& v)
 	read(j, "Opposite hand knife", v.oppositeHandKnife);
 	read(j, "Bullet impacts", v.bulletImpacts);
 	read(j, "Accuracy tracers", v.accuracyTracers);
-	read(j, "Model names", v.modelNames);
 	read<value_t::object>(j, "Beams self", v.self);
 	read<value_t::object>(j, "Beams ally", v.ally);
 	read<value_t::object>(j, "Beams enemy", v.enemy);
@@ -1241,7 +1240,6 @@ static void to_json(json& j, const Config::Visuals& o)
     WRITE("Color correction", colorCorrection);
 	WRITE("Bullet impacts", bulletImpacts);
 	WRITE("Accuracy tracers", accuracyTracers);
-	WRITE("Model names", modelNames);
 	WRITE("Beams self", self);
 	WRITE("Beams ally", ally);
 	WRITE("Beams enemy", enemy);
