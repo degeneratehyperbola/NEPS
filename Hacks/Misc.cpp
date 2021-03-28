@@ -258,7 +258,6 @@ void Misc::spectatorList(ImDrawList *drawList) noexcept
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 		if (ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs)))
 		{
-
 			for (auto &observer : observers)
 			{
 				ImGui::TextUnformatted(observer);
@@ -750,9 +749,6 @@ void Misc::changeConVarsTick() noexcept
     static auto nadeVar = interfaces->cvar->findVar("cl_grenadepreview");
     nadeVar->onChangeCallbacks.size = 0;
 	nadeVar->setValue(config->misc.nadePredict);
-    static auto modelVar = interfaces->cvar->findVar("r_drawmodelnames");
-    modelVar->onChangeCallbacks.size = 0;
-	modelVar->setValue(config->visuals.modelNames);
 	static auto shadowVar = interfaces->cvar->findVar("cl_csm_enabled");
 	shadowVar->setValue(!config->visuals.noShadows);
 	static auto lerpVar = interfaces->cvar->findVar("cl_interpolate");
@@ -1379,7 +1375,7 @@ void Misc::drawOffscreenEnemies(ImDrawList *drawList) noexcept
 
 void Misc::blockBot(UserCmd *cmd) noexcept
 {
-	if (!config->griefing.bb.keyMode) return;
+	if (!config->griefing.blockbot.bind.keyMode) return;
 
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
@@ -1388,7 +1384,7 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 	auto &global = GameData::global();
 
 	float best = 60.0f;
-	if (static Helpers::KeyBindState flag; flag[config->griefing.bbTar])
+	if (static Helpers::KeyBindState flag; flag[config->griefing.blockbot.target])
 	{
 		for (auto &player : GameData::players())
 		{
@@ -1408,12 +1404,12 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 		}
 	}
 
-	if (static Helpers::KeyBindState flag; !flag[config->griefing.bb]) return;
+	if (static Helpers::KeyBindState flag; !flag[config->griefing.blockbot.bind]) return;
 
 	const auto target = interfaces->entityList->getEntityFromHandle(global.indicators.blockTarget);
 	if (target && target != localPlayer.get() && !target->isDormant() && target->isAlive() && !localPlayer->isOtherEnemy(target))
 	{
-		const auto targetVec = (target->getAbsOrigin() + target->velocity() * memory->globalVars->intervalPerTick * config->griefing.bbTrajFac - localPlayer->getAbsOrigin()) * config->griefing.bbDistFac;
+		const auto targetVec = (target->getAbsOrigin() + target->velocity() * memory->globalVars->intervalPerTick * config->griefing.blockbot.trajectoryFac - localPlayer->getAbsOrigin()) * config->griefing.blockbot.distanceFac;
 		const auto z1 = target->getAbsOrigin().z - localPlayer->getEyePosition().z;
 		const auto z2 = target->getEyePosition().z - localPlayer->getAbsOrigin().z;
 		if (z1 >= 0.0f || z2 <= 0.0f)
@@ -1482,7 +1478,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	if (!local.exists || !local.alive)
 		return;
 
-	if (config->griefing.bb.keyMode)
+	if (config->griefing.blockbot.visualise.enabled)
 	{
 		auto target = GameData::playerByHandle(global.indicators.blockTarget);
 		if (target && !target->dormant && target->alive && !target->enemy)
@@ -1496,7 +1492,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 			ImVec2 pos, dir;
 			ImVec2 points[4];
 
-			const auto color = Helpers::calculateColor(config->griefing.bbCol);
+			const auto color = Helpers::calculateColor(config->griefing.blockbot.visualise);
 
 			bool draw = Helpers::worldToScreen(target->origin, pos);
 			draw = draw && Helpers::worldToScreen(curDir + target->origin, dir);
@@ -1513,10 +1509,10 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 			if (draw)
 			{
-				drawList->AddLine(points[0], points[1], color, 1.0f);
-				drawList->AddLine(points[1], points[2], color, 1.0f);
-				drawList->AddLine(points[2], points[3], color, 1.0f);
-				drawList->AddLine(points[3], points[0], color, 1.0f);
+				drawList->AddLine(points[0], points[1], color, config->griefing.blockbot.visualise.thickness);
+				drawList->AddLine(points[1], points[2], color, config->griefing.blockbot.visualise.thickness);
+				drawList->AddLine(points[2], points[3], color, config->griefing.blockbot.visualise.thickness);
+				drawList->AddLine(points[3], points[0], color, config->griefing.blockbot.visualise.thickness);
 			}
 		}
 	}

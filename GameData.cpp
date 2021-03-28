@@ -51,7 +51,6 @@ void GameData::update() noexcept
 
     Lock lock;
 
-    playerData.clear();
     observerData.clear();
     weaponData.clear();
     entityData.clear();
@@ -70,7 +69,8 @@ void GameData::update() noexcept
 
     viewMatrix = interfaces->engine->worldToScreenMatrix();
 
-    const auto observerTarget = localPlayer->getObserverMode() == ObsMode::InEye ? localPlayer->getObserverTarget() : nullptr;
+	const auto observerMode = localPlayer->getObserverMode();
+    const auto observerTarget = observerMode != ObsMode::Roaming && observerMode != ObsMode::Deathcam ? localPlayer->getObserverTarget() : nullptr;
 
 	for (int i = 1; i <= interfaces->entityList->getHighestEntityIndex(); ++i)
 	{
@@ -80,7 +80,7 @@ void GameData::update() noexcept
 
 		if (entity->isPlayer())
 		{
-			if (entity == localPlayer.get() || entity == observerTarget)
+			if (entity == localPlayer.get())
 				continue;
 
 			if (const auto player = playerByHandleWritable(entity->handle()))
@@ -161,25 +161,19 @@ void GameData::update() noexcept
     std::sort(entityData.begin(), entityData.end());
     std::sort(lootCrateData.begin(), lootCrateData.end());
 
-    for (auto it = projectileData.begin(); it != projectileData.end();) {
-        if (!interfaces->entityList->getEntityFromHandle(it->handle)) {
-            it->exploded = true;
+	std::for_each(projectileData.begin(), projectileData.end(), [](auto &projectile)
+	{
+		if (interfaces->entityList->getEntityFromHandle(projectile.handle) == nullptr)
+			projectile.exploded = true;
+	});
 
-            if (it->trajectory.size() < 1 || it->trajectory[it->trajectory.size() - 1].first + 60.0f < memory->globalVars->realtime) {
-                it = projectileData.erase(it);
-                continue;
-            }
-        }
-        ++it;
-    }
+	std::erase_if(projectileData, [](const auto &projectile)
+	{
+		return interfaces->entityList->getEntityFromHandle(projectile.handle) == nullptr
+			&& (projectile.trajectory.size() < 1 || projectile.trajectory[projectile.trajectory.size() - 1].first + 60.0f < memory->globalVars->realtime);
+	});
 
-    for (auto it = playerData.begin(); it != playerData.end();) {
-        if (!interfaces->entityList->getEntityFromHandle(it->handle)) {
-            it = playerData.erase(it);
-            continue;
-        }
-        ++it;
-    }
+	std::erase_if(playerData, [](const auto &player) { return interfaces->entityList->getEntityFromHandle(player.handle) == nullptr; });
 }
 
 void GameData::clearProjectileList() noexcept
@@ -274,6 +268,8 @@ void LocalPlayerData::update() noexcept
     const auto obsMode = localPlayer->getObserverMode();
 	if (const auto obs = localPlayer->getObserverTarget(); obs && obsMode != ObsMode::Roaming && obsMode != ObsMode::Deathcam)
 	{
+		observerTargetHandle = obs->handle();
+
 		origin = obs->getAbsOrigin();
 		velocity = obs->velocity();
 
@@ -286,6 +282,8 @@ void LocalPlayerData::update() noexcept
 	}
 	else
 	{
+		observerTargetHandle = -1;
+
 		origin = localPlayer->getAbsOrigin();
 		velocity = localPlayer->velocity();
 
@@ -377,36 +375,41 @@ PlayerData::PlayerData(Entity* entity) noexcept : BaseData{ entity }
     update(entity);
 }
 
-void PlayerData::update(Entity* entity) noexcept
+void PlayerData::update(Entity *entity) noexcept
 {
-    entity->getPlayerName(name);
+	entity->getPlayerName(name);
 
-    dormant = entity->isDormant();
-    if (dormant)
-        return;
+	if (entity->isDormant() && !dormant)
+		becameDormant = memory->globalVars->realtime;
 
-    static_cast<BaseData&>(*this) = { entity };
-    origin = entity->getAbsOrigin();
-    velocity = entity->velocity();
-    inViewFrustum = !interfaces->engine->cullBox(obbMins + origin, obbMaxs + origin);
-    alive = entity->isAlive();
+	dormant = entity->isDormant();
+	if (dormant)
+		return;
 
-    if (localPlayer) {
-        enemy = memory->isOtherEnemy(entity, localPlayer.get());
-        visible = inViewFrustum && alive && entity->visibleTo(localPlayer.get());
-    }
+	static_cast<BaseData &>(*this) = {entity};
+	origin = entity->getAbsOrigin();
+	velocity = entity->velocity();
+	inViewFrustum = !interfaces->engine->cullBox(obbMins + origin, obbMaxs + origin);
+	alive = entity->isAlive();
 
-    constexpr auto isEntityAudible = [](int entityIndex) noexcept {
-        for (int i = 0; i < memory->activeChannels->count; ++i)
-            if (memory->channels[memory->activeChannels->list[i]].soundSource == entityIndex)
-                return true;
-        return false;
-    };
+	if (localPlayer)
+	{
+		enemy = memory->isOtherEnemy(entity, localPlayer.get());
+		visible = inViewFrustum && alive && entity->visibleTo(localPlayer.get());
+	}
 
-    audible = isEntityAudible(entity->index());
-    spotted = entity->spotted();
-    health = entity->health();
-    armor = entity->armor();
+	constexpr auto isEntityAudible = [](int entityIndex) noexcept
+	{
+		for (int i = 0; i < memory->activeChannels->count; ++i)
+			if (memory->channels[memory->activeChannels->list[i]].soundSource == entityIndex)
+				return true;
+		return false;
+	};
+
+	audible = isEntityAudible(entity->index());
+	spotted = entity->spotted();
+	health = entity->health();
+	armor = entity->armor();
 
 	isBot = entity->isBot();
 	hasBomb = entity->hasC4();
@@ -418,13 +421,14 @@ void PlayerData::update(Entity* entity) noexcept
 		reloading = entity->isInReload();
 	}
 
-    flashDuration = entity->flashDuration();
+	flashDuration = entity->flashDuration();
 
-    if (const auto weapon = entity->getActiveWeapon()) {
-        audible = audible || isEntityAudible(weapon->index());
-        if (const auto weaponInfo = weapon->getWeaponData())
-            activeWeapon = interfaces->localize->findAsUTF8(weaponInfo->name);
-    }
+	if (const auto weapon = entity->getActiveWeapon())
+	{
+		audible = audible || isEntityAudible(weapon->index());
+		if (const auto weaponInfo = weapon->getWeaponData())
+			activeWeapon = interfaces->localize->findAsUTF8(weaponInfo->name);
+	}
 
 	const auto collidable = entity->getCollideable();
 	if (!collidable)
@@ -433,44 +437,46 @@ void PlayerData::update(Entity* entity) noexcept
 	colMaxs = collidable->obbMaxs();
 	colMins = collidable->obbMins();
 
-    const auto model = entity->getModel();
-    if (!model)
-        return;
+	const auto model = entity->getModel();
+	if (!model)
+		return;
 
-    const auto studioModel = interfaces->modelInfo->getStudioModel(model);
-    if (!studioModel)
-        return;
+	const auto studioModel = interfaces->modelInfo->getStudioModel(model);
+	if (!studioModel)
+		return;
 
-    Matrix3x4 boneMatrices[MAXSTUDIOBONES];
-    if (!entity->setupBones(boneMatrices, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
-        return;
+	Matrix3x4 boneMatrices[MAXSTUDIOBONES];
+	if (!entity->setupBones(boneMatrices, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
+		return;
 
 	bones.clear();
-    bones.reserve(20);
+	bones.reserve(20);
 
-    for (int i = 0; i < studioModel->numBones; ++i) {
-        const auto bone = studioModel->getBone(i);
+	for (int i = 0; i < studioModel->numBones; ++i)
+	{
+		const auto bone = studioModel->getBone(i);
 
-        if (!bone || bone->parent == -1 || !(bone->flags & BONE_USED_BY_HITBOX))
-            continue;
+		if (!bone || bone->parent == -1 || !(bone->flags & BONE_USED_BY_HITBOX))
+			continue;
 
-        bones.emplace_back(boneMatrices[i].origin(), boneMatrices[bone->parent].origin());
-    }
+		bones.emplace_back(boneMatrices[i].origin(), boneMatrices[bone->parent].origin());
+	}
 
-    const auto set = studioModel->getHitboxSet(entity->hitboxSet());
+	const auto set = studioModel->getHitboxSet(entity->hitboxSet());
 
-    if (!set)
-        return;
+	if (!set)
+		return;
 
-    const auto headBox = set->getHitbox(0);
+	const auto headBox = set->getHitbox(0);
 
-    headMins = headBox->bbMin.transform(boneMatrices[headBox->bone]);
-    headMaxs = headBox->bbMax.transform(boneMatrices[headBox->bone]);
+	headMins = headBox->bbMin.transform(boneMatrices[headBox->bone]);
+	headMaxs = headBox->bbMax.transform(boneMatrices[headBox->bone]);
 
-    if (headBox->capsuleRadius > 0.0f) {
-        headMins -= headBox->capsuleRadius;
-        headMaxs += headBox->capsuleRadius;
-    }
+	if (headBox->capsuleRadius > 0.0f)
+	{
+		headMins -= headBox->capsuleRadius;
+		headMaxs += headBox->capsuleRadius;
+	}
 }
 
 WeaponData::WeaponData(Entity* entity) noexcept : BaseData{ entity }

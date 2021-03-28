@@ -523,7 +523,7 @@ static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const 
 		drawList->AddLine(bonePoint, parentPoint, color, config.thickness);
 }
 
-static bool renderPlayerEsp(const PlayerData &playerData, const Player &playerConfig) noexcept
+static bool renderPlayerEsp(const PlayerData &playerData, Player playerConfig) noexcept
 {
 	if (!playerConfig.enabled)
 		return false;
@@ -531,6 +531,25 @@ static bool renderPlayerEsp(const PlayerData &playerData, const Player &playerCo
 	if (playerConfig.audibleOnly && !playerData.audible && !playerConfig.spottedOnly
 		|| playerConfig.spottedOnly && !playerData.spotted && !(playerConfig.audibleOnly && playerData.audible)) // if both "Audible Only" and "Spotted Only" are on treat them as audible OR spotted
 		return true;
+
+	if (playerData.dormant)
+	{
+		const float factor = std::clamp((memory->globalVars->realtime - playerData.becameDormant) / 4, 0.0f, 1.0f);
+
+		if (factor == 1.0f) return;
+
+		playerConfig.box.color[3] -= factor;
+		playerConfig.box.fill.color[3] -= factor;
+		playerConfig.flags.color[3] -= factor;
+		playerConfig.flashDuration.color[3] *= factor;
+		playerConfig.headBox.color[3] -= factor;
+		playerConfig.headBox.fill.color[3] -= factor;
+		playerConfig.healthBar.color[3] -= factor;
+		playerConfig.name.color[3] -= factor;
+		playerConfig.skeleton.color[3] -= factor;
+		playerConfig.snapline.color[3] -= factor;
+		playerConfig.weapon.color[3] -= factor;
+	}
 
 	renderPlayerBox(playerData, playerConfig);
 	drawPlayerSkeleton(playerConfig.skeleton, playerData);
@@ -607,11 +626,11 @@ void StreamProofESP::render() noexcept
 	{
 		if (!player.alive) continue;
 		if (!player.inViewFrustum) continue;
-		if (player.dormant) continue;
+		if (player.handle == GameData::local().observerTargetHandle) continue;
 
 		auto &playerConfig = player.enemy ? config->esp.enemies : config->esp.allies;
 
 		if (!renderPlayerEsp(player, playerConfig["All"]))
-			renderPlayerEsp(player, playerConfig[player.visible ? "Visible" : "Occluded"]);
+			renderPlayerEsp(player, playerConfig[player.dormant ? "Dormant" : (player.visible ? "Visible" : "Occluded")]);
 	}
 }

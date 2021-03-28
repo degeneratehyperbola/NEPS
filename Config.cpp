@@ -668,13 +668,9 @@ static void from_json(const json &j, Config::Griefing &s)
 	read(j, "Ban color", s.banColor);
 	read<value_t::string>(j, "Ban text", s.banText);
 	read<value_t::object>(j, "Reportbot", s.reportbot);
+	read<value_t::object>(j, "Blockbot", s.blockbot);
 	read(j, "Fake prime", s.fakePrime);
 	read(j, "Vote reveal", s.revealVotes);
-	read<value_t::object>(j, "Blockbot", s.bb);
-	read<value_t::object>(j, "Blockbot target", s.bbTar);
-	read(j, "Blockbot factor", s.bbTrajFac);
-	read(j, "Blockbot dist factor", s.bbDistFac);
-	read<value_t::object>(j, "Blockbot color", s.bbCol);
 }
 
 static void from_json(const json& j, Config::Griefing::Reportbot& r)
@@ -688,6 +684,15 @@ static void from_json(const json& j, Config::Griefing::Reportbot& r)
     read(j, "Wall Hacking", r.wallhack);
     read(j, "Aim Hacking", r.aimbot);
     read(j, "Other Hacking", r.other);
+}
+
+static void from_json(const json& j, Config::Griefing::Blockbot& b)
+{
+	read<value_t::object>(j, "Bind", b.bind);
+	read<value_t::object>(j, "Target", b.target);
+	read(j, "Trajectory factor", b.trajectoryFac);
+	read(j, "Distance factor", b.distanceFac);
+	read<value_t::object>(j, "Visualise", b.visualise);
 }
 
 static void from_json(const json &j, Config::Movement &m)
@@ -1034,8 +1039,6 @@ static void to_json(json& j, const Config::Sound& o)
 	WRITE("Kill sound", killSound);
 	WRITE("Hit sound volume", hitSoundVol);
 	WRITE("Kill sound volume", killSoundVol);
-	//j["Custom hit sound"] = o.customHitSound;
-	//j["Custom kill sound"] = o.customKillSound;
 	WRITE("Custom hit sound", customHitSound);
 	WRITE("Custom kill sound", customKillSound);
 }
@@ -1120,6 +1123,15 @@ static void to_json(json &j, const Config::Griefing::Reportbot &o, const Config:
 	WRITE("Other Hacking", other);
 }
 
+static void to_json(json &j, const Config::Griefing::Blockbot &o, const Config::Griefing::Blockbot &dummy = {})
+{
+	WRITE("Bind", bind);
+	WRITE("Target", target);
+	WRITE("Trajectory factor", trajectoryFac);
+	WRITE("Distance factor", distanceFac);
+	WRITE("Visualise", visualise);
+}
+
 static void to_json(json &j, const Config::Griefing &o)
 {
 	const Config::Griefing dummy;
@@ -1134,16 +1146,12 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Name stealer", nameStealer);
 	WRITE("Kill message", killMessage);
 	WRITE("Kill message string", killMessageString);
-	WRITE("Fake prime", fakePrime);
-	WRITE("Vote reveal", revealVotes);
 	WRITE("Ban color", banColor);
 	WRITE("Ban text", banText);
 	WRITE("Reportbot", reportbot);
-	WRITE("Blockbot", bb);
-	WRITE("Blockbot target", bbTar);
-	WRITE("Blockbot factor", bbTrajFac);
-	WRITE("Blockbot dist factor", bbDistFac);
-	WRITE("Blockbot color", bbCol);
+	WRITE("Blockbot", blockbot);
+	WRITE("Fake prime", fakePrime);
+	WRITE("Vote reveal", revealVotes);
 }
 
 static void to_json(json &j, const Config::Movement &o)

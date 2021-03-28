@@ -98,6 +98,7 @@ struct LocalPlayerData
 	int fov;
 	int handle;
 	float flashDuration;
+	int observerTargetHandle;
 	Vector aimPunch;
 	Vector aimPunchAngle;
 	Vector origin;
@@ -158,6 +159,7 @@ struct PlayerData : BaseData
 	void update(Entity *entity) noexcept;
 
 	bool dormant;
+	float becameDormant;
 	bool enemy = false;
 	bool visible = false;
 	bool audible;

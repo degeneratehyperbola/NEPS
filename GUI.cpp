@@ -762,7 +762,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
             const auto items = [](std::size_t category) noexcept -> std::vector<const char*> {
                 switch (category) {
                 case 0:
-                case 1: return { "Visible", "Occluded" };
+                case 1: return { "Visible", "Occluded", "Dormant" };
                 case 2: return { "Pistols", "SMGs", "Rifles", "Sniper Rifles", "Shotguns", "Machineguns", "Grenades", "Melee", "Other" };
                 case 3: return { "Flashbang", "HE Grenade", "Breach Charge", "Bump Mine", "Decoy Grenade", "Molotov", "TA Grenade", "Smoke Grenade", "Snowball" };
                 case 4: return { "Pistol Case", "Light Case", "Heavy Case", "Explosive Case", "Tools Case", "Cash Dufflebag" };
@@ -1554,14 +1554,13 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
-	ImGuiCustom::keyBind("Blockbot", config->griefing.bb);
+	ImGuiCustom::keyBind("Blockbot", config->griefing.blockbot.bind);
 	ImGui::PushItemWidth(192.0f);
-	ImGui::SliderFloat("##tfactor", &config->griefing.bbTrajFac, 0.0f, 4.0f, "Trajectory factor %.3fu");
-	ImGui::SliderFloat("##dfactor", &config->griefing.bbDistFac, 0.0f, 4.0f, "Distance factor %.3fu");
+	ImGui::SliderFloat("##tfactor", &config->griefing.blockbot.trajectoryFac, 0.0f, 4.0f, "Trajectory factor %.3fu");
+	ImGui::SliderFloat("##dfactor", &config->griefing.blockbot.distanceFac, 0.0f, 4.0f, "Distance factor %.3fu");
 	ImGui::PopItemWidth();
-	ImGuiCustom::keyBind("Blockbot target", config->griefing.bbTar);
-	ImGui::SameLine();
-	ImGuiCustom::colorPicker("##bbinfo", config->griefing.bbCol);
+	ImGuiCustom::keyBind("Blockbot target", config->griefing.blockbot.target);
+	ImGuiCustom::colorPicker("Visualise blockbot", config->griefing.blockbot.visualise);
 
 	if (!contentOnly)
 		ImGui::End();
@@ -1604,20 +1603,12 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
     ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
 
 	#ifdef LEGACY_WATERMARK
-	ImGui::PushID("spec");
     ImGuiCustom::colorPicker("Spectator list", config->misc.spectatorList);
-	ImGui::PopID();
 	ImGui::SameLine();
-	ImGui::PushID("specBg");
 	ImGuiCustom::colorPicker("Background", config->misc.specBg.color, &config->misc.specBg.rainbow, &config->misc.specBg.rainbowSpeed);
-	ImGui::PopID();
-	ImGui::PushID("water");
     ImGuiCustom::colorPicker("Watermark", config->misc.watermark);
-	ImGui::PopID();
 	ImGui::SameLine();
-	ImGui::PushID("waterBg");
 	ImGuiCustom::colorPicker("Background", config->misc.bg.color, &config->misc.bg.rainbow, &config->misc.bg.rainbowSpeed);
-	ImGui::PopID();
 	#else
 	ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
 	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);
