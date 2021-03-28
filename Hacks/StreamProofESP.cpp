@@ -319,33 +319,32 @@ struct FontPush
 	}
 };
 
-static void drawHealthBar(const ImVec2 &pos, float height, int health, Color4Border text, float distance, float cull) noexcept
+static void drawHealthBar(const ImVec2 &pos, float height, int health, const Color4BorderToggle &healthBarConfig, const Color4BorderToggle &text, float distance, float cull) noexcept
 {
-	int originalHealth = health;
+	const int originalHealth = health;
 	health = std::clamp(health, 0, 100);
 
 	constexpr float width = 3.0f;
 
-	ImVec2 min = pos;
-	ImVec2 max = min + ImVec2{width, height / 2.0f};
+	if (healthBarConfig.enabled)
+	{
+		ImVec2 min = pos;
+		ImVec2 max = min + ImVec2{width, height};
 
-	if (text.border)
-		drawList->AddRectFilled(min - ImVec2{1.0f, 1.0f}, pos + ImVec2{width + 1.0f, height + 1.0f}, Helpers::calculateColor(0, 0, 0, 255));
+		const auto color = Helpers::calculateColor(healthBarConfig);
 
-	drawList->PushClipRect(pos + ImVec2{-1.0f, (100 - health) / 100.0f * height - 1.0f}, pos + ImVec2{width + 1.0f, height + 1.0f});
+		if (healthBarConfig.border)
+			drawList->AddRectFilled(min - ImVec2{1.0f, 1.0f}, pos + ImVec2{width + 1.0f, height + 1.0f}, color & IM_COL32_A_MASK);
 
-	const auto green = Helpers::calculateColor(0, 255, 0, 255);
-	const auto yellow = Helpers::calculateColor(255, 255, 0, 255);
-	const auto red = Helpers::calculateColor(255, 0, 0, 255);
+		drawList->PushClipRect(pos + ImVec2{-1.0f, (100 - health) / 100.0f * height - 1.0f}, pos + ImVec2{width + 1.0f, height + 1.0f});
 
-	drawList->AddRectFilledMultiColor(ImFloor(min), ImFloor(max), green, green, yellow, yellow);
-	min.y += height / 2.0f;
-	max.y += height / 2.0f;
-	drawList->AddRectFilledMultiColor(ImFloor(min), ImFloor(max), yellow, yellow, red, red);
+		drawList->AddRectFilled(ImFloor(min), ImFloor(max), color);
 
-	drawList->PopClipRect();
+		drawList->PopClipRect();
+	}
 
-	renderText(distance, cull, text, std::to_string(originalHealth).c_str(), pos + ImVec2{0.0f, (100 - health) / 100.0f * height}, true, false);
+	if (text.enabled)
+		renderText(distance, cull, text, std::to_string(originalHealth).c_str(), pos + ImVec2{0.0f, (100 - health) / 100.0f * height}, true, false);
 }
 
 static void renderPlayerBox(const PlayerData &playerData, const Player &config) noexcept
@@ -361,8 +360,7 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 
 	FontPush font{config.font.name, playerData.distanceToLocal};
 
-	if (config.healthBar.enabled)
-		drawHealthBar(bbox.min - ImVec2{5.0f, 0.0f}, (bbox.max.y - bbox.min.y), playerData.health, config.healthBar, playerData.distanceToLocal, config.textCullDistance);
+	drawHealthBar(bbox.min - ImVec2{5.0f, 0.0f}, (bbox.max.y - bbox.min.y), playerData.health, config.healthBar, config.health, playerData.distanceToLocal, config.textCullDistance);
 
 	if (config.name.enabled)
 	{
@@ -536,7 +534,7 @@ static bool renderPlayerEsp(const PlayerData &playerData, Player playerConfig) n
 	{
 		const float factor = std::clamp((memory->globalVars->realtime - playerData.becameDormant) / 4, 0.0f, 1.0f);
 
-		if (factor == 1.0f) return;
+		if (factor == 1.0f) return true;
 
 		playerConfig.box.color[3] -= factor;
 		playerConfig.box.fill.color[3] -= factor;
@@ -545,6 +543,7 @@ static bool renderPlayerEsp(const PlayerData &playerData, Player playerConfig) n
 		playerConfig.headBox.color[3] -= factor;
 		playerConfig.headBox.fill.color[3] -= factor;
 		playerConfig.healthBar.color[3] -= factor;
+		playerConfig.health.color[3] -= factor;
 		playerConfig.name.color[3] -= factor;
 		playerConfig.skeleton.color[3] -= factor;
 		playerConfig.snapline.color[3] -= factor;

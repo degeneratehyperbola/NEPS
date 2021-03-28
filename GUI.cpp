@@ -989,9 +989,10 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
             }
         
             ImGui::SameLine(spacing);
+            ImGuiCustom::colorPicker("Health", playerConfig.health);
             ImGuiCustom::colorPicker("Health bar", playerConfig.healthBar);
-			ImGuiCustom::colorPicker("Flags", playerConfig.flags);
             ImGui::SameLine(spacing);
+			ImGuiCustom::colorPicker("Flags", playerConfig.flags);
         } else if (currentCategory == 2) {
             auto& weaponConfig = config->esp.weapons[currentItem];
             ImGuiCustom::colorPicker("Ammo", weaponConfig.ammo);

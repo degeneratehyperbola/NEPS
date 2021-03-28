@@ -297,6 +297,7 @@ static void from_json(const json& j, Player& p)
     read(j, "Audible Only", p.audibleOnly);
     read(j, "Spotted Only", p.spottedOnly);
     read<value_t::object>(j, "Health Bar", p.healthBar);
+    read<value_t::object>(j, "Health", p.health);
     read<value_t::object>(j, "Skeleton", p.skeleton);
     read<value_t::object>(j, "Head Box", p.headBox);
     read<value_t::object>(j, "Flags", p.flags);
@@ -861,6 +862,7 @@ static void to_json(json& j, const Player& o, const Player& dummy = {})
     WRITE("Audible Only", audibleOnly);
     WRITE("Spotted Only", spottedOnly);
     WRITE("Health Bar", healthBar);
+    WRITE("Health", health);
     WRITE("Skeleton", skeleton);
     WRITE("Head Box", headBox);
     WRITE("Flags", flags);
