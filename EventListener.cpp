@@ -58,7 +58,7 @@ void EventListener::fireGameEvent(GameEvent* event)
         Visuals::hitMarker(event);
         break;
 	case fnv::hash("bullet_impact"):
-		Visuals::bBeams(event);
+		Visuals::bulletBeams(event);
 		break;
 	case fnv::hash("vote_cast"):
 		Misc::voteRevealer(*event);

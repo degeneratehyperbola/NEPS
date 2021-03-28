@@ -7,7 +7,7 @@
 #include "EngineTrace.h"
 #include "EntityList.h"
 #include "LocalPlayer.h"
-#include "matrix3x4.h"
+#include "Matrix3x4.h"
 #include "ModelRender.h"
 #include "ModelInfo.h"
 #include "VarMapping.h"
@@ -48,29 +48,6 @@ enum class ObsMode {
     Roaming
 };
 
-enum class PoseParam
-{
-	STRAFE_YAW,
-	STAND,
-	LEAN_YAW,
-	SPEED,
-	LADDER_YAW,
-	LADDER_SPEED,
-	JUMP_FALL,
-	MOVE_YAW,
-	MOVE_BLEND_CROUCH,
-	MOVE_BLEND_WALK,
-	MOVE_BLEND_RUN,
-	BODY_YAW,
-	BODY_PITCH,
-	AIM_BLEND_STAND_IDLE,
-	AIM_BLEND_STAND_WALK,
-	AIM_BLEND_STAND_RUN,
-	AIM_BLEND_COURCH_IDLE,
-	AIM_BLEND_CROUCH_WALK,
-	DEATH_YAW
-};
-
 class Collideable {
 public:
     VIRTUAL_METHOD(const Vector&, obbMins, 1, (), (this))
@@ -97,7 +74,7 @@ public:
 
 	VIRTUAL_METHOD(Vector &, getRenderOrigin, 1, (), (this + 4))
     VIRTUAL_METHOD(const Model*, getModel, 8, (), (this + 4))
-    VIRTUAL_METHOD(const matrix3x4&, toWorldTransform, 32, (), (this + 4))
+    VIRTUAL_METHOD(const Matrix3x4&, toWorldTransform, 32, (), (this + 4))
 
     VIRTUAL_METHOD(int&, handle, 2, (), (this))
     VIRTUAL_METHOD(Collideable*, getCollideable, 3, (), (this))
@@ -120,7 +97,7 @@ public:
     VIRTUAL_METHOD(float, getInaccuracy, 482, (), (this))
 	VIRTUAL_METHOD(void, updateClientSideAnimation, 223, (), (this))
 
-	enum
+	enum PlayerFlags
 	{
 		FL_ONGROUND = 1 << 0, // At rest / on the ground
 		FL_DUCKING = 1 << 1, // Player flag -- Player is fully crouched
@@ -177,13 +154,32 @@ public:
 		return **reinterpret_cast<AnimState **>(this + 0x3914);
 	}
 
+	enum PoseParameter
+	{
+		PP_STRAFE_YAW,
+		PP_STAND,
+		PP_LEAN_YAW,
+		PP_SPEED,
+		PP_LADDER_YAW,
+		PP_LADDER_SPEED,
+		PP_JUMP_FALL,
+		PP_MOVE_YAW,
+		PP_MOVE_BLEND_CROUCH,
+		PP_MOVE_BLEND_WALK,
+		PP_MOVE_BLEND_RUN,
+		PP_BODY_YAW,
+		PP_BODY_PITCH,
+		PP_AIM_BLEND_STAND_IDLE,
+		PP_AIM_BLEND_STAND_WALK,
+		PP_AIM_BLEND_STAND_RUN,
+		PP_AIM_BLEND_COURCH_IDLE,
+		PP_AIM_BLEND_CROUCH_WALK,
+		PP_DEATH_YAW
+	};
+
 	std::array<float, 24> &poseParam() noexcept
 	{
 		return *reinterpret_cast<std::array<float, 24> *>((uintptr_t)this + netvars->operator[](fnv::hash("CBaseAnimating->m_flPoseParameter")));
-	}
-	float &poseParam(PoseParam index) noexcept
-	{
-		return reinterpret_cast<std::array<float, 24> *>((uintptr_t)this + netvars->operator[](fnv::hash("CBaseAnimating->m_flPoseParameter")))->operator[]((int)index);
 	}
 	float &poseParam(int index) noexcept
 	{
@@ -219,44 +215,46 @@ public:
         return false;
     }
 
-    bool setupBones(matrix3x4* out, int maxBones, int boneMask, float currentTime) noexcept
-    {
+	bool setupBones(Matrix3x4 *out, int maxBones, int boneMask, float currentTime) noexcept
+	{
 		if (config->misc.fixBoneMatrix && localPlayer && this == localPlayer.get())
 		{
-            int *render = reinterpret_cast<int*>(this + 0x274);
+			int *render = reinterpret_cast<int *>(this + 0x274);
 			int *effects = (int *)(this + 0xF0);
-			int *shouldskipframe = (int *)(this + 0xA68);
-            int backup = *render;
+			int *shouldSkipFrame = (int *)(this + 0xA68);
+			int backupRender = *render;
 			int backupEffects = *effects;
-			int backupShouldskipframe = *shouldskipframe;
-            Vector absOrigin = getAbsOrigin();
+			int backupShouldSkipFrame = *shouldSkipFrame;
+			Vector absOrigin = getAbsOrigin();
 			*render = 0;
-			*shouldskipframe = 0;
+			*shouldSkipFrame = 0;
 			*effects |= 8;
-            memory->setAbsOrigin(this, origin());
+			memory->setAbsOrigin(this, origin());
 			auto result = VirtualMethod::call<bool, 13>(this + 4, out, maxBones, boneMask, currentTime);
-            memory->setAbsOrigin(this, absOrigin);
-            *render = backup;
+			memory->setAbsOrigin(this, absOrigin);
+			*render = backupRender;
 			*effects = backupEffects;
-			*shouldskipframe = backupShouldskipframe;
+			*shouldSkipFrame = backupShouldSkipFrame;
 			return result;
 		}
-        if (config->misc.fixBoneMatrix) {
-            int* render = reinterpret_cast<int*>(this + 0x274);
-            int backup = *render;
-            Vector absOrigin = getAbsOrigin();
-            *render = 0;
-            memory->setAbsOrigin(this, origin());
-            auto result = VirtualMethod::call<bool, 13>(this + 4, out, maxBones, boneMask, currentTime);
-            memory->setAbsOrigin(this, absOrigin);
-            *render = backup;
-            return result;
-        }
-        return VirtualMethod::call<bool, 13>(this + 4, out, maxBones, boneMask, currentTime);
-    }
+		if (config->misc.fixBoneMatrix)
+		{
+			int *render = reinterpret_cast<int *>(this + 0x274);
+			int backup = *render;
+			Vector absOrigin = getAbsOrigin();
+			*render = 0;
+			memory->setAbsOrigin(this, origin());
+			auto result = VirtualMethod::call<bool, 13>(this + sizeof(uintptr_t), out, maxBones, boneMask, currentTime);
+			memory->setAbsOrigin(this, absOrigin);
+			*render = backup;
+			return result;
+		}
+
+		return VirtualMethod::call<bool, 13>(this + 4, out, maxBones, boneMask, currentTime);
+	}
     Vector getBonePosition(int bone) noexcept
     {
-        if (matrix3x4 boneMatrices[MAXSTUDIOBONES]; setupBones(boneMatrices, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, 0.0f))
+        if (Matrix3x4 boneMatrices[MAXSTUDIOBONES]; setupBones(boneMatrices, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, 0.0f))
             return boneMatrices[bone].origin();
         else
             return Vector{};
@@ -358,6 +356,8 @@ public:
 	NETVAR(clientAnimations, "CBaseAnimating", "m_bClientSideAnimation", bool)
     NETVAR(body, "CBaseAnimating", "m_nBody", int)
     NETVAR(hitboxSet, "CBaseAnimating", "m_nHitboxSet", int)
+    NETVAR(frozen, "CBaseAnimating", "m_flFrozen", float)
+	NETVAR_OFFSET(useFastPipeline, "CBaseAnimating", "m_flFrozen", 4, bool)
 
     NETVAR(modelIndex, "CBaseEntity", "m_nModelIndex", unsigned)
     NETVAR(origin, "CBaseEntity", "m_vecOrigin", Vector)
@@ -383,6 +383,7 @@ public:
 	NETVAR(observerMode, "CBasePlayer", "m_iObserverMode", ObsMode)
     NETVAR(lastPlaceName, "CBasePlayer", "m_szLastPlaceName", char[18])
     NETVAR_OFFSET(thirdPersonAngles, "CBasePlayer", "deadflag", 4, Vector)
+    //NETVAR(effects, "CBasePlayer", "m_fEffects", int)
 
     NETVAR(armor, "CCSPlayer", "m_ArmorValue", int)
     NETVAR(eyeAngles, "CCSPlayer", "m_angEyeAngles", Vector)

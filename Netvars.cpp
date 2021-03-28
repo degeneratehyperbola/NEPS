@@ -166,7 +166,7 @@ static void __cdecl viewModelSequence(RecvProxyData& data, void* arg2, void* arg
 {
     if (localPlayer) {
         if (const auto activeWeapon = localPlayer->getActiveWeapon()) {
-            if (config->visuals.deagleSpinner && activeWeapon->getClientClass()->classId == ClassId::Deagle && data.value._int == 7)
+            if (config->visuals.deagleSpinner && activeWeapon->getClientClass()->classID == ClassID::Deagle && data.value._int == 7)
 				data.value._int = 8;
 
 			if (const auto weapon_info = game_data::get_weapon_info(activeWeapon->itemDefinitionIndex()))

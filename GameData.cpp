@@ -108,9 +108,9 @@ void GameData::update() noexcept
 					weaponData.emplace_back(entity);
 			} else
 			{
-				switch (entity->getClientClass()->classId)
+				switch (entity->getClientClass()->classID)
 				{
-				case ClassId::BaseCSGrenadeProjectile:
+				case ClassID::GrenadeProjectile:
 					if (entity->grenadeExploded())
 					{
 						if (const auto it = std::find(projectileData.begin(), projectileData.end(), entity->handle()); it != projectileData.end())
@@ -118,37 +118,37 @@ void GameData::update() noexcept
 						break;
 					}
 					[[fallthrough]];
-				case ClassId::BreachChargeProjectile:
-				case ClassId::BumpMineProjectile:
-				case ClassId::DecoyProjectile:
-				case ClassId::MolotovProjectile:
-				case ClassId::SensorGrenadeProjectile:
-				case ClassId::SmokeGrenadeProjectile:
-				case ClassId::SnowballProjectile:
+				case ClassID::BreachChargeProjectile:
+				case ClassID::BumpMineProjectile:
+				case ClassID::DecoyProjectile:
+				case ClassID::MolotovProjectile:
+				case ClassID::SensorGrenadeProjectile:
+				case ClassID::SmokeGrenadeProjectile:
+				case ClassID::SnowballProjectile:
 					if (const auto it = std::find(projectileData.begin(), projectileData.end(), entity->handle()); it != projectileData.end())
 						it->update(entity);
 					else
 						projectileData.emplace_front(entity);
 					break;
-				case ClassId::DynamicProp:
+				case ClassID::PropDynamic:
 					if (const auto model = entity->getModel(); !model || !std::strstr(model->name, "challenge_coin"))
 						break;
 					[[fallthrough]];
-				case ClassId::EconEntity:
-				case ClassId::Chicken:
-				case ClassId::PlantedC4:
-				case ClassId::Hostage:
-				case ClassId::Dronegun:
-				case ClassId::Cash:
-				case ClassId::AmmoBox:
-				case ClassId::RadarJammer:
-				case ClassId::SnowballPile:
+				case ClassID::EconEntity:
+				case ClassID::Chicken:
+				case ClassID::PlantedC4:
+				case ClassID::Hostage:
+				case ClassID::Dronegun:
+				case ClassID::Cash:
+				case ClassID::AmmoBox:
+				case ClassID::RadarJammer:
+				case ClassID::SnowballPile:
 					entityData.emplace_back(entity);
 					break;
-				case ClassId::LootCrate:
+				case ClassID::LootCrate:
 					lootCrateData.emplace_back(entity);
 					break;
-				case ClassId::Inferno:
+				case ClassID::Inferno:
 					infernoData.emplace_back(entity);
 					break;
 				}
@@ -317,17 +317,17 @@ BaseData::BaseData(Entity* entity) noexcept
 EntityData::EntityData(Entity* entity) noexcept : BaseData{ entity }
 {
     name = [](Entity *entity) {
-        switch (entity->getClientClass()->classId) {
-        case ClassId::EconEntity: return "Defuse Kit";
-        case ClassId::Chicken: return "Chicken";
-        case ClassId::PlantedC4: return "Planted C4";
-        case ClassId::Hostage: return "Hostage";
-        case ClassId::Dronegun: return "Sentry";
-        case ClassId::Cash: return "Cash";
-        case ClassId::AmmoBox: return "Ammo Box";
-        case ClassId::RadarJammer: return "Radar Jammer";
-        case ClassId::SnowballPile: return "Snowball Pile";
-		case ClassId::DynamicProp: return "Collectable Coin";
+        switch (entity->getClientClass()->classID) {
+        case ClassID::EconEntity: return "Defuse Kit";
+        case ClassID::Chicken: return "Chicken";
+        case ClassID::PlantedC4: return "Planted C4";
+        case ClassID::Hostage: return "Hostage";
+        case ClassID::Dronegun: return "Sentry";
+        case ClassID::Cash: return "Cash";
+        case ClassID::AmmoBox: return "Ammo Box";
+        case ClassID::RadarJammer: return "Radar Jammer";
+        case ClassID::SnowballPile: return "Snowball Pile";
+		case ClassID::PropDynamic: return "Collectable Coin";
         default: assert(false); return "unknown";
         }
     }(entity);
@@ -336,19 +336,19 @@ EntityData::EntityData(Entity* entity) noexcept : BaseData{ entity }
 ProjectileData::ProjectileData(Entity* projectile) noexcept : BaseData { projectile }
 {
     name = [](Entity* projectile) {
-        switch (projectile->getClientClass()->classId) {
-        case ClassId::BaseCSGrenadeProjectile:
+        switch (projectile->getClientClass()->classID) {
+        case ClassID::GrenadeProjectile:
             if (const auto model = projectile->getModel(); model && strstr(model->name, "flashbang"))
                 return "Flashbang";
             else
                 return "HE Grenade";
-        case ClassId::BreachChargeProjectile: return "Breach Charge";
-        case ClassId::BumpMineProjectile: return "Bump Mine";
-        case ClassId::DecoyProjectile: return "Decoy Grenade";
-        case ClassId::MolotovProjectile: return "Molotov";
-        case ClassId::SensorGrenadeProjectile: return "TA Grenade";
-        case ClassId::SmokeGrenadeProjectile: return "Smoke Grenade";
-        case ClassId::SnowballProjectile: return "Snowball";
+        case ClassID::BreachChargeProjectile: return "Breach Charge";
+        case ClassID::BumpMineProjectile: return "Bump Mine";
+        case ClassID::DecoyProjectile: return "Decoy Grenade";
+        case ClassID::MolotovProjectile: return "Molotov";
+        case ClassID::SensorGrenadeProjectile: return "TA Grenade";
+        case ClassID::SmokeGrenadeProjectile: return "Smoke Grenade";
+        case ClassID::SnowballProjectile: return "Snowball";
         default: assert(false); return "unknown";
         }
     }(projectile);
@@ -441,7 +441,7 @@ void PlayerData::update(Entity* entity) noexcept
     if (!studioModel)
         return;
 
-    matrix3x4 boneMatrices[MAXSTUDIOBONES];
+    Matrix3x4 boneMatrices[MAXSTUDIOBONES];
     if (!entity->setupBones(boneMatrices, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
         return;
 

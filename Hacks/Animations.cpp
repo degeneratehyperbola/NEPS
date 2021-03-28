@@ -8,7 +8,7 @@
 #include "../SDK/Input.h"
 #include "../SDK/GlobalVars.h"
 #include "../SDK/LocalPlayer.h"
-#include "../SDK/matrix3x4.h"
+#include "../SDK/Matrix3x4.h"
 #include "../SDK/ModelInfo.h"
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/UserCmd.h"
@@ -20,7 +20,7 @@
 #include "../Interfaces.h"
 #include "../Memory.h"
 
-bool Animations::clientLerped(matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Vector *headPos, float *feetYawDelta) noexcept
+bool Animations::clientLerped(Matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Vector *headPos, float *feetYawDelta) noexcept
 {
 	bool matrixUpdated = false;
 

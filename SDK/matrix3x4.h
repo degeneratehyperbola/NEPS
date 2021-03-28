@@ -2,7 +2,7 @@
 
 struct Vector;
 
-class matrix3x4 {
+class Matrix3x4 {
     float mat[3][4];
 public:
     constexpr auto operator[](int i) const noexcept { return mat[i]; }
@@ -12,12 +12,12 @@ public:
 
 #include "Vector.h"
 
-constexpr auto matrix3x4::origin() const noexcept
+constexpr auto Matrix3x4::origin() const noexcept
 {
     return Vector{ mat[0][3], mat[1][3], mat[2][3] };
 }
 
-constexpr void matrix3x4::setOrigin(Vector in) noexcept
+constexpr void Matrix3x4::setOrigin(Vector in) noexcept
 {
 	mat[0][3] = in.x;
 	mat[1][3] = in.y;

@@ -61,9 +61,6 @@ Memory::Memory() noexcept
 	channels = *reinterpret_cast<Channel **>(findPattern("engine", "\x81\xC2????\x8B\x72\x54") + 2);
 	playerResource = *reinterpret_cast<PlayerResource ***>(findPattern("client", "\x74\x30\x8B\x35????\x85\xF6") + 4);
 	getDecoratedPlayerName = relativeToAbsolute<decltype(getDecoratedPlayerName)>(findPattern("client", "\xE8????\x66\x83\x3E") + 1);
-	//sendMove = reinterpret_cast<decltype(sendMove)>(findPattern("engine", "\x55\x8B\xEC\xA1????\x81\xEC????\xB9????\x53\x8B\x98"));
-	//writeUserCmdDeltaToBufferReturn = *(reinterpret_cast<void **>(findPattern("engine", "\x84\xC0\x74\x04\xB0\x01\xEB\x02\x32\xC0\x8B\xFE\x46\x3B\xF3\x7E\xC9\x84\xC0\x0F\x84????")));
-	//writeUserCmd = reinterpret_cast<decltype(writeUserCmd)>(findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x51\x53\x56\x8B\xD9\x8B\x0D"));
 	scopeDust = findPattern("client", "\xFF\x50\x3C\x8B\x4C\x24\x20") + 3;
 	scopeArc = findPattern("client", "\x8B\x0D????\xFF\xB7????\x8B\x01\xFF\x90????\x8B\x7C\x24\x1C");
 	demoOrHLTV = findPattern("client", "\x84\xC0\x75\x09\x38\x05");

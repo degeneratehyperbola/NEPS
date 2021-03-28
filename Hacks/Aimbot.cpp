@@ -71,7 +71,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
         const auto localPlayerEyePosition = localPlayer->getEyePosition();
 
-		std::array<matrix3x4, MAXSTUDIOBONES> bufferBones;
+		std::array<Matrix3x4, MAXSTUDIOBONES> bufferBones;
 		#ifdef _DEBUG_NEPS
 		std::vector<Vector> multipoints;
 		#endif // _DEBUG_NEPS

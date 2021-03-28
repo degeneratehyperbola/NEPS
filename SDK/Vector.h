@@ -4,7 +4,7 @@
 
 #include "../Helpers.h"
 
-class matrix3x4;
+class Matrix3x4;
 
 struct Vector {
 	constexpr auto notNull() const noexcept
@@ -183,7 +183,7 @@ struct Vector {
 		return *this * cos + axis.crossProduct(*this) * sin + axis * axis.dotProduct(*this) * (1.0f - cos);
 	}
 
-	constexpr auto transform(const matrix3x4& mat) const noexcept;
+	constexpr auto transform(const Matrix3x4& mat) const noexcept;
 
 	auto distTo(const Vector& v) const noexcept
     {
@@ -267,9 +267,9 @@ struct Vector {
     float x, y, z;
 };
 
-#include "matrix3x4.h"
+#include "Matrix3x4.h"
 
-constexpr auto Vector::transform(const matrix3x4 &mat) const noexcept
+constexpr auto Vector::transform(const Matrix3x4 &mat) const noexcept
 {
 	return Vector{dotProduct({ mat[0][0], mat[0][1], mat[0][2] }) + mat[0][3],
 				  dotProduct({ mat[1][0], mat[1][1], mat[1][2] }) + mat[1][3],

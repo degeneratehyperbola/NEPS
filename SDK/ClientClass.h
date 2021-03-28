@@ -1,7 +1,7 @@
 #pragma once
 
 #include <type_traits>
-#include "ClassId.h"
+#include "ClassID.h"
 
 class Entity;
 struct RecvTable;
@@ -13,5 +13,5 @@ struct ClientClass
 	char *networkName;
 	RecvTable *recvTable;
 	ClientClass *next;
-	ClassId classId;
+	ClassID classID;
 };

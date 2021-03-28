@@ -17,51 +17,54 @@
 #include <limits>
 #include <tuple>
 
-static constexpr auto operator-(float sub, const std::array<float, 3>& a) noexcept
+static constexpr auto operator-(float sub, const std::array<float, 3> &a) noexcept
 {
-    return Vector{ sub - a[0], sub - a[1], sub - a[2] };
+	return Vector{sub - a[0], sub - a[1], sub - a[2]};
 }
 
-struct BoundingBox {
+struct BoundingBox
+{
 private:
-    bool valid;
+	bool valid;
 public:
-    ImVec2 min, max;
-    std::array<ImVec2, 8> vertices;
+	ImVec2 min, max;
+	std::array<ImVec2, 8> vertices;
 
-    BoundingBox(const Vector& mins, const Vector& maxs, const std::array<float, 3>& scale, const matrix3x4* matrix = nullptr) noexcept
-    {
-        min.y = min.x = std::numeric_limits<float>::max();
-        max.y = max.x = -std::numeric_limits<float>::max();
+	BoundingBox(const Vector &mins, const Vector &maxs, const std::array<float, 3> &scale, const Matrix3x4 *matrix = nullptr) noexcept
+	{
+		min.y = min.x = std::numeric_limits<float>::max();
+		max.y = max.x = -std::numeric_limits<float>::max();
 
-        const auto scaledMins = mins + (maxs - mins) * 2 * (0.25f - scale);
-        const auto scaledMaxs = maxs - (maxs - mins) * 2 * (0.25f - scale);
+		const auto scaledMins = mins + (maxs - mins) * 2 * (0.25f - scale);
+		const auto scaledMaxs = maxs - (maxs - mins) * 2 * (0.25f - scale);
 
-        for (int i = 0; i < 8; ++i) {
-            const Vector point{ i & 1 ? scaledMaxs.x : scaledMins.x,
-                                i & 2 ? scaledMaxs.y : scaledMins.y,
-                                i & 4 ? scaledMaxs.z : scaledMins.z };
+		for (int i = 0; i < 8; ++i)
+		{
+			const Vector point{i & 1 ? scaledMaxs.x : scaledMins.x,
+								i & 2 ? scaledMaxs.y : scaledMins.y,
+								i & 4 ? scaledMaxs.z : scaledMins.z};
 
-            if (!Helpers::worldToScreen(matrix ? point.transform(*matrix) : point, vertices[i])) {
-                valid = false;
-                return;
-            }
+			if (!Helpers::worldToScreen(matrix ? point.transform(*matrix) : point, vertices[i]))
+			{
+				valid = false;
+				return;
+			}
 
-            min.x = std::min(min.x, vertices[i].x);
-            min.y = std::min(min.y, vertices[i].y);
-            max.x = std::max(max.x, vertices[i].x);
-            max.y = std::max(max.y, vertices[i].y);
-        }
-        valid = true;
-    }
+			min.x = std::min(min.x, vertices[i].x);
+			min.y = std::min(min.y, vertices[i].y);
+			max.x = std::max(max.x, vertices[i].x);
+			max.y = std::max(max.y, vertices[i].y);
+		}
+		valid = true;
+	}
 
-    BoundingBox(const BaseData& data, const std::array<float, 3>& scale) noexcept : BoundingBox{ data.obbMins, data.obbMaxs, scale, &data.coordinateFrame } {}
-    BoundingBox(const Vector& center) noexcept : BoundingBox{ center - 2.0f, center + 2.0f, { 0.25f, 0.25f, 0.25f } } {}
+	BoundingBox(const BaseData &data, const std::array<float, 3> &scale) noexcept : BoundingBox{data.obbMins, data.obbMaxs, scale, &data.coordinateFrame} {}
+	BoundingBox(const Vector &center) noexcept : BoundingBox{center - 2.0f, center + 2.0f, { 0.25f, 0.25f, 0.25f }} {}
 
-    operator bool() const noexcept
-    {
-        return valid;
-    }
+	operator bool() const noexcept
+	{
+		return valid;
+	}
 };
 
 static ImDrawList* drawList;
@@ -69,26 +72,28 @@ static ImDrawList* drawList;
 // convex hull using Graham's scan
 static std::vector<ImVec2> convexHull(std::vector<ImVec2> points) noexcept
 {
-    if (points.size() < 3)
-        return {};
+	if (points.size() < 3)
+		return {};
 
-    std::swap(points[0], *std::min_element(points.begin(), points.end(), [](const auto& a, const auto& b) { return (a.x < b.x || (a.x == b.x && a.y < b.y)); }));
+	std::swap(points[0], *std::min_element(points.begin(), points.end(), [](const auto &a, const auto &b) { return (a.x < b.x || (a.x == b.x && a.y < b.y)); }));
 
-    constexpr auto orientation = [](const ImVec2& a, const ImVec2& b, const ImVec2& c) {
-        return (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
-    };
+	constexpr auto orientation = [](const ImVec2 &a, const ImVec2 &b, const ImVec2 &c)
+	{
+		return (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
+	};
 
-    std::sort(points.begin() + 1, points.end(), [&](const auto& a, const auto& b) { return orientation(points[0], a, b) > 0.0f; });
+	std::sort(points.begin() + 1, points.end(), [&](const auto &a, const auto &b) { return orientation(points[0], a, b) > 0.0f; });
 
-    std::vector<ImVec2> hull;
+	std::vector<ImVec2> hull;
 
-    for (const auto& p : points) {
-        while (hull.size() >= 2 && orientation(hull[hull.size() - 2], hull[hull.size() - 1], p) < 0.0f)
-            hull.pop_back();
-        hull.emplace_back(p);
-    }
+	for (const auto &p : points)
+	{
+		while (hull.size() >= 2 && orientation(hull[hull.size() - 2], hull[hull.size() - 1], p) < 0.0f)
+			hull.pop_back();
+		hull.emplace_back(p);
+	}
 
-    return hull;
+	return hull;
 }
 
 static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
@@ -236,121 +241,125 @@ static ImVec2 renderText(float distance, float cullDistance, const Color4Border 
 	else if (cullDistance < 0 && distance < cullDistance)
 		return {};
 
-    const auto textSize = ImGui::CalcTextSize(text);
+	const auto textSize = ImGui::CalcTextSize(text);
 
-    const auto horizontalOffset = centered ? textSize.x / 2 : 0.0f;
-    const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
+	const auto horizontalOffset = centered ? textSize.x / 2 : 0.0f;
+	const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
 
-    const auto color = Helpers::calculateColor(textCfg);
+	const auto color = Helpers::calculateColor(textCfg);
 	if (textCfg.border)
 	{
-		drawList->AddText({ pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f }, color & IM_COL32_A_MASK, text);
-		drawList->AddText({ pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f }, color & IM_COL32_A_MASK, text);
-		drawList->AddText({ pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset }, color & IM_COL32_A_MASK, text);
-		drawList->AddText({ pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset }, color & IM_COL32_A_MASK, text);
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f}, color & IM_COL32_A_MASK, text);
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f}, color & IM_COL32_A_MASK, text);
+		drawList->AddText({pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset}, color & IM_COL32_A_MASK, text);
+		drawList->AddText({pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset}, color & IM_COL32_A_MASK, text);
 	}
-    drawList->AddText({ pos.x - horizontalOffset, pos.y - verticalOffset }, color, text);
+	drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset}, color, text);
 
-    return textSize;
+	return textSize;
 }
 
-static void drawSnapline(const Snapline& config, const ImVec2& min, const ImVec2& max) noexcept
+static void drawSnapline(const Snapline &config, const ImVec2 &min, const ImVec2 &max) noexcept
 {
-    if (!config.enabled)
-        return;
+	if (!config.enabled)
+		return;
 
-    const auto& screenSize = ImGui::GetIO().DisplaySize;
+	const auto &screenSize = ImGui::GetIO().DisplaySize;
 
-    ImVec2 p1, p2;
-    p1.x = screenSize.x / 2;
-    p2.x = (min.x + max.x) / 2;
+	ImVec2 p1, p2;
+	p1.x = screenSize.x / 2;
+	p2.x = (min.x + max.x) / 2;
 
-    switch (config.type) {
-    case Snapline::Bottom:
-        p1.y = screenSize.y;
-        p2.y = max.y;
-        break;
-    case Snapline::Top:
-        p1.y = 0.0f;
-        p2.y = min.y;
-        break;
-    case Snapline::Crosshair:
-        p1.y = screenSize.y / 2;
-        p2.y = (min.y + max.y) / 2;
-        break;
-    default:
-        return;
-    }
+	switch (config.type)
+	{
+	case Snapline::Bottom:
+		p1.y = screenSize.y;
+		p2.y = max.y;
+		break;
+	case Snapline::Top:
+		p1.y = 0.0f;
+		p2.y = min.y;
+		break;
+	case Snapline::Crosshair:
+		p1.y = screenSize.y / 2;
+		p2.y = (min.y + max.y) / 2;
+		break;
+	default:
+		return;
+	}
 
-    drawList->AddLine(p1, p2, Helpers::calculateColor(config), config.thickness);
+	drawList->AddLine(p1, p2, Helpers::calculateColor(config), config.thickness);
 }
 
-struct FontPush {
-    FontPush(const std::string& name, float distance)
-    {
-        if (const auto it = config->getFonts().find(name); it != config->getFonts().end()) {
-            distance *= GameData::local().fov / 90.0f;
+struct FontPush
+{
+	FontPush(const std::string &name, float distance)
+	{
+		if (const auto it = config->getFonts().find(name); it != config->getFonts().end())
+		{
+			distance *= GameData::local().fov / 90.0f;
 
-            ImGui::PushFont([](const Config::Font& font, float dist) {
-                if (dist <= 400.0f)
-                    return font.big;
-                if (dist <= 1000.0f)
-                    return font.medium;
-                return font.tiny;
-            }(it->second, distance));
-        }
-        else {
-            ImGui::PushFont(nullptr);
-        }
-    }
+			ImGui::PushFont([](const Config::Font &font, float dist)
+			{
+				if (dist <= 400.0f)
+					return font.big;
+				if (dist <= 1000.0f)
+					return font.medium;
+				return font.tiny;
+			}(it->second, distance));
+		} else
+		{
+			ImGui::PushFont(nullptr);
+		}
+	}
 
-    ~FontPush()
-    {
-        ImGui::PopFont();
-    }
+	~FontPush()
+	{
+		ImGui::PopFont();
+	}
 };
 
-static void drawHealthBar(const ImVec2& pos, float height, int health, Color4Border text, float distance, float cull) noexcept
+static void drawHealthBar(const ImVec2 &pos, float height, int health, Color4Border text, float distance, float cull) noexcept
 {
 	int originalHealth = health;
 	health = std::clamp(health, 0, 100);
 
-    constexpr float width = 3.0f;
+	constexpr float width = 3.0f;
 
-    ImVec2 min = pos;
+	ImVec2 min = pos;
 	ImVec2 max = min + ImVec2{width, height / 2.0f};
 
 	if (text.border)
-		drawList->AddRectFilled(min - ImVec2{ 1.0f, 1.0f }, pos + ImVec2{ width + 1.0f, height + 1.0f }, Helpers::calculateColor(0, 0, 0, 255));
-    
-	drawList->PushClipRect(pos + ImVec2{ -1.0f, (100 - health) / 100.0f * height - 1.0f }, pos + ImVec2{ width + 1.0f, height + 1.0f });
+		drawList->AddRectFilled(min - ImVec2{1.0f, 1.0f}, pos + ImVec2{width + 1.0f, height + 1.0f}, Helpers::calculateColor(0, 0, 0, 255));
 
-    const auto green = Helpers::calculateColor(0, 255, 0, 255);
-    const auto yellow = Helpers::calculateColor(255, 255, 0, 255);
-    const auto red = Helpers::calculateColor(255, 0, 0, 255);
+	drawList->PushClipRect(pos + ImVec2{-1.0f, (100 - health) / 100.0f * height - 1.0f}, pos + ImVec2{width + 1.0f, height + 1.0f});
 
-    drawList->AddRectFilledMultiColor(ImFloor(min), ImFloor(max), green, green, yellow, yellow);
-    min.y += height / 2.0f;
-    max.y += height / 2.0f;
-    drawList->AddRectFilledMultiColor(ImFloor(min), ImFloor(max), yellow, yellow, red, red);
+	const auto green = Helpers::calculateColor(0, 255, 0, 255);
+	const auto yellow = Helpers::calculateColor(255, 255, 0, 255);
+	const auto red = Helpers::calculateColor(255, 0, 0, 255);
 
-    drawList->PopClipRect();
+	drawList->AddRectFilledMultiColor(ImFloor(min), ImFloor(max), green, green, yellow, yellow);
+	min.y += height / 2.0f;
+	max.y += height / 2.0f;
+	drawList->AddRectFilledMultiColor(ImFloor(min), ImFloor(max), yellow, yellow, red, red);
+
+	drawList->PopClipRect();
 
 	renderText(distance, cull, text, std::to_string(originalHealth).c_str(), pos + ImVec2{0.0f, (100 - health) / 100.0f * height}, true, false);
 }
 
-static void renderPlayerBox(const PlayerData& playerData, const Player& config) noexcept
+static void renderPlayerBox(const PlayerData &playerData, const Player &config) noexcept
 {
-    const BoundingBox bbox{ playerData, config.box.scale };
+	const BoundingBox bbox{playerData, config.box.scale};
 
-    if (!bbox)
-        return;
+	if (!bbox)
+		return;
 
-    renderBox(bbox, config.box);
+	renderBox(bbox, config.box);
 
-    ImVec2 offsetMins{}, offsetMaxs{};
+	ImVec2 offsetMins{}, offsetMaxs{};
 
-    FontPush font{ config.font.name, playerData.distanceToLocal };
+	FontPush font{config.font.name, playerData.distanceToLocal};
 
 	if (config.healthBar.enabled)
 		drawHealthBar(bbox.min - ImVec2{5.0f, 0.0f}, (bbox.max.y - bbox.min.y), playerData.health, config.healthBar, playerData.distanceToLocal, config.textCullDistance);
@@ -394,7 +403,7 @@ static void renderPlayerBox(const PlayerData& playerData, const Player& config) 
 
 		offsetMins.y -= radius * 2.5f;
 	}
-		
+
 	if (config.weapon.enabled && !playerData.activeWeapon.empty())
 	{
 		const auto weaponTextSize = renderText(playerData.distanceToLocal, config.textCullDistance, config.weapon, playerData.activeWeapon.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.max.y}, true, false);
@@ -404,75 +413,83 @@ static void renderPlayerBox(const PlayerData& playerData, const Player& config) 
 	drawSnapline(config.snapline, bbox.min + offsetMins, bbox.max + offsetMaxs);
 }
 
-static void renderWeaponBox(const WeaponData& weaponData, const Weapon& config) noexcept
+static void renderWeaponBox(const WeaponData &weaponData, const Weapon &config) noexcept
 {
-    const BoundingBox bbox{ weaponData, config.box.scale };
+	const BoundingBox bbox{weaponData, config.box.scale};
 
-    if (!bbox)
-        return;
+	if (!bbox)
+		return;
 
-    renderBox(bbox, config.box);
-    drawSnapline(config.snapline, bbox.min, bbox.max);
+	renderBox(bbox, config.box);
+	drawSnapline(config.snapline, bbox.min, bbox.max);
 
-    FontPush font{ config.font.name, weaponData.distanceToLocal };
+	FontPush font{config.font.name, weaponData.distanceToLocal};
 
-    if (config.name.enabled && !weaponData.displayName.empty()) {
-        renderText(weaponData.distanceToLocal, config.textCullDistance, config.name, weaponData.displayName.c_str(), { (bbox.min.x + bbox.max.x) / 2, bbox.min.y - 5 });
-    }
+	if (config.name.enabled && !weaponData.displayName.empty())
+	{
+		renderText(weaponData.distanceToLocal, config.textCullDistance, config.name, weaponData.displayName.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.min.y - 5});
+	}
 
-    if (config.ammo.enabled && weaponData.clip != -1) {
-        const auto text{ std::to_string(weaponData.clip) + " / " + std::to_string(weaponData.reserveAmmo) };
-        renderText(weaponData.distanceToLocal, config.textCullDistance, config.ammo, text.c_str(), { (bbox.min.x + bbox.max.x) / 2, bbox.max.y + 5 }, true, false);
-    }
+	if (config.ammo.enabled && weaponData.clip != -1)
+	{
+		const auto text{std::to_string(weaponData.clip) + " / " + std::to_string(weaponData.reserveAmmo)};
+		renderText(weaponData.distanceToLocal, config.textCullDistance, config.ammo, text.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.max.y + 5}, true, false);
+	}
 }
 
-static void renderEntityBox(const BaseData& entityData, const char* name, const Shared& config) noexcept
+static void renderEntityBox(const BaseData &entityData, const char *name, const Shared &config) noexcept
 {
-    const BoundingBox bbox{ entityData, config.box.scale };
+	const BoundingBox bbox{entityData, config.box.scale};
 
-    if (!bbox)
-        return;
+	if (!bbox)
+		return;
 
-    renderBox(bbox, config.box);
-    drawSnapline(config.snapline, bbox.min, bbox.max);
+	renderBox(bbox, config.box);
+	drawSnapline(config.snapline, bbox.min, bbox.max);
 
-    FontPush font{ config.font.name, entityData.distanceToLocal };
+	FontPush font{config.font.name, entityData.distanceToLocal};
 
-    if (config.name.enabled)
-        renderText(entityData.distanceToLocal, config.textCullDistance, config.name, name, { (bbox.min.x + bbox.max.x) / 2, bbox.min.y - 5 });
+	if (config.name.enabled)
+		renderText(entityData.distanceToLocal, config.textCullDistance, config.name, name, {(bbox.min.x + bbox.max.x) / 2, bbox.min.y - 5});
 }
 
-static void drawProjectileTrajectory(const Trail& config, const std::vector<std::pair<float, Vector>>& trajectory) noexcept
+static void drawProjectileTrajectory(const Trail &config, const std::vector<std::pair<float, Vector>> &trajectory) noexcept
 {
-    if (!config.enabled)
-        return;
+	if (!config.enabled)
+		return;
 
-    std::vector<ImVec2> points, shadowPoints;
+	std::vector<ImVec2> points, shadowPoints;
 
-    const auto color = Helpers::calculateColor(config);
+	const auto color = Helpers::calculateColor(config);
 
-    for (const auto& [time, point] : trajectory) {
-        if (ImVec2 pos; time + config.time >= memory->globalVars->realtime && Helpers::worldToScreen(point, pos, false)) {
-            if (config.type == Trail::Line) {
-                points.emplace_back(pos);
-                shadowPoints.emplace_back(pos);
-            } else if (config.type == Trail::Circles) {
+	for (const auto &[time, point] : trajectory)
+	{
+		if (ImVec2 pos; time + config.time >= memory->globalVars->realtime && Helpers::worldToScreen(point, pos, false))
+		{
+			if (config.type == Trail::Line)
+			{
+				points.emplace_back(pos);
+				shadowPoints.emplace_back(pos);
+			} else if (config.type == Trail::Circles)
+			{
 				if (config.border)
 					drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color & IM_COL32_A_MASK, 12, config.thickness + 2.0f);
-                drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color, 12, config.thickness);
-            } else if (config.type == Trail::FilledCircles) {
+				drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color, 12, config.thickness);
+			} else if (config.type == Trail::FilledCircles)
+			{
 				if (config.border)
 					drawList->AddCircleFilled(pos, 5.0f - point.distTo(GameData::local().origin) / 700.0f, color & IM_COL32_A_MASK);
-                drawList->AddCircleFilled(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color);
-            }
-        }
-    }
+				drawList->AddCircleFilled(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color);
+			}
+		}
+	}
 
-    if (config.type == Trail::Line) {
+	if (config.type == Trail::Line)
+	{
 		if (config.border)
 			drawList->AddPolyline(shadowPoints.data(), shadowPoints.size(), color & IM_COL32_A_MASK, false, config.thickness + 2.0f);
-        drawList->AddPolyline(points.data(), points.size(), color, false, config.thickness);
-    }
+		drawList->AddPolyline(points.data(), points.size(), color, false, config.thickness);
+	}
 }
 
 static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const PlayerData &playerData) noexcept
@@ -506,88 +523,95 @@ static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const 
 		drawList->AddLine(bonePoint, parentPoint, color, config.thickness);
 }
 
-static bool renderPlayerEsp(const PlayerData& playerData, const Player& playerConfig) noexcept
+static bool renderPlayerEsp(const PlayerData &playerData, const Player &playerConfig) noexcept
 {
-    if (!playerConfig.enabled)
-        return false;
+	if (!playerConfig.enabled)
+		return false;
 
-    if (playerConfig.audibleOnly && !playerData.audible && !playerConfig.spottedOnly
-        || playerConfig.spottedOnly && !playerData.spotted && !(playerConfig.audibleOnly && playerData.audible)) // if both "Audible Only" and "Spotted Only" are on treat them as audible OR spotted
-        return true;
+	if (playerConfig.audibleOnly && !playerData.audible && !playerConfig.spottedOnly
+		|| playerConfig.spottedOnly && !playerData.spotted && !(playerConfig.audibleOnly && playerData.audible)) // if both "Audible Only" and "Spotted Only" are on treat them as audible OR spotted
+		return true;
 
-    renderPlayerBox(playerData, playerConfig);
-    drawPlayerSkeleton(playerConfig.skeleton, playerData);
+	renderPlayerBox(playerData, playerConfig);
+	drawPlayerSkeleton(playerConfig.skeleton, playerData);
 
 	if (const BoundingBox headBbox{playerData.headMins, playerData.headMaxs, playerConfig.headBox.scale})
-        renderBox(headBbox, playerConfig.headBox);
+		renderBox(headBbox, playerConfig.headBox);
 
-    return true;
+	return true;
 }
 
-static void renderWeaponEsp(const WeaponData& weaponData, const Weapon& parentConfig, const Weapon& itemConfig) noexcept
+static void renderWeaponEsp(const WeaponData &weaponData, const Weapon &parentConfig, const Weapon &itemConfig) noexcept
 {
-    const auto& config = itemConfig.enabled ? itemConfig : (parentConfig.enabled ? parentConfig : ::config->esp.weapons["All"]);
-    if (config.enabled) {
-        renderWeaponBox(weaponData, config);
-    }
+	const auto &config = itemConfig.enabled ? itemConfig : (parentConfig.enabled ? parentConfig : ::config->esp.weapons["All"]);
+	if (config.enabled)
+	{
+		renderWeaponBox(weaponData, config);
+	}
 }
 
-static void renderEntityEsp(const BaseData& entityData, const std::unordered_map<std::string, Shared>& map, const char* name) noexcept
+static void renderEntityEsp(const BaseData &entityData, const std::unordered_map<std::string, Shared> &map, const char *name) noexcept
 {
-    if (const auto cfg = map.find(name); cfg != map.cend() && cfg->second.enabled) {
-        renderEntityBox(entityData, name, cfg->second);
-    } else if (const auto cfg = map.find("All"); cfg != map.cend() && cfg->second.enabled) {
-        renderEntityBox(entityData, name, cfg->second);
-    }
+	if (const auto cfg = map.find(name); cfg != map.cend() && cfg->second.enabled)
+	{
+		renderEntityBox(entityData, name, cfg->second);
+	} else if (const auto cfg = map.find("All"); cfg != map.cend() && cfg->second.enabled)
+	{
+		renderEntityBox(entityData, name, cfg->second);
+	}
 }
 
-static void renderProjectileEsp(const ProjectileData& projectileData, const Projectile& parentConfig, const Projectile& itemConfig, const char* name) noexcept
+static void renderProjectileEsp(const ProjectileData &projectileData, const Projectile &parentConfig, const Projectile &itemConfig, const char *name) noexcept
 {
-    const auto& config = itemConfig.enabled ? itemConfig : parentConfig;
+	const auto &config = itemConfig.enabled ? itemConfig : parentConfig;
 
-    if (config.enabled) {
-        if (!projectileData.exploded)
-            renderEntityBox(projectileData, name, config);
+	if (config.enabled)
+	{
+		if (!projectileData.exploded)
+			renderEntityBox(projectileData, name, config);
 
-        if (config.trails.enabled) {
-            if (projectileData.thrownByLocalPlayer)
-                drawProjectileTrajectory(config.trails.localPlayer, projectileData.trajectory);
-            else if (!projectileData.thrownByEnemy)
-                drawProjectileTrajectory(config.trails.allies, projectileData.trajectory);
-            else
-                drawProjectileTrajectory(config.trails.enemies, projectileData.trajectory);
-        }
-    }
+		if (config.trails.enabled)
+		{
+			if (projectileData.thrownByLocalPlayer)
+				drawProjectileTrajectory(config.trails.localPlayer, projectileData.trajectory);
+			else if (!projectileData.thrownByEnemy)
+				drawProjectileTrajectory(config.trails.allies, projectileData.trajectory);
+			else
+				drawProjectileTrajectory(config.trails.enemies, projectileData.trajectory);
+		}
+	}
 }
 
 void StreamProofESP::render() noexcept
 {
-    drawList = ImGui::GetBackgroundDrawList();
+	drawList = ImGui::GetBackgroundDrawList();
 
-    GameData::Lock lock;
+	GameData::Lock lock;
 
-    for (const auto& weapon : GameData::weapons())
-        renderWeaponEsp(weapon, config->esp.weapons[weapon.group], config->esp.weapons[weapon.name]);
+	for (const auto &weapon : GameData::weapons())
+		renderWeaponEsp(weapon, config->esp.weapons[weapon.group], config->esp.weapons[weapon.name]);
 
-    for (const auto& entity : GameData::entities())
-        renderEntityEsp(entity, config->esp.otherEntities, entity.name);
+	for (const auto &entity : GameData::entities())
+		renderEntityEsp(entity, config->esp.otherEntities, entity.name);
 
-    for (const auto& lootCrate : GameData::lootCrates()) {
-        if (lootCrate.name)
-            renderEntityEsp(lootCrate, config->esp.lootCrates, lootCrate.name);
-    }
+	for (const auto &lootCrate : GameData::lootCrates())
+	{
+		if (lootCrate.name)
+			renderEntityEsp(lootCrate, config->esp.lootCrates, lootCrate.name);
+	}
 
-    for (const auto& projectile : GameData::projectiles())
-        renderProjectileEsp(projectile, config->esp.projectiles["All"], config->esp.projectiles[projectile.name], projectile.name);
+	for (const auto &projectile : GameData::projectiles())
+		renderProjectileEsp(projectile, config->esp.projectiles["All"], config->esp.projectiles[projectile.name], projectile.name);
 
-    for (const auto& player : GameData::players()) {
+	for (const auto &player : GameData::players())
+	{
 		if (!player.alive) continue;
 		if (!player.inViewFrustum) continue;
 		if (player.dormant) continue;
 
-        auto& playerConfig = player.enemy ? config->esp.enemies : config->esp.allies;
+		auto &playerConfig = player.enemy ? config->esp.enemies : config->esp.allies;
 
-        if (!renderPlayerEsp(player, playerConfig["All"]))
-            renderPlayerEsp(player, playerConfig[player.visible ? "Visible" : "Occluded"]);
-    }
+		if (!renderPlayerEsp(player, playerConfig["All"]))
+			renderPlayerEsp(player, playerConfig[player.visible ? "Visible" : "Occluded"]);
+	}
 }

@@ -24,6 +24,7 @@
 #include "../SDK/Localize.h"
 #include "../SDK/LocalPlayer.h"
 #include "../SDK/NetworkChannel.h"
+#include "../SDK/NetworkStringTable.h"
 #include "../SDK/Panorama.h"
 #include "../SDK/Sound.h"
 #include "../SDK/Surface.h"
@@ -255,7 +256,7 @@ void Misc::spectatorList(ImDrawList *drawList) noexcept
 		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-		if (ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs))
+		if (ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs)))
 		{
 
 			for (auto &observer : observers)
@@ -524,7 +525,7 @@ void Misc::fastPlant(UserCmd* cmd) noexcept
     const auto endPos = startPos + Vector::fromAngle(cmd->viewangles) * doorRange;
     interfaces->engineTrace->traceRay({ startPos, endPos }, 0x46004009, localPlayer.get(), trace);
 
-    if (!trace.entity || trace.entity->getClientClass()->classId != ClassId::PropDoorRotating)
+    if (!trace.entity || trace.entity->getClientClass()->classID != ClassID::PropDoorRotating)
         cmd->buttons &= ~UserCmd::IN_USE;
 }
 
@@ -573,7 +574,7 @@ void Misc::drawBombTimer() noexcept
 		ImGui::SetNextWindowSize({windowWidth, 0});
 
 	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
-	if (ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize)))
+	if (ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs)))
 	{
 		std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
 
@@ -781,7 +782,7 @@ static void oppositeHandKnife(FrameStage stage) noexcept
 
     if (stage == FrameStage::RENDER_START) {
         if (const auto activeWeapon = localPlayer->getActiveWeapon()) {
-            if (const auto classId = activeWeapon->getClientClass()->classId; classId == ClassId::Knife || classId == ClassId::KnifeGG)
+            if (const auto classID = activeWeapon->getClientClass()->classID; classID == ClassID::Knife || classID == ClassID::KnifeGG)
 				rightHandVar->setValue(!original);
         }
     } else {
@@ -821,9 +822,6 @@ void Misc::changeConVarsFrame(FrameStage stage)
 	case FrameStage::NET_UPDATE_END:
 		break;
 	case FrameStage::RENDER_START:
-		static auto mdlVar = interfaces->cvar->findVar("r_drawothermodels");
-		mdlVar->onChangeCallbacks.size = 0;
-		if (mdlVar->getInt() == 1) mdlVar->setValue(3);
 		static auto blurVar = interfaces->cvar->findVar("@panorama_disable_blur");
 		blurVar->setValue(config->misc.disablePanoramablur);
 		static auto lagVar = interfaces->cvar->findVar("cam_ideallag");
@@ -858,14 +856,14 @@ void Misc::quickHealthshot(UserCmd* cmd) noexcept
         inProgress = true;
 
     if (auto activeWeapon{ localPlayer->getActiveWeapon() }; activeWeapon && inProgress) {
-        if (activeWeapon->getClientClass()->classId == ClassId::Healthshot && localPlayer->nextAttack() <= memory->globalVars->serverTime() && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime())
+        if (activeWeapon->getClientClass()->classID == ClassID::Healthshot && localPlayer->nextAttack() <= memory->globalVars->serverTime() && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime())
             cmd->buttons |= UserCmd::IN_ATTACK;
         else {
             for (auto weaponHandle : localPlayer->weapons()) {
                 if (weaponHandle == -1)
                     break;
 
-                if (const auto weapon{ interfaces->entityList->getEntityFromHandle(weaponHandle) }; weapon && weapon->getClientClass()->classId == ClassId::Healthshot) {
+                if (const auto weapon{ interfaces->entityList->getEntityFromHandle(weaponHandle) }; weapon && weapon->getClientClass()->classID == ClassID::Healthshot) {
                     cmd->weaponselect = weapon->index();
                     cmd->weaponsubtype = weapon->getWeaponSubType();
                     return;
@@ -879,7 +877,7 @@ void Misc::quickHealthshot(UserCmd* cmd) noexcept
 void Misc::fixTabletSignal() noexcept
 {
     if (config->misc.fixTabletSignal && localPlayer) {
-        if (auto activeWeapon{ localPlayer->getActiveWeapon() }; activeWeapon && activeWeapon->getClientClass()->classId == ClassId::Tablet)
+        if (auto activeWeapon{ localPlayer->getActiveWeapon() }; activeWeapon && activeWeapon->getClientClass()->classID == ClassID::Tablet)
             activeWeapon->tabletReceptionIsBlocked() = false;
     }
 }
@@ -1085,11 +1083,14 @@ void Misc::playHitSound(GameEvent &event) noexcept
 	};
 
 	if (static_cast<std::size_t>(config->sound.hitSound - 1) < hitSounds.size())
-		//interfaces->engine->clientCmdUnrestricted((std::string("playvol ") + hitSounds[config->sound.hitSound - 1] + ' ' + std::to_string(config->sound.hitSoundVol)).c_str(), true);
 		interfaces->engine->clientCmdUnrestricted(hitSounds[config->sound.hitSound - 1]);
 	else if (config->sound.hitSound == 5)
-		//interfaces->engine->clientCmdUnrestricted((std::string("playvol ") + config->sound.customHitSound + ' ' + std::to_string(config->sound.hitSoundVol)).c_str(), true);
+	{
+		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+			soundprecache->addString(false, config->sound.customHitSound.c_str());
+
 		interfaces->engine->clientCmdUnrestricted(("play " + config->sound.customHitSound).c_str());
+	}
 }
 
 void Misc::playKillSound(GameEvent& event) noexcept
@@ -1111,11 +1112,14 @@ void Misc::playKillSound(GameEvent& event) noexcept
     };
 
     if (static_cast<std::size_t>(config->sound.killSound - 1) < killSounds.size())
-        //interfaces->engine->clientCmdUnrestricted((std::string("playvol ") + killSounds[config->sound.killSound - 1] + ' ' + std::to_string(config->sound.killSoundVol)).c_str(), true);
         interfaces->engine->clientCmdUnrestricted(killSounds[config->sound.killSound - 1]);
 	else if (config->sound.killSound == 5)
-        //interfaces->engine->clientCmdUnrestricted((std::string("playvol ") + config->sound.customKillSound + ' ' + std::to_string(config->sound.killSoundVol)).c_str(), true);
+	{
+		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+			soundprecache->addString(false, config->sound.customKillSound.c_str());
+
         interfaces->engine->clientCmdUnrestricted(("play " + config->sound.customKillSound).c_str());
+	}
 }
 
 void Misc::purchaseList(GameEvent* event) noexcept
@@ -1572,7 +1576,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 	ImGui::SetNextWindowPos(ImVec2{0.0f, 50.0f}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{200.0f, FLT_MAX});
-	if (ImGui::Begin("Indicators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration)))
+	if (ImGui::Begin("Indicators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs)))
 	{
 		const auto networkChannel = interfaces->engine->getNetworkChannel();
 		if (networkChannel)

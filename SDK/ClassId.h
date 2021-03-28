@@ -1,21 +1,22 @@
 #pragma once
 
-enum class ClassId
+enum class ClassID
 {
-	BaseCSGrenadeProjectile = 9,
-	BaseViewModel = 21,
+	BaseAnimating = 2,
+	GrenadeProjectile = 9,
+	WeaponWorldModel = 23,
 	BreachChargeProjectile = 29,
 	BumpMineProjectile = 33,
 	C4,
 	Chicken = 36,
-	CSPlayer = 40,
-	CSPlayerResource,
-	CSRagdoll = 42,
+	Player = 40,
+	PlayerResource,
+	Ragdoll = 42,
 	Deagle = 46,
 	DecoyProjectile = 48,
 	Drone,
 	Dronegun,
-	DynamicProp = 52,
+	PropDynamic = 52,
 	EconEntity = 53,
 	EconWearable,
 	Hostage = 97,
@@ -25,6 +26,7 @@ enum class ClassId
 	Knife = 107,
 	KnifeGG,
 	MolotovProjectile = 114,
+	PropPhysicsMultiplayer = 123,
 	AmmoBox = 125,
 	LootCrate,
 	RadarJammer,

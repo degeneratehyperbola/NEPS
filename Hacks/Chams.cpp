@@ -19,6 +19,38 @@
 #include "../SDK/StudioRender.h"
 #include "../SDK/KeyValues.h"
 
+void Chams::toSlowPipeline() noexcept
+{
+	if (!localPlayer || !interfaces->engine->isInGame())
+		return;
+
+	for (int i = 1; i <= interfaces->entityList->getHighestEntityIndex(); i++)
+	{
+		auto entity = interfaces->entityList->getEntity(i);
+		if (!entity) continue;
+
+		if (entity->isWeapon())
+		{
+			entity->useFastPipeline() = false;
+			continue;
+		}
+
+		switch (entity->getClientClass()->classID)
+		{
+		case ClassID::PropPhysicsMultiplayer:
+		case ClassID::PropDynamic:
+		case ClassID::EconEntity:
+		case ClassID::WeaponWorldModel:
+		case ClassID::BaseAnimating:
+		case ClassID::Ragdoll:
+			entity->useFastPipeline() = false;
+			continue;
+		default:
+			continue;
+		}
+	}
+}
+
 Chams::Chams() noexcept
 {
     normal = interfaces->materialSystem->createMaterial("normal", KeyValues::fromString("VertexLitGeneric", nullptr));
@@ -55,7 +87,7 @@ Chams::Chams() noexcept
 	}
 }
 
-bool Chams::render(void* ctx, void* state, const ModelRenderInfo& info, matrix3x4* customBoneToWorld) noexcept
+bool Chams::render(void* ctx, void* state, const ModelRenderInfo& info, Matrix3x4* customBoneToWorld) noexcept
 {
     appliedChams = false;
     this->ctx = ctx;
@@ -74,7 +106,7 @@ bool Chams::render(void* ctx, void* state, const ModelRenderInfo& info, matrix3x
 			&& !std::strstr(info.model->name + 17, "fists"))
             renderWeapons();
 	} else if (std::string_view{info.model->name}.starts_with("models/weapons/w_")) {
-		if (std::strstr(info.model->name + 17, "ied_dropped"))
+		if (std::strstr(info.model->name + 17, "ied"))
 			renderC4();
 		else if (std::strstr(info.model->name + 17, "defuser"))
 			renderDefuser();
@@ -100,7 +132,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 
     const auto health = player->health();
 
-	if (const auto activeWeapon = player->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classId == ClassId::C4 && activeWeapon->c4StartedArming() && std::any_of(config->chams["Planting"].materials.cbegin(), config->chams["Planting"].materials.cend(), [](const Config::Chams::Material& mat) { return mat.enabled; }))
+	if (const auto activeWeapon = player->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classID == ClassID::C4 && activeWeapon->c4StartedArming() && std::any_of(config->chams["Planting"].materials.cbegin(), config->chams["Planting"].materials.cend(), [](const Config::Chams::Material& mat) { return mat.enabled; }))
 	{
         applyChams(config->chams["Planting"].materials, health);
     } else if (player->isDefusing() && std::any_of(config->chams["Defusing"].materials.cbegin(), config->chams["Defusing"].materials.cend(), [](const Config::Chams::Material& mat) { return mat.enabled; }))
@@ -114,7 +146,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 		const auto &global = GameData::global();
 
 		if (config->antiAim.desync) {
-			matrix3x4 fakeBones[MAXSTUDIOBONES];
+			Matrix3x4 fakeBones[MAXSTUDIOBONES];
 			std::copy(std::begin(global.lerpedBones), std::end(global.lerpedBones), fakeBones);
 
 			const auto &origin = localPlayer->getRenderOrigin();
@@ -222,7 +254,7 @@ void Chams::renderSleeves() noexcept
     applyChams(config->chams["Sleeves"].materials, localPlayer->health());
 }
 
-void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int health, const matrix3x4* customMatrix) noexcept
+void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int health, const Matrix3x4* customMatrix) noexcept
 {
     for (const auto& cham : chams) {
         if (!cham.enabled || !cham.ignorez)

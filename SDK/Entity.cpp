@@ -47,7 +47,7 @@ bool Entity::canSee(Entity* other, const Vector& pos) noexcept
 
     Trace trace;
     interfaces->engineTrace->traceRay({ eyePos, pos }, 0x46004009, this, trace);
-    return trace.entity == other || trace.fraction > 0.97f;
+    return trace.entity == other || trace.fraction == 1.0f;
 }
 
 bool Entity::visibleTo(Entity* other) noexcept
@@ -72,7 +72,7 @@ bool Entity::visibleTo(Entity* other) noexcept
     if (!set)
         return false;
 
-    matrix3x4 boneMatrices[MAXSTUDIOBONES];
+    Matrix3x4 boneMatrices[MAXSTUDIOBONES];
     if (!setupBones(boneMatrices, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
         return false;
 

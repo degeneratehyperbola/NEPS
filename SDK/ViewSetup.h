@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Pad.h"
+
 struct ViewSetup
 {
-	std::byte pad[172];
+	PAD(172)
 	void *csm;
 	float fov;
 	float fovViewmodel;

@@ -104,9 +104,6 @@ public:
 	uintptr_t money;
 	uintptr_t demoFileEndReached;
 	const wchar_t *(__thiscall *getDecoratedPlayerName)(PlayerResource *pr, int index, wchar_t *buffer, int buffsize, int flags);
-	//void(__fastcall *sendMove)();
-	//void  writeUserCmdDeltaToBufferReturn;
-	//void(__fastcall *writeUserCmd)(void *buf, UserCmd *in, UserCmd *out);
 	void(__thiscall *createState)(AnimState *state, Entity *);
 	void(__vectorcall *updateState)(AnimState *state, void *, float x, float y, float z, void *);
 	void(__fastcall *invalidateBoneCache)(Entity *);

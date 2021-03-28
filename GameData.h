@@ -7,7 +7,7 @@
 #include <vector>
 #include <array>
 
-#include "SDK/matrix3x4.h"
+#include "SDK/Matrix3x4.h"
 #include "SDK/Vector.h"
 #include "SDK/AnimState.h"
 #include "SDK/ModelInfo.h"
@@ -69,15 +69,18 @@ struct Indicators
 	int blockTarget = 0;
 	Vector serverHead = Vector{};
 	Vector desyncHead = Vector{};
-	std::vector<Vector> multipoints;
 	float deltaLby = 0.0f;
+
+	#ifdef _DEBUG_NEPS
+	std::vector<Vector> multipoints;
+	#endif // _DEBUG_NEPS
 };
 
 struct GlobalData
 {
 	UserCmd lastCmd = UserCmd{};
 	bool sentPacket = true;
-	matrix3x4 lerpedBones[MAXSTUDIOBONES];
+	Matrix3x4 lerpedBones[MAXSTUDIOBONES];
 	
 	Indicators indicators;
 };
@@ -115,7 +118,7 @@ struct BaseData
 
 	float distanceToLocal;
 	Vector obbMins, obbMaxs;
-	matrix3x4 coordinateFrame;
+	Matrix3x4 coordinateFrame;
 };
 
 struct EntityData final : BaseData

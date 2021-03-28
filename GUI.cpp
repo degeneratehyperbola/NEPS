@@ -25,12 +25,18 @@
 #include "Hacks/SkinChanger.h"
 #include "Hacks/Aimbot.h"
 
-#include "SDK/ConVar.h"
-#include "SDK/Cvar.h"
+#ifdef _DEBUG_NEPS
+#include "SDK/Client.h"
 #include "SDK/ClientMode.h"
-#include "SDK/Engine.h"
+#include "SDK/EngineTrace.h"
 #include "SDK/Entity.h"
 #include "SDK/EntityList.h"
+#include "SDK/ClientClass.h"
+#include "SDK/NetworkStringTable.h"
+#endif // _DEBUG_NEPS
+#include "SDK/Engine.h"
+#include "SDK/ConVar.h"
+#include "SDK/Cvar.h"
 #include "SDK/Input.h"
 #include "SDK/InputSystem.h"
 
@@ -609,7 +615,7 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 
     static int material = 1;
 
-    if (ImGui::Combo("##category", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Backtrack\0Local player\0Desync\0Viewmodel\0Sleeves\0Hands\0Weapons\0C4\0Defuse kits\0Ragdolls\0Props\0"))
+    if (ImGui::Combo("##category", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Backtrack\0Local player\0Desync\0Weapon\0Sleeves\0Hands\0World weapons\0C4\0Defuse kits\0Ragdolls\0Props\0"))
         material = 1;
 
     ImGui::SameLine();
@@ -1473,13 +1479,6 @@ void GUI::renderExploitsWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Slowwalk", config->exploits.slowwalk);
 
 	ImGui::Checkbox("Bypass sv_pure", &config->exploits.bypassPure);
-	ImGui::PushItemWidth(90.0f);
-	if (ImGui::Button("Spoof sv_cheats"))
-	{
-		const static auto cheatoVar = interfaces->cvar->findVar("sv_cheats");
-		cheatoVar->onChangeCallbacks.size = 0;
-		cheatoVar->setValue(true);
-	}
 
 	//ImGuiCustom::keyBind("Doubletap", config->exploits.doubletap);
 
@@ -1885,17 +1884,60 @@ void GUI::renderGuiStyle2() noexcept
     ImGui::End();
 }
 
+#ifdef _DEBUG_NEPS
 void GUI::debug() noexcept
 {
 	if (ImGui::Button("Test chat hook"))
 	{
-		memory->clientMode->getHudChat()->printf(0, "\x01N \x02N \x03N \x04N \x05N \x06N \x07N \x08N \x09N \x0AN \x0BN \x0CN \x0DN \x0EN \x0FN \x10N");
+		memory->clientMode->getHudChat()->printf(0, "\x01N \x02N \x03N \x04N \x05N \x06N \x07N \x08N \x09N \x0AN \x0BN \x0CN \x0DN \x0EN \x0FN \x10N \x01");
 		memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s voted %c%s\x01", "River", '\x04', "YES");
 		memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s voted %c%s\x01", "Hyperbola", '\x02', "NO");
 	}
 
-	static bool dumpColors = false;
+	if (ImGui::Button("List client classes"))
+	{
+		for (int i = 1; i <= interfaces->entityList->getHighestEntityIndex(); i++)
+		{
+			auto entity = interfaces->entityList->getEntity(i);
+			if (!entity) continue;
 
+			memory->conColorMsg({0, 200, 0, 255}, std::to_string(i).c_str());
+			memory->debugMsg(": ");
+			memory->conColorMsg({0, 120, 255, 255}, entity->getClientClass()->networkName);
+			memory->debugMsg(" -> ");
+			memory->conColorMsg({255, 120, 255, 255}, std::to_string((int)entity->getClientClass()->classID).c_str());
+			memory->debugMsg("   ");
+		}
+	}
+
+	static const char *entName;
+	static ClassID entClassID;
+	if (ImGui::Button("Loking at...") && localPlayer)
+	{
+		Vector start = localPlayer->getEyePosition();
+		Vector end = start + Vector::fromAngle(interfaces->engine->getViewAngles()) * 1000.0f;
+
+		Trace trace;
+		interfaces->engineTrace->traceRay({start, end}, ALL_VISIBLE_CONTENTS | CONTENTS_MOVEABLE | CONTENTS_DETAIL, localPlayer.get(), trace);
+
+		if (trace.entity)
+		{
+			auto clientClass = trace.entity->getClientClass();
+			entName = clientClass->networkName;
+			entClassID = clientClass->classID;
+		}
+	}
+
+	if (entName)
+	{
+		ImGui::TextUnformatted(entName);
+		ImGui::TextUnformatted(std::to_string((int)entClassID).c_str());
+	}
+
+	if (ImGui::Button("Precache info"))
+		interfaces->engine->clientCmdUnrestricted("sv_precacheinfo");
+
+	static bool dumpColors = false;
 	ImGui::Checkbox("Style colors code", &dumpColors);
 
 	if (!dumpColors) return;
@@ -1920,3 +1962,4 @@ void GUI::debug() noexcept
 
 	ImGui::InputTextMultiline("", buffer, 128 * ImGuiCol_COUNT, {400.0f, 500.0f}, ImGuiInputTextFlags_ReadOnly);
 }
+#endif // _DEBUG_NEPS

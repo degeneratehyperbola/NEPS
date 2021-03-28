@@ -109,7 +109,7 @@
     <ClInclude Include="SDK\EntityList.h" />
     <ClInclude Include="SDK\Cvar.h" />
     <ClInclude Include="SDK\Engine.h" />
-    <ClInclude Include="SDK\ClassId.h" />
+    <ClInclude Include="SDK\ClassID.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Hooks.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -136,7 +136,7 @@
     <ClInclude Include="SDK\LocalPlayer.h" />
     <ClInclude Include="SDK\Material.h" />
     <ClInclude Include="SDK\MaterialSystem.h" />
-    <ClInclude Include="SDK\matrix3x4.h" />
+    <ClInclude Include="SDK\Matrix3x4.h" />
     <ClInclude Include="SDK\MemAlloc.h" />
     <ClInclude Include="SDK\ModelInfo.h" />
     <ClInclude Include="SDK\ModelRender.h" />

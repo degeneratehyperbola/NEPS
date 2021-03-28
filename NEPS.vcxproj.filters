@@ -253,9 +253,6 @@
     <ClInclude Include="SDK\Entity.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="SDK\ClassId.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\EntityList.h">
       <Filter>SDK</Filter>
     </ClInclude>
@@ -354,9 +351,6 @@
     </ClInclude>
     <ClInclude Include="Hacks\AntiAim.h">
       <Filter>Hacks</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\matrix3x4.h">
-      <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="SDK\RenderContext.h">
       <Filter>SDK</Filter>
@@ -485,6 +479,12 @@
       <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="SDK\ClientMode.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Matrix3x4.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\ClassID.h">
       <Filter>SDK</Filter>
     </ClInclude>
   </ItemGroup>

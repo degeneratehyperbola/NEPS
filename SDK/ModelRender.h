@@ -2,7 +2,7 @@
 
 #include "Vector.h"
 
-class matrix3x4;
+class Matrix3x4;
 
 struct Model {
     void* handle;
@@ -20,8 +20,8 @@ struct ModelRenderInfo {
     char pad[4];
     void* renderable;
     const Model* model;
-    const matrix3x4* modelToWorld;
-    const matrix3x4* lightingOffset;
+    const Matrix3x4* modelToWorld;
+    const Matrix3x4* lightingOffset;
     const Vector* lightingOrigin;
     int flags;
     int entityIndex;
