@@ -524,7 +524,7 @@ void Misc::fastPlant(UserCmd* cmd) noexcept
     const auto endPos = startPos + Vector::fromAngle(cmd->viewangles) * doorRange;
     interfaces->engineTrace->traceRay({ startPos, endPos }, 0x46004009, localPlayer.get(), trace);
 
-    if (!trace.entity || trace.entity->getClientClass()->classID != ClassID::PropDoorRotating)
+    if (!trace.entity || trace.entity->getClientClass()->classId != ClassId::PropDoorRotating)
         cmd->buttons &= ~UserCmd::IN_USE;
 }
 
@@ -778,7 +778,7 @@ static void oppositeHandKnife(FrameStage stage) noexcept
 
     if (stage == FrameStage::RENDER_START) {
         if (const auto activeWeapon = localPlayer->getActiveWeapon()) {
-            if (const auto classID = activeWeapon->getClientClass()->classID; classID == ClassID::Knife || classID == ClassID::KnifeGG)
+            if (const auto classId = activeWeapon->getClientClass()->classId; classId == ClassId::Knife || classId == ClassId::KnifeGG)
 				rightHandVar->setValue(!original);
         }
     } else {
@@ -852,14 +852,14 @@ void Misc::quickHealthshot(UserCmd* cmd) noexcept
         inProgress = true;
 
     if (auto activeWeapon{ localPlayer->getActiveWeapon() }; activeWeapon && inProgress) {
-        if (activeWeapon->getClientClass()->classID == ClassID::Healthshot && localPlayer->nextAttack() <= memory->globalVars->serverTime() && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime())
+        if (activeWeapon->getClientClass()->classId == ClassId::Healthshot && localPlayer->nextAttack() <= memory->globalVars->serverTime() && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime())
             cmd->buttons |= UserCmd::IN_ATTACK;
         else {
             for (auto weaponHandle : localPlayer->weapons()) {
                 if (weaponHandle == -1)
                     break;
 
-                if (const auto weapon{ interfaces->entityList->getEntityFromHandle(weaponHandle) }; weapon && weapon->getClientClass()->classID == ClassID::Healthshot) {
+                if (const auto weapon{ interfaces->entityList->getEntityFromHandle(weaponHandle) }; weapon && weapon->getClientClass()->classId == ClassId::Healthshot) {
                     cmd->weaponselect = weapon->index();
                     cmd->weaponsubtype = weapon->getWeaponSubType();
                     return;
@@ -873,7 +873,7 @@ void Misc::quickHealthshot(UserCmd* cmd) noexcept
 void Misc::fixTabletSignal() noexcept
 {
     if (config->misc.fixTabletSignal && localPlayer) {
-        if (auto activeWeapon{ localPlayer->getActiveWeapon() }; activeWeapon && activeWeapon->getClientClass()->classID == ClassID::Tablet)
+        if (auto activeWeapon{ localPlayer->getActiveWeapon() }; activeWeapon && activeWeapon->getClientClass()->classId == ClassId::Tablet)
             activeWeapon->tabletReceptionIsBlocked() = false;
     }
 }

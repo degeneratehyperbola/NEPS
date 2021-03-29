@@ -78,7 +78,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		}
 	}
 
-	if (config->antiAim.pitch && cmd->viewangles.x == currentViewAngles.x)
+	if (!config->antiAim.fakeUp && config->antiAim.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = config->antiAim.pitchAngle;
 
 	if (static Helpers::KeyBindState choke; choke[config->antiAim.choke] && config->antiAim.desync && config->antiAim.chokedPackets && cmd->viewangles.y == currentViewAngles.y)
@@ -115,4 +115,27 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 	if (config->antiAim.yaw)
 		cmd->viewangles.y += config->antiAim.yawAngle;
+}
+
+void AntiAim::fakeUp(UserCmd *cmd, const Vector &currentViewAngles, bool &sendPacket) noexcept
+{
+	if (!localPlayer) return;
+
+	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
+		return;
+
+	if (cmd->buttons & UserCmd::IN_USE)
+		return;
+
+	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
+		return;
+
+	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
+		return;
+
+	if (config->antiAim.fakeUp && cmd->viewangles.x == currentViewAngles.x)
+	{
+		cmd->viewangles.x = -540.0f;
+		cmd->forwardmove = -cmd->forwardmove;
+	}
 }

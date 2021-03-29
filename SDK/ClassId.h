@@ -1,6 +1,6 @@
 #pragma once
 
-enum class ClassID
+enum class ClassId
 {
 	BaseAnimating = 2,
 	GrenadeProjectile = 9,

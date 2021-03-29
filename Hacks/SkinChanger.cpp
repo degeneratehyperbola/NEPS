@@ -304,7 +304,7 @@ static Entity* make_glove(int entry, int serial) noexcept
     if (!createWearable) {
         createWearable = []() -> decltype(createWearable) {
             for (auto clientClass = interfaces->client->getAllClasses(); clientClass; clientClass = clientClass->next)
-                if (clientClass->classID == ClassID::EconWearable)
+                if (clientClass->classId == ClassId::EconWearable)
                     return clientClass->createFunction;
             return nullptr;
         }();
@@ -365,7 +365,7 @@ static void post_data_update_start(int localHandle) noexcept
                 for (int i = 65; i <= interfaces->entityList->getHighestEntityIndex(); i++) {
                     auto entity = interfaces->entityList->getEntity(i);
 
-                    if (entity && entity->getClientClass()->classID == ClassID{ 70 }) {
+                    if (entity && entity->getClientClass()->classId == ClassId{ 70 }) {
                         entry = i;
                         break;
                     }

@@ -371,9 +371,13 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
     ImGui::Checkbox("##yaw", &config->antiAim.yaw);
     ImGui::SameLine();
 	ImGui::SliderFloat("##yaw_sl", &config->antiAim.yawAngle, -180.0f, 180.0f, "Yaw %.2fdeg");
-    ImGui::Checkbox("##pitch", &config->antiAim.pitch);
-    ImGui::SameLine();
-    ImGui::SliderFloat("##pitch_sl", &config->antiAim.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
+    ImGui::Checkbox("Fake pitch up", &config->antiAim.fakeUp);
+	if (!config->antiAim.fakeUp)
+	{
+		ImGui::Checkbox("##pitch", &config->antiAim.pitch);
+		ImGui::SameLine();
+		ImGui::SliderFloat("##pitch_sl", &config->antiAim.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
+	}
     ImGui::Checkbox("Desync", &config->antiAim.desync);
 	if (config->antiAim.desync)
 	{
@@ -1903,13 +1907,13 @@ void GUI::debug() noexcept
 			memory->debugMsg(": ");
 			memory->conColorMsg({0, 120, 255, 255}, entity->getClientClass()->networkName);
 			memory->debugMsg(" -> ");
-			memory->conColorMsg({255, 120, 255, 255}, std::to_string((int)entity->getClientClass()->classID).c_str());
+			memory->conColorMsg({255, 120, 255, 255}, std::to_string((int)entity->getClientClass()->classId).c_str());
 			memory->debugMsg("   ");
 		}
 	}
 
 	static const char *entName;
-	static ClassID entClassID;
+	static ClassId entClassId;
 	if (ImGui::Button("Loking at...") && localPlayer)
 	{
 		Vector start = localPlayer->getEyePosition();
@@ -1922,14 +1926,14 @@ void GUI::debug() noexcept
 		{
 			auto clientClass = trace.entity->getClientClass();
 			entName = clientClass->networkName;
-			entClassID = clientClass->classID;
+			entClassId = clientClass->classId;
 		}
 	}
 
 	if (entName)
 	{
 		ImGui::TextUnformatted(entName);
-		ImGui::TextUnformatted(std::to_string((int)entClassID).c_str());
+		ImGui::TextUnformatted(std::to_string((int)entClassId).c_str());
 	}
 
 	if (ImGui::Button("Precache info"))

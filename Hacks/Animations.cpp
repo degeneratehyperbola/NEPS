@@ -60,24 +60,7 @@ bool Animations::clientLerped(Matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Ve
 
 		*(int *)(localPlayer.get() + 0xA68) = 0;
 
-		//const float pursue = cmd->viewangles.y;
-		//static float yawTarget = pursue;
-		//static float currentYaw = pursue;
-		//float deltaYaw = Helpers::angleDiffDeg(currentYaw, cmd->viewangles.y);
-
-		//if (config->antiAim.chokedPackets && config->antiAim.desync && !config->antiAim.extended)
-		//	currentYaw = Helpers::approachAngleDeg(pursue, currentYaw, std::max(0.0f, memory->globalVars->currenttime - lerpedState->lastClientSideAnimationUpdateTime) * 100.0f);
-		//else
-		//	Helpers::feetYaw(lerpedState, pursue, yawTarget, currentYaw);
-
-		//currentYaw -= deltaYaw;
-		//deltaYaw = std::clamp(deltaYaw, -60.0f, 60.0f);
-		//currentYaw += deltaYaw;
-		//currentYaw = std::fmodf(currentYaw, 360.0f);
-		//lerpedState->feetYaw = currentYaw;
-		// XD
-
-		memory->updateState(lerpedState, NULL, NULL, cmd->viewangles.y, cmd->viewangles.x, NULL);
+		memory->updateState(lerpedState, NULL, NULL, cmd->viewangles.y, config->antiAim.fakeUp ? -98.0f : cmd->viewangles.x, NULL);
 		memory->invalidateBoneCache(localPlayer.get());
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, lerpedState->feetYaw, 0.0f});
 

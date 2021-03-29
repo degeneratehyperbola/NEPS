@@ -250,6 +250,8 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	previousViewAngles = cmd->viewangles;
 
+	AntiAim::fakeUp(cmd, currentViewAngles, sendPacket);
+
 	auto &global = GameData::global();
 
 	global.sentPacket = sendPacket;

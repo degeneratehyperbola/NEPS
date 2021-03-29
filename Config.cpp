@@ -381,6 +381,7 @@ static void from_json(const json& j, Config::AntiAim& a)
     read(j, "Desync clamp", a.clamped);
     read(j, "Desync ext", a.extended);
     read(j, "Desync avoid overlap", a.avoidOverlap);
+    read(j, "Fake up", a.fakeUp);
     read(j, "Flip key", a.flipKey);
 	read<value_t::object>(j, "Fake duck", a.fakeDuck);
 	read(j, "Choked packets", a.chokedPackets);
@@ -972,6 +973,7 @@ static void to_json(json& j, const Config::AntiAim& o, const Config::AntiAim& du
     WRITE("Desync clamp", clamped);
     WRITE("Desync ext", extended);
     WRITE("Desync avoid overlap", avoidOverlap);
+    WRITE("Fake up", fakeUp);
     WRITE("Flip key", flipKey);
 	WRITE("Fake duck", fakeDuck);
 	WRITE("Choked packets", chokedPackets);

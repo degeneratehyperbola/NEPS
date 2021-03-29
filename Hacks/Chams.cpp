@@ -145,7 +145,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 		GameData::Lock lock;
 		const auto &global = GameData::global();
 
-		if (config->antiAim.desync) {
+		if (config->antiAim.desync || config->antiAim.fakeUp) {
 			Matrix3x4 fakeBones[MAXSTUDIOBONES];
 			std::copy(std::begin(global.lerpedBones), std::end(global.lerpedBones), fakeBones);
 

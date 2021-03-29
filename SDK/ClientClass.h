@@ -13,5 +13,5 @@ struct ClientClass
 	char *networkName;
 	RecvTable *recvTable;
 	ClientClass *next;
-	ClassID classID;
+	ClassId classId;
 };
