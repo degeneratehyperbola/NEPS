@@ -94,6 +94,7 @@ public:
 
 	struct AntiAim
 	{
+		//KeyBind bind;
 		bool pitch = false;
 		float pitchAngle = 0.0f;
 		bool yaw = false;
@@ -108,7 +109,8 @@ public:
 		KeyBind fakeDuck;
 		int chokedPackets = 0;
 		KeyBind choke;
-	} antiAim;
+	}/*;
+	std::array<AntiAim, 7>*/ antiAim;
 
 	struct Glow : Color4
 	{

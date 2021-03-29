@@ -46,8 +46,9 @@ void Backtrack::update(FrameStage stage) noexcept
             Record record{ };
             record.origin = entity->getAbsOrigin();
             record.simulationTime = entity->simulationTime();
+            record.oldSimulationTime = entity->oldSimulationTime();
 
-            entity->setupBones(record.matrix, 256, 0x7FF00, memory->globalVars->currenttime);
+            entity->setupBones(record.matrix, 256, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
             records[i].push_front(record);
 

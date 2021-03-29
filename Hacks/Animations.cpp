@@ -60,7 +60,7 @@ bool Animations::clientLerped(Matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Ve
 
 		*(int *)(localPlayer.get() + 0xA68) = 0;
 
-		memory->updateState(lerpedState, NULL, NULL, cmd->viewangles.y, config->antiAim.fakeUp ? -98.0f : cmd->viewangles.x, NULL);
+		memory->updateState(lerpedState, NULL, NULL, cmd->viewangles.y, cmd->viewangles.x, NULL);
 		memory->invalidateBoneCache(localPlayer.get());
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, lerpedState->feetYaw, 0.0f});
 

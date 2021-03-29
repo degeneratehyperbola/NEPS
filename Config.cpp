@@ -372,6 +372,7 @@ static void from_json(const json& j, Config::Backtrack& b)
 
 static void from_json(const json& j, Config::AntiAim& a)
 {
+    //read(j, "Bind", a.bind);
     read(j, "Pitch", a.pitch);
     read(j, "Pitch angle", a.pitchAngle);
     read(j, "Yaw", a.yaw);
@@ -722,6 +723,7 @@ bool Config::load(const char8_t *name, bool incremental) noexcept
 	read(j, "Aimbot", aimbot);
 	read(j, "Triggerbot", triggerbot);
 	read<value_t::object>(j, "Backtrack", backtrack);
+	//read(j, "Anti aim", antiAim);
 	read<value_t::object>(j, "Anti aim", antiAim);
 	read(j, "Glow", glow);
 	read(j, "Chams", chams);
@@ -964,6 +966,7 @@ static void to_json(json& j, const Config::Backtrack& o, const Config::Backtrack
 
 static void to_json(json& j, const Config::AntiAim& o, const Config::AntiAim& dummy = {})
 {
+    //WRITE("Bind", bind);
     WRITE("Pitch", pitch);
     WRITE("Pitch angle", pitchAngle);
     WRITE("Yaw", yaw);

@@ -250,29 +250,29 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	previousViewAngles = cmd->viewangles;
 
-	AntiAim::fakeUp(cmd, currentViewAngles, sendPacket);
+	AntiAim::fakePitch(cmd);
 
 	auto &global = GameData::global();
 
 	global.sentPacket = sendPacket;
 	global.lastCmd = *cmd;
 
-	if (config->antiAim.desync)
+	if (config->antiAim.desync || config->antiAim.fakeUp)
 		Animations::clientLerped(global.lerpedBones, cmd, sendPacket, &global.indicators.desyncHead, &global.indicators.deltaLby);
 
-	//if (interfaces->engine->isInGame())
-	//{
-	//	static NetworkChannel *old = nullptr;
-	//	NetworkChannel *current = interfaces->engine->getNetworkChannel();
-	//	if (current && old != current)
-	//	{
-	//		netChInitialized = false;
-	//		old = current;
-	//		hooks->networkChannel.init(current);
-	//		hooks->networkChannel.hookAt(42, sendNetMsg);
-	//		netChInitialized = true;
-	//	}
-	//}
+	if (interfaces->engine->isInGame())
+	{
+		static NetworkChannel *old = nullptr;
+		NetworkChannel *current = interfaces->engine->getNetworkChannel();
+		if (current && old != current)
+		{
+			netChInitialized = false;
+			old = current;
+			hooks->networkChannel.init(current);
+			hooks->networkChannel.hookAt(42, sendNetMsg);
+			netChInitialized = true;
+		}
+	}
 
 	return false;
 }

@@ -363,6 +363,7 @@ public:
     NETVAR(origin, "CBaseEntity", "m_vecOrigin", Vector)
     NETVAR_OFFSET(moveType, "CBaseEntity", "m_nRenderMode", 1, MoveType)
     NETVAR(simulationTime, "CBaseEntity", "m_flSimulationTime", float)
+    NETVAR_OFFSET(oldSimulationTime, "CBaseEntity", "m_flSimulationTime", 4, float)
     NETVAR(ownerEntity, "CBaseEntity", "m_hOwnerEntity", int)
     NETVAR(team, "CBaseEntity", "m_iTeamNum", Team)
     NETVAR(spotted, "CBaseEntity", "m_bSpotted", bool)

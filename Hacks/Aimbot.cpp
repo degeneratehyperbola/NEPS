@@ -1,4 +1,5 @@
 #include "Aimbot.h"
+#include "Backtrack.h"
 #include "../Config.h"
 #include "../Interfaces.h"
 #ifdef _DEBUG_NEPS
@@ -89,41 +90,57 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			if (!hitboxSet)
 				continue;
 
+			// Fake up resolver, yes
+			if (entity->thirdPersonAngles().x < -180.0f)
+				entity->thirdPersonAngles().x = 89.0f;
+
+			if (!entity->setupBones(bufferBones.data(), MAXSTUDIOBONES, BONE_USED_BY_HITBOX, 0.0f))
+				continue;
+
+			float simulationTime = entity->simulationTime();
+			float oldSimulationTime = entity->oldSimulationTime();
+
+			{
+				bool goesThroughWall = false;
+				Trace trace;
+				auto origin = bufferBones[0].origin();
+				bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
+
+				if (trace.entity == entity && canHit)
+				{
+					if (config->aimbot[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
+						cmd->buttons |= UserCmd::IN_ATTACK2;
+
+					if (goesThroughWall && config->backtrack.enabled)
+					{
+						const auto record = Backtrack::getRecords(i).back();
+						if (Backtrack::valid(record.simulationTime))
+						{
+							simulationTime = record.simulationTime;
+							oldSimulationTime = record.oldSimulationTime;
+							std::copy(std::begin(record.matrix), std::end(record.matrix), bufferBones.begin());
+						}
+					}
+				}
+			}
+
 			auto allowedHitgroup = config->aimbot[weaponIndex].hitgroup;
 
 			if (static Helpers::KeyBindState flag; flag[config->aimbot[weaponIndex].safeOnly] && !entity->isBot())
 			{
 				const auto remoteActiveWep = entity->getActiveWeapon();
 				const auto animState = entity->getAnimState();
-				if (remoteActiveWep && remoteActiveWep->lastShotTime() == entity->simulationTime());
-				else if (animState && animState->feetYawRate == 0.0f);
-				else if (~entity->flags() & Entity::FL_ONGROUND);
-				else if (entity->velocity().length2D() > 90.0f);
+				if (remoteActiveWep && remoteActiveWep->lastShotTime() == simulationTime);
+				else if (const auto delta = simulationTime - oldSimulationTime; Helpers::timeToTicks(delta) < 1);
+				else if (entity->getMaxDesyncAngle() < 55.0f);
 				else
 				{
 					allowedHitgroup = config->aimbot[weaponIndex].safeHitgroup;
 				}
 			}
 
-			// Fake up resolver, yes
-			if (entity->thirdPersonAngles().x < -180.0f)
-				entity->thirdPersonAngles().x = 89.0f;
-
 			if (!allowedHitgroup)
 				continue;
-
-			if (!entity->setupBones(bufferBones.data(), MAXSTUDIOBONES, BONE_USED_BY_HITBOX, 0.0f))
-				continue;
-
-			if (config->aimbot[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
-			{
-				bool goesThroughWall = false;
-				Trace trace;
-				auto origin = bufferBones[0].origin();
-				bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
-				if (trace.entity == entity && canHit && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
-					cmd->buttons |= UserCmd::IN_ATTACK2;
-			}
 
 			for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
 			{

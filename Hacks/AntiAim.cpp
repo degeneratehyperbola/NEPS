@@ -10,6 +10,8 @@
 #include "../SDK/UserCmd.h"
 #include "../SDK/GlobalVars.h"
 
+static bool canDoFakePitch;
+
 bool lbyUpdate()
 {
 	auto time = memory->globalVars->serverTime();
@@ -33,7 +35,10 @@ bool lbyUpdate()
 
 void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
-	if (!localPlayer) return;
+	canDoFakePitch = false;
+
+	if (!localPlayer)
+		return;
 
 	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
 		return;
@@ -46,6 +51,8 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
 		return;
+
+	canDoFakePitch = true;
 
 	if (static Helpers::KeyBindState flag; flag[config->antiAim.choke] && config->antiAim.chokedPackets)
 		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= config->antiAim.chokedPackets;
@@ -95,7 +102,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			}
 		} else
 		{
-			const float add = config->antiAim.clamped ? (cmd->tickCount & 1 ? 33.0f : 27.0f) : 0.0f;
+			const float add = config->antiAim.clamped ? 30.0f : 0.0f;
 			const float desyncAngle = flip ? localPlayer->getMaxDesyncAngle() - add : -localPlayer->getMaxDesyncAngle() + add;
 
 			if (!sendPacket && (!config->antiAim.corrected || localPlayer->velocity().length2D() < 0.1f))
@@ -117,23 +124,9 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		cmd->viewangles.y += config->antiAim.yawAngle;
 }
 
-void AntiAim::fakeUp(UserCmd *cmd, const Vector &currentViewAngles, bool &sendPacket) noexcept
+void AntiAim::fakePitch(UserCmd *cmd) noexcept
 {
-	if (!localPlayer) return;
-
-	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
-		return;
-
-	if (cmd->buttons & UserCmd::IN_USE)
-		return;
-
-	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
-		return;
-
-	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
-		return;
-
-	if (config->antiAim.fakeUp && cmd->viewangles.x == currentViewAngles.x)
+	if (canDoFakePitch)
 	{
 		cmd->viewangles.x = -540.0f;
 		cmd->forwardmove = -cmd->forwardmove;
