@@ -118,7 +118,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						const auto &records = Backtrack::getRecords(i);
 						for (size_t j = 0; j < records.size(); j++)
 						{
-							if (Backtrack::valid(records[j].simulationTime))
+							if (Backtrack::valid(records[j].simulationTime) && records[j].origin != entity->origin())
 								bestRecord = j;
 						}
 
