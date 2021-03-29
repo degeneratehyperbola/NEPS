@@ -1386,11 +1386,11 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 	float best = 60.0f;
 	if (static Helpers::KeyBindState flag; flag[config->griefing.blockbot.target])
 	{
-		for (auto &player : GameData::players())
+		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 		{
-			Entity *entity = interfaces->entityList->getEntityFromHandle(player.handle);
+			Entity *entity = interfaces->entityList->getEntity(i);
 
-			if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || localPlayer->isOtherEnemy(entity))
+			if (!entity || !entity->isPlayer() || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive())
 				continue;
 
 			const auto angle = Helpers::calculateRelativeAngle(localPlayer->getEyePosition(), entity->getEyePosition(), cmd->viewangles);
@@ -1407,7 +1407,7 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 	if (static Helpers::KeyBindState flag; !flag[config->griefing.blockbot.bind]) return;
 
 	const auto target = interfaces->entityList->getEntityFromHandle(global.indicators.blockTarget);
-	if (target && target != localPlayer.get() && !target->isDormant() && target->isAlive() && !localPlayer->isOtherEnemy(target))
+	if (target && target->isPlayer() && target != localPlayer.get() && !target->isDormant() && target->isAlive())
 	{
 		const auto targetVec = (target->getAbsOrigin() + target->velocity() * memory->globalVars->intervalPerTick * config->griefing.blockbot.trajectoryFac - localPlayer->getAbsOrigin()) * config->griefing.blockbot.distanceFac;
 		const auto z1 = target->getAbsOrigin().z - localPlayer->getEyePosition().z;
@@ -1481,7 +1481,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	if (config->griefing.blockbot.visualise.enabled)
 	{
 		auto target = GameData::playerByHandle(global.indicators.blockTarget);
-		if (target && !target->dormant && target->alive && !target->enemy)
+		if (target && !target->dormant && target->alive)
 		{
 			Vector curDir = target->velocity * 0.12f;
 			curDir.z = 0.0f;
@@ -1618,6 +1618,9 @@ void Misc::voteRevealer(GameEvent &event) noexcept
 	if (!config->griefing.revealVotes)
 		return;
 
+	if (!localPlayer)
+		return;
+
 	const auto entity = interfaces->entityList->getEntity(event.getInt("entityid"));
 	if (!entity || !entity->isPlayer())
 		return;
@@ -1625,5 +1628,5 @@ void Misc::voteRevealer(GameEvent &event) noexcept
 	const auto votedYes = event.getInt("vote_option") == 0;
 	const char color = votedYes ? '\x04' : '\x02';
 
-	memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s voted %c%s\x01", entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
+	memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s %s voted %c%s\x01", entity->isOtherEnemy(localPlayer.get()) ? "Enemy" : "Teammate", entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
 }
