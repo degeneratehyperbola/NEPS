@@ -5,6 +5,7 @@
 #include "../GameData.h"
 #endif // _DEBUG_NEPS
 #include "../Memory.h"
+#include "../SDK/AnimState.h"
 #include "../SDK/Entity.h"
 #include "../SDK/UserCmd.h"
 #include "../SDK/Vector.h"
@@ -93,8 +94,11 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			if (static Helpers::KeyBindState flag; flag[config->aimbot[weaponIndex].safeOnly] && !entity->isBot())
 			{
 				const auto remoteActiveWep = entity->getActiveWeapon();
-				if (remoteActiveWep && config->aimbot[weaponIndex].onShot && remoteActiveWep->lastShotTime() == entity->simulationTime());
-				else if (config->aimbot[weaponIndex].onMove && (entity->velocity().length2D() > 90.0f || ~entity->flags() & Entity::FL_ONGROUND));
+				const auto animState = entity->getAnimState();
+				if (remoteActiveWep && remoteActiveWep->lastShotTime() == entity->simulationTime());
+				else if (animState && animState->feetYawRate == 0.0f);
+				else if (~entity->flags() & Entity::FL_ONGROUND);
+				else if (entity->velocity().length2D() > 90.0f);
 				else
 				{
 					allowedHitgroup = config->aimbot[weaponIndex].safeHitgroup;

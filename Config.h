@@ -59,8 +59,6 @@ public:
 		bool betweenShots = true;
 		KeyBind safeOnly;
 		int safeHitgroup = 0;
-		bool onShot = false;
-		bool onMove = false;
 		bool targetStop = false;
 	};
 	std::array<Aimbot, 40> aimbot;
