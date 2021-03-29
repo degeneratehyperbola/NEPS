@@ -27,4 +27,5 @@ namespace ImGuiCustom
     void keyBind(const char *name, int *key, int *keyMode = nullptr) noexcept;
     void keyBind(const char *name, KeyBind &bind) noexcept;
     void multiCombo(const char *name, int &flagValue, const char *items) noexcept;
+    void boolCombo(const char *name, bool &value, const char *items) noexcept;
 }

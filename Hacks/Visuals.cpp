@@ -502,7 +502,7 @@ void Visuals::bulletBeams(GameEvent *event)
 {
 	if (!config->visuals.self.enabled && !config->visuals.ally.enabled && !config->visuals.enemy.enabled || !localPlayer || !interfaces->engine->isInGame()) return;
 
-	const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt("userid")));
+	auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt("userid")));
 
 	if (!player) return;
 

@@ -383,7 +383,6 @@ public:
 	NETVAR(observerMode, "CBasePlayer", "m_iObserverMode", ObsMode)
     NETVAR(lastPlaceName, "CBasePlayer", "m_szLastPlaceName", char[18])
     NETVAR_OFFSET(thirdPersonAngles, "CBasePlayer", "deadflag", 4, Vector)
-    //NETVAR(effects, "CBasePlayer", "m_fEffects", int)
 
     NETVAR(armor, "CCSPlayer", "m_ArmorValue", int)
     NETVAR(eyeAngles, "CCSPlayer", "m_angEyeAngles", Vector)

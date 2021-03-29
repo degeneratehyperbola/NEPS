@@ -2,7 +2,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui/imgui_internal.h"
 
-#include "imguiCustom.h"
+#include "ImguiCustom.h"
 #include "Interfaces.h"
 #include "SDK/InputSystem.h"
 
@@ -309,7 +309,7 @@ void ImGuiCustom::keyBind(const char *name, KeyBind &bind) noexcept
 	keyBind(name, &bind.key, &bind.keyMode);
 }
 
-static bool SingleStringGetter(void *data, int idx, const char **out_text)
+static bool singleStringGetter(void *data, int idx, const char **out_text)
 {
 	const char *items_separated_by_zeros = (const char *)data;
 	int items_count = 0;
@@ -353,7 +353,7 @@ void ImGuiCustom::multiCombo(const char *name, int &flagValue, const char *items
 			bool selected = flagValue & (1 << i);
 
 			const char *item;
-			SingleStringGetter(data, i, &item);
+			singleStringGetter(data, i, &item);
 
 			ImGui::PushID(i);
 			ImGui::Selectable(item, &selected, ImGuiSelectableFlags_DontClosePopups);
@@ -363,6 +363,39 @@ void ImGuiCustom::multiCombo(const char *name, int &flagValue, const char *items
 				flagValue |= (1 << i);
 			else
 				flagValue &= ~(1 << i);
+		}
+		ImGui::EndCombo();
+	}
+}
+
+void ImGuiCustom::boolCombo(const char *name, bool &value, const char *items) noexcept
+{
+	int count = 0;
+	const char *p = items;
+	while (*p)
+	{
+		p += std::strlen(p) + 1;
+		count++;
+	}
+
+	void *data = (void *)items;
+
+	const char *preview;
+	singleStringGetter(data, value, &preview);
+	if (ImGui::BeginCombo(name, preview))
+	{
+		for (int i = 0; i < std::min(count, 2); i++)
+		{
+			bool selected = i == value;
+
+			const char *item;
+			singleStringGetter(data, i, &item);
+
+			ImGui::PushID(i);
+			ImGui::Selectable(item, &selected);
+			ImGui::PopID();
+
+			if (selected) value = i;
 		}
 		ImGui::EndCombo();
 	}

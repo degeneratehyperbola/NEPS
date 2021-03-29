@@ -11,7 +11,7 @@
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_stdlib.h"
 
-#include "imguiCustom.h"
+#include "ImguiCustom.h"
 
 #include "GUI.h"
 #include "GameData.h"
@@ -955,7 +955,10 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGui::Combo("Type", &sharedConfig.box.type, "2D\0" "2D corners\0" "3D\0" "3D corners\0");
 			ImGui::SetNextItemWidth(275.0f);
 			ImGui::SliderFloat3("Scale", sharedConfig.box.scale.data(), 0.0f, 0.50f, "%.2f");
-			ImGuiCustom::colorPicker("Fill / outline", sharedConfig.box.fill);
+			ImGuiCustom::colorPicker("##fill", sharedConfig.box.fill.color, &sharedConfig.box.fill.rainbow, &sharedConfig.box.fill.rainbowSpeed);
+			ImGui::SameLine();
+			ImGui::SetNextItemWidth(85.0f);
+			ImGuiCustom::boolCombo("##fill_outline", sharedConfig.box.fill.enabled, "Outline\0Fill\0");
 			ImGui::EndPopup();
 		}
 
@@ -984,7 +987,10 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
                 ImGui::Combo("Type", &playerConfig.headBox.type, "2D\0" "Corner 2D\0" "3D\0" "Corner 3D\0");
                 ImGui::SetNextItemWidth(275.0f);
                 ImGui::SliderFloat3("Scale", playerConfig.headBox.scale.data(), 0.0f, 0.50f, "%.2f");
-                ImGuiCustom::colorPicker("Fill / outline", playerConfig.headBox.fill);
+				ImGuiCustom::colorPicker("##fill", playerConfig.headBox.fill.color, &playerConfig.headBox.fill.rainbow, &playerConfig.headBox.fill.rainbowSpeed);
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(85.0f);
+				ImGuiCustom::boolCombo("##fill_outline", playerConfig.headBox.fill.enabled, "Outline\0Fill\0");
                 ImGui::EndPopup();
             }
         
@@ -1014,7 +1020,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 					ImGuiCustom::colorPicker(name, trail);
 					ImGui::SameLine(150.0f);
 					ImGui::SetNextItemWidth(95.0f);
-					ImGui::Combo("", &trail.type, "Line\0Circles\0Filled Circles\0");
+					ImGui::Combo("", &trail.type, "Line\0Circles\0Filled circles\0");
 					ImGui::SameLine();
 					ImGui::SetNextItemWidth(95.0f);
 					ImGui::InputFloat("Time", &trail.time, 0.1f, 0.5f, "%.1fs");
@@ -1082,14 +1088,15 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::SliderFloat("##bwidth", &config->visuals.self.width, 0.0f, 5.0f, "Thickness %.3f");
 		ImGui::SliderFloat("##blife", &config->visuals.self.life, 0.0f, 10.0f, "Duration %.3fs");
 		ImGui::PopItemWidth();
-		ImGui::Checkbox("Railgun / noise", &config->visuals.self.railgun);
+		ImGui::SetNextItemWidth(85.0f);
+		ImGuiCustom::boolCombo("Type", config->visuals.self.railgun, "Noise\0Railgun");
 		ImGui::SetNextItemWidth(255.0f);
 		if (config->visuals.self.railgun)
 			ImGui::SliderFloat("##bnoise", &config->visuals.self.noise, 0.0f, 10.0f, "Radius %.3f");
 		else
 			ImGui::SliderFloat("##bnoise", &config->visuals.self.noise, 0.0f, 10.0f, "Noise %.3f");
 		if (!config->visuals.self.railgun)
-			ImGui::Checkbox("Do noise once", &config->visuals.self.noiseOnce);
+			ImGui::Checkbox("Static noise", &config->visuals.self.noiseOnce);
 		ImGui::EndPopup();
 	}
 	
@@ -1106,14 +1113,15 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::SliderFloat("##bwidth", &config->visuals.ally.width, 0.0f, 5.0f, "Thickness %.3f");
 		ImGui::SliderFloat("##blife", &config->visuals.ally.life, 0.0f, 10.0f, "Duration %.3fs");
 		ImGui::PopItemWidth();
-		ImGui::Checkbox("Railgun / noise", &config->visuals.ally.railgun);
+		ImGui::SetNextItemWidth(85.0f);
+		ImGuiCustom::boolCombo("Type", config->visuals.ally.railgun, "Noise\0Railgun");
 		ImGui::SetNextItemWidth(255.0f);
 		if (config->visuals.ally.railgun)
 			ImGui::SliderFloat("##bnoise", &config->visuals.ally.noise, 0.0f, 10.0f, "Radius %.3f");
 		else
 			ImGui::SliderFloat("##bnoise", &config->visuals.ally.noise, 0.0f, 10.0f, "Noise %.3f");
 		if (!config->visuals.ally.railgun)
-			ImGui::Checkbox("Do noise once", &config->visuals.ally.noiseOnce);
+			ImGui::Checkbox("Static noise", &config->visuals.ally.noiseOnce);
 		ImGui::EndPopup();
 	}
 
@@ -1130,14 +1138,15 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::SliderFloat("##bwidth", &config->visuals.enemy.width, 0.0f, 5.0f, "Thickness %.3f");
 		ImGui::SliderFloat("##blife", &config->visuals.enemy.life, 0.0f, 10.0f, "Duration %.3fs");
 		ImGui::PopItemWidth();
-		ImGui::Checkbox("Railgun / noise", &config->visuals.enemy.railgun);
+		ImGui::SetNextItemWidth(85.0f);
+		ImGuiCustom::boolCombo("Type", config->visuals.enemy.railgun, "Noise\0Railgun");
 		ImGui::SetNextItemWidth(255.0f);
 		if (config->visuals.enemy.railgun)
 			ImGui::SliderFloat("##bnoise", &config->visuals.enemy.noise, 0.0f, 10.0f, "Radius %.3f");
 		else
 			ImGui::SliderFloat("##bnoise", &config->visuals.enemy.noise, 0.0f, 10.0f, "Noise %.3f");
 		if (!config->visuals.enemy.railgun)
-			ImGui::Checkbox("Do noise once", &config->visuals.enemy.noiseOnce);
+			ImGui::Checkbox("Static noise", &config->visuals.enemy.noiseOnce);
 		ImGui::EndPopup();
 	}
 
@@ -1269,12 +1278,13 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 			std::transform(filterWide.begin(), filterWide.end(), filterWide.begin(), [](wchar_t w) { return std::towupper(w); });
 
             for (std::size_t i = 0; i < kits.size(); ++i) {
-                if (filter.empty() || wcsstr(kits[i].nameUpperCase.c_str(), filterWide.c_str())) {
-                    ImGui::PushID(i);
-                    if (ImGui::Selectable(kits[i].name.c_str(), i == selected_entry.paint_kit_vector_index))
-                        selected_entry.paint_kit_vector_index = i;
-                    ImGui::PopID();
-                }
+				if (filter.empty() || wcsstr(kits[i].nameUpperCase.c_str(), filterWide.c_str()))
+				{
+					ImGui::PushID(i);
+					if (ImGui::Selectable(kits[i].name.c_str(), i == selected_entry.paint_kit_vector_index))
+						selected_entry.paint_kit_vector_index = i;
+					ImGui::PopID();
+				}
             }
             ImGui::ListBoxFooter();
         }
