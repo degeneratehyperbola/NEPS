@@ -105,6 +105,10 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				}
 			}
 
+			// Fake up resolver, yes
+			if (entity->thirdPersonAngles().x < -180.0f)
+				entity->thirdPersonAngles().x = 89.0f;
+
 			if (!allowedHitgroup)
 				continue;
 
