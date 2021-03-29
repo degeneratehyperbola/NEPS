@@ -10,7 +10,7 @@
 #include "../SDK/UserCmd.h"
 #include "../SDK/GlobalVars.h"
 
-static bool canDoFakePitch;
+static bool canDoFakePitch = false;
 
 bool lbyUpdate()
 {
@@ -126,7 +126,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 {
-	if (canDoFakePitch)
+	if (canDoFakePitch && config->antiAim.fakeUp)
 	{
 		cmd->viewangles.x = -540.0f;
 		cmd->forwardmove = -cmd->forwardmove;

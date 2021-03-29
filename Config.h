@@ -109,8 +109,8 @@ public:
 		KeyBind fakeDuck;
 		int chokedPackets = 0;
 		KeyBind choke;
-	}/*;
-	std::array<AntiAim, 7>*/ antiAim;
+	} antiAim;
+	//std::array<AntiAim, 7> antiAim;
 
 	struct Glow : Color4
 	{
