@@ -482,10 +482,11 @@ bool Helpers::attacking(bool cmdAttack, bool cmdAttack2) noexcept
 		const auto activeWeapon = localPlayer->getActiveWeapon();
 		if (activeWeapon)
 		{
+			if (activeWeapon->getClientClass()->classId == ClassId::Healthshot)
+				return false;
+
 			if (activeWeapon->isGrenade())
-			{
 				return !activeWeapon->pinPulled() && activeWeapon->throwTime() > 0.0f && activeWeapon->throwTime() <= time;
-			}
 
 			if (activeWeapon->burstMode() && activeWeapon->nextBurstShot() > 0.0f && activeWeapon->nextBurstShot() <= time)
 				return true;

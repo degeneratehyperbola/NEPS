@@ -293,7 +293,7 @@ static float __stdcall getViewModelFov() noexcept
 	float additionalFov = static_cast<float>(config->visuals.viewmodel.fov);
 	if (localPlayer)
 	{
-		if (const auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classID == ClassID::Tablet || !config->visuals.viewmodel.enabled || localPlayer->isScoped())
+		if (const auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classId == ClassId::Tablet || !config->visuals.viewmodel.enabled || localPlayer->isScoped())
 			additionalFov = 0.0f;
 	}
 

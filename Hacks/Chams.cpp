@@ -35,14 +35,14 @@ void Chams::toSlowPipeline() noexcept
 			continue;
 		}
 
-		switch (entity->getClientClass()->classID)
+		switch (entity->getClientClass()->classId)
 		{
-		case ClassID::PropPhysicsMultiplayer:
-		case ClassID::PropDynamic:
-		case ClassID::EconEntity:
-		case ClassID::WeaponWorldModel:
-		case ClassID::BaseAnimating:
-		case ClassID::Ragdoll:
+		case ClassId::PropPhysicsMultiplayer:
+		case ClassId::PropDynamic:
+		case ClassId::EconEntity:
+		case ClassId::WeaponWorldModel:
+		case ClassId::BaseAnimating:
+		case ClassId::Ragdoll:
 			entity->useFastPipeline() = false;
 			continue;
 		default:
@@ -132,7 +132,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 
     const auto health = player->health();
 
-	if (const auto activeWeapon = player->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classID == ClassID::C4 && activeWeapon->c4StartedArming() && std::any_of(config->chams["Planting"].materials.cbegin(), config->chams["Planting"].materials.cend(), [](const Config::Chams::Material& mat) { return mat.enabled; }))
+	if (const auto activeWeapon = player->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classId == ClassId::C4 && activeWeapon->c4StartedArming() && std::any_of(config->chams["Planting"].materials.cbegin(), config->chams["Planting"].materials.cend(), [](const Config::Chams::Material& mat) { return mat.enabled; }))
 	{
         applyChams(config->chams["Planting"].materials, health);
     } else if (player->isDefusing() && std::any_of(config->chams["Defusing"].materials.cbegin(), config->chams["Defusing"].materials.cend(), [](const Config::Chams::Material& mat) { return mat.enabled; }))
