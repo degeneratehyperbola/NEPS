@@ -386,7 +386,7 @@ void ImGuiCustom::boolCombo(const char *name, bool &value, const char *items) no
 	{
 		for (int i = 0; i < std::min(count, 2); i++)
 		{
-			bool selected = i == value;
+			bool selected = i == (int)value;
 
 			const char *item;
 			singleStringGetter(data, i, &item);
