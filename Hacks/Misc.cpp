@@ -1383,7 +1383,7 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 	GameData::Lock lock;
 	auto &global = GameData::global();
 
-	float best = 60.0f;
+	float best = 255.0f;
 	if (static Helpers::KeyBindState flag; flag[config->griefing.blockbot.target])
 	{
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)

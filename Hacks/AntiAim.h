@@ -6,5 +6,5 @@ struct Vector;
 namespace AntiAim
 {
 	void run(UserCmd *, const Vector &, bool &) noexcept;
-	void fakePitch(UserCmd *) noexcept;
+	bool fakePitch(UserCmd *) noexcept;
 }

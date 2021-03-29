@@ -85,7 +85,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		}
 	}
 
-	if (!config->antiAim.fakeUp && config->antiAim.pitch && cmd->viewangles.x == currentViewAngles.x)
+	if (config->antiAim.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = config->antiAim.pitchAngle;
 
 	if (static Helpers::KeyBindState choke; choke[config->antiAim.choke] && config->antiAim.desync && config->antiAim.chokedPackets && cmd->viewangles.y == currentViewAngles.y)
@@ -124,11 +124,14 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		cmd->viewangles.y += config->antiAim.yawAngle;
 }
 
-void AntiAim::fakePitch(UserCmd *cmd) noexcept
+bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 {
 	if (canDoFakePitch)
 	{
 		cmd->viewangles.x = -540.0f;
 		cmd->forwardmove = -cmd->forwardmove;
+		return true;
 	}
+
+	return false;
 }

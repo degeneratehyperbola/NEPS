@@ -248,9 +248,9 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	cmd->forwardmove = std::clamp(cmd->forwardmove, -450.0f, 450.0f);
 	cmd->sidemove = std::clamp(cmd->sidemove, -450.0f, 450.0f);
 
-	previousViewAngles = cmd->viewangles;
+	bool fakePitchPerformed = AntiAim::fakePitch(cmd);
 
-	AntiAim::fakePitch(cmd);
+	previousViewAngles = cmd->viewangles;
 
 	auto &global = GameData::global();
 
@@ -258,7 +258,12 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	global.lastCmd = *cmd;
 
 	if (config->antiAim.desync || config->antiAim.fakeUp)
+	{
+		if (fakePitchPerformed)
+			cmd->viewangles.x = -89.0f; // Fake pitch visualisation
 		Animations::clientLerped(global.lerpedBones, cmd, sendPacket, &global.indicators.desyncHead, &global.indicators.deltaLby);
+		cmd->viewangles.x = previousViewAngles.x; // Restore view angles after visualising fake pitch
+	}
 
 	if (interfaces->engine->isInGame())
 	{

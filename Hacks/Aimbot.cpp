@@ -103,7 +103,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			{
 				bool goesThroughWall = false;
 				Trace trace;
-				auto origin = bufferBones[0].origin();
+				auto origin = bufferBones[8].origin();
 				bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
 
 				if (trace.entity == entity && canHit)
@@ -113,9 +113,18 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 					if (goesThroughWall && config->backtrack.enabled)
 					{
-						const auto record = Backtrack::getRecords(i).back();
-						if (Backtrack::valid(record.simulationTime))
+						int bestRecord = 0;
+
+						const auto &records = Backtrack::getRecords(i);
+						for (size_t j = 0; j < records.size(); j++)
 						{
+							if (Backtrack::valid(records[j].simulationTime))
+								bestRecord = j;
+						}
+
+						if (bestRecord)
+						{
+							const auto &record = records[bestRecord];
 							simulationTime = record.simulationTime;
 							oldSimulationTime = record.oldSimulationTime;
 							std::copy(std::begin(record.matrix), std::end(record.matrix), bufferBones.begin());
