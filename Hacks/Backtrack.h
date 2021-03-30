@@ -19,7 +19,6 @@ namespace Backtrack
 	{
 		Vector origin;
 		float simulationTime;
-		float oldSimulationTime;
 		Matrix3x4 matrix[MAXSTUDIOBONES];
 	};
 
