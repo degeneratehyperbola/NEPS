@@ -88,7 +88,7 @@ public:
 	{
 		bool enabled = false;
 		bool ignoreSmoke = false;
-		bool recoilBasedFov = false;
+		bool recoilBasedFov = true;
 		int timeLimit = 200;
 	} backtrack;
 
@@ -107,6 +107,7 @@ public:
 		bool fakeUp = false;
 		int flipKey = 0;
 		KeyBind fakeDuck;
+		int fakeDuckPackets = 0;
 		int chokedPackets = 0;
 		KeyBind choke;
 	} antiAim;
@@ -325,7 +326,7 @@ public:
 	{
 		bool bunnyHop = false;
 		bool autoStrafe = false;
-		float steerSpeed = 17.0f;
+		float steerSpeed = 18.5f;
 		KeyBind edgeJump;
 		bool fastStop = false;
 	} movement;

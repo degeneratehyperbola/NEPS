@@ -284,8 +284,10 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
     ImGui::Checkbox("Aimlock", &config->aimbot[currentWeapon].aimlock);
     ImGui::Checkbox("Silent", &config->aimbot[currentWeapon].silent);
+	if (!config->aimbot[currentWeapon].silent)
+		ImGui::Checkbox("Stop on reach", &config->aimbot[currentWeapon].targetStop);
     ImGui::Checkbox("Friendly fire", &config->aimbot[currentWeapon].friendlyFire);
-    ImGui::Checkbox("Visible only", &config->aimbot[currentWeapon].visibleOnly);
+	ImGui::Checkbox("Visible only", &config->aimbot[currentWeapon].visibleOnly);
     ImGui::Checkbox("Scoped only", &config->aimbot[currentWeapon].scopedOnly);
     ImGui::Checkbox("Ignore flash", &config->aimbot[currentWeapon].ignoreFlash);
     ImGui::Checkbox("Ignore smoke", &config->aimbot[currentWeapon].ignoreSmoke);
@@ -296,7 +298,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
     ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
 	ImGui::SetNextItemWidth(85.0f);
 	ImGuiCustom::multiCombo("Hitgroup", config->aimbot[currentWeapon].hitgroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
-	ImGui::Checkbox("Stop on reach", &config->aimbot[currentWeapon].targetStop);
 
     ImGui::NextColumn();
     ImGui::Checkbox("Multipoint", &config->aimbot[currentWeapon].multipoint);
@@ -379,17 +380,25 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 		ImGui::SliderFloat("##pitch_sl", &config->antiAim.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
 	}
     ImGui::Checkbox("Desync", &config->antiAim.desync);
-	if (config->antiAim.desync)
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("Desync advanced", ImGuiDir_Right))
+		ImGui::OpenPopup("##desync");
+
+	if (ImGui::BeginPopup("##desync"))
 	{
 		ImGui::Checkbox("Reduce slide", &config->antiAim.corrected);
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Turns off AA when moving");
 		ImGui::Checkbox("Increase clamp", &config->antiAim.clamped);
-		ImGui::Checkbox("Extended (experimental)", &config->antiAim.extended);
+		ImGui::Checkbox("Extended", &config->antiAim.extended);
 		ImGui::Checkbox("Flip on overlap", &config->antiAim.avoidOverlap);
 		ImGuiCustom::keyBind("Flip key", &config->antiAim.flipKey);
+		ImGui::EndPopup();
 	}
+
 	ImGuiCustom::keyBind("Fake duck", config->antiAim.fakeDuck);
+	ImGui::SetNextItemWidth(90.0f);
+	ImGui::InputInt("Fake duck packets", &config->antiAim.fakeDuckPackets, 1, 5);
 	ImGui::SetNextItemWidth(90.0f);
 	ImGui::InputInt("Choked packets", &config->antiAim.chokedPackets, 1, 5);
 	config->antiAim.chokedPackets = std::clamp(config->antiAim.chokedPackets, 0, 64);
@@ -1588,11 +1597,9 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	}
 
 	ImGui::Checkbox("Bunnyhop", &config->movement.bunnyHop);
-	if (config->movement.bunnyHop)
-	{
-		ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
-		ImGui::SliderFloat("##steer", &config->movement.steerSpeed, 0.0f, 30.0f, "Autostrafe steer %.3f");
-	}
+	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
+	ImGui::SetNextItemWidth(100.0f);
+	ImGui::SliderFloat("##steer", &config->movement.steerSpeed, 0.0f, 30.0f, "Steer %.1f");
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
 	if (!contentOnly)

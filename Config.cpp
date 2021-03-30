@@ -385,6 +385,7 @@ static void from_json(const json& j, Config::AntiAim& a)
     read(j, "Fake up", a.fakeUp);
     read(j, "Flip key", a.flipKey);
 	read<value_t::object>(j, "Fake duck", a.fakeDuck);
+	read(j, "Fake duck packets", a.fakeDuckPackets);
 	//read(j, "Fake duck", a.fakeDuck);
 	read(j, "Choked packets", a.chokedPackets);
 	read<value_t::object>(j, "Choke", a.choke);
@@ -981,6 +982,7 @@ static void to_json(json& j, const Config::AntiAim& o, const Config::AntiAim& du
     WRITE("Fake up", fakeUp);
     WRITE("Flip key", flipKey);
 	WRITE("Fake duck", fakeDuck);
+	WRITE("Fake duck packets", fakeDuckPackets);
 	WRITE("Choked packets", chokedPackets);
 	WRITE("Choke", choke);
 }

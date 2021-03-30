@@ -54,18 +54,18 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 	canDoFakePitch = true;
 
-	if (static Helpers::KeyBindState flag; flag[config->antiAim.choke] && config->antiAim.chokedPackets)
-		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= config->antiAim.chokedPackets;
-
-	if (static Helpers::KeyBindState flag; config->antiAim.chokedPackets && flag[config->antiAim.fakeDuck])
+	if (static Helpers::KeyBindState flag; config->antiAim.fakeDuckPackets && flag[config->antiAim.fakeDuck])
 	{
+		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= config->antiAim.fakeDuckPackets;
+
 		cmd->buttons |= UserCmd::IN_BULLRUSH;
 
-		if (interfaces->engine->getNetworkChannel()->chokedPackets > (config->antiAim.chokedPackets / 2))
+		if (interfaces->engine->getNetworkChannel()->chokedPackets > (config->antiAim.fakeDuckPackets / 2))
 			cmd->buttons |= UserCmd::IN_DUCK;
 		else
 			cmd->buttons &= ~UserCmd::IN_DUCK;
-	}
+	} else if (static Helpers::KeyBindState flag; flag[config->antiAim.choke] && config->antiAim.chokedPackets)
+		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= config->antiAim.chokedPackets;
 
 	static bool flip = true;
 
@@ -88,23 +88,23 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (config->antiAim.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = config->antiAim.pitchAngle;
 
-	if (static Helpers::KeyBindState choke; choke[config->antiAim.choke] && config->antiAim.desync && config->antiAim.chokedPackets && cmd->viewangles.y == currentViewAngles.y)
+	if (config->antiAim.desync && cmd->viewangles.y == currentViewAngles.y)
 	{
+		const float add = config->antiAim.clamped ? 30.0f : 0.0f;
+		const float desyncAngle = flip ? localPlayer->getMaxDesyncAngle() - add : -localPlayer->getMaxDesyncAngle() + add;
+
 		if (config->antiAim.extended)
 		{
 			if (lbyUpdate())
 			{
+				cmd->viewangles.y -= desyncAngle;
 				sendPacket = false;
-				cmd->viewangles.y += flip ? 180.0f : -180.0f;
 			} else if (!sendPacket)
 			{
-				cmd->viewangles.y += flip ? -120.0f : 120.0f;
+				cmd->viewangles.y += desyncAngle;
 			}
 		} else
 		{
-			const float add = config->antiAim.clamped ? 30.0f : 0.0f;
-			const float desyncAngle = flip ? localPlayer->getMaxDesyncAngle() - add : -localPlayer->getMaxDesyncAngle() + add;
-
 			if (!sendPacket && (!config->antiAim.corrected || localPlayer->velocity().length2D() < 0.1f))
 			{
 				cmd->viewangles.y += desyncAngle;
