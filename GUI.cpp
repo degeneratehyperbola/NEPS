@@ -661,9 +661,6 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
     ImGui::Checkbox("Ignore-Z", &chams.ignorez);
     ImGuiCustom::colorPicker("Color", chams.color, &chams.rainbow, &chams.rainbowSpeed);
 
-	if (categories[currentCategory] == "Backtrack")
-		ImGui::Checkbox("Trailing backtrack", &config->chams["Backtrack"].trailBacktrack);
-
     if (!contentOnly) {
         ImGui::End();
     }
@@ -1186,7 +1183,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
     ImGuiCustom::colorPicker("World color", config->visuals.world);
     ImGuiCustom::colorPicker("Props color", config->visuals.props);
     ImGuiCustom::colorPicker("Sky color", config->visuals.sky);
-	//ImGuiCustom::colorPicker("Console color", config->visuals.consoleCol);
+	ImGuiCustom::colorPicker("Molotov fire color", config->visuals.particles);
 		;
     ImGui::PushItemWidth(255.0f);
 	ImGui::Checkbox("Opposite hand knife", &config->visuals.oppositeHandKnife);

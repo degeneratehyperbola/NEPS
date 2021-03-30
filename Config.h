@@ -135,9 +135,7 @@ public:
 			int material = 0;
 		};
 		std::array<Material, 7> materials;
-		bool trailBacktrack = true;
 	};
-
 	std::unordered_map<std::string, Chams> chams;
 
 	struct ESP
@@ -188,6 +186,7 @@ public:
 		Color4Toggle world;
 		Color4Toggle props;
 		Color3Toggle sky;
+		Color4Toggle particles = {1.0f, 1.0f, 1.0f, 1.0f};
 		bool deagleSpinner = false;
 		int screenEffect = 0;
 		int hitEffect = 0;
@@ -219,7 +218,6 @@ public:
 		Color4Toggle molotovHull = {1.0f, 0.5f, 0.0f, 0.3f};
 		Color4ToggleThickness playerBounds = {1.0f, 1.0f, 1.0f, 1.0f};
 		Color4ToggleThickness playerVel = {1.0f, 1.0f, 1.0f, 1.0f};
-		Color4Toggle consoleCol = {1.0f, 1.0f, 1.0f, 1.0f};
 
 		struct ColorCorrection
 		{

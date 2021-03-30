@@ -418,7 +418,6 @@ static void from_json(const json& j, Config::Chams::Material& m)
 static void from_json(const json& j, Config::Chams& c)
 {
     read_array_opt(j, "Materials", c.materials);
-	read(j, "Trailing backtrack", c.trailBacktrack);
 }
 
 static void from_json(const json& j, Config::ESP& e)
@@ -497,6 +496,7 @@ static void from_json(const json& j, Config::Visuals& v)
     read<value_t::object>(j, "World", v.world);
     read<value_t::object>(j, "Props", v.props);
     read<value_t::object>(j, "Sky", v.sky);
+	read<value_t::object>(j, "Particles", v.particles);
     read(j, "Deagle spinner", v.deagleSpinner);
     read(j, "Screen effect", v.screenEffect);
     read(j, "Hit effect", v.hitEffect);
@@ -518,7 +518,6 @@ static void from_json(const json& j, Config::Visuals& v)
 	read<value_t::object>(j, "Inferno hull", v.molotovHull);
 	read<value_t::object>(j, "Player bounds", v.playerBounds);
 	read<value_t::object>(j, "Player velocity", v.playerVel);
-	read<value_t::object>(j, "Console color", v.consoleCol);
 }
 
 static void from_json(const json& j, sticker_setting& s)
@@ -1013,7 +1012,6 @@ static void to_json(json& j, const Config::Chams::Material& o)
 static void to_json(json& j, const Config::Chams& o)
 {
     j["Materials"] = o.materials;
-	j["Trailing backtrack"] = o.trailBacktrack;
 }
 
 static void to_json(json& j, const Config::ESP& o)
@@ -1242,6 +1240,7 @@ static void to_json(json& j, const Config::Visuals& o)
     WRITE("World", world);
     WRITE("Props", props);
     WRITE("Sky", sky);
+	WRITE("Particles", particles);
     WRITE("Deagle spinner", deagleSpinner);
     WRITE("Screen effect", screenEffect);
     WRITE("Hit effect", hitEffect);
@@ -1261,7 +1260,6 @@ static void to_json(json& j, const Config::Visuals& o)
 	WRITE("Inferno hull", molotovHull);
 	WRITE("Player bounds", playerBounds);
 	WRITE("Player velocity", playerVel);
-	WRITE("Console color", consoleCol);
 }
 
 static void to_json(json& j, const ImVec4& o)
