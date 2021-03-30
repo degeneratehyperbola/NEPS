@@ -216,7 +216,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::quickHealthshot(cmd);
 	Misc::fixTabletSignal();
 	Misc::slowwalk(cmd);
-	Misc::blockBot(cmd);
 
 	EnginePrediction::run(cmd);
 
@@ -224,6 +223,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Triggerbot::run(cmd);
 	Backtrack::run(cmd);
 	Misc::edgejump(cmd);
+	Misc::blockBot(cmd);
 	Misc::fastPlant(cmd);
 
 	AntiAim::run(cmd, currentViewAngles, sendPacket);
