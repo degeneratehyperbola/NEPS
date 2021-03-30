@@ -645,7 +645,7 @@ InfernoData::InfernoData(Entity *inferno) noexcept
 	for (int i = 0; i < inferno->fireCount(); ++i)
 	{
 		if (inferno->fireIsBurning()[i])
-			points.emplace_back(inferno->fireXDelta()[i] + origin.x, inferno->fireYDelta()[i] + origin.y, inferno->fireZDelta()[i] + origin.z);
+			points.emplace_back(Vector{inferno->fireXDelta()[i] + origin.x, inferno->fireYDelta()[i] + origin.y, inferno->fireZDelta()[i] + origin.z});
 	}
 }
 
