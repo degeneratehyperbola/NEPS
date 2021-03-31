@@ -413,6 +413,7 @@ void PlayerData::update(Entity *entity) noexcept
 
 	isBot = entity->isBot();
 	hasBomb = entity->hasC4();
+	isVip = entity->isVip();
 	hasDefuser = entity->hasDefuser();
 	ducking = entity->flags() & Entity::FL_DUCKING;
 	if (const auto activeWeapon = entity->getActiveWeapon())

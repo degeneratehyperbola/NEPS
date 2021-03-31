@@ -168,6 +168,7 @@ struct PlayerData : BaseData
 	bool alive;
 	bool isBot;
 	bool hasBomb;
+	bool isVip;
 	bool hasDefuser;
 	bool ducking;
 	bool scoped;
