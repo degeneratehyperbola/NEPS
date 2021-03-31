@@ -43,9 +43,12 @@ void Chams::toSlowPipeline() noexcept
 		case ClassId::WeaponWorldModel:
 		case ClassId::BaseAnimating:
 		case ClassId::Ragdoll:
+		case ClassId::MolotovGrenade:
+		case ClassId::DecoyGrenade:
+		case ClassId::HEGrenade:
+		case ClassId::Flashbang:
+		case ClassId::BumpMine:
 			entity->useFastPipeline() = false;
-			continue;
-		default:
 			continue;
 		}
 	}
