@@ -450,6 +450,8 @@ public:
     NETVAR(pinPulled, "CBaseCSGrenade", "m_bPinPulled", bool)
     NETVAR(throwTime, "CBaseCSGrenade", "m_fThrowTime", float)
 
+    NETVAR(didSmokeEffect, "CSmokeGrenadeProjectile", "m_bDidSmokeEffect", bool)
+
 	NETVAR(mapHasBombTarget, "CCSGameRulesProxy", "m_bMapHasBombTarget", bool)
 	NETVAR(freezePeriod, "CCSGameRulesProxy", "m_bFreezePeriod", bool)
 

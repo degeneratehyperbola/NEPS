@@ -24,6 +24,7 @@ struct LootCrateData;
 struct ProjectileData;
 struct BombData;
 struct InfernoData;
+struct SmokeData;
 struct MatchData;
 
 struct Indicators;
@@ -60,6 +61,7 @@ namespace GameData
 	const PlayerData *playerByHandle(int handle) noexcept;
 	const BombData &plantedC4() noexcept;
 	const std::vector<InfernoData> &infernos() noexcept;
+	const std::vector<SmokeData> &smokes() noexcept;
 	const MatchData &match() noexcept;
 	GlobalData &global() noexcept;
 }
@@ -231,6 +233,13 @@ struct InfernoData
 	InfernoData(Entity *inferno) noexcept;
 
 	std::vector<Vector> points;
+};
+
+struct SmokeData
+{
+	SmokeData(Entity *smoke) noexcept;
+
+	Vector origin;
 };
 
 struct MatchData

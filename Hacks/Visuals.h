@@ -27,4 +27,5 @@ namespace Visuals
     void skybox(FrameStage stage) noexcept;
     void bulletBeams(GameEvent *event);
     void drawMolotovHull(ImDrawList *drawList) noexcept;
+	void drawSmokeHull(ImDrawList *drawList) noexcept;
 }

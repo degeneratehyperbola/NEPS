@@ -34,6 +34,7 @@ enum class ClassId
 	PlantedC4 = 129,
 	PropDoorRotating = 143,
 	SensorGrenadeProjectile = 153,
+	SmokeGrenade = 156,
 	SmokeGrenadeProjectile = 157,
 	SnowballPile = 160,
 	SnowballProjectile = 161,

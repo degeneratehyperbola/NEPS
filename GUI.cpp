@@ -1080,6 +1080,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
     ImGui::Checkbox("Wireframe smoke", &config->visuals.wireframeSmoke);
 
 	ImGuiCustom::colorPicker("Molotov radius", config->visuals.molotovHull);
+	ImGuiCustom::colorPicker("Smoke radius", config->visuals.smokeHull);
 	ImGuiCustom::colorPicker("Player bounds", config->visuals.playerBounds);
 	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVel);
 

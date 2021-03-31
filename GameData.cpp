@@ -31,6 +31,7 @@ static std::vector<LootCrateData> lootCrateData;
 static std::list<ProjectileData> projectileData;
 static BombData bombData;
 static std::vector<InfernoData> infernoData;
+static std::vector<SmokeData> smokeData;
 static MatchData matchData;
 
 GlobalData globalData;
@@ -56,6 +57,7 @@ void GameData::update() noexcept
     entityData.clear();
     lootCrateData.clear();
 	infernoData.clear();
+	smokeData.clear();
 
     localPlayerData.update();
 	bombData.update();
@@ -118,12 +120,15 @@ void GameData::update() noexcept
 						break;
 					}
 					[[fallthrough]];
+				case ClassId::SmokeGrenadeProjectile:
+					if (entity->didSmokeEffect())
+						smokeData.emplace_back(entity);
+					[[fallthrough]];
 				case ClassId::BreachChargeProjectile:
 				case ClassId::BumpMineProjectile:
 				case ClassId::DecoyProjectile:
 				case ClassId::MolotovProjectile:
 				case ClassId::SensorGrenadeProjectile:
-				case ClassId::SmokeGrenadeProjectile:
 				case ClassId::SnowballProjectile:
 					if (const auto it = std::find(projectileData.begin(), projectileData.end(), entity->handle()); it != projectileData.end())
 						it->update(entity);
@@ -237,6 +242,11 @@ const std::vector<InfernoData> &GameData::infernos() noexcept
 	return infernoData;
 }
 
+const std::vector<SmokeData> &GameData::smokes() noexcept
+{
+	return smokeData;
+}
+
 const MatchData &GameData::match() noexcept
 {
 	return matchData;
@@ -331,7 +341,7 @@ EntityData::EntityData(Entity* entity) noexcept : BaseData{ entity }
     }(entity);
 }
 
-ProjectileData::ProjectileData(Entity* projectile) noexcept : BaseData { projectile }
+ProjectileData::ProjectileData(Entity* projectile) noexcept : BaseData {projectile}
 {
     name = [](Entity* projectile) {
         switch (projectile->getClientClass()->classId) {
@@ -363,7 +373,7 @@ ProjectileData::ProjectileData(Entity* projectile) noexcept : BaseData { project
 
 void ProjectileData::update(Entity* projectile) noexcept
 {
-    static_cast<BaseData&>(*this) = { projectile };
+    static_cast<BaseData&>(*this) = {projectile};
 
     if (const auto& pos = projectile->getAbsOrigin(); trajectory.size() < 1 || trajectory[trajectory.size() - 1].second != pos)
         trajectory.emplace_back(memory->globalVars->realtime, pos);
@@ -648,6 +658,11 @@ InfernoData::InfernoData(Entity *inferno) noexcept
 		if (inferno->fireIsBurning()[i])
 			points.emplace_back(Vector{inferno->fireXDelta()[i] + origin.x, inferno->fireYDelta()[i] + origin.y, inferno->fireZDelta()[i] + origin.z});
 	}
+}
+
+SmokeData::SmokeData(Entity *smoke) noexcept
+{
+	origin = smoke->getAbsOrigin();
 }
 
 void MatchData::update() noexcept
