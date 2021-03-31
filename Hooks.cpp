@@ -76,25 +76,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 			R"_msg(We do have a resolver now >:)
 
 Let's get started!
-To open UI press %button on your keyboard.%loaded
-
-RECENT CHANGELOG:
-  - Added PBR pipeline chams
-  - Added multipoint
-  - Added static props chams and color
-  - Added extended desync (very broken, don't use it)
-  - Improved desync visualisation
-  - Improved keybinds
-  - Added smoothness to zoom and third person
-  - Added kill effects
-  - Added smoothness to kill and hit effects
-
-RECENT FIXES:
-  - Fixed directional autostrafer understeer
-  - Fixed chams not showing thrown weapons
-  - Fixed string loading issues
-  - Fixed custom font crash
-  - Revised GUI labels)_msg";
+To open UI press %button on your keyboard.%loaded)_msg";
 
 		Helpers::replace(welcomeMsg, "%button", interfaces->inputSystem->virtualKeyToString(config->misc.menuKey));
 		Helpers::replace(welcomeMsg, "%loaded", loaded);
@@ -328,6 +310,8 @@ static bool __fastcall svCheatsGetBool(void *_this) noexcept
 	return hooks->svCheats.getOriginal<bool, 13>()(_this);
 }
 
+static bool drawingConsole = false;
+
 static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept
 {
 	if (interfaces->panel->getName(panel) == "MatSystemTopPanel")
@@ -338,8 +322,11 @@ static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool 
 		#endif // LEGACY_WATERMARK
 	} else if (interfaces->panel->getName(panel) == "GameConsole")
 	{
-
+		drawingConsole = true;
+		hooks->panel.callOriginal<void, 41>(panel, forceRepaint, allowForce);
+		return;
 	}
+	drawingConsole = false;
 	hooks->panel.callOriginal<void, 41>(panel, forceRepaint, allowForce);
 }
 
