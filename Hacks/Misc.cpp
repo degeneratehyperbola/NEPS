@@ -1,8 +1,4 @@
-﻿#include <mutex>
-#include <numeric>
-#include <sstream>
-
-#include "../Config.h"
+﻿#include "../Config.h"
 #include "../Interfaces.h"
 #include "../Memory.h"
 #include "../Netvars.h"
@@ -40,6 +36,10 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "../imgui/imgui_internal.h"
 #include "../ImguiCustom.h"
+
+#include <mutex>
+#include <numeric>
+#include <sstream>
 
 void Misc::edgejump(UserCmd *cmd) noexcept
 {
@@ -345,6 +345,7 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 	if (!config->misc.watermark.enabled)
 		return;
 
+	ImGui::SetNextWindowSizeConstraints({150.0f, 0.0f}, {FLT_MAX, FLT_MAX});
 	ImGui::SetNextWindowBgAlpha(0.4f);
 	if (ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove))
 	{
@@ -382,12 +383,16 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 			ImGui::EndPopup();
 		}
 
-		const auto watermark = "NEPS > neverlose";
+		constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora"};
+
+		std::ostringstream watermark;
+		watermark << "NEPS > ";
+		watermark << otherOnes[static_cast<int>(memory->globalVars->realtime * 2) % (otherOnes.size() - 1)];
 		static float frameRate = 1.0f;
 		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 
-		ImGui::TextUnformatted(watermark);
-		ImGui::TextUnformatted((std::to_string(static_cast<int>(1 / frameRate)) + "fps").c_str());
+		ImGui::TextUnformatted(watermark.str().c_str());
+		ImGui::TextUnformatted((std::to_string(static_cast<int>(1.0f / frameRate)) + "fps").c_str());
 		if (interfaces->engine->isInGame())
 		{
 			float latency = 0.0f;
