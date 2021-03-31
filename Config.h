@@ -161,13 +161,13 @@ public:
 		bool inverseRagdollGravity = false;
 		bool noFog = false;
 		bool no3dSky = false;
-		bool noLandBob = false;
 		bool noAimPunch = false;
 		bool noViewPunch = false;
 		bool noHands = false;
 		bool noSleeves = false;
 		bool noWeapons = false;
 		bool noSmoke = false;
+		bool noFire = false;
 		bool noBlur = false;
 		bool noScopeOverlay = false;
 		bool noGrass = false;
@@ -186,7 +186,6 @@ public:
 		Color4Toggle world;
 		Color4Toggle props;
 		Color3Toggle sky;
-		Color4Toggle particles = {1.0f, 1.0f, 1.0f, 1.0f};
 		bool deagleSpinner = false;
 		int screenEffect = 0;
 		int hitEffect = 0;
@@ -212,10 +211,20 @@ public:
 			bool noiseOnce = true;
 			bool railgun = true;
 		};
-		Beams self;
-		Beams ally;
-		Beams enemy;
-		Color4Toggle molotovHull = {1.0f, 0.5f, 0.0f, 0.3f};
+		Beams selfBeams;
+		Beams allyBeams;
+		Beams enemyBeams;
+		struct Dlights
+		{
+			bool enabled;
+			std::array<float, 4> col = {1.0f, 1.0f, 1.0f, 1.0f};
+			float radius;
+		};
+		Dlights selfDlights;
+		Dlights allyDlights;
+		Dlights enemyDlights;
+		Color4ToggleThickness molotovHull = {1.0f, 0.5f, 0.0f, 0.3f};
+		Color4ToggleThickness smokeHull = {0.5f, 0.5f, 0.5f, 0.3f};
 		Color4ToggleThickness playerBounds = {1.0f, 1.0f, 1.0f, 1.0f};
 		Color4ToggleThickness playerVel = {1.0f, 1.0f, 1.0f, 1.0f};
 

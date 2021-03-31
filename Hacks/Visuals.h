@@ -23,6 +23,7 @@ namespace Visuals
     bool removeHands(const char* modelName) noexcept;
     bool removeSleeves(const char* modelName) noexcept;
     bool removeWeapons(const char* modelName) noexcept;
+    void removeFire(FrameStage stage) noexcept;
     void skybox(FrameStage stage) noexcept;
     void bulletBeams(GameEvent *event);
     void drawMolotovHull(ImDrawList *drawList) noexcept;

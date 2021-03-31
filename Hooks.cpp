@@ -370,6 +370,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Visuals::skybox(stage);
 		Visuals::removeBlur(stage);
 		Visuals::removeGrass(stage);
+		Visuals::removeFire(stage);
 		Visuals::modifySmoke(stage);
 		Visuals::playerModel(stage);
 		Visuals::disablePostProcessing(stage);

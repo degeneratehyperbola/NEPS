@@ -139,35 +139,15 @@ void Visuals::playerModel(FrameStage stage) noexcept
 
 void Visuals::colorWorld() noexcept
 {
-    if (!config->visuals.world.enabled && !config->visuals.sky.enabled && !config->visuals.props.enabled)
-        return;
+	if (!config->visuals.world.enabled && !config->visuals.sky.enabled && !config->visuals.props.enabled)
+		return;
 
-    for (short h = interfaces->materialSystem->firstMaterial(); h != interfaces->materialSystem->invalidMaterial(); h = interfaces->materialSystem->nextMaterial(h)) {
-        const auto mat = interfaces->materialSystem->getMaterial(h);
+	for (short h = interfaces->materialSystem->firstMaterial(); h != interfaces->materialSystem->invalidMaterial(); h = interfaces->materialSystem->nextMaterial(h))
+	{
+		const auto mat = interfaces->materialSystem->getMaterial(h);
 
-        if (!mat || mat->isErrorMaterial() || mat->getReferenceCount() < 1)
-            continue;
-
-		//if (std::strstr(mat->getName(), "vgui_white") ||
-		//	std::strstr(mat->getName(), "800corner1") ||
-		//	std::strstr(mat->getName(), "800corner2") ||
-		//	std::strstr(mat->getName(), "800corner3") ||
-		//	std::strstr(mat->getName(), "800corner4")
-		//	)
-		//{
-		//	if (config->visuals.consoleCol.enabled)
-		//	{
-		//		if (config->visuals.consoleCol.rainbow)
-		//			mat->colorModulate(Helpers::rainbowColor(config->visuals.consoleCol.rainbowSpeed));
-		//		else
-		//			mat->colorModulate(config->visuals.consoleCol.color[0], config->visuals.consoleCol.color[1], config->visuals.consoleCol.color[2]);
-		//		mat->alphaModulate(config->visuals.consoleCol.color[3]);
-		//	} else
-		//	{
-		//		mat->colorModulate(1.0f, 1.0f, 1.0f);
-		//		mat->alphaModulate(1.0f);
-		//	}
-		//}
+		if (!mat || mat->isErrorMaterial() || mat->getReferenceCount() < 1)
+			continue;
 
 		if (config->visuals.world.enabled && std::strstr(mat->getTextureGroupName(), "World"))
 		{
@@ -176,6 +156,7 @@ void Visuals::colorWorld() noexcept
 			else
 				mat->colorModulate(config->visuals.world.color[0], config->visuals.world.color[1], config->visuals.world.color[2]);
 			mat->alphaModulate(config->visuals.world.color[3]);
+			mat->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, config->visuals.world.color[3] == 0.0f);
 		} else if (config->visuals.props.enabled && std::strstr(mat->getTextureGroupName(), "StaticProp"))
 		{
 			if (config->visuals.props.rainbow)
@@ -183,32 +164,35 @@ void Visuals::colorWorld() noexcept
 			else
 				mat->colorModulate(config->visuals.props.color[0], config->visuals.props.color[1], config->visuals.props.color[2]);
 			mat->alphaModulate(config->visuals.props.color[3]);
-        } else if (config->visuals.sky.enabled && std::strstr(mat->getTextureGroupName(), "SkyBox")) {
-            if (config->visuals.sky.rainbow)
-                mat->colorModulate(Helpers::rainbowColor(config->visuals.sky.rainbowSpeed));
-            else
-                mat->colorModulate(config->visuals.sky.color);
-        }
-    }
+			mat->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, config->visuals.props.color[3] == 0.0f);
+		} else if (config->visuals.sky.enabled && std::strstr(mat->getTextureGroupName(), "SkyBox"))
+		{
+			if (config->visuals.sky.rainbow)
+				mat->colorModulate(Helpers::rainbowColor(config->visuals.sky.rainbowSpeed));
+			else
+				mat->colorModulate(config->visuals.sky.color);
+		}
+	}
 }
 
 void Visuals::modifySmoke(FrameStage stage) noexcept
 {
-    if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
-        return;
+	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+		return;
 
-    constexpr std::array smokeMaterials{
-        "particle/vistasmokev1/vistasmokev1_emods",
-        "particle/vistasmokev1/vistasmokev1_emods_impactdust",
-        "particle/vistasmokev1/vistasmokev1_fire",
-        "particle/vistasmokev1/vistasmokev1_smokegrenade"
-    };
+	constexpr std::array smokeMaterials = {
+		"particle/vistasmokev1/vistasmokev1_emods",
+		"particle/vistasmokev1/vistasmokev1_emods_impactdust",
+		"particle/vistasmokev1/vistasmokev1_fire",
+		"particle/vistasmokev1/vistasmokev1_smokegrenade"
+	};
 
-    for (const auto mat : smokeMaterials) {
-        const auto material = interfaces->materialSystem->findMaterial(mat);
-        material->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noSmoke);
-        material->setMaterialVarFlag(MaterialVarFlag::WIREFRAME, stage == FrameStage::RENDER_START && config->visuals.wireframeSmoke);
-    }
+	for (const auto mat : smokeMaterials)
+	{
+		const auto material = interfaces->materialSystem->findMaterial(mat);
+		material->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noSmoke);
+		material->setMaterialVarFlag(MaterialVarFlag::WIREFRAME, stage == FrameStage::RENDER_START && config->visuals.wireframeSmoke);
+	}
 }
 
 void Visuals::thirdperson() noexcept
@@ -264,17 +248,19 @@ void Visuals::removeGrass(FrameStage stage) noexcept
     if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
         return;
 
-    constexpr auto getGrassMaterialName = []() noexcept -> const char* {
-        switch (fnv::hashRuntime(interfaces->engine->getLevelName())) {
-        case fnv::hash("dz_blacksite"): return "detail/detailsprites_survival";
-        case fnv::hash("dz_sirocco"): return "detail/dust_massive_detail_sprites";
+	constexpr auto getGrassMaterialName = []() noexcept -> const char *
+	{
+		switch (fnv::hashRuntime(interfaces->engine->getLevelName()))
+		{
+		case fnv::hash("dz_blacksite"): return "detail/detailsprites_survival";
+		case fnv::hash("dz_sirocco"): return "detail/dust_massive_detail_sprites";
 		case fnv::hash("coop_autumn"): return "detail/autumn_detail_sprites";
 		case fnv::hash("dz_frostbite"): return "ski/detail/detailsprites_overgrown_ski";
-        // dz_junglety has been removed in 7/23/2020 patch
-        // case fnv::hash("dz_junglety"): return "detail/tropical_grass";
-        default: return nullptr;
-        }
-    };
+			// dz_junglety has been removed in 7/23/2020 patch
+			// case fnv::hash("dz_junglety"): return "detail/tropical_grass";
+		default: return nullptr;
+		}
+	};
 
     if (const auto grassMaterialName = getGrassMaterialName())
         interfaces->materialSystem->findMaterial(grassMaterialName)->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noGrass);
@@ -485,6 +471,27 @@ bool Visuals::removeWeapons(const char* modelName) noexcept
         && !std::strstr(modelName, "parachute") && !std::strstr(modelName, "fists");
 }
 
+void Visuals::removeFire(FrameStage stage) noexcept
+{
+	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+		return;
+
+	constexpr std::array fireMaterials = {
+		"decals/molotovscorch",
+		"particle/fire_explosion_1/fire_explosion_1",
+		"particle/fire_explosion_1/fire_explosion_1_oriented",
+		"particle/fire_burning_character/fire_molotov_crop",
+		"particle/fire_burning_character/fire_env_fire_depthblend",
+		"particle/fire_burning_character/fire_env_fire",
+		"particle/vistasmokev1/vistasmokev1_nearcull_nodepth"
+	};
+
+	for (const auto mat : fireMaterials)
+	{
+		interfaces->materialSystem->findMaterial(mat)->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noFire);
+	}
+}
+
 void Visuals::skybox(FrameStage stage) noexcept
 {
     if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
@@ -500,7 +507,14 @@ void Visuals::skybox(FrameStage stage) noexcept
 
 void Visuals::bulletBeams(GameEvent *event)
 {
-	if (!config->visuals.self.enabled && !config->visuals.ally.enabled && !config->visuals.enemy.enabled || !localPlayer || !interfaces->engine->isInGame()) return;
+	if (!config->visuals.selfBeams.enabled && !config->visuals.allyBeams.enabled && !config->visuals.enemyBeams.enabled)
+		return;
+
+	if (!localPlayer)
+		return;
+
+	if (!interfaces->engine->isInGame())
+		return;
 
 	auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt("userid")));
 
@@ -536,36 +550,36 @@ void Visuals::bulletBeams(GameEvent *event)
 	bool railgun = false;
 	if (localPlayer->isOtherEnemy(player))
 	{
-		if (!config->visuals.enemy.enabled) return;
-		sprite = config->visuals.enemy.sprite;
-		std::copy(config->visuals.enemy.col.begin(), config->visuals.enemy.col.end(), col);
-		width = config->visuals.enemy.width;
-		life = config->visuals.enemy.life;
-		noise = config->visuals.enemy.noise;
-		noiseOnce = config->visuals.enemy.noiseOnce;
-		railgun = config->visuals.enemy.railgun;
+		if (!config->visuals.enemyBeams.enabled) return;
+		sprite = config->visuals.enemyBeams.sprite;
+		std::copy(config->visuals.enemyBeams.col.begin(), config->visuals.enemyBeams.col.end(), col);
+		width = config->visuals.enemyBeams.width;
+		life = config->visuals.enemyBeams.life;
+		noise = config->visuals.enemyBeams.noise;
+		noiseOnce = config->visuals.enemyBeams.noiseOnce;
+		railgun = config->visuals.enemyBeams.railgun;
 	}
 	else if (player != localPlayer.get())
 	{
-		if (!config->visuals.ally.enabled) return;
-		sprite = config->visuals.ally.sprite;
-		std::copy(config->visuals.ally.col.begin(), config->visuals.ally.col.end(), col);
-		width = config->visuals.ally.width;
-		life = config->visuals.ally.life;
-		noise = config->visuals.ally.noise;
-		noiseOnce = config->visuals.ally.noiseOnce;
-		railgun = config->visuals.ally.railgun;
+		if (!config->visuals.allyBeams.enabled) return;
+		sprite = config->visuals.allyBeams.sprite;
+		std::copy(config->visuals.allyBeams.col.begin(), config->visuals.allyBeams.col.end(), col);
+		width = config->visuals.allyBeams.width;
+		life = config->visuals.allyBeams.life;
+		noise = config->visuals.allyBeams.noise;
+		noiseOnce = config->visuals.allyBeams.noiseOnce;
+		railgun = config->visuals.allyBeams.railgun;
 	}
 	else
 	{
-		if (!config->visuals.self.enabled) return;
-		sprite = config->visuals.self.sprite;
-		std::copy(config->visuals.self.col.begin(), config->visuals.self.col.end(), col);
-		width = config->visuals.self.width;
-		life = config->visuals.self.life;
-		noise = config->visuals.self.noise;
-		noiseOnce = config->visuals.self.noiseOnce;
-		railgun = config->visuals.self.railgun;
+		if (!config->visuals.selfBeams.enabled) return;
+		sprite = config->visuals.selfBeams.sprite;
+		std::copy(config->visuals.selfBeams.col.begin(), config->visuals.selfBeams.col.end(), col);
+		width = config->visuals.selfBeams.width;
+		life = config->visuals.selfBeams.life;
+		noise = config->visuals.selfBeams.noise;
+		noiseOnce = config->visuals.selfBeams.noiseOnce;
+		railgun = config->visuals.selfBeams.railgun;
 	}
 
 	if (life <= 0.0f || width == 0.0f || col[3] == 0.0f || col[0] == 0.0f && col[1] == 0.0f && col[2] == 0.0f)
@@ -620,7 +634,7 @@ void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 
 	static const auto flameCircumference = []
 	{
-		std::array<Vector, 72> points;
+		std::array<Vector, 64> points;
 		for (std::size_t i = 0; i < points.size(); ++i)
 		{
 			constexpr auto flameRadius = 60.0f; // https://github.com/perilouswithadollarsign/cstrike15_src/blob/f82112a2388b841d72cb62ca48ab1846dfcc11c8/game/server/cstrike15/Effects/inferno.cpp#L889
@@ -657,6 +671,9 @@ void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 			std::sort(screenPoints.begin() + 1, screenPoints.begin() + count, [&](const auto &a, const auto &b) { return orientation(screenPoints[0], a, b) > 0.0f; });
 
 			drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
+			drawList->AddPolyline(screenPoints.data(), count, color | IM_COL32_A_MASK, true, config->visuals.molotovHull.thickness);
 		}
+
+		
 	}
 }

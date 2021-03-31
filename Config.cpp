@@ -464,19 +464,26 @@ static void from_json(const json &j, Config::Visuals::Beams &b)
 	read(j, "Railgun", b.railgun);
 }
 
+static void from_json(const json &j, Config::Visuals::Dlights &b)
+{
+	read(j, "Enabled", b.enabled);
+	read(j, "Color", b.col);
+	read(j, "Radius", b.radius);
+}
+
 static void from_json(const json& j, Config::Visuals& v)
 {
     read(j, "Disable post-processing", v.disablePostProcessing);
     read(j, "Inverse ragdoll gravity", v.inverseRagdollGravity);
     read(j, "No fog", v.noFog);
     read(j, "No 3d sky", v.no3dSky);
-    read(j, "No land bob", v.noLandBob);
     read(j, "No aim punch", v.noAimPunch);
     read(j, "No view punch", v.noViewPunch);
     read(j, "No hands", v.noHands);
     read(j, "No sleeves", v.noSleeves);
     read(j, "No weapons", v.noWeapons);
     read(j, "No smoke", v.noSmoke);
+    read(j, "No fire", v.noFire);
     read(j, "No blur", v.noBlur);
     read(j, "No scope overlay", v.noScopeOverlay);
     read(j, "No grass", v.noGrass);
@@ -496,7 +503,6 @@ static void from_json(const json& j, Config::Visuals& v)
     read<value_t::object>(j, "World", v.world);
     read<value_t::object>(j, "Props", v.props);
     read<value_t::object>(j, "Sky", v.sky);
-	read<value_t::object>(j, "Particles", v.particles);
     read(j, "Deagle spinner", v.deagleSpinner);
     read(j, "Screen effect", v.screenEffect);
     read(j, "Hit effect", v.hitEffect);
@@ -512,10 +518,14 @@ static void from_json(const json& j, Config::Visuals& v)
 	read(j, "Opposite hand knife", v.oppositeHandKnife);
 	read(j, "Bullet impacts", v.bulletImpacts);
 	read(j, "Accuracy tracers", v.accuracyTracers);
-	read<value_t::object>(j, "Beams self", v.self);
-	read<value_t::object>(j, "Beams ally", v.ally);
-	read<value_t::object>(j, "Beams enemy", v.enemy);
+	read<value_t::object>(j, "Beams self", v.selfBeams);
+	read<value_t::object>(j, "Beams ally", v.allyBeams);
+	read<value_t::object>(j, "Beams enemy", v.enemyBeams);
+	read<value_t::object>(j, "Dlights self", v.selfDlights);
+	read<value_t::object>(j, "Dlights ally", v.allyDlights);
+	read<value_t::object>(j, "Dlights enemy", v.enemyDlights);
 	read<value_t::object>(j, "Inferno hull", v.molotovHull);
+	read<value_t::object>(j, "Smoke hull", v.smokeHull);
 	read<value_t::object>(j, "Player bounds", v.playerBounds);
 	read<value_t::object>(j, "Player velocity", v.playerVel);
 }
@@ -1204,6 +1214,13 @@ static void to_json(json &j, const Config::Visuals::Beams &o, const Config::Visu
 	WRITE("Railgun", railgun);
 }
 
+static void to_json(json &j, const Config::Visuals::Dlights &o, const Config::Visuals::Dlights &dummy)
+{
+	WRITE("Enabled", enabled);
+	WRITE("Color", col);
+	WRITE("Radius", radius);
+}
+
 static void to_json(json& j, const Config::Visuals& o)
 {
     const Config::Visuals dummy;
@@ -1214,13 +1231,13 @@ static void to_json(json& j, const Config::Visuals& o)
     WRITE("Inverse ragdoll gravity", inverseRagdollGravity);
     WRITE("No fog", noFog);
     WRITE("No 3d sky", no3dSky);
-    WRITE("No land bob", noLandBob);
     WRITE("No aim punch", noAimPunch);
     WRITE("No view punch", noViewPunch);
     WRITE("No hands", noHands);
     WRITE("No sleeves", noSleeves);
     WRITE("No weapons", noWeapons);
     WRITE("No smoke", noSmoke);
+    WRITE("No fire", noFire);
     WRITE("No blur", noBlur);
     WRITE("No scope overlay", noScopeOverlay);
     WRITE("No grass", noGrass);
@@ -1240,7 +1257,6 @@ static void to_json(json& j, const Config::Visuals& o)
     WRITE("World", world);
     WRITE("Props", props);
     WRITE("Sky", sky);
-	WRITE("Particles", particles);
     WRITE("Deagle spinner", deagleSpinner);
     WRITE("Screen effect", screenEffect);
     WRITE("Hit effect", hitEffect);
@@ -1254,10 +1270,14 @@ static void to_json(json& j, const Config::Visuals& o)
     WRITE("Color correction", colorCorrection);
 	WRITE("Bullet impacts", bulletImpacts);
 	WRITE("Accuracy tracers", accuracyTracers);
-	WRITE("Beams self", self);
-	WRITE("Beams ally", ally);
-	WRITE("Beams enemy", enemy);
+	WRITE("Beams self", selfBeams);
+	WRITE("Beams ally", allyBeams);
+	WRITE("Beams enemy", enemyBeams);
+	WRITE("Dlights self", selfDlights);
+	WRITE("Dlights ally", allyDlights);
+	WRITE("Dlights enemy", enemyDlights);
 	WRITE("Inferno hull", molotovHull);
+	WRITE("Smoke hull", smokeHull);
 	WRITE("Player bounds", playerBounds);
 	WRITE("Player velocity", playerVel);
 }
