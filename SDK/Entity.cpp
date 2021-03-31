@@ -17,7 +17,15 @@ bool Entity::hasC4() noexcept
 	if (!*memory->playerResource)
 		return false;
 
-	return this->index() == (*memory->playerResource)->bombOwner();
+	return this->isPlayer() && this->index() == (*memory->playerResource)->bombOwner();
+}
+
+bool Entity::isVip() noexcept
+{
+	if (!*memory->playerResource)
+		return false;
+
+	return this->isPlayer() && this->index() == (*memory->playerResource)->vip();
 }
 
 void Entity::getPlayerName(char(&out)[128]) noexcept

@@ -76,14 +76,13 @@ void Backtrack::run(UserCmd *cmd) noexcept
 		return;
 
 	auto localPlayerEyePosition = localPlayer->getEyePosition();
+	const auto aimPunch = localPlayer->getAimPunch();
 
 	Entity *bestTarget = nullptr;
 	int bestTargetIndex = 0;
 	int bestRecord = 0;
 	auto bestFov = 255.0f;
 	Vector bestTargetOrigin = Vector{};
-
-	const auto aimPunch = localPlayer->getAimPunch();
 
 	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 	{

@@ -59,11 +59,10 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= config->antiAim.fakeDuckPackets;
 
 		cmd->buttons |= UserCmd::IN_BULLRUSH;
+		cmd->buttons &= ~UserCmd::IN_DUCK;
 
 		if (interfaces->engine->getNetworkChannel()->chokedPackets > (config->antiAim.fakeDuckPackets / 2))
 			cmd->buttons |= UserCmd::IN_DUCK;
-		else
-			cmd->buttons &= ~UserCmd::IN_DUCK;
 	} else if (static Helpers::KeyBindState flag; flag[config->antiAim.choke] && config->antiAim.chokedPackets)
 		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= config->antiAim.chokedPackets;
 

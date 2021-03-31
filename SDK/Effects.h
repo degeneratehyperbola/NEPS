@@ -42,7 +42,6 @@ struct DynamicLight
 class Effects
 {
 public:
-	VIRTUAL_METHOD(DynamicLight *, allocDLight, 4, (int index), (this, index))
-	VIRTUAL_METHOD(DynamicLight *, allocELight, 5, (int index), (this, index))
+	VIRTUAL_METHOD(DynamicLight *, allocDlight, 4, (int index), (this, index))
 	VIRTUAL_METHOD(DynamicLight *, getLightByIndex, 8, (int index), (this, index))
 };

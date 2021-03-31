@@ -331,6 +331,7 @@ public:
 	}
 
 	bool hasC4() noexcept;
+	bool isVip() noexcept;
 
     void getPlayerName(char(&out)[128]) noexcept;
     [[nodiscard]] std::string getPlayerName() noexcept

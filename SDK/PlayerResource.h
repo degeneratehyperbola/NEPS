@@ -23,6 +23,6 @@ public:
 
 	NETVAR(bombsiteCenterA, "CCSPlayerResource", "m_bombsiteCenterA", Vector)
 	NETVAR(bombsiteCenterB, "CCSPlayerResource", "m_bombsiteCenterB", Vector)
-	NETVAR(bombOwner, "CCSPlayerResource", "m_iPlayerC4", int) // Entity index of a C4 carrier
-	NETVAR(vip, "CCSPlayerResource", "m_iPlayerVIP", int) // Entity index of a VIP
+	NETVAR(bombOwner, "CCSPlayerResource", "m_iPlayerC4", int) // Entity index of a C4 carrier or 0
+	NETVAR(vip, "CCSPlayerResource", "m_iPlayerVIP", int) // Entity index of a VIP or 0
 };

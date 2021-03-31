@@ -16,6 +16,7 @@
 
 #include <limits>
 #include <tuple>
+#include <sstream>
 
 static constexpr auto operator-(float sub, const std::array<float, 3> &a) noexcept
 {
@@ -370,21 +371,23 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 
 	if (config.flags.enabled)
 	{
-		std::string flags = "";
+		std::ostringstream flags;
 
 		if (playerData.isBot)
-			flags += "BOT\n";
+			flags << "BOT\n";
 		if (playerData.hasBomb)
-			flags += "C4\n";
+			flags << "C4\n";
+		if (playerData.isVip)
+			flags << "VIP\n";
 		if (playerData.hasDefuser)
-			flags += "KIT\n";
+			flags << "KIT\n";
 		if (playerData.ducking)
-			flags += "DUCK\n";
+			flags << "DUCK\n";
 		if (playerData.armor)
-			flags += std::to_string(playerData.armor) + "ap\n";
+			flags << playerData.armor << "ap\n";
 
-		if (!flags.empty())
-			renderText(playerData.distanceToLocal, config.textCullDistance, config.flags, flags.c_str(), {bbox.max.x + 1.0f, bbox.min.y}, false, false);
+		if (!flags.str().empty())
+			renderText(playerData.distanceToLocal, config.textCullDistance, config.flags, flags.str().c_str(), {bbox.max.x + 1.0f, bbox.min.y}, false, false);
 	}
 
 	if (config.flashDuration.enabled && playerData.flashDuration > 0.0f)
@@ -521,20 +524,20 @@ static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const 
 		drawList->AddLine(bonePoint, parentPoint, color, config.thickness);
 }
 
-static bool renderPlayerEsp(const PlayerData &playerData, Player playerConfig) noexcept
+static void renderPlayerEsp(const PlayerData &playerData, Player playerConfig) noexcept
 {
 	if (!playerConfig.enabled)
-		return false;
+		return;
 
 	if (playerConfig.audibleOnly && !playerData.audible && !playerConfig.spottedOnly
 		|| playerConfig.spottedOnly && !playerData.spotted && !(playerConfig.audibleOnly && playerData.audible)) // if both "Audible Only" and "Spotted Only" are on treat them as audible OR spotted
-		return true;
+		return;
 
 	if (playerData.dormant)
 	{
 		const float factor = std::clamp((memory->globalVars->realtime - playerData.becameDormant) / 4, 0.0f, 1.0f);
 
-		if (factor == 1.0f) return true;
+		if (factor == 1.0f) return;
 
 		playerConfig.box.color[3] -= factor;
 		playerConfig.box.fill.color[3] -= factor;
@@ -556,7 +559,7 @@ static bool renderPlayerEsp(const PlayerData &playerData, Player playerConfig) n
 	if (const BoundingBox headBbox{playerData.headMins, playerData.headMaxs, playerConfig.headBox.scale})
 		renderBox(headBbox, playerConfig.headBox);
 
-	return true;
+	return;
 }
 
 static void renderWeaponEsp(const WeaponData &weaponData, const Weapon &parentConfig, const Weapon &itemConfig) noexcept
@@ -629,7 +632,13 @@ void StreamProofESP::render() noexcept
 
 		auto &playerConfig = player.enemy ? config->esp.enemies : config->esp.allies;
 
-		if (!renderPlayerEsp(player, playerConfig["All"]))
-			renderPlayerEsp(player, playerConfig[player.dormant ? "Dormant" : (player.visible ? "Visible" : "Occluded")]);
+		if (player.dormant && playerConfig["Dormant"].enabled)
+			renderPlayerEsp(player, playerConfig["Dormant"]);
+		else if (player.visible && playerConfig["Visible"].enabled)
+			renderPlayerEsp(player, playerConfig["Visible"]);
+		else if (!player.visible && playerConfig["Occluded"].enabled)
+			renderPlayerEsp(player, playerConfig["Occluded"]);
+		else
+			renderPlayerEsp(player, playerConfig["All"]);
 	}
 }
