@@ -383,7 +383,7 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 			ImGui::EndPopup();
 		}
 
-		constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora"};
+		constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms"};
 
 		std::ostringstream watermark;
 		watermark << "NEPS > ";
@@ -1128,7 +1128,7 @@ void Misc::playKillSound(GameEvent &event) noexcept
 		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
 			soundprecache->addString(false, config->sound.customKillSound.c_str());
 
-		interfaces->surface->playSound(config->sound.customHitSound.c_str());
+		interfaces->surface->playSound(config->sound.customKillSound.c_str());
 	}
 }
 
