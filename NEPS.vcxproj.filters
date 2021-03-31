@@ -469,9 +469,6 @@
     <ClInclude Include="SDK\SteamMatchMaking.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="SDK\SteamID.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
     <ClInclude Include="Resources\Resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
@@ -486,6 +483,9 @@
     </ClInclude>
     <ClInclude Include="ImguiCustom.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\SteamId.h">
+      <Filter>SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

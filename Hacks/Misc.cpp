@@ -1077,49 +1077,58 @@ void Misc::playHitSound(GameEvent &event) noexcept
 		return;
 
 	constexpr std::array hitSounds = {
-		"play physics/metal/metal_solid_impact_bullet2",
-		"play buttons/arena_switch_press_02",
-		"play training/timer_bell",
-		"play physics/glass/glass_impact_bullet1"
+		"physics/metal/metal_solid_impact_bullet2.wav",
+		"buttons/arena_switch_press_02.wav",
+		"training/timer_bell.wav",
+		"physics/glass/glass_impact_bullet1.wav"
 	};
 
 	if (static_cast<std::size_t>(config->sound.hitSound - 1) < hitSounds.size())
-		interfaces->engine->clientCmdUnrestricted(hitSounds[config->sound.hitSound - 1]);
-	else if (config->sound.hitSound == 5)
+	{
+		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+			soundprecache->addString(false, hitSounds[config->sound.hitSound - 1]);
+
+		interfaces->surface->playSound(hitSounds[config->sound.hitSound - 1]);
+	} else if (config->sound.hitSound == 5)
 	{
 		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
 			soundprecache->addString(false, config->sound.customHitSound.c_str());
 
-		interfaces->engine->clientCmdUnrestricted(("play " + config->sound.customHitSound).c_str());
+		interfaces->surface->playSound(config->sound.customHitSound.c_str());
 	}
 }
 
-void Misc::playKillSound(GameEvent& event) noexcept
+void Misc::playKillSound(GameEvent &event) noexcept
 {
-    if (!config->sound.killSound)
-        return;
+	if (!config->sound.killSound)
+		return;
 
-    if (!localPlayer || !localPlayer->isAlive())
-        return;
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
-    if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
-        return;
+	if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
+		return;
 
-    constexpr std::array killSounds = {
-        "play physics/metal/metal_solid_impact_bullet2",
-        "play buttons/arena_switch_press_02",
-        "play training/timer_bell",
-        "play physics/glass/glass_impact_bullet1"
-    };
+	constexpr std::array killSounds = {
+		"physics/metal/metal_solid_impact_bullet2.wav",
+		"buttons/arena_switch_press_02.wav",
+		"training/timer_bell.wav",
+		"physics/glass/glass_impact_bullet1.wav"
+	};
 
-    if (static_cast<std::size_t>(config->sound.killSound - 1) < killSounds.size())
-        interfaces->engine->clientCmdUnrestricted(killSounds[config->sound.killSound - 1]);
+	if (static_cast<std::size_t>(config->sound.killSound - 1) < killSounds.size())
+	{
+		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+			soundprecache->addString(false, killSounds[config->sound.killSound - 1]);
+
+		interfaces->surface->playSound(killSounds[config->sound.hitSound - 1]);
+	}
 	else if (config->sound.killSound == 5)
 	{
 		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
 			soundprecache->addString(false, config->sound.customKillSound.c_str());
 
-        interfaces->engine->clientCmdUnrestricted(("play " + config->sound.customKillSound).c_str());
+		interfaces->surface->playSound(config->sound.customHitSound.c_str());
 	}
 }
 
