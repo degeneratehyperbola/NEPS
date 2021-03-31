@@ -62,7 +62,7 @@ void ImGuiCustom::colorPicker(const char *name, std::array<float, 4> &color, boo
 				}
 				if (thickness)
 				{
-					ImGui::DragFloat("##thickness", thickness, 0.1f, 1.0f, 100.0f, "Thick %.1f");
+					ImGui::DragFloat("##thickness", thickness, 0.1f, 1.0f, 10.0f, "Thick %.2f");
 					*thickness = std::max(*thickness, 1.0f);
 				}
 				if (border)
