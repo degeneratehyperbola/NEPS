@@ -1121,7 +1121,7 @@ void Misc::playKillSound(GameEvent &event) noexcept
 		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
 			soundprecache->addString(false, killSounds[config->sound.killSound - 1]);
 
-		interfaces->surface->playSound(killSounds[config->sound.hitSound - 1]);
+		interfaces->surface->playSound(killSounds[config->sound.killSound - 1]);
 	}
 	else if (config->sound.killSound == 5)
 	{
@@ -1246,99 +1246,103 @@ static int reportbotRound;
 
 void Misc::runReportbot() noexcept
 {
-    if (!config->griefing.reportbot.enabled)
-        return;
+	if (!config->griefing.reportbot.enabled)
+		return;
 
-    if (!localPlayer)
-        return;
+	if (!localPlayer)
+		return;
 
-    static auto lastReportTime = 0.0f;
+	static auto lastReportTime = 0.0f;
 
-    if (lastReportTime + config->griefing.reportbot.delay > memory->globalVars->realtime)
-        return;
+	if (lastReportTime + config->griefing.reportbot.delay > memory->globalVars->realtime)
+		return;
 
-    if (reportbotRound >= config->griefing.reportbot.rounds)
-        return;
+	if (reportbotRound >= config->griefing.reportbot.rounds)
+		return;
 
-    for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i) {
-        const auto entity = interfaces->entityList->getEntity(i);
+	for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i)
+	{
+		const auto entity = interfaces->entityList->getEntity(i);
 
-        if (!entity || entity == localPlayer.get())
-            continue;
+		if (!entity || entity == localPlayer.get())
+			continue;
 
-        if (config->griefing.reportbot.target != 2 && (entity->isOtherEnemy(localPlayer.get()) ? config->griefing.reportbot.target != 0 : config->griefing.reportbot.target != 1))
-            continue;
+		if (config->griefing.reportbot.target != 2 && (entity->isOtherEnemy(localPlayer.get()) ? config->griefing.reportbot.target != 0 : config->griefing.reportbot.target != 1))
+			continue;
 
-        PlayerInfo playerInfo;
-        if (!interfaces->engine->getPlayerInfo(i, playerInfo))
-            continue;
+		PlayerInfo playerInfo;
+		if (!interfaces->engine->getPlayerInfo(i, playerInfo))
+			continue;
 
-        if (playerInfo.fakeplayer || std::find(reportedPlayers.cbegin(), reportedPlayers.cend(), playerInfo.xuid) != reportedPlayers.cend())
-            continue;
+		if (playerInfo.fakeplayer || std::find(reportedPlayers.cbegin(), reportedPlayers.cend(), playerInfo.xuid) != reportedPlayers.cend())
+			continue;
 
-        std::string report;
+		std::string report;
 
-        if (config->griefing.reportbot.textAbuse)
-            report += "textabuse,";
-        if (config->griefing.reportbot.griefing)
-            report += "grief,";
-        if (config->griefing.reportbot.wallhack)
-            report += "wallhack,";
-        if (config->griefing.reportbot.aimbot)
-            report += "aimbot,";
-        if (config->griefing.reportbot.other)
-            report += "speedhack,";
+		if (config->griefing.reportbot.textAbuse)
+			report += "textabuse,";
+		if (config->griefing.reportbot.griefing)
+			report += "grief,";
+		if (config->griefing.reportbot.wallhack)
+			report += "wallhack,";
+		if (config->griefing.reportbot.aimbot)
+			report += "aimbot,";
+		if (config->griefing.reportbot.other)
+			report += "speedhack,";
 
-        if (!report.empty()) {
-            memory->submitReport(std::to_string(playerInfo.xuid).c_str(), report.c_str());
-            lastReportTime = memory->globalVars->realtime;
-            reportedPlayers.emplace_back(playerInfo.xuid);
-        }
-        return;
-    }
+		if (!report.empty())
+		{
+			memory->submitReport(std::to_string(playerInfo.xuid).c_str(), report.c_str());
+			lastReportTime = memory->globalVars->realtime;
+			reportedPlayers.emplace_back(playerInfo.xuid);
+		}
+		return;
+	}
 
-    reportedPlayers.clear();
-    ++reportbotRound;
+	reportedPlayers.clear();
+	++reportbotRound;
 }
 
 void Misc::resetReportbot() noexcept
 {
-    reportbotRound = 0;
-    reportedPlayers.clear();
+	reportbotRound = 0;
+	reportedPlayers.clear();
 }
 
 void Misc::preserveKillfeed(bool roundStart) noexcept
 {
-    if (!config->misc.preserveKillfeed.enabled)
-        return;
+	if (!config->misc.preserveKillfeed.enabled)
+		return;
 
-    static auto nextUpdate = 0.0f;
+	static auto nextUpdate = 0.0f;
 
-    if (roundStart) {
-        nextUpdate = memory->globalVars->realtime + 10.0f;
-        return;
-    }
+	if (roundStart)
+	{
+		nextUpdate = memory->globalVars->realtime + 10.0f;
+		return;
+	}
 
-    if (nextUpdate > memory->globalVars->realtime)
-        return;
+	if (nextUpdate > memory->globalVars->realtime)
+		return;
 
-    nextUpdate = memory->globalVars->realtime + 2.0f;
+	nextUpdate = memory->globalVars->realtime + 2.0f;
 
-    const auto deathNotice = memory->findHudElement(memory->hud, "CCSGO_HudDeathNotice");
-    if (!deathNotice)
-        return;
+	const auto deathNotice = memory->findHudElement(memory->hud, "CCSGO_HudDeathNotice");
+	if (!deathNotice)
+		return;
 
-    const auto deathNoticePanel = (*(UIPanel**)(*(deathNotice - 5 + 22) + 4));
-    const auto childPanelCount = deathNoticePanel->getChildCount();
+	const auto deathNoticePanel = (*(UIPanel **)(*(deathNotice - 5 + 22) + 4));
+	const auto childPanelCount = deathNoticePanel->getChildCount();
 
-    for (int i = 0; i < childPanelCount; ++i) {
-        const auto child = deathNoticePanel->getChild(i);
-        if (!child)
-            continue;
+	for (int i = 0; i < childPanelCount; ++i)
+	{
+		const auto child = deathNoticePanel->getChild(i);
+		if (!child)
+			continue;
 
-        if (child->hasClass("DeathNotice_Killer") && (!config->misc.preserveKillfeed.onlyHeadshots || child->hasClass("DeathNoticeHeadShot")))
-            child->setAttributeFloat("SpawnTime", memory->globalVars->currenttime);
-    }
+		if (child->hasClass("DeathNotice_Killer") && (!config->misc.preserveKillfeed.onlyHeadshots || child->hasClass("DeathNoticeHeadShot")))
+			child->setAttributeFloat("SpawnTime", memory->globalVars->currenttime);
+	}
 }
 
 void Misc::fixAnimation() noexcept
@@ -1357,12 +1361,12 @@ void Misc::drawOffscreenEnemies(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 
 	const auto yaw = Helpers::degreesToRadians(interfaces->engine->getViewAngles().y);
-	
+
 	for (auto &player : GameData::players())
-    {
+	{
 		if (player.dormant || !player.alive || !player.enemy || player.inViewFrustum)
 			continue;
-		
+
 		const auto positionDiff = GameData::local().origin - player.origin;
 
 		auto x = std::cos(yaw) * positionDiff.y - std::sin(yaw) * positionDiff.x;
@@ -1377,14 +1381,14 @@ void Misc::drawOffscreenEnemies(ImDrawList *drawList) noexcept
 		cy /= clen;
 
 		const auto center = ImGui::GetIO().DisplaySize / 2;
-		const auto pos = center + ImVec2{ x, y } * 170;
-		const auto pfar = center + ImVec2{ x, y } * 200;
+		const auto pos = center + ImVec2{x, y} *170;
+		const auto pfar = center + ImVec2{x, y} *200;
 		const auto color = Helpers::calculateColor(config->misc.offscreenEnemies);
-        //drawList->AddCircleFilled(pos, 11.0f, color & IM_COL32_A_MASK, 40);
-        //drawList->AddCircleFilled(pos, 10.0f, color, 40);
-		drawList->AddTriangleFilled(pfar, pos + ImVec2{cx, cy} * 15, pos + ImVec2{cx, cy} * -15, color);
-		drawList->AddTriangle(pfar, pos + ImVec2{cx, cy} * 15, pos + ImVec2{cx, cy} * -15, color | IM_COL32_A_MASK);
-    }
+		//drawList->AddCircleFilled(pos, 11.0f, color & IM_COL32_A_MASK, 40);
+		//drawList->AddCircleFilled(pos, 10.0f, color, 40);
+		drawList->AddTriangleFilled(pfar, pos + ImVec2{cx, cy} *15, pos + ImVec2{cx, cy} *-15, color);
+		drawList->AddTriangle(pfar, pos + ImVec2{cx, cy} *15, pos + ImVec2{cx, cy} *-15, color | IM_COL32_A_MASK);
+	}
 }
 
 void Misc::blockBot(UserCmd *cmd) noexcept
@@ -1437,8 +1441,7 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 				move *= 450.0f / l;
 			cmd->forwardmove = move.x;
 			cmd->sidemove = move.y;
-		}
-		else
+		} else
 		{
 			Vector fwd = Vector::fromAngle2D(cmd->viewangles.y);
 			Vector side = fwd.crossProduct(Vector::up());

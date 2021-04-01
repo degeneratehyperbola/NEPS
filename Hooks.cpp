@@ -310,8 +310,6 @@ static bool __fastcall svCheatsGetBool(void *_this) noexcept
 	return hooks->svCheats.getOriginal<bool, 13>()(_this);
 }
 
-static bool drawingConsole = false;
-
 static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept
 {
 	if (interfaces->panel->getName(panel) == "MatSystemTopPanel")
@@ -320,13 +318,8 @@ static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool 
 		Misc::spectatorList();
 		Misc::watermark();
 		#endif // LEGACY_WATERMARK
-	} else if (interfaces->panel->getName(panel) == "GameConsole")
-	{
-		drawingConsole = true;
-		hooks->panel.callOriginal<void, 41>(panel, forceRepaint, allowForce);
-		return;
 	}
-	drawingConsole = false;
+
 	hooks->panel.callOriginal<void, 41>(panel, forceRepaint, allowForce);
 }
 
@@ -466,6 +459,7 @@ static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 
 	if (config->visuals.noScopeOverlay && (*static_cast<std::uint32_t *>(_ReturnAddress()) == 0x20244C8B || *reinterpret_cast<std::uint32_t *>(std::uintptr_t(_ReturnAddress()) + 6) == 0x01ACB7FF))
 		a = 0;
+
 	hooks->surface.callOriginal<void, 15>(r, g, b, a);
 }
 

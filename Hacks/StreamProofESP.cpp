@@ -335,13 +335,9 @@ static void drawHealthBar(const ImVec2 &pos, float height, int health, const Col
 		const auto color = Helpers::calculateColor(healthBarConfig);
 
 		if (healthBarConfig.border)
-			drawList->AddRectFilled(min - ImVec2{1.0f, 1.0f}, pos + ImVec2{width + 1.0f, height + 1.0f}, color & IM_COL32_A_MASK);
+			drawList->AddRectFilled(min - ImVec2{1.0f, 1.0f}, max + ImVec2{1.0f, 1.0f}, color & IM_COL32_A_MASK);
 
-		drawList->PushClipRect(pos + ImVec2{-1.0f, (100 - health) / 100.0f * height - 1.0f}, pos + ImVec2{width + 1.0f, height + 1.0f});
-
-		drawList->AddRectFilled(ImFloor(min), ImFloor(max), color);
-
-		drawList->PopClipRect();
+		drawList->AddRectFilled(min + ImVec2{0.0f, (100 - health) / 100.0f * height}, max, color);
 	}
 
 	if (text.enabled)
@@ -530,7 +526,7 @@ static void renderPlayerEsp(const PlayerData &playerData, Player playerConfig) n
 		return;
 
 	if (playerConfig.audibleOnly && !playerData.audible && !playerConfig.spottedOnly
-		|| playerConfig.spottedOnly && !playerData.spotted && !(playerConfig.audibleOnly && playerData.audible)) // if both "Audible Only" and "Spotted Only" are on treat them as audible OR spotted
+		|| playerConfig.spottedOnly && !playerData.spotted && !(playerConfig.audibleOnly && playerData.audible)) // If both "Audible only" and "Spotted only" are on treat them as audible OR spotted
 		return;
 
 	if (playerData.dormant)
