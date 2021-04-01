@@ -2,7 +2,8 @@
 
 #include "VirtualMethod.h"
 
-class SoundEmitter {
+class SoundEmitter
+{
 public:
-    VIRTUAL_METHOD(const char*, getSoundName, 46, (int index), (this, index))
+	VIRTUAL_METHOD(const char *, getSoundName, 46, (int index), (this, index))
 };
