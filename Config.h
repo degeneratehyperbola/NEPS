@@ -94,7 +94,6 @@ public:
 
 	struct AntiAim
 	{
-		//KeyBind bind;
 		bool pitch = false;
 		float pitchAngle = 0.0f;
 		bool yaw = false;
@@ -111,7 +110,6 @@ public:
 		int chokedPackets = 0;
 		KeyBind choke;
 	} antiAim;
-	//std::array<AntiAim, 7> antiAim;
 
 	struct Glow : Color4
 	{
@@ -200,6 +198,7 @@ public:
 		bool oppositeHandKnife = false;
 		int bulletImpacts = 0;
 		int accuracyTracers = 0;
+
 		struct Beams
 		{
 			bool enabled;
@@ -211,18 +210,22 @@ public:
 			bool noiseOnce = true;
 			bool railgun = true;
 		};
+
 		Beams selfBeams;
 		Beams allyBeams;
 		Beams enemyBeams;
+
 		struct Dlights
 		{
 			bool enabled;
 			std::array<float, 4> col = {1.0f, 1.0f, 1.0f, 1.0f};
 			float radius;
 		};
+
 		Dlights selfDlights;
 		Dlights allyDlights;
 		Dlights enemyDlights;
+
 		Color4ToggleThickness molotovHull = {1.0f, 0.5f, 0.0f, 0.3f};
 		Color4ToggleThickness smokeHull = {0.5f, 0.5f, 0.5f, 0.3f};
 		Color4ToggleThickness playerBounds = {1.0f, 1.0f, 1.0f, 1.0f};

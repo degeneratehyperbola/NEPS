@@ -18,7 +18,7 @@ public:
 	void updateColors() const noexcept;
 private:
 	void renderMenuBar() noexcept;
-	void debug() noexcept;
+	void renderDebugWindow() noexcept;
 	void renderAimbotWindow(bool contentOnly = false) noexcept;
 	void renderAntiAimWindow(bool contentOnly = false) noexcept;
 	void renderTriggerbotWindow(bool contentOnly = false) noexcept;

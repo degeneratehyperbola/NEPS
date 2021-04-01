@@ -369,7 +369,7 @@ public:
     NETVAR(team, "CBaseEntity", "m_iTeamNum", Team)
     NETVAR(spotted, "CBaseEntity", "m_bSpotted", bool)
 
-    NETVAR(weapons, "CBaseCombatCharacter", "m_hMyWeapons", int[64])
+    NETVAR(weapons, "CBaseCombatCharacter", "m_hMyWeapons", int [64])
     PNETVAR(wearables, "CBaseCombatCharacter", "m_hMyWearables", int)
     NETVAR(nextAttack, "CBaseCombatCharacter", "m_flNextAttack", float)
 
@@ -383,7 +383,7 @@ public:
     NETVAR(viewPunchAngle, "CBasePlayer", "m_viewPunchAngle", Vector)
     NETVAR(velocity, "CBasePlayer", "m_vecVelocity[0]", Vector)
 	NETVAR(observerMode, "CBasePlayer", "m_iObserverMode", ObsMode)
-    NETVAR(lastPlaceName, "CBasePlayer", "m_szLastPlaceName", char[18])
+    NETVAR(lastPlaceName, "CBasePlayer", "m_szLastPlaceName", char [18])
     NETVAR_OFFSET(thirdPersonAngles, "CBasePlayer", "deadflag", 4, Vector)
 
     NETVAR(armor, "CCSPlayer", "m_ArmorValue", int)
@@ -422,7 +422,7 @@ public:
     NETVAR(itemDefinitionIndex2, "CBaseAttributableItem", "m_iItemDefinitionIndex", WeaponId)
     NETVAR(itemIDHigh, "CBaseAttributableItem", "m_iItemIDHigh", int)
     NETVAR(entityQuality, "CBaseAttributableItem", "m_iEntityQuality", int)
-    NETVAR(customName, "CBaseAttributableItem", "m_szCustomName", char[32])
+    NETVAR(customName, "CBaseAttributableItem", "m_szCustomName", char [32])
     NETVAR(fallbackPaintKit, "CBaseAttributableItem", "m_nFallbackPaintKit", unsigned)
     NETVAR(fallbackSeed, "CBaseAttributableItem", "m_nFallbackSeed", unsigned)
     NETVAR(fallbackWear, "CBaseAttributableItem", "m_flFallbackWear", float)
@@ -455,9 +455,9 @@ public:
 	NETVAR(mapHasBombTarget, "CCSGameRulesProxy", "m_bMapHasBombTarget", bool)
 	NETVAR(freezePeriod, "CCSGameRulesProxy", "m_bFreezePeriod", bool)
 
-	NETVAR(fireXDelta, "CInferno", "m_fireXDelta", int[100])
-	NETVAR(fireYDelta, "CInferno", "m_fireYDelta", int[100])
-	NETVAR(fireZDelta, "CInferno", "m_fireZDelta", int[100])
-	NETVAR(fireIsBurning, "CInferno", "m_bFireIsBurning", bool[100])
+	NETVAR(fireXDelta, "CInferno", "m_fireXDelta", int [100])
+	NETVAR(fireYDelta, "CInferno", "m_fireYDelta", int [100])
+	NETVAR(fireZDelta, "CInferno", "m_fireZDelta", int [100])
+	NETVAR(fireIsBurning, "CInferno", "m_bFireIsBurning", bool [100])
 	NETVAR(fireCount, "CInferno", "m_fireCount", int)
 };

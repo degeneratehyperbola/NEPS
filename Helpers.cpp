@@ -17,7 +17,7 @@
 #include "SDK/PhysicsSurfaceProps.h"
 #include "SDK/StudioRender.h"
 
-std::tuple<float, float, float> Helpers::rgbToHsv(float r, float g, float b) noexcept
+std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 {
 	r = std::clamp(r, 0.0f, 1.0f);
 	g = std::clamp(g, 0.0f, 1.0f);
@@ -44,7 +44,7 @@ std::tuple<float, float, float> Helpers::rgbToHsv(float r, float g, float b) noe
 	return {hue, sat, max};
 }
 
-std::tuple<float, float, float> Helpers::hsvToRgb(float h, float s, float v) noexcept
+std::array<float, 3U> Helpers::hsvToRgb(float h, float s, float v) noexcept
 {
 	h = std::remainder(h, 1.0f) + 0.5f;
 	s = std::clamp(s, 0.0f, 1.0f);
@@ -72,9 +72,15 @@ std::tuple<float, float, float> Helpers::hsvToRgb(float h, float s, float v) noe
 	return {r + m, g + m, b + m};
 }
 
-std::tuple<float, float, float> Helpers::rainbowColor(float speed) noexcept
+std::array<float, 3U> Helpers::rainbowColor(float speed) noexcept
 {
 	return hsvToRgb(speed * memory->globalVars->realtime * 0.1f, 1.0f, 1.0f);
+}
+
+std::array<float, 4U> Helpers::rainbowColor(float speed, float alpha) noexcept
+{
+	auto [r, g, b] = hsvToRgb(speed * memory->globalVars->realtime * 0.1f, 1.0f, 1.0f);
+	return {r, g, b, alpha};
 }
 
 static bool traceToExit(const Trace &enterTrace, const Vector &start, const Vector &direction, Vector &end, Trace &exitTrace)
@@ -259,38 +265,39 @@ bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendly
 float Helpers::findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept
 {
 	float f = targetRadius / (std::tan(spread + inaccuracy) * distance);
-	if (config->backtrack.enabled) f *= f;
+	f *= f;
 	return std::clamp(f, 0.0f, 1.0f) * 100.0f;
 }
 
-static auto rainbowColor(float time, float speed, float alpha) noexcept
+static float alphaFactor = 1.0f;
+
+void Helpers::setAlphaFactor(float factor) noexcept
 {
-    constexpr float pi = std::numbers::pi_v<float>;
-    return std::array{ std::sin(speed * time) * 0.5f + 0.5f,
-                       std::sin(speed * time + 2 * pi / 3) * 0.5f + 0.5f,
-                       std::sin(speed * time + 4 * pi / 3) * 0.5f + 0.5f,
-                       alpha };
+	alphaFactor = factor;
 }
 
 unsigned int Helpers::calculateColor(Color4 color) noexcept
 {
 	color.color[3] *= (255.0f - GameData::local().flashDuration) / 255.0f;
-	return ImGui::ColorConvertFloat4ToU32(color.rainbow ? ::rainbowColor(memory->globalVars->realtime, color.rainbowSpeed, color.color[3]) : color.color);
+	color.color[3] *= alphaFactor;
+	return ImGui::ColorConvertFloat4ToU32(color.rainbow ? rainbowColor(color.rainbowSpeed, color.color[3]) : color.color);
 }
 
 unsigned int Helpers::calculateColor(Color3 color) noexcept
 {
-    return ImGui::ColorConvertFloat4ToU32(color.rainbow ? ::rainbowColor(memory->globalVars->realtime, color.rainbowSpeed, 1.0f) : ImVec4{ color.color[0], color.color[1], color.color[2], 1.0f});
+	return ImGui::ColorConvertFloat4ToU32(color.rainbow ? rainbowColor(color.rainbowSpeed, 1.0f) : ImVec4{color.color[0], color.color[1], color.color[2], 1.0f});
 }
 
 unsigned int Helpers::calculateColor(int r, int g, int b, int a) noexcept
 {
 	a -= static_cast<int>(a * GameData::local().flashDuration / 255.0f);
+	a = static_cast<int>(a * alphaFactor);
 	return IM_COL32(r, g, b, a);
 }
 
 unsigned int Helpers::calculateColor(float r, float g, float b, float a) noexcept
 {
+	a *= alphaFactor;
 	a -= static_cast<int>(a * GameData::local().flashDuration / 255.0f);
 	return ImGui::ColorConvertFloat4ToU32({r, g, b, a});
 }
@@ -509,13 +516,13 @@ bool Helpers::attacking(bool cmdAttack, bool cmdAttack2) noexcept
 	return false;
 }
 
-bool Helpers::replace(std::string &str, const std::string &from, const std::string &to) noexcept
+int Helpers::replace(std::string &str, const std::string &from, const std::string &to) noexcept
 {
 	size_t startPos = str.find(from);
 	if (startPos == std::string::npos)
-		return false;
+		return -1;
 	str.replace(startPos, from.length(), to);
-	return true;
+	return startPos;
 }
 
 float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept

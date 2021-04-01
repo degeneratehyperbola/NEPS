@@ -5,8 +5,6 @@
 class HudChat
 {
 public:
-	// "%c" for color
-	// "%s" for string
 	template <typename... Args>
 	void printf(int filter, const char *fmt, Args... args) noexcept
 	{

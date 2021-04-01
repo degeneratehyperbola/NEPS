@@ -51,7 +51,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 
 	const auto now = memory->globalVars->realtime;
 
-    if (now - lastContact < config->triggerbot[weaponIndex].burstTime) {
+    if (now - lastContact < cfg.burstTime) {
         cmd->buttons |= UserCmd::IN_ATTACK;
         return;
     }

@@ -1003,7 +1003,7 @@ static float idealAngleDelta3(float speed)
 
 void Misc::autoStrafe(UserCmd* cmd) noexcept
 {
-	if (!config->movement.autoStrafe || !config->movement.bunnyHop)
+	if (!config->movement.autoStrafe)
 		return;
 
 	if (!localPlayer || localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
@@ -1024,9 +1024,7 @@ void Misc::autoStrafe(UserCmd* cmd) noexcept
 	const float yawRad = Helpers::degreesToRadians(cmd->viewangles.y);
 
 	const float curVel = curSpeed != 0.0f ? std::atan2f(localPlayer->velocity().y, localPlayer->velocity().x) - yawRad : 0.0f;
-	static float prevVel = curVel;
 	const float wishAng = std::atan2f(-cmd->sidemove, cmd->forwardmove);
-	const float wishSpeed = Vector{-cmd->sidemove, cmd->forwardmove, cmd->upmove}.length();
 
 	const float angleDelta = Helpers::angleDiffRad(curVel, wishAng);
 	float move = angleDelta < 0.0f ? curVel + PI / 2 - deltaAt90 + idealDelta : curVel - PI / 2 + deltaAt90 - idealDelta;
@@ -1034,7 +1032,6 @@ void Misc::autoStrafe(UserCmd* cmd) noexcept
 	cmd->forwardmove = std::cosf(move) * 450.0f;
 	cmd->sidemove = -std::sinf(move) * 450.0f;
 
-	prevVel = curVel;
 	wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
 }
 

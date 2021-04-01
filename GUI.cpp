@@ -2,6 +2,7 @@
 #include <fstream>
 #include <functional>
 #include <string>
+#include <sstream>
 #include <ShlObj.h>
 #include <Windows.h>
 #include <shellapi.h>
@@ -113,9 +114,8 @@ void GUI::render() noexcept
 	}
 
 	#ifdef _DEBUG_NEPS
-	debug();
+	renderDebugWindow();
 	ImGui::ShowDemoWindow();
-	ImGui::ShowMetricsWindow();
 	#endif // _DEBUG_NEPS
 }
 
@@ -1892,8 +1892,10 @@ void GUI::renderGuiStyle2() noexcept
 }
 
 #ifdef _DEBUG_NEPS
-void GUI::debug() noexcept
+void GUI::renderDebugWindow() noexcept
 {
+	ImGui::Columns(2, nullptr, false);
+
 	if (ImGui::Button("Test chat hook"))
 	{
 		memory->clientMode->getHudChat()->printf(0, "\x01N \x02N \x03N \x04N \x05N \x06N \x07N \x08N \x09N \x0AN \x0BN \x0CN \x0DN \x0EN \x0FN \x10N \x01");
@@ -1919,7 +1921,7 @@ void GUI::debug() noexcept
 
 	static const char *entName;
 	static ClassId entClassId;
-	static Entity *entity;
+	static int idx;
 	if (ImGui::Button("Loking at...") && localPlayer)
 	{
 		Vector start = localPlayer->getEyePosition();
@@ -1933,73 +1935,72 @@ void GUI::debug() noexcept
 			auto clientClass = trace.entity->getClientClass();
 			entName = clientClass->networkName;
 			entClassId = clientClass->classId;
-			entity = trace.entity;
+			idx = trace.entity->index();
 		}
 	}
-
+	
+	Entity *entity = interfaces->entityList->getEntity(idx);
 	if (entName)
 	{
-		ImGui::TextUnformatted(entName);
-		ImGui::TextUnformatted(std::to_string((int)entClassId).c_str());
+		ImGui::TextColored({1.0f, 1.0f, 0.0f, 1.0f}, "%s %i", entName, entClassId);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("In entity list at %i\n%s", idx, entity ? "OK" : "NULL");
 	}
 
-	static DynamicLight *elight = nullptr;
-	if (ImGui::Button("Allocade e-light for selected entity") && entity && entClassId != ClassId::World)
+	static std::array<float, 3> lightColor = {};
+	static float radius = 120.0f;
+	static float life = 20.0f;
+	static int exponent = 0;
+
+	ImGuiCustom::colorPicker("Light color", lightColor);
+	ImGui::SliderFloat("##radius", &radius, 0.0f, 5000.0f, "Light radius %.3f", ImGuiSliderFlags_Logarithmic);
+	ImGui::SliderInt("##exponent", &exponent, 0, 12, "Light exponent %d");
+	ImGui::SliderFloat("##life", &life, 0.0f, 100.0f, "Light lifetime %.3f");
+
+	static DynamicLight *dlight = nullptr;
+	if (ImGui::Button("Allocade d-light for selected entity") && entity && entClassId != ClassId::World)
 	{
-		elight = interfaces->effects->allocDlight(entity->index());
-		if (elight)
+		dlight = interfaces->effects->allocDlight(idx);
+		if (dlight)
 		{
-			elight->outerAngle = 0.0f;
-			elight->flags = 0;
-			elight->decay = 0.0f;
-			elight->die = memory->globalVars->currenttime + 7.0f;
+			dlight->outerAngle = 0.0f;
+			dlight->flags = 0;
+			dlight->decay = 0.0f;
+			dlight->die = memory->globalVars->currenttime + life;
+			dlight->origin = entity->getAbsOrigin();
+			dlight->radius = radius;
+			dlight->color.r = static_cast<unsigned char>(lightColor[0] * 255);
+			dlight->color.g = static_cast<unsigned char>(lightColor[1] * 255);
+			dlight->color.b = static_cast<unsigned char>(lightColor[2] * 255);
+			dlight->color.exponent = exponent;
 		}
-	}
-
-	static std::array<float, 4> lightColor = {};
-	static float lightRadius = 50.0f;
-	if (elight)
-	{
-		ImGuiCustom::colorPicker("Light color", lightColor);
-		ImGui::SliderFloat("##radius", &lightRadius, 0.0f, 5000.0f, "Light radius %.3f", ImGuiSliderFlags_Logarithmic);
-	}
-
-	if (ImGui::Button("Update e-light") && elight)
-	{
-		elight->origin = entity->getAbsOrigin();
-		elight->radius = lightRadius;
-		elight->color.r = static_cast<unsigned char>(lightColor[0] * 255);
-		elight->color.g = static_cast<unsigned char>(lightColor[1] * 255);
-		elight->color.b = static_cast<unsigned char>(lightColor[2] * 255);
-		elight->color.exponent = static_cast<signed char>((lightColor[3] - 0.5f) * 255);
 	}
 
 	if (ImGui::Button("Precache info"))
 		interfaces->engine->clientCmdUnrestricted("sv_precacheinfo");
 
-	static bool dumpColors = false;
-	ImGui::Checkbox("Style colors code", &dumpColors);
-
-	if (!dumpColors) return;
-
 	const auto &colors = ImGui::GetStyle().Colors;
-	char buffer[128 * ImGuiCol_COUNT] = "";
+	std::ostringstream ss;
 
 	for (int i = 0; i < ImGuiCol_COUNT; i++)
 	{
-		strcat(buffer, "colors[ImGuiCol_");
-		strcat(buffer, ImGui::GetStyleColorName(i));
-		strcat(buffer, "] = {");
-		strcat(buffer, std::to_string(colors[i].x).c_str());
-		strcat(buffer, "f, ");
-		strcat(buffer, std::to_string(colors[i].y).c_str());
-		strcat(buffer, "f, ");
-		strcat(buffer, std::to_string(colors[i].z).c_str());
-		strcat(buffer, "f, ");
-		strcat(buffer, std::to_string(colors[i].w).c_str());
-		strcat(buffer, "f};\n");
+		ss << "colors[ImGuiCol_" << ImGui::GetStyleColorName(i) << "] = {";
+		ss.precision(2);
+		ss << std::fixed << colors[i].x;
+		ss << "f, ";
+		ss << colors[i].y;
+		ss << "f, ";
+		ss << colors[i].z;
+		ss << "f, ";
+		ss << colors[i].w;
+		ss << "f};\n";
 	}
 
-	ImGui::InputTextMultiline("", buffer, 128 * ImGuiCol_COUNT, {400.0f, 500.0f}, ImGuiInputTextFlags_ReadOnly);
+	if (ImGui::Button("Copy style colors"))
+		ImGui::SetClipboardText(ss.str().c_str());
+
+	ImGui::NextColumn();
+
+	ImGui::Text("Hello @ %s %i", "p", 100);
 }
 #endif // _DEBUG_NEPS

@@ -520,7 +520,7 @@ static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const 
 		drawList->AddLine(bonePoint, parentPoint, color, config.thickness);
 }
 
-static void renderPlayerEsp(const PlayerData &playerData, Player playerConfig) noexcept
+static void renderPlayerEsp(const PlayerData &playerData, const Player &playerConfig) noexcept
 {
 	if (!playerConfig.enabled)
 		return;
@@ -531,22 +531,11 @@ static void renderPlayerEsp(const PlayerData &playerData, Player playerConfig) n
 
 	if (playerData.dormant)
 	{
-		const float factor = std::clamp((memory->globalVars->realtime - playerData.becameDormant) / 4, 0.0f, 1.0f);
+		const float factor = std::clamp(1.0f - (memory->globalVars->realtime - playerData.becameDormant) * 0.25f, 0.0f, 1.0f);
 
-		if (factor == 1.0f) return;
+		if (factor == 0.0f) return;
 
-		playerConfig.box.color[3] -= factor;
-		playerConfig.box.fill.color[3] -= factor;
-		playerConfig.flags.color[3] -= factor;
-		playerConfig.flashDuration.color[3] *= factor;
-		playerConfig.headBox.color[3] -= factor;
-		playerConfig.headBox.fill.color[3] -= factor;
-		playerConfig.healthBar.color[3] -= factor;
-		playerConfig.health.color[3] -= factor;
-		playerConfig.name.color[3] -= factor;
-		playerConfig.skeleton.color[3] -= factor;
-		playerConfig.snapline.color[3] -= factor;
-		playerConfig.weapon.color[3] -= factor;
+		Helpers::setAlphaFactor(factor);
 	}
 
 	renderPlayerBox(playerData, playerConfig);
@@ -555,6 +544,7 @@ static void renderPlayerEsp(const PlayerData &playerData, Player playerConfig) n
 	if (const BoundingBox headBbox{playerData.headMins, playerData.headMaxs, playerConfig.headBox.scale})
 		renderBox(headBbox, playerConfig.headBox);
 
+	Helpers::setAlphaFactor(1.0f);
 	return;
 }
 

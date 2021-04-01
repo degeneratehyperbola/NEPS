@@ -28,10 +28,11 @@ namespace Helpers
 
 	constexpr auto timeToTicks = [](float time) noexcept { return static_cast<int>(0.5f + time / memory->globalVars->intervalPerTick); };
 
-	std::tuple<float, float, float> rgbToHsv(float r, float g, float b) noexcept;
-	std::tuple<float, float, float> hsvToRgb(float h, float s, float v) noexcept;
+	std::array<float, 3U> rgbToHsv(float r, float g, float b) noexcept;
+	std::array<float, 3U> hsvToRgb(float h, float s, float v) noexcept;
 
-	std::tuple<float, float, float> rainbowColor(float speed) noexcept;
+	std::array<float, 3U> rainbowColor(float speed) noexcept;
+	std::array<float, 4U> rainbowColor(float speed, float alpha) noexcept;
 
 	Vector calculateRelativeAngle(const Vector &source, const Vector &destination, const Vector &viewAngles) noexcept;
 
@@ -43,6 +44,8 @@ namespace Helpers
     bool canHit(const Vector &destination, Trace &trace, bool allowFriendlyFire, bool *goesThroughWall = nullptr) noexcept;
 
 	float findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept;
+
+	void setAlphaFactor(float factor) noexcept;
 
 	unsigned int calculateColor(Color4 color) noexcept;
 	unsigned int calculateColor(Color3 color) noexcept;
@@ -135,7 +138,7 @@ namespace Helpers
 	// For local player
     bool attacking(bool cmdAttack, bool cmdAttack2) noexcept;
 
-	bool replace(std::string &, const std::string &, const std::string &) noexcept;
+	int replace(std::string &, const std::string &, const std::string &) noexcept;
 
 	float approxRadius(const StudioBbox &hitbox, int i) noexcept;
 }
