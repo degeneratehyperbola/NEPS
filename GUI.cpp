@@ -1922,7 +1922,7 @@ void GUI::renderDebugWindow() noexcept
 	static const char *entName;
 	static ClassId entClassId;
 	static int idx;
-	if (ImGui::Button("Loking at...") && localPlayer)
+	if (ImGui::Button("Select...") && localPlayer)
 	{
 		Vector start = localPlayer->getEyePosition();
 		Vector end = start + Vector::fromAngle(interfaces->engine->getViewAngles()) * 1000.0f;
@@ -1939,12 +1939,26 @@ void GUI::renderDebugWindow() noexcept
 		}
 	}
 	
+	ImGui::SameLine();
+
+	if (ImGui::Button("Select self") && localPlayer)
+	{
+		auto clientClass = localPlayer->getClientClass();
+		entName = clientClass->networkName;
+		entClassId = clientClass->classId;
+		idx = localPlayer->index();
+	}
+
 	Entity *entity = interfaces->entityList->getEntity(idx);
 	if (entName)
 	{
-		ImGui::TextColored({1.0f, 1.0f, 0.0f, 1.0f}, "%s %i", entName, entClassId);
+		ImGui::TextUnformatted("Selected:");
+		ImGui::SameLine();
+		ImGui::TextColored({1.0f, 1.0f, 0.0f, 1.0f}, "%s", entName);
 		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("In entity list at %i\n%s", idx, entity ? "OK" : "NULL");
+			ImGui::SetTooltip("In entity list at %i", idx);
+		ImGui::SameLine();
+		ImGui::TextColored({0.0f, 0.3f, 1.0f, 1.0f}, "%i", entClassId);
 	}
 
 	static std::array<float, 3> lightColor = {};
@@ -2000,7 +2014,5 @@ void GUI::renderDebugWindow() noexcept
 		ImGui::SetClipboardText(ss.str().c_str());
 
 	ImGui::NextColumn();
-
-	ImGui::Text("Hello @ %s %i", "p", 100);
 }
 #endif // _DEBUG_NEPS

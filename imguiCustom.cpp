@@ -31,8 +31,8 @@ void ImGuiCustom::colorPicker(const char *name, std::array<float, 4> &color, boo
 		ImGui::EndDragDropTarget();
 	}
 	ImGui::SameLine(0.0f, 5.0f);
-	if (std::strncmp(name, "##", 2))
-		ImGui::TextUnformatted(name);
+
+	ImGui::TextUnformatted(name, std::strstr(name, "##"));
 
 	if (openPopup)
 		ImGui::OpenPopup("##popup");
@@ -95,8 +95,8 @@ void ImGuiCustom::colorPicker(const char *name, std::array<float, 3> &color, boo
 		ImGui::EndDragDropTarget();
 	}
 	ImGui::SameLine(0.0f, 5.0f);
-	if (std::strncmp(name, "##", 2))
-		ImGui::TextUnformatted(name);
+
+	ImGui::TextUnformatted(name, std::strstr(name, "##"));
 
 	if (openPopup)
 		ImGui::OpenPopup("##popup");
