@@ -80,10 +80,12 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 	Trace trace;
 	const int damage = Helpers::findDamage(endPos, weaponData, trace, cfg.friendlyFire, cfg.hitgroup, &goesThroughWall);
 
+	lastTime = now;
+
 	if (cfg.visibleOnly && goesThroughWall)
 		return;
 
-	if (!trace.entity)
+	if (!trace.entity || !trace.entity->isPlayer())
 		return;
 
 	const auto distance = trace.fraction * weaponData->range;
@@ -98,8 +100,6 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 		if (cfg.hitchance > hitchance)
 			return;
 	}
-
-	lastTime = now;
 
 	auto minDamage = goesThroughWall ?
 		std::min(cfg.minDamageAutoWall, trace.entity->health() + cfg.killshotAutoWall) :
