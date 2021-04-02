@@ -387,7 +387,7 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 
 		std::ostringstream watermark;
 		watermark << "NEPS > ";
-		watermark << otherOnes[static_cast<int>(memory->globalVars->realtime * 2) % (otherOnes.size() - 1)];
+		watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % (otherOnes.size() - 1)];
 		static float frameRate = 1.0f;
 		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 
@@ -1149,7 +1149,7 @@ void Misc::purchaseList(GameEvent* event) noexcept
     if (event) {
         switch (fnv::hashRuntime(event->getName())) {
         case fnv::hash("item_purchase"): {
-            const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt("userid")));
+            const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
 
             if (player && localPlayer && memory->isOtherEnemy(player, localPlayer.get())) {
                 if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(event->getString("weapon"))) {

@@ -68,7 +68,7 @@ void Glow::render() noexcept
 					glowobject.glowColor = {1.0f - health / 100.0f,  health / 100.0f, 0.0f};
 				else if (glow.rainbow)
 				{
-					const auto [r, g, b] { Helpers::rainbowColor(glow.rainbowSpeed) };
+					const auto [r, g, b] = Helpers::rainbowColor(glow.rainbowSpeed);
 					glowobject.glowColor = {r, g, b};
 				} else
 					glowobject.glowColor = {glow.color[0], glow.color[1], glow.color[2]};

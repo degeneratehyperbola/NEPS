@@ -109,7 +109,7 @@ To open UI press %button on your keyboard.%loaded)_msg";
 
 static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, const RECT *dest, HWND windowOverride, const RGNDATA *dirtyRegion) noexcept
 {
-	[[maybe_unused]] static bool imguiInit{ImGui_ImplDX9_Init(device)};
+	[[maybe_unused]] static bool imguiInit = ImGui_ImplDX9_Init(device);
 
 	if (config->loadScheduledFonts())
 		ImGui_ImplDX9_DestroyFontsTexture();

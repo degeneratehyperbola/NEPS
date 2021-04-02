@@ -280,12 +280,14 @@ unsigned int Helpers::calculateColor(Color4 color) noexcept
 {
 	color.color[3] *= (255.0f - GameData::local().flashDuration) / 255.0f;
 	color.color[3] *= alphaFactor;
-	return ImGui::ColorConvertFloat4ToU32(color.rainbow ? rainbowColor(color.rainbowSpeed, color.color[3]) : color.color);
+	auto [r, g, b, a] = color.rainbow ? rainbowColor(color.rainbowSpeed, color.color[3]) : color.color;
+	return ImGui::ColorConvertFloat4ToU32({r, g, b, a});
 }
 
 unsigned int Helpers::calculateColor(Color3 color) noexcept
 {
-	return ImGui::ColorConvertFloat4ToU32(color.rainbow ? rainbowColor(color.rainbowSpeed, 1.0f) : ImVec4{color.color[0], color.color[1], color.color[2], 1.0f});
+	auto [r, g, b] = color.rainbow ? rainbowColor(color.rainbowSpeed) : color.color;
+	return ImGui::ColorConvertFloat4ToU32({r, g, b, 1.0f});
 }
 
 unsigned int Helpers::calculateColor(int r, int g, int b, int a) noexcept

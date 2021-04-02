@@ -453,7 +453,7 @@ static void from_json(const json &j, Config::Visuals::Beams &b)
 {
 	read(j, "Enabled", b.enabled);
 	read(j, "Sprite", b.sprite);
-	read(j, "Color", b.col);
+	read(j, "Color", b.color);
 	read(j, "Width", b.width);
 	read(j, "Life", b.life);
 	read(j, "Noise", b.noise);
@@ -464,7 +464,7 @@ static void from_json(const json &j, Config::Visuals::Beams &b)
 static void from_json(const json &j, Config::Visuals::Dlights &b)
 {
 	read(j, "Enabled", b.enabled);
-	read(j, "Color", b.col);
+	read(j, "Color", b.color);
 	read(j, "Radius", b.radius);
 }
 
@@ -1201,7 +1201,7 @@ static void to_json(json &j, const Config::Visuals::Beams &o, const Config::Visu
 {
 	WRITE("Enabled", enabled);
 	WRITE("Sprite", sprite);
-	WRITE("Color", col);
+	WRITE("Color", color);
 	WRITE("Width", width);
 	WRITE("Life", life);
 	WRITE("Noise", noise);
@@ -1212,7 +1212,7 @@ static void to_json(json &j, const Config::Visuals::Beams &o, const Config::Visu
 static void to_json(json &j, const Config::Visuals::Dlights &o, const Config::Visuals::Dlights &dummy)
 {
 	WRITE("Enabled", enabled);
-	WRITE("Color", col);
+	WRITE("Color", color);
 	WRITE("Radius", radius);
 }
 

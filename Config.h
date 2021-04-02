@@ -203,7 +203,7 @@ public:
 		{
 			bool enabled;
 			int sprite = 0;
-			std::array<float, 4> col = {1.0f, 1.0f, 1.0f, 1.0f};
+			std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f};
 			float width = 1.0f;
 			float life = 3.0f;
 			float noise = 5.0f;
@@ -218,7 +218,7 @@ public:
 		struct Dlights
 		{
 			bool enabled;
-			std::array<float, 4> col = {1.0f, 1.0f, 1.0f, 1.0f};
+			std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f};
 			float radius;
 		};
 

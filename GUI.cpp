@@ -601,7 +601,7 @@ void GUI::renderGlowWindow(bool contentOnly) noexcept
     ImGui::Columns(2, nullptr, false); 
     ImGui::Checkbox("Health based", &config->glow[currentItem].healthBased);
 
-    ImGuiCustom::colorPicker("Color", config->glow[currentItem].color, &config->glow[currentItem].rainbow, &config->glow[currentItem].rainbowSpeed);
+    ImGuiCustom::colorPicker("Color", config->glow[currentItem].color.data(), nullptr, &config->glow[currentItem].rainbow, &config->glow[currentItem].rainbowSpeed);
 
     ImGui::NextColumn();
     ImGui::SetNextItemWidth(100.0f);
@@ -660,7 +660,7 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
     ImGui::Checkbox("Wireframe", &chams.wireframe);
     ImGui::Checkbox("Cover", &chams.cover);
     ImGui::Checkbox("Ignore-Z", &chams.ignorez);
-    ImGuiCustom::colorPicker("Color", chams.color, &chams.rainbow, &chams.rainbowSpeed);
+    ImGuiCustom::colorPicker("Color", chams.color.data(), nullptr, &chams.rainbow, &chams.rainbowSpeed);
 
     if (!contentOnly) {
         ImGui::End();
@@ -963,7 +963,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGui::Combo("Type", &sharedConfig.box.type, "2D\0" "2D corners\0" "3D\0" "3D corners\0");
 			ImGui::SetNextItemWidth(275.0f);
 			ImGui::SliderFloat3("Scale", sharedConfig.box.scale.data(), 0.0f, 0.50f, "%.2f");
-			ImGuiCustom::colorPicker("##fill", sharedConfig.box.fill.color, &sharedConfig.box.fill.rainbow, &sharedConfig.box.fill.rainbowSpeed);
+			ImGuiCustom::colorPicker("##fill", sharedConfig.box.fill.color.data(), nullptr, &sharedConfig.box.fill.rainbow, &sharedConfig.box.fill.rainbowSpeed);
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(85.0f);
 			ImGuiCustom::boolCombo("##fill_outline", sharedConfig.box.fill.enabled, "Outline\0Fill\0");
@@ -995,7 +995,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
                 ImGui::Combo("Type", &playerConfig.headBox.type, "2D\0" "Corner 2D\0" "3D\0" "Corner 3D\0");
                 ImGui::SetNextItemWidth(275.0f);
                 ImGui::SliderFloat3("Scale", playerConfig.headBox.scale.data(), 0.0f, 0.50f, "%.2f");
-				ImGuiCustom::colorPicker("##fill", playerConfig.headBox.fill.color, &playerConfig.headBox.fill.rainbow, &playerConfig.headBox.fill.rainbowSpeed);
+				ImGuiCustom::colorPicker("##fill", playerConfig.headBox.fill.color.data(), nullptr, &playerConfig.headBox.fill.rainbow, &playerConfig.headBox.fill.rainbowSpeed);
 				ImGui::SameLine();
 				ImGui::SetNextItemWidth(85.0f);
 				ImGuiCustom::boolCombo("##fill_outline", playerConfig.headBox.fill.enabled, "Outline\0Fill\0");
@@ -1084,7 +1084,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGuiCustom::colorPicker("Player bounds", config->visuals.playerBounds);
 	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVel);
 
-	ImGuiCustom::colorPicker("Own beams", config->visuals.selfBeams.col, nullptr, nullptr, &config->visuals.selfBeams.enabled);
+	ImGuiCustom::colorPicker("Own beams", config->visuals.selfBeams.color.data(), nullptr, nullptr, nullptr, &config->visuals.selfBeams.enabled);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("bself", ImGuiDir_Right))
 		ImGui::OpenPopup("##bself");
@@ -1109,7 +1109,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 	
-	ImGuiCustom::colorPicker("Ally beams", config->visuals.allyBeams.col, nullptr, nullptr, &config->visuals.allyBeams.enabled);
+	ImGuiCustom::colorPicker("Ally beams", config->visuals.allyBeams.color.data(), nullptr, nullptr, nullptr, &config->visuals.allyBeams.enabled);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("bally", ImGuiDir_Right))
 		ImGui::OpenPopup("##bally");
@@ -1134,7 +1134,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
-	ImGuiCustom::colorPicker("Enemy beams", config->visuals.enemyBeams.col, nullptr, nullptr, &config->visuals.enemyBeams.enabled);
+	ImGuiCustom::colorPicker("Enemy beams", config->visuals.enemyBeams.color.data(), nullptr, nullptr, nullptr, &config->visuals.enemyBeams.enabled);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("benemy", ImGuiDir_Right))
 		ImGui::OpenPopup("##benemy");
@@ -1474,7 +1474,7 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
         for (int i = 0; i < ImGuiCol_COUNT; i++) {
             if (i && i & 3) ImGui::SameLine(200.0f * (i & 3));
 
-            ImGuiCustom::colorPicker(ImGui::GetStyleColorName(i), (std::array<float, 4>&)style.Colors[i]);
+            ImGuiCustom::colorPicker(ImGui::GetStyleColorName(i), &style.Colors[i].x, &style.Colors[i].w);
         }
     }
 
@@ -1899,8 +1899,8 @@ void GUI::renderDebugWindow() noexcept
 	if (ImGui::Button("Test chat hook"))
 	{
 		memory->clientMode->getHudChat()->printf(0, "\x01N \x02N \x03N \x04N \x05N \x06N \x07N \x08N \x09N \x0AN \x0BN \x0CN \x0DN \x0EN \x0FN \x10N \x01");
-		memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s voted %c%s\x01", "River", '\x04', "YES");
-		memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s voted %c%s\x01", "Hyperbola", '\x02', "NO");
+		memory->clientMode->getHudChat()->printf(0, "\x01[NEPS]\x08 %s voted %c%s\x01", "River", '\x04', "YES");
+		memory->clientMode->getHudChat()->printf(0, "\x01[NEPS]\x08 %s voted %c%s\x01", "Hyperbola", '\x02', "NO");
 	}
 
 	if (ImGui::Button("List client classes"))
@@ -1966,7 +1966,7 @@ void GUI::renderDebugWindow() noexcept
 	static float life = 20.0f;
 	static int exponent = 0;
 
-	ImGuiCustom::colorPicker("Light color", lightColor);
+	ImGuiCustom::colorPicker("Light color", lightColor.data());
 	ImGui::SliderFloat("##radius", &radius, 0.0f, 5000.0f, "Light radius %.3f", ImGuiSliderFlags_Logarithmic);
 	ImGui::SliderInt("##exponent", &exponent, 0, 12, "Light exponent %d");
 	ImGui::SliderFloat("##life", &life, 0.0f, 100.0f, "Light lifetime %.3f");
@@ -2014,5 +2014,28 @@ void GUI::renderDebugWindow() noexcept
 		ImGui::SetClipboardText(ss.str().c_str());
 
 	ImGui::NextColumn();
+
+	if (ImGui::BeginTable("shrek", 4))
+	{
+		ImGui::TableSetupColumn("Name");
+		ImGui::TableSetupColumn("Wins");
+		ImGui::TableSetupColumn("Level");
+		ImGui::TableSetupColumn("Rank");
+		ImGui::TableHeadersRow();
+
+		GameData::Lock lock;
+		for (auto &player : GameData::players())
+		{
+			ImGui::TableNextRow();
+			ImGui::PushID(ImGui::TableGetRowIndex());
+
+			ImGui::TableNextColumn();
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text(player.name);
+		}
+
+		ImGui::EndTable();
+	}
 }
 #endif // _DEBUG_NEPS

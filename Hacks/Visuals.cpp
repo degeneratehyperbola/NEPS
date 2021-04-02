@@ -315,7 +315,7 @@ void Visuals::hitEffect(GameEvent* event) noexcept
     if (config->visuals.hitEffect && localPlayer) {
         static float lastHitTime = 0.0f;
 
-        if (event && interfaces->engine->getPlayerForUserID(event->getInt("attacker")) == localPlayer->index()) {
+        if (event && interfaces->engine->getPlayerFromUserID(event->getInt("attacker")) == localPlayer->index()) {
             lastHitTime = memory->globalVars->realtime;
             return;
         }
@@ -357,7 +357,7 @@ void Visuals::killEffect(GameEvent *event) noexcept
 	{
 		static float lastKillTime = 0.0f;
 
-		if (event && interfaces->engine->getPlayerForUserID(event->getInt("attacker")) == localPlayer->index())
+		if (event && interfaces->engine->getPlayerFromUserID(event->getInt("attacker")) == localPlayer->index())
 		{
 			lastKillTime = memory->globalVars->realtime;
 			return;
@@ -516,7 +516,7 @@ void Visuals::bulletBeams(GameEvent *event)
 	if (!interfaces->engine->isInGame())
 		return;
 
-	auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt("userid")));
+	auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
 
 	if (!player) return;
 
@@ -525,101 +525,68 @@ void Visuals::bulletBeams(GameEvent *event)
 	pos.y = event->getFloat("y");
 	pos.z = event->getFloat("z");
 
-	constexpr auto getBeamSprite = [](int beam) constexpr noexcept
-	{
-		switch (beam)
-		{
-		case 0:
-			return "sprites/physbeam.vmt";
-		case 1:
-			return "sprites/white.vmt";
-		case 2:
-			return "sprites/purplelaser1.vmt";
-		case 3:
-			return "sprites/laserbeam.vmt";
-		}
-		return "";
+	constexpr std::array beamSprites = {
+		"sprites/physbeam.vmt",
+		"sprites/white.vmt",
+		"sprites/purplelaser1.vmt",
+		"sprites/laserbeam.vmt"
 	};
 
-	int sprite = 0;
-	float col[4] = {};
-	float width = 0.0f;
-	float life = 0.0f;
-	float noise = 0.0f;
-	bool noiseOnce = true;
-	bool railgun = false;
+	Config::Visuals::Beams *cfg = nullptr;
 	if (localPlayer->isOtherEnemy(player))
 	{
 		if (!config->visuals.enemyBeams.enabled) return;
-		sprite = config->visuals.enemyBeams.sprite;
-		std::copy(config->visuals.enemyBeams.col.begin(), config->visuals.enemyBeams.col.end(), col);
-		width = config->visuals.enemyBeams.width;
-		life = config->visuals.enemyBeams.life;
-		noise = config->visuals.enemyBeams.noise;
-		noiseOnce = config->visuals.enemyBeams.noiseOnce;
-		railgun = config->visuals.enemyBeams.railgun;
+		cfg = &config->visuals.enemyBeams;
 	}
 	else if (player != localPlayer.get())
 	{
 		if (!config->visuals.allyBeams.enabled) return;
-		sprite = config->visuals.allyBeams.sprite;
-		std::copy(config->visuals.allyBeams.col.begin(), config->visuals.allyBeams.col.end(), col);
-		width = config->visuals.allyBeams.width;
-		life = config->visuals.allyBeams.life;
-		noise = config->visuals.allyBeams.noise;
-		noiseOnce = config->visuals.allyBeams.noiseOnce;
-		railgun = config->visuals.allyBeams.railgun;
+		cfg = &config->visuals.allyBeams;
 	}
 	else
 	{
 		if (!config->visuals.selfBeams.enabled) return;
-		sprite = config->visuals.selfBeams.sprite;
-		std::copy(config->visuals.selfBeams.col.begin(), config->visuals.selfBeams.col.end(), col);
-		width = config->visuals.selfBeams.width;
-		life = config->visuals.selfBeams.life;
-		noise = config->visuals.selfBeams.noise;
-		noiseOnce = config->visuals.selfBeams.noiseOnce;
-		railgun = config->visuals.selfBeams.railgun;
+		cfg = &config->visuals.selfBeams;
 	}
 
-	if (life <= 0.0f || width == 0.0f || col[3] == 0.0f || col[0] == 0.0f && col[1] == 0.0f && col[2] == 0.0f)
+	if (!cfg || static_cast<std::size_t>(cfg->sprite) >= beamSprites.size() || cfg->life <= 0.0f || cfg->width == 0.0f || cfg->color[3] == 0.0f || cfg->color[0] == 0.0f && cfg->color[1] == 0.0f && cfg->color[2] == 0.0f)
 		return;
 
 	if (const auto modelprecache = interfaces->networkStringTableContainer->findTable("modelprecache"))
-		modelprecache->addString(false, getBeamSprite(sprite));
+		modelprecache->addString(false, beamSprites[cfg->sprite]);
 
 	const float distance = player->getEyePosition().distTo(pos);
 
 	BeamInfo info;
 	info.type = TE_BEAMPOINTS;
-	info.modelName = getBeamSprite(sprite);
+	info.modelName = beamSprites[cfg->sprite];
 	info.haloScale = 0.0f;
-	info.life = life;
-	info.width = width;
-	info.endWidth = width;
+	info.life = cfg->life;
+	info.width = cfg->width;
+	info.endWidth = cfg->width;
 	info.fadeLength = 100.0f;
-	info.amplitude = railgun ? noise * 0.02f : noise * 200.0f / distance;
+	info.amplitude = cfg->railgun ? cfg->noise * 0.02f : cfg->noise * 200.0f / distance;
 	info.speed = 0.2f;
 	info.startFrame = 0;
 	info.frameRate = 60.0f;
-	info.red = col[0] * 255.0f;
-	info.green = col[1] * 255.0f;
-	info.blue = col[2] * 255.0f;
-	info.brightness = col[3] * 255.0f;
-	info.segments = noise > 0.0f ? static_cast<int>(distance) / 15 : -1;
+	info.red = cfg->color[0] * 255.0f;
+	info.green = cfg->color[1] * 255.0f;
+	info.blue = cfg->color[2] * 255.0f;
+	info.brightness = cfg->color[3] * 255.0f;
+	info.segments = cfg->noise > 0.0f ? static_cast<int>(distance) / 15 : -1;
 	info.renderable = true;
 	info.end = pos;
 	info.start = player->getEyePosition();
 	info.flags = FBEAM_SHADEIN;
-	if (railgun || noiseOnce || noise == 0.0f)
+	if (cfg->railgun || cfg->noiseOnce || cfg->noise == 0.0f)
 		info.flags |= FBEAM_ONLYNOISEONCE;
-	if (railgun)
+	if (cfg->railgun)
 		info.flags |= FBEAM_SINENOISE;
 
 	if (const auto beam = memory->viewRenderBeams->createBeamPoints(info))
 	{
 		beam->flags &= ~FBEAM_FOREVER;
-		beam->die = memory->globalVars->currenttime + life;
+		beam->die = memory->globalVars->currenttime + cfg->life;
 	}
 }
 
