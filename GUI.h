@@ -51,7 +51,7 @@ private:
 		bool sound = false;
 		bool style = false;
 		bool exploits = false;
-		bool steamapi = false;
+		bool griefing = false;
 		bool movement = false;
 		bool misc = false;
 		bool config = false;

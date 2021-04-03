@@ -739,7 +739,7 @@ void Misc::fakeBan(bool set) noexcept
     if (set)
         shouldSet = set;
 
-    if (shouldSet && interfaces->engine->isInGame() && changeName(false, std::string{ "\x1\xB" }.append(std::string{ static_cast<char>(config->griefing.banColor + 1) }).append(config->griefing.banText).append("\x1").c_str(), 5.0f))
+    if (shouldSet && interfaces->engine->isInGame() && changeName(false, std::string{"\x1\xB"}.append(std::string{static_cast<char>(config->griefing.banColor + 1)}).append(config->griefing.banText).append("\x1").c_str(), 5.0f))
         shouldSet = false;
 }
 
@@ -1640,7 +1640,7 @@ void Misc::voteRevealer(GameEvent &event) noexcept
 		return;
 
 	const auto votedYes = event.getInt("vote_option") == 0;
-	const char color = votedYes ? '\x04' : '\x02';
+	const char color = votedYes ? '\x4' : '\x2';
 
-	memory->clientMode->getHudChat()->printf(0, " \x01[NEPS]\x08 %s %s voted %c%s\x01", entity->isOtherEnemy(localPlayer.get()) ? "Enemy" : "Teammate", entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
+	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s %s voted %c%s\x1", entity->isOtherEnemy(localPlayer.get()) ? "Enemy" : "Teammate", entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
 }

@@ -156,7 +156,7 @@ void GUI::renderMenuBar() noexcept
 		menuBarItem("Visuals", window.visuals);
 		menuBarItem("Skin changer", window.skinChanger);
 		menuBarItem("Sound", window.sound);
-		menuBarItem("Griefing", window.steamapi);
+		menuBarItem("Griefing", window.griefing);
 		menuBarItem("Exploits", window.exploits);
 		menuBarItem("Movement", window.movement);
 		menuBarItem("Misc", window.misc);
@@ -604,8 +604,8 @@ void GUI::renderBacktrackWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Enabled", &config->backtrack.enabled);
 	ImGui::Checkbox("Ignore smoke", &config->backtrack.ignoreSmoke);
 	ImGui::Checkbox("Recoil based fov", &config->backtrack.recoilBasedFov);
-	ImGui::PushItemWidth(220.0f);
-	ImGui::SliderInt("Time limit", &config->backtrack.timeLimit, 1, 200, "%d ms");
+	ImGui::PushItemWidth(180.0f);
+	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 200, "Time limit %dms");
 	ImGui::PopItemWidth();
 	if (!contentOnly)
 		ImGui::End();
@@ -694,18 +694,22 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 		++material;
 
 	ImGui::SameLine();
-
 	auto &chams{config->chams[categories[currentCategory]].materials[material - 1]};
-
 	ImGui::Checkbox("Enabled", &chams.enabled);
 	ImGui::Separator();
-	ImGui::Checkbox("Health based", &chams.healthBased);
-	ImGui::Checkbox("Blinking", &chams.blinking);
+
 	ImGui::Combo("Material", &chams.material, "Diffuse\0Flat\0Flat additive\0Animated\0Glass\0Chrome\0Crystal\0Phong\0Fresnel\0Glow\0Pearlescent\0");
-	ImGui::Checkbox("Wireframe", &chams.wireframe);
-	ImGui::Checkbox("Cover", &chams.cover);
-	ImGui::Checkbox("Ignore-Z", &chams.ignorez);
+
+	float spacing = 130.0f;
+	ImGui::Checkbox("Health based", &chams.healthBased);
+	ImGui::SameLine(spacing);
+	ImGui::Checkbox("Blinking", &chams.blinking);
 	ImGuiCustom::colorPicker("Color", chams.color.data(), nullptr, &chams.rainbow, &chams.rainbowSpeed);
+	ImGui::SameLine(spacing);
+	ImGui::Checkbox("Cover", &chams.cover);
+	ImGui::Checkbox("Wireframe", &chams.wireframe);
+	ImGui::SameLine(spacing);
+	ImGui::Checkbox("Ignore-Z", &chams.ignorez);
 
 	if (!contentOnly)
 	{
@@ -748,7 +752,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		}
 	};
 
-	if (ImGui::ListBoxHeader("##list", {170.0f, 250.0f}))
+	if (ImGui::BeginListBox("##list", {170.0f, 250.0f}))
 	{
 		constexpr std::array categories{"Enemies", "Allies", "Weapons", "Projectiles", "Loot Crates", "Other Entities"};
 
@@ -1005,19 +1009,19 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGui::Unindent();
 			ImGui::PopID();
 		}
-		ImGui::ListBoxFooter();
+		ImGui::EndListBox();
 	}
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginChild("##child", {400.0f, 0.0f}))
+	if (ImGui::BeginChild("##child", {360.0f, 0.0f}))
 	{
 		auto &sharedConfig = getConfigShared(currentCategory, currentItem);
 
 		ImGui::Checkbox("Enabled", &sharedConfig.enabled);
-		ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 260.0f);
+		ImGui::SameLine(ImGui::GetContentRegionMax().x - 225.0f);
 		ImGui::SetNextItemWidth(220.0f);
-		if (ImGui::BeginCombo("Font", config->getSystemFonts()[sharedConfig.font.index].c_str()))
+		if (ImGui::BeginCombo("##font", config->getSystemFonts()[sharedConfig.font.index].c_str(), ImGuiComboFlags_PopupAlignLeft))
 		{
 			for (size_t i = 0; i < config->getSystemFonts().size(); i++)
 			{
@@ -1036,7 +1040,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 
 		ImGui::Separator();
 
-		constexpr auto spacing = 210.0f;
+		constexpr auto spacing = 195.0f;
 		ImGuiCustom::colorPicker("Tracer", sharedConfig.snapline);
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(90.0f);
@@ -1153,7 +1157,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	{
 		if (!window.visuals)
 			return;
-		ImGui::SetNextWindowSize({560.0f, 0.0f});
+		ImGui::SetNextWindowSize({530.0f, 0.0f});
 		ImGui::Begin("Visuals", &window.visuals, windowFlags);
 	}
 	ImGui::Columns(2, nullptr, false);
@@ -1461,6 +1465,13 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
 	}
 
+	{
+		constexpr auto playerModels = "Default\0Special Agent Ava | FBI\0Operator | FBI SWAT\0Markus Delrow | FBI HRT\0Michael Syfers | FBI Sniper\0B Squadron Officer | SAS\0Seal Team 6 Soldier | NSWC SEAL\0Buckshot | NSWC SEAL\0Lt. Commander Ricksaw | NSWC SEAL\0Third Commando Company | KSK\0'Two Times' McCoy | USAF TACP\0Dragomir | Sabre\0Rezan The Ready | Sabre\0'The Doctor' Romanov | Sabre\0Maximus | Sabre\0Blackwolf | Sabre\0The Elite Mr. Muhlik | Elite Crew\0Ground Rebel | Elite Crew\0Osiris | Elite Crew\0Prof. Shahmat | Elite Crew\0Enforcer | Phoenix\0Slingshot | Phoenix\0Soldier | Phoenix\0Pirate\0Pirate Variant A\0Pirate Variant B\0Pirate Variant C\0Pirate Variant D\0Anarchist\0Anarchist Variant A\0Anarchist Variant B\0Anarchist Variant C\0Anarchist Variant D\0Balkan Variant A\0Balkan Variant B\0Balkan Variant C\0Balkan Variant D\0Balkan Variant E\0Jumpsuit Variant A\0Jumpsuit Variant B\0Jumpsuit Variant C\0Street Soldier | Phoenix\0'Blueberries' Buckshot | NSWC SEAL\0'Two Times' McCoy | TACP Cavalry\0Rezan the Redshirt | Sabre\0Dragomir | Sabre Footsoldier\0Cmdr. Mae 'Dead Cold' Jamison | SWAT\0 1st Lieutenant Farlow | SWAT\0John 'Van Healen' Kask | SWAT\0Bio-Haz Specialist | SWAT\0Sergeant Bombson | SWAT\0Chem-Haz Specialist | SWAT\0Sir Bloody Miami Darryl | The Professionals\0Sir Bloody Silent Darryl | The Professionals\0Sir Bloody Skullhead Darryl | The Professionals\0Sir Bloody Darryl Royale | The Professionals\0Sir Bloody Loudmouth Darryl | The Professionals\0Safecracker Voltzmann | The Professionals\0Little Kev | The Professionals\0Number K | The Professionals\0Getaway Sally | The Professionals\0";
+
+		ImGui::Combo("T player model", &config->visuals.playerModelT, playerModels);
+		ImGui::Combo("CT player model", &config->visuals.playerModelCT, playerModels);
+	}
+
 	ImGui::NextColumn();
 
 	{
@@ -1531,11 +1542,6 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		ImGui::PopID();
 	}
 	selected_entry.update();
-
-	constexpr auto playerModels = "Default\0Special Agent Ava | FBI\0Operator | FBI SWAT\0Markus Delrow | FBI HRT\0Michael Syfers | FBI Sniper\0B Squadron Officer | SAS\0Seal Team 6 Soldier | NSWC SEAL\0Buckshot | NSWC SEAL\0Lt. Commander Ricksaw | NSWC SEAL\0Third Commando Company | KSK\0'Two Times' McCoy | USAF TACP\0Dragomir | Sabre\0Rezan The Ready | Sabre\0'The Doctor' Romanov | Sabre\0Maximus | Sabre\0Blackwolf | Sabre\0The Elite Mr. Muhlik | Elite Crew\0Ground Rebel | Elite Crew\0Osiris | Elite Crew\0Prof. Shahmat | Elite Crew\0Enforcer | Phoenix\0Slingshot | Phoenix\0Soldier | Phoenix\0Pirate\0Pirate Variant A\0Pirate Variant B\0Pirate Variant C\0Pirate Variant D\0Anarchist\0Anarchist Variant A\0Anarchist Variant B\0Anarchist Variant C\0Anarchist Variant D\0Balkan Variant A\0Balkan Variant B\0Balkan Variant C\0Balkan Variant D\0Balkan Variant E\0Jumpsuit Variant A\0Jumpsuit Variant B\0Jumpsuit Variant C\0Street Soldier | Phoenix\0'Blueberries' Buckshot | NSWC SEAL\0'Two Times' McCoy | TACP Cavalry\0Rezan the Redshirt | Sabre\0Dragomir | Sabre Footsoldier\0Cmdr. Mae 'Dead Cold' Jamison | SWAT\0 1st Lieutenant Farlow | SWAT\0John 'Van Healen' Kask | SWAT\0Bio-Haz Specialist | SWAT\0Sergeant Bombson | SWAT\0Chem-Haz Specialist | SWAT\0Sir Bloody Miami Darryl | The Professionals\0Sir Bloody Silent Darryl | The Professionals\0Sir Bloody Skullhead Darryl | The Professionals\0Sir Bloody Darryl Royale | The Professionals\0Sir Bloody Loudmouth Darryl | The Professionals\0Safecracker Voltzmann | The Professionals\0Little Kev | The Professionals\0Number K | The Professionals\0Getaway Sally | The Professionals\0";
-
-	ImGui::Combo("T player model", &config->visuals.playerModelT, playerModels);
-	ImGui::Combo("CT player model", &config->visuals.playerModelCT, playerModels);
 
 	ImGui::Columns(1);
 
@@ -1665,16 +1671,16 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 {
 	if (!contentOnly)
 	{
-		if (!window.steamapi)
+		if (!window.griefing)
 			return;
-		ImGui::Begin("Griefing", &window.steamapi, windowFlags);
+		ImGui::Begin("Griefing", &window.griefing, windowFlags);
 	}
 
-	static std::string playerInfoName;
+	static std::string playerName;
 	ImGui::SetNextItemWidth(192.0f);
-	ImGui::InputText("##player_name", &playerInfoName);
+	ImGui::InputText("##player_name", &playerName);
 	if (ImGui::Button("Change name"))
-		Misc::changeName(false, playerInfoName.c_str() + '\x1', 0.0f);
+		Misc::changeName(false, (playerName + "\x1").c_str(), 5.0f);
 
 	ImGui::SetNextItemWidth(192.0f);
 	ImGui::InputText("##ban", &config->griefing.banText);
@@ -2083,9 +2089,9 @@ void GUI::renderDebugWindow() noexcept
 
 	if (ImGui::Button("Test chat hook"))
 	{
-		memory->clientMode->getHudChat()->printf(0, "\x01N \x02N \x03N \x04N \x05N \x06N \x07N \x08N \x09N \x0AN \x0BN \x0CN \x0DN \x0EN \x0FN \x10N \x01");
-		memory->clientMode->getHudChat()->printf(0, "\x01[NEPS]\x08 %s voted %c%s\x01", "River", '\x04', "YES");
-		memory->clientMode->getHudChat()->printf(0, "\x01[NEPS]\x08 %s voted %c%s\x01", "Hyperbola", '\x02', "NO");
+		memory->clientMode->getHudChat()->printf(0, "\x1N \x2N \x3N \x4N \x5N \x6N \x7N \x8N \x9N \xAN \xBN \xCN \xDN \xEN \xFN \x10N \x1");
+		memory->clientMode->getHudChat()->printf(0, "\x1[NEPS]\x8 %s voted %c%s\x1", "River", '\x4', "YES");
+		memory->clientMode->getHudChat()->printf(0, "\x1[NEPS]\x8 %s voted %c%s\x1", "Hyperbola", '\x2', "NO");
 	}
 
 	if (ImGui::Button("List client classes"))
