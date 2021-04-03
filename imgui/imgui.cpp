@@ -3544,6 +3544,7 @@ void ImGui::UpdateMouseMovingWindowNewFrame()
             if (moving_window->Pos.x != pos.x || moving_window->Pos.y != pos.y)
             {
                 MarkIniSettingsDirty(moving_window);
+				pos = ImClamp(pos, ImVec2(0.0f, 0.0f), g.IO.DisplaySize - moving_window->Size);
                 SetWindowPos(moving_window, pos, ImGuiCond_Always);
             }
             FocusWindow(g.MovingWindow);
