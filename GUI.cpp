@@ -1019,9 +1019,9 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		auto &sharedConfig = getConfigShared(currentCategory, currentItem);
 
 		ImGui::Checkbox("Enabled", &sharedConfig.enabled);
-		ImGui::SameLine(ImGui::GetContentRegionMax().x - 225.0f);
+		ImGui::SameLine(ImGui::GetContentRegionMax().x - 220.0f);
 		ImGui::SetNextItemWidth(220.0f);
-		if (ImGui::BeginCombo("##font", config->getSystemFonts()[sharedConfig.font.index].c_str(), ImGuiComboFlags_PopupAlignLeft))
+		if (ImGui::BeginCombo("##font", config->getSystemFonts()[sharedConfig.font.index].c_str()))
 		{
 			for (size_t i = 0; i < config->getSystemFonts().size(); i++)
 			{
@@ -1346,7 +1346,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 	{
 		if (!window.skinChanger)
 			return;
-		ImGui::SetNextWindowSize({700.0f, 0.0f});
+		ImGui::SetNextWindowSize({600.0f, 0.0f});
 		ImGui::Begin("Skin changer", &window.skinChanger, windowFlags);
 	}
 
@@ -1366,16 +1366,16 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 	constexpr auto rarityColor = [](int rarity)
 	{
 		constexpr auto rarityColors = std::to_array<ImU32>({
-			IM_COL32(0,     0,   0,   0),
+			IM_COL32(0, 0, 0, 0),
 			IM_COL32(176, 195, 217, 255),
 			IM_COL32(94, 152, 217, 255),
 			IM_COL32(75, 105, 255, 255),
-			IM_COL32(136,  71, 255, 255),
-			IM_COL32(211,  44, 230, 255),
-			IM_COL32(235,  75,  75, 255),
-			IM_COL32(228, 174,  57, 255)
+			IM_COL32(136, 71, 255, 255),
+			IM_COL32(211, 44, 230, 255),
+			IM_COL32(235, 75, 75, 255),
+			IM_COL32(228, 174, 57, 255)
 		});
-		return rarityColors[static_cast<std::size_t>(rarity) < rarityColors.size() ? rarity : 0];
+		return rarityColors[static_cast<std::size_t>(rarity) < rarityColors.size() ? rarity : IM_COL32(174, 174, 174, 255)];
 	};
 
 	constexpr auto passesFilter = [](const std::wstring &str, std::wstring filter)
@@ -1397,20 +1397,22 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Enabled", &selected_entry.enabled);
 		ImGui::Separator();
 		ImGui::Columns(2, nullptr, false);
+		ImGui::PushItemWidth(100.0f);
 		ImGui::InputInt("Seed", &selected_entry.seed);
 		ImGui::InputInt("StatTrak\u2122", &selected_entry.stat_trak);
+		ImGui::PopItemWidth();
 		selected_entry.stat_trak = (std::max)(selected_entry.stat_trak, -1);
-		ImGui::SliderFloat("Wear", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("##wear", &selected_entry.wear, FLT_MIN, 1.f, "Wear %.10f", ImGuiSliderFlags_Logarithmic);
 
 		const auto &kits = itemIndex == 1 ? SkinChanger::getGloveKits() : SkinChanger::getSkinKits();
 
-		ImGui::PushID("Search");
+		ImGui::PushID("search");
 		static std::array<std::string, SkinChanger::weapon_names.size()> filters;
 		auto &filter = filters[itemIndex];
 		ImGui::InputTextWithHint("", "Search", &filter);
 		ImGui::PopID();
 
-		if (ImGui::BeginListBox("Paint Kit", {0.0f, 7.0f * ImGui::GetTextLineHeightWithSpacing()}))
+		if (ImGui::BeginListBox("##kit", {0.0f, ImGui::GetTextLineHeightWithSpacing() * 7.0f + ImGui::GetStyle().FramePadding.y - 1.0f}))
 		{
 			ImGui::PushID("Paint Kit");
 
@@ -1462,7 +1464,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 			selected_entry.definition_override_vector_index = 0;
 		}
 
-		ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
+		ImGui::InputText("Name tag", selected_entry.custom_name, 32);
 	}
 
 	{
@@ -1478,11 +1480,8 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		ImGui::PushID("sticker");
 
 		static std::size_t selectedStickerSlot = 0;
-		ImVec2 size;
-		size.x = 0.0f;
-		size.y = ImGui::GetTextLineHeightWithSpacing() * 5.25f + ImGui::GetStyle().FramePadding.y * 2.0f;
 
-		if (ImGui::BeginListBox("", size))
+		if (ImGui::BeginListBox("##stickers", {0.0f, ImGui::GetTextLineHeightWithSpacing() * 5.0f + ImGui::GetStyle().FramePadding.y - 1.0f}))
 		{
 			for (int i = 0; i < 5; ++i)
 			{
@@ -1502,15 +1501,15 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		auto &selected_sticker = selected_entry.stickers[selectedStickerSlot];
 		const auto &kits = SkinChanger::getStickerKits();
 
-		ImGui::PushID("Search");
+		ImGui::PushID("search");
 		static std::array<std::string, SkinChanger::weapon_names.size()> filters;
 		auto &filter = filters[itemIndex];
 		ImGui::InputTextWithHint("", "Search", &filter);
 		ImGui::PopID();
 
-		if (ImGui::BeginListBox("Sticker", {0.0f, 7.0f * ImGui::GetTextLineHeightWithSpacing()}))
+		if (ImGui::BeginListBox("##sticker_sel", {0.0f, ImGui::GetTextLineHeightWithSpacing() * 7.0f + ImGui::GetStyle().FramePadding.y - 1.0f}))
 		{
-			ImGui::PushID("Sticker");
+			ImGui::PushID("sticker");
 
 			const std::wstring filterWide = Helpers::toUpper(Helpers::toWideString(filter));
 			for (std::size_t i = 0; i < kits.size(); ++i)
@@ -1535,9 +1534,9 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 			ImGui::EndListBox();
 		}
 
-		ImGui::SliderFloat("Wear", &selected_sticker.wear, FLT_MIN, 1.0f, "%.10f", ImGuiSliderFlags_Logarithmic);
-		ImGui::SliderFloat("Scale", &selected_sticker.scale, 0.1f, 5.0f);
-		ImGui::SliderFloat("Rotation", &selected_sticker.rotation, 0.0f, 360.0f);
+		ImGui::SliderFloat("##wear", &selected_sticker.wear, FLT_MIN, 1.0f, "Wear %.10f", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("##scale", &selected_sticker.scale, 0.1f, 5.0f, "Scale %.3f");
+		ImGui::SliderFloat("##rotation", &selected_sticker.rotation, 0.0f, 360.0f, "Rotation %.3fdeg");
 
 		ImGui::PopID();
 	}

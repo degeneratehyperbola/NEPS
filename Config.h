@@ -402,8 +402,8 @@ public:
 	const auto &getFonts() noexcept { return fonts; }
 	const auto &getPath() noexcept { return path; }
 private:
-	std::vector<std::string> scheduledFonts{"Default"};
-	std::vector<std::string> systemFonts{"Default"};
+	std::vector<std::string> scheduledFonts = {"Default"};
+	std::vector<std::string> systemFonts = {"Default"};
 	std::unordered_map<std::string, Font> fonts;
 	std::filesystem::path path;
 	std::vector<std::string> configs;
