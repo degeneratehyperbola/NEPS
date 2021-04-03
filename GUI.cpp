@@ -34,6 +34,7 @@
 #include "SDK/Entity.h"
 #include "SDK/EntityList.h"
 #include "SDK/ClientClass.h"
+#include "SDK/PlayerResource.h"
 #include "SDK/NetworkStringTable.h"
 #endif // _DEBUG_NEPS
 #include "SDK/Engine.h"
@@ -2015,6 +2016,8 @@ void GUI::renderDebugWindow() noexcept
 
 	ImGui::NextColumn();
 
+	auto playerResource = *memory->playerResource;
+
 	if (ImGui::BeginTable("shrek", 4))
 	{
 		ImGui::TableSetupColumn("Name");
@@ -2023,19 +2026,57 @@ void GUI::renderDebugWindow() noexcept
 		ImGui::TableSetupColumn("Rank");
 		ImGui::TableHeadersRow();
 
+		if (localPlayer)
+		{
+			ImGui::TableNextRow();
+			ImGui::PushID(ImGui::TableGetRowIndex());
+
+			if (ImGui::TableNextColumn())
+				ImGui::TextUnformatted("Local player");
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%i", playerResource->competitiveWins()[localPlayer->index()]);
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%i", playerResource->level()[localPlayer->index()]);
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%i", playerResource->competitiveRanking()[localPlayer->index()]);
+		}
+
 		GameData::Lock lock;
 		for (auto &player : GameData::players())
 		{
 			ImGui::TableNextRow();
 			ImGui::PushID(ImGui::TableGetRowIndex());
 
-			ImGui::TableNextColumn();
+			if (!playerResource)
+				continue;
+
+			auto *entity = interfaces->entityList->getEntityFromHandle(player.handle);
+			if (!entity) continue;
 
 			if (ImGui::TableNextColumn())
-				ImGui::Text(player.name);
+				ImGui::TextUnformatted(player.name);
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%i", playerResource->competitiveWins()[entity->index()]);
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%i", playerResource->level()[entity->index()]);
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%i", playerResource->competitiveRanking()[entity->index()]);
 		}
 
 		ImGui::EndTable();
+	}
+
+	if (localPlayer && playerResource)
+	{
+		ImGui::InputInt("Wins", &playerResource->competitiveWins()[localPlayer->index()]);
+		ImGui::InputInt("Level", &playerResource->level()[localPlayer->index()]);
+		ImGui::InputInt("Ranking", &playerResource->competitiveRanking()[localPlayer->index()]);
 	}
 }
 #endif // _DEBUG_NEPS
