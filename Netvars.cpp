@@ -23,161 +23,22 @@ static void __cdecl spottedHook(RecvProxyData& data, void* arg2, void* arg3) noe
     proxies[hash].first(data, arg2, arg3);
 }
 
-#include "Hacks/SkinChanger.h"
-
-static int get_new_animation(const uint32_t model, const int sequence) noexcept
+static void __cdecl viewModelSequence(RecvProxyData &data, void *outStruct, void *arg3) noexcept
 {
-    enum Sequence
-    {
-        SEQUENCE_DEFAULT_DRAW = 0,
-        SEQUENCE_DEFAULT_IDLE1 = 1,
-        SEQUENCE_DEFAULT_IDLE2 = 2,
-        SEQUENCE_DEFAULT_LIGHT_MISS1 = 3,
-        SEQUENCE_DEFAULT_LIGHT_MISS2 = 4,
-        SEQUENCE_DEFAULT_HEAVY_MISS1 = 9,
-        SEQUENCE_DEFAULT_HEAVY_HIT1 = 10,
-        SEQUENCE_DEFAULT_HEAVY_BACKSTAB = 11,
-        SEQUENCE_DEFAULT_LOOKAT01 = 12,
+	const auto viewModel = reinterpret_cast<Entity *>(outStruct);
 
-        SEQUENCE_BUTTERFLY_DRAW = 0,
-        SEQUENCE_BUTTERFLY_DRAW2 = 1,
-        SEQUENCE_BUTTERFLY_LOOKAT01 = 13,
-        SEQUENCE_BUTTERFLY_LOOKAT03 = 15,
-
-        SEQUENCE_FALCHION_IDLE1 = 1,
-        SEQUENCE_FALCHION_HEAVY_MISS1 = 8,
-        SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP = 9,
-        SEQUENCE_FALCHION_LOOKAT01 = 12,
-        SEQUENCE_FALCHION_LOOKAT02 = 13,
-
-        SEQUENCE_DAGGERS_IDLE1 = 1,
-        SEQUENCE_DAGGERS_LIGHT_MISS1 = 2,
-        SEQUENCE_DAGGERS_LIGHT_MISS5 = 6,
-        SEQUENCE_DAGGERS_HEAVY_MISS2 = 11,
-        SEQUENCE_DAGGERS_HEAVY_MISS1 = 12,
-
-        SEQUENCE_BOWIE_IDLE1 = 1,
-    };
-
-    // Hashes for best performance.
-    switch (model) {
-    case fnv::hash("models/weapons/v_knife_butterfly.mdl"):
-    {
-        switch (sequence)
-        {
-        case SEQUENCE_DEFAULT_DRAW:
-            return random(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2);
-        case SEQUENCE_DEFAULT_LOOKAT01:
-            return random(SEQUENCE_BUTTERFLY_LOOKAT01, SEQUENCE_BUTTERFLY_LOOKAT03);
-        default:
-            return sequence + 1;
-        }
-    }
-    case fnv::hash("models/weapons/v_knife_falchion_advanced.mdl"):
-    {
-        switch (sequence)
-        {
-        case SEQUENCE_DEFAULT_IDLE2:
-            return SEQUENCE_FALCHION_IDLE1;
-        case SEQUENCE_DEFAULT_HEAVY_MISS1:
-            return random(SEQUENCE_FALCHION_HEAVY_MISS1, SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP);
-        case SEQUENCE_DEFAULT_LOOKAT01:
-            return random(SEQUENCE_FALCHION_LOOKAT01, SEQUENCE_FALCHION_LOOKAT02);
-        case SEQUENCE_DEFAULT_DRAW:
-        case SEQUENCE_DEFAULT_IDLE1:
-            return sequence;
-        default:
-            return sequence - 1;
-        }
-    }
-    case fnv::hash("models/weapons/v_knife_push.mdl"):
-    {
-        switch (sequence)
-        {
-        case SEQUENCE_DEFAULT_IDLE2:
-            return SEQUENCE_DAGGERS_IDLE1;
-        case SEQUENCE_DEFAULT_LIGHT_MISS1:
-        case SEQUENCE_DEFAULT_LIGHT_MISS2:
-            return random(SEQUENCE_DAGGERS_LIGHT_MISS1, SEQUENCE_DAGGERS_LIGHT_MISS5);
-        case SEQUENCE_DEFAULT_HEAVY_MISS1:
-            return random(SEQUENCE_DAGGERS_HEAVY_MISS2, SEQUENCE_DAGGERS_HEAVY_MISS1);
-        case SEQUENCE_DEFAULT_HEAVY_HIT1:
-        case SEQUENCE_DEFAULT_HEAVY_BACKSTAB:
-        case SEQUENCE_DEFAULT_LOOKAT01:
-            return sequence + 3;
-        case SEQUENCE_DEFAULT_DRAW:
-        case SEQUENCE_DEFAULT_IDLE1:
-            return sequence;
-        default:
-            return sequence + 2;
-        }
-    }
-    case fnv::hash("models/weapons/v_knife_survival_bowie.mdl"):
-    {
-        switch (sequence)
-        {
-        case SEQUENCE_DEFAULT_DRAW:
-        case SEQUENCE_DEFAULT_IDLE1:
-            return sequence;
-        case SEQUENCE_DEFAULT_IDLE2:
-            return SEQUENCE_BOWIE_IDLE1;
-        default:
-            return sequence - 1;
-        }
-    }
-    case fnv::hash("models/weapons/v_knife_ursus.mdl"):
-    case fnv::hash("models/weapons/v_knife_skeleton.mdl"):
-    case fnv::hash("models/weapons/v_knife_outdoor.mdl"):
-    case fnv::hash("models/weapons/v_knife_cord.mdl"):
-    case fnv::hash("models/weapons/v_knife_canis.mdl"):
-    {
-        switch (sequence)
-        {
-        case SEQUENCE_DEFAULT_DRAW:
-            return random(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2);
-        case SEQUENCE_DEFAULT_LOOKAT01:
-            return random(SEQUENCE_BUTTERFLY_LOOKAT01, 14);
-        default:
-            return sequence + 1;
-        }
-    }
-    case fnv::hash("models/weapons/v_knife_stiletto.mdl"):
-    {
-        switch (sequence)
-        {
-        case SEQUENCE_DEFAULT_LOOKAT01:
-            return random(12, 13);
-        }
-    }
-    case fnv::hash("models/weapons/v_knife_widowmaker.mdl"):
-    {
-        switch (sequence)
-        {
-        case SEQUENCE_DEFAULT_LOOKAT01:
-            return random(14, 15);
-        }
-    }
-    default:
-        return sequence;
-    }
-}
-
-static void __cdecl viewModelSequence(RecvProxyData& data, void* arg2, void* arg3) noexcept
-{
-    if (localPlayer) {
-        if (const auto activeWeapon = localPlayer->getActiveWeapon()) {
-            if (config->visuals.deagleSpinner && activeWeapon->getClientClass()->classId == ClassId::Deagle && data.value._int == 7)
+	if (localPlayer && interfaces->entityList->getEntityFromHandle(viewModel->owner()) == localPlayer.get())
+	{
+		if (const auto weapon = interfaces->entityList->getEntityFromHandle(viewModel->weapon()))
+		{
+			if (config->visuals.deagleSpinner && weapon->getClientClass()->classId == ClassId::Deagle && data.value._int == 7)
 				data.value._int = 8;
 
-			if (const auto weapon_info = game_data::get_weapon_info(activeWeapon->itemDefinitionIndex()))
-			{
-				if (const auto active_conf = get_by_definition_index(WEAPON_KNIFE); active_conf && active_conf->definition_override_index)
-					data.value._int = get_new_animation(fnv::hashRuntime(weapon_info->model), data.value._int);
-			}
-        }
-    }
-    constexpr auto hash{ fnv::hash("CBaseViewModel->m_nSequence") };
-    proxies[hash].first(data, arg2, arg3);
+			SkinChanger::fixKnifeAnimation(weapon, data.value._int);
+		}
+	}
+	constexpr auto hash{fnv::hash("CBaseViewModel->m_nSequence")};
+	proxies[hash].first(data, outStruct, arg3);
 }
 
 Netvars::Netvars() noexcept

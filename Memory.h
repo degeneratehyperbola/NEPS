@@ -107,6 +107,13 @@ public:
 	void(__thiscall *createState)(AnimState *state, Entity *);
 	void(__vectorcall *updateState)(AnimState *state, void *, float x, float y, float z, void *);
 	void(__fastcall *invalidateBoneCache)(Entity *);
+	void(__thiscall *setOrAddAttributeValueByNameFunction)(std::uintptr_t, const char *attribute);
+
+	void setOrAddAttributeValueByName(std::uintptr_t attributeList, const char *attribute, float value) const noexcept
+	{
+		__asm movd xmm2, value
+		setOrAddAttributeValueByNameFunction(attributeList, attribute);
+	}
 
 	MemAlloc *memalloc;
 	ViewRenderBeams *viewRenderBeams;

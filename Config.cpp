@@ -110,6 +110,15 @@ static void read(const json& j, const char* key, int& o) noexcept
         val.get_to(o);
 }
 
+static void read(const json &j, const char *key, WeaponId &o) noexcept
+{
+	if (!j.contains(key))
+		return;
+
+	if (const auto &val = j[key]; val.is_number_integer())
+		val.get_to(o);
+}
+
 template <typename T, size_t Size>
 static void read_array_opt(const json& j, const char* key, std::array<T, Size>& o) noexcept
 {
@@ -542,18 +551,13 @@ static void from_json(const json& j, item_setting& i)
     read(j, "Enabled", i.enabled);
     read(j, "Definition index", i.itemId);
     read(j, "Quality", i.quality);
-
     read(j, "Paint Kit", i.paintKit);
-
     read(j, "Definition override", i.definition_override_index);
-
     read(j, "Seed", i.seed);
     read(j, "StatTrak", i.stat_trak);
     read(j, "Wear", i.wear);
-
     if (j.contains("Custom name"))
         strncpy_s(i.custom_name, j["Custom name"].get<std::string>().c_str(), _TRUNCATE);
-
     read(j, "Stickers", i.stickers);
 
 	i.onLoad();

@@ -71,8 +71,9 @@ Memory::Memory() noexcept
 	createState = *reinterpret_cast<decltype(createState)>(findPattern("client", "\x55\x8B\xEC\x56\x8B\xF1\xB9????\xC7\x46"));
 	updateState = *reinterpret_cast<decltype(updateState)>(findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x18\x56\x57\x8B\xF9\xF3\x0F\x11\x54\x24"));
 	invalidateBoneCache = *reinterpret_cast<decltype(invalidateBoneCache)>(findPattern("client", "\x80\x3D?????\x74\x16\xA1????\x48\xC7\x81"));
-
 	viewRenderBeams = *reinterpret_cast<ViewRenderBeams **>(findPattern("client", "\xB9????\xA1????\xFF\x10\xA1????\xB9" + 1));
+
+	setOrAddAttributeValueByNameFunction = relativeToAbsolute<decltype(setOrAddAttributeValueByNameFunction)>(findPattern("client", "\xE8????\x8B\x8D????\x85\xC9\x74\x10") + 1);
 
 	localPlayer.init(*reinterpret_cast<Entity ***>(findPattern("client", "\xA1????\x89\x45\xBC\x85\xC0") + 1));
 }
