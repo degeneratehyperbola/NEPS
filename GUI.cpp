@@ -1346,10 +1346,6 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		ImGui::Begin("Skin changer", &window.skinChanger, windowFlags);
 	}
 
-	constexpr auto playerModels = "Default\0Special Agent Ava | FBI\0Operator | FBI SWAT\0Markus Delrow | FBI HRT\0Michael Syfers | FBI Sniper\0B Squadron Officer | SAS\0Seal Team 6 Soldier | NSWC SEAL\0Buckshot | NSWC SEAL\0Lt. Commander Ricksaw | NSWC SEAL\0Third Commando Company | KSK\0'Two Times' McCoy | USAF TACP\0Dragomir | Sabre\0Rezan The Ready | Sabre\0'The Doctor' Romanov | Sabre\0Maximus | Sabre\0Blackwolf | Sabre\0The Elite Mr. Muhlik | Elite Crew\0Ground Rebel | Elite Crew\0Osiris | Elite Crew\0Prof. Shahmat | Elite Crew\0Enforcer | Phoenix\0Slingshot | Phoenix\0Soldier | Phoenix\0Pirate\0Pirate Variant A\0Pirate Variant B\0Pirate Variant C\0Pirate Variant D\0Anarchist\0Anarchist Variant A\0Anarchist Variant B\0Anarchist Variant C\0Anarchist Variant D\0Balkan Variant A\0Balkan Variant B\0Balkan Variant C\0Balkan Variant D\0Balkan Variant E\0Jumpsuit Variant A\0Jumpsuit Variant B\0Jumpsuit Variant C\0Street Soldier | Phoenix\0'Blueberries' Buckshot | NSWC SEAL\0'Two Times' McCoy | TACP Cavalry\0Rezan the Redshirt | Sabre\0Dragomir | Sabre Footsoldier\0Cmdr. Mae 'Dead Cold' Jamison | SWAT\0 1st Lieutenant Farlow | SWAT\0John 'Van Healen' Kask | SWAT\0Bio-Haz Specialist | SWAT\0Sergeant Bombson | SWAT\0Chem-Haz Specialist | SWAT\0Sir Bloody Miami Darryl | The Professionals\0Sir Bloody Silent Darryl | The Professionals\0Sir Bloody Skullhead Darryl | The Professionals\0Sir Bloody Darryl Royale | The Professionals\0Sir Bloody Loudmouth Darryl | The Professionals\0Safecracker Voltzmann | The Professionals\0Little Kev | The Professionals\0Number K | The Professionals\0Getaway Sally | The Professionals\0";
-	ImGui::Combo("T player model", &config->visuals.playerModelT, playerModels);
-	ImGui::Combo("CT player model", &config->visuals.playerModelCT, playerModels);
-
 	static auto itemIndex = 0;
 
 	ImGui::PushItemWidth(110.0f);
@@ -1404,43 +1400,37 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 
 		const auto &kits = itemIndex == 1 ? SkinChanger::getGloveKits() : SkinChanger::getSkinKits();
 
-		if (ImGui::BeginCombo("Paint Kit", kits[selected_entry.paint_kit_vector_index].name.c_str()))
+		ImGui::PushID("Search");
+		static std::array<std::string, SkinChanger::weapon_names.size()> filters;
+		auto &filter = filters[itemIndex];
+		ImGui::InputTextWithHint("", "Search", &filter);
+		ImGui::PopID();
+
+		if (ImGui::BeginListBox("Paint Kit", {0.0f, 7.0f * ImGui::GetTextLineHeightWithSpacing()}))
 		{
 			ImGui::PushID("Paint Kit");
-			ImGui::PushID("Search");
-			ImGui::SetNextItemWidth(-1.0f);
-			static std::array<std::string, SkinChanger::weapon_names.size()> filters;
-			auto &filter = filters[itemIndex];
-			ImGui::InputTextWithHint("", "Search", &filter);
-			if (ImGui::IsItemHovered() || (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0)))
-				ImGui::SetKeyboardFocusHere(-1);
-			ImGui::PopID();
 
 			const std::wstring filterWide = Helpers::toUpper(Helpers::toWideString(filter));
-			if (ImGui::BeginChild("##scrollarea", {0, 6 * ImGui::GetTextLineHeightWithSpacing()}))
+			for (std::size_t i = 0; i < kits.size(); ++i)
 			{
-				for (std::size_t i = 0; i < kits.size(); ++i)
+				if (filter.empty() || passesFilter(kits[i].nameUpperCase, filterWide))
 				{
-					if (filter.empty() || passesFilter(kits[i].nameUpperCase, filterWide))
+					ImGui::PushID(i);
+					const auto selected = i == selected_entry.paint_kit_vector_index;
+					ImGui::PushStyleColor(ImGuiCol_Text, rarityColor(kits[i].rarity));
+					if (ImGui::Selectable(kits[i].name.c_str(), selected))
 					{
-						ImGui::PushID(i);
-						const auto selected = i == selected_entry.paint_kit_vector_index;
-						ImGui::PushStyleColor(ImGuiCol_Text, rarityColor(kits[i].rarity));
-						if (ImGui::Selectable(kits[i].name.c_str(), selected))
-						{
-							selected_entry.paint_kit_vector_index = i;
-							ImGui::CloseCurrentPopup();
-						}
-						if (selected && ImGui::IsWindowAppearing())
-							ImGui::SetScrollHereY();
-						ImGui::PopStyleColor();
-						ImGui::PopID();
+						selected_entry.paint_kit_vector_index = i;
+						ImGui::CloseCurrentPopup();
 					}
+					if (selected && ImGui::IsWindowAppearing())
+						ImGui::SetScrollHereY();
+					ImGui::PopStyleColor();
+					ImGui::PopID();
 				}
-				ImGui::EndChild();
 			}
 			ImGui::PopID();
-			ImGui::EndCombo();
+			ImGui::EndListBox();
 		}
 
 		ImGui::Combo("Quality", &selected_entry.entity_quality_vector_index, [](void *data, int idx, const char **out_text)
@@ -1465,9 +1455,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 			}, nullptr, SkinChanger::getGloveTypes().size(), 5);
 		} else
 		{
-			static auto unused_value = 0;
 			selected_entry.definition_override_vector_index = 0;
-			ImGui::Combo("Unavailable", &unused_value, "For knives or gloves\0");
 		}
 
 		ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
@@ -1479,8 +1467,6 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		ImGui::PushID("sticker");
 
 		static std::size_t selectedStickerSlot = 0;
-
-		ImGui::PushItemWidth(-1);
 		ImVec2 size;
 		size.x = 0.0f;
 		size.y = ImGui::GetTextLineHeightWithSpacing() * 5.25f + ImGui::GetStyle().FramePadding.y * 2.0f;
@@ -1502,48 +1488,40 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 			ImGui::EndListBox();
 		}
 
-		ImGui::PopItemWidth();
-
 		auto &selected_sticker = selected_entry.stickers[selectedStickerSlot];
-
 		const auto &kits = SkinChanger::getStickerKits();
-		if (ImGui::BeginCombo("Sticker", kits[selected_sticker.kit_vector_index].name.c_str()))
+
+		ImGui::PushID("Search");
+		static std::array<std::string, SkinChanger::weapon_names.size()> filters;
+		auto &filter = filters[itemIndex];
+		ImGui::InputTextWithHint("", "Search", &filter);
+		ImGui::PopID();
+
+		if (ImGui::BeginListBox("Sticker", {0.0f, 7.0f * ImGui::GetTextLineHeightWithSpacing()}))
 		{
 			ImGui::PushID("Sticker");
-			ImGui::PushID("Search");
-			ImGui::SetNextItemWidth(-1.0f);
-			static std::array<std::string, SkinChanger::weapon_names.size()> filters;
-			auto &filter = filters[itemIndex];
-			ImGui::InputTextWithHint("", "Search", &filter);
-			if (ImGui::IsItemHovered() || (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0)))
-				ImGui::SetKeyboardFocusHere(-1);
-			ImGui::PopID();
 
 			const std::wstring filterWide = Helpers::toUpper(Helpers::toWideString(filter));
-			if (ImGui::BeginChild("##scrollarea", {0, 6 * ImGui::GetTextLineHeightWithSpacing()}))
+			for (std::size_t i = 0; i < kits.size(); ++i)
 			{
-				for (std::size_t i = 0; i < kits.size(); ++i)
+				if (filter.empty() || passesFilter(kits[i].nameUpperCase, filterWide))
 				{
-					if (filter.empty() || passesFilter(kits[i].nameUpperCase, filterWide))
+					ImGui::PushID(i);
+					const auto selected = i == selected_sticker.kit_vector_index;
+					ImGui::PushStyleColor(ImGuiCol_Text, rarityColor(kits[i].rarity));
+					if (ImGui::Selectable(kits[i].name.c_str(), selected))
 					{
-						ImGui::PushID(i);
-						const auto selected = i == selected_sticker.kit_vector_index;
-						ImGui::PushStyleColor(ImGuiCol_Text, rarityColor(kits[i].rarity));
-						if (ImGui::Selectable(kits[i].name.c_str(), selected))
-						{
-							selected_sticker.kit_vector_index = i;
-							ImGui::CloseCurrentPopup();
-						}
-						if (selected && ImGui::IsWindowAppearing())
-							ImGui::SetScrollHereY();
-						ImGui::PopStyleColor();
-						ImGui::PopID();
+						selected_sticker.kit_vector_index = i;
+						ImGui::CloseCurrentPopup();
 					}
+					if (selected && ImGui::IsWindowAppearing())
+						ImGui::SetScrollHereY();
+					ImGui::PopStyleColor();
+					ImGui::PopID();
 				}
-				ImGui::EndChild();
 			}
 			ImGui::PopID();
-			ImGui::EndCombo();
+			ImGui::EndListBox();
 		}
 
 		ImGui::SliderFloat("Wear", &selected_sticker.wear, FLT_MIN, 1.0f, "%.10f", ImGuiSliderFlags_Logarithmic);
@@ -1553,6 +1531,11 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		ImGui::PopID();
 	}
 	selected_entry.update();
+
+	constexpr auto playerModels = "Default\0Special Agent Ava | FBI\0Operator | FBI SWAT\0Markus Delrow | FBI HRT\0Michael Syfers | FBI Sniper\0B Squadron Officer | SAS\0Seal Team 6 Soldier | NSWC SEAL\0Buckshot | NSWC SEAL\0Lt. Commander Ricksaw | NSWC SEAL\0Third Commando Company | KSK\0'Two Times' McCoy | USAF TACP\0Dragomir | Sabre\0Rezan The Ready | Sabre\0'The Doctor' Romanov | Sabre\0Maximus | Sabre\0Blackwolf | Sabre\0The Elite Mr. Muhlik | Elite Crew\0Ground Rebel | Elite Crew\0Osiris | Elite Crew\0Prof. Shahmat | Elite Crew\0Enforcer | Phoenix\0Slingshot | Phoenix\0Soldier | Phoenix\0Pirate\0Pirate Variant A\0Pirate Variant B\0Pirate Variant C\0Pirate Variant D\0Anarchist\0Anarchist Variant A\0Anarchist Variant B\0Anarchist Variant C\0Anarchist Variant D\0Balkan Variant A\0Balkan Variant B\0Balkan Variant C\0Balkan Variant D\0Balkan Variant E\0Jumpsuit Variant A\0Jumpsuit Variant B\0Jumpsuit Variant C\0Street Soldier | Phoenix\0'Blueberries' Buckshot | NSWC SEAL\0'Two Times' McCoy | TACP Cavalry\0Rezan the Redshirt | Sabre\0Dragomir | Sabre Footsoldier\0Cmdr. Mae 'Dead Cold' Jamison | SWAT\0 1st Lieutenant Farlow | SWAT\0John 'Van Healen' Kask | SWAT\0Bio-Haz Specialist | SWAT\0Sergeant Bombson | SWAT\0Chem-Haz Specialist | SWAT\0Sir Bloody Miami Darryl | The Professionals\0Sir Bloody Silent Darryl | The Professionals\0Sir Bloody Skullhead Darryl | The Professionals\0Sir Bloody Darryl Royale | The Professionals\0Sir Bloody Loudmouth Darryl | The Professionals\0Safecracker Voltzmann | The Professionals\0Little Kev | The Professionals\0Number K | The Professionals\0Getaway Sally | The Professionals\0";
+
+	ImGui::Combo("T player model", &config->visuals.playerModelT, playerModels);
+	ImGui::Combo("CT player model", &config->visuals.playerModelCT, playerModels);
 
 	ImGui::Columns(1);
 
