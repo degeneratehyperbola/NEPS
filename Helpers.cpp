@@ -299,8 +299,8 @@ unsigned int Helpers::calculateColor(int r, int g, int b, int a) noexcept
 
 unsigned int Helpers::calculateColor(float r, float g, float b, float a) noexcept
 {
+	a -= a * GameData::local().flashDuration / 255.0f;
 	a *= alphaFactor;
-	a -= static_cast<int>(a * GameData::local().flashDuration / 255.0f);
 	return ImGui::ColorConvertFloat4ToU32({r, g, b, a});
 }
 
