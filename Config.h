@@ -58,7 +58,7 @@ public:
 		int hitgroup = 127;
 		bool betweenShots = true;
 		KeyBind safeOnly;
-		int safeHitgroup = 12;
+		int safeHitgroup = 6;
 	};
 	std::array<Aimbot, 40> aimbot;
 
