@@ -1400,6 +1400,8 @@ void Misc::drawOffscreenEnemies(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 
 	const auto yaw = Helpers::degreesToRadians(interfaces->engine->getViewAngles().y);
+	const auto color = Helpers::calculateColor(config->misc.offscreenEnemies);
+	const auto colorB = Helpers::calculateColor(config->misc.offscreenEnemies.color[0], config->misc.offscreenEnemies.color[1], config->misc.offscreenEnemies.color[2], 1.0f);
 
 	for (auto &player : GameData::players())
 	{
@@ -1420,13 +1422,10 @@ void Misc::drawOffscreenEnemies(ImDrawList *drawList) noexcept
 		cy /= clen;
 
 		const auto center = ImGui::GetIO().DisplaySize / 2;
-		const auto pos = center + ImVec2{x, y} *170;
-		const auto pfar = center + ImVec2{x, y} *200;
-		const auto color = Helpers::calculateColor(config->misc.offscreenEnemies);
-		//drawList->AddCircleFilled(pos, 11.0f, color & IM_COL32_A_MASK, 40);
-		//drawList->AddCircleFilled(pos, 10.0f, color, 40);
-		drawList->AddTriangleFilled(pfar, pos + ImVec2{cx, cy} *15, pos + ImVec2{cx, cy} *-15, color);
-		drawList->AddTriangle(pfar, pos + ImVec2{cx, cy} *15, pos + ImVec2{cx, cy} *-15, color | IM_COL32_A_MASK);
+		const auto pos = center + ImVec2{x, y} * 170;
+		const auto posfar = center + ImVec2{x, y} * 200;
+		drawList->AddTriangleFilled(posfar, pos + ImVec2{cx, cy} *15, pos + ImVec2{cx, cy} *-15, color);
+		drawList->AddTriangle(posfar, pos + ImVec2{cx, cy} *15, pos + ImVec2{cx, cy} *-15, colorB);
 	}
 }
 

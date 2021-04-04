@@ -596,6 +596,7 @@ void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 		return;
 
 	const auto color = Helpers::calculateColor(config->visuals.molotovHull);
+	const auto colorB = Helpers::calculateColor(config->visuals.molotovHull.color[0], config->visuals.molotovHull.color[1], config->visuals.molotovHull.color[2], 1.0f);
 
 	GameData::Lock lock;
 
@@ -638,7 +639,7 @@ void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 			std::sort(screenPoints.begin() + 1, screenPoints.begin() + count, [&](const auto &a, const auto &b) { return orientation(screenPoints[0], a, b) > 0.0f; });
 
 			drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
-			drawList->AddPolyline(screenPoints.data(), count, color | IM_COL32_A_MASK, true, config->visuals.molotovHull.thickness);
+			drawList->AddPolyline(screenPoints.data(), count, colorB, true, config->visuals.molotovHull.thickness);
 		}
 	}
 }
@@ -649,6 +650,7 @@ void Visuals::drawSmokeHull(ImDrawList *drawList) noexcept
 		return;
 
 	const auto color = Helpers::calculateColor(config->visuals.smokeHull);
+	const auto colorB = Helpers::calculateColor(config->visuals.smokeHull.color[0], config->visuals.smokeHull.color[1], config->visuals.smokeHull.color[2], 1.0f);
 
 	GameData::Lock lock;
 
@@ -689,6 +691,6 @@ void Visuals::drawSmokeHull(ImDrawList *drawList) noexcept
 		std::sort(screenPoints.begin() + 1, screenPoints.begin() + count, [&](const auto &a, const auto &b) { return orientation(screenPoints[0], a, b) > 0.0f; });
 
 		drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
-		drawList->AddPolyline(screenPoints.data(), count, color | IM_COL32_A_MASK, true, config->visuals.smokeHull.thickness);
+		drawList->AddPolyline(screenPoints.data(), count, colorB, true, config->visuals.smokeHull.thickness);
 	}
 }
