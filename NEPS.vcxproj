@@ -43,12 +43,6 @@
     <ClCompile Include="MinHook\hook.c" />
     <ClCompile Include="MinHook\trampoline.c" />
     <ClCompile Include="Netvars.cpp" />
-    <ClCompile Include="nSkinz\item_definitions.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugMin|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="nSkinz\Utilities\Platform.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugMin|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Neps.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Hacks\Misc.cpp" />
@@ -98,15 +92,6 @@
     <ClInclude Include="MinHook\trampoline.h" />
     <ClInclude Include="Netvars.h" />
     <ClInclude Include="nlohmann\json.hpp" />
-    <ClInclude Include="nSkinz\item_definitions.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugMin|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="nSkinz\Utilities\Platform.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugMin|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="nSkinz\Utilities\vmt_smart_hook.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugMin|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Resources\Resource.h" />
     <ClInclude Include="SDK\AnimState.h" />
     <ClInclude Include="SDK\Beam.h" />

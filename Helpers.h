@@ -141,4 +141,14 @@ namespace Helpers
 	int replace(std::string &, const std::string &, const std::string &) noexcept;
 
 	float approxRadius(const StudioBbox &hitbox, int i) noexcept;
+
+	template<typename T>
+	std::vector<T> join(const std::vector<T> &first, const std::vector<T> &second) noexcept
+	{
+		std::vector<T> buffer;
+		buffer.reserve(first.size() + second.size());
+		buffer.insert(buffer.end(), first.begin(), first.end());
+		buffer.insert(buffer.end(), second.begin(), second.end());
+		return buffer;
+	}
 }
