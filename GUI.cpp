@@ -226,7 +226,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 				*out_text = pistols[idx];
 			}
 			return true;
-		}, nullptr, IM_ARRAYSIZE(pistols));
+		}, nullptr, IM_ARRAYSIZE(pistols), 15);
 
 		currentWeapon = currentPistol ? currentPistol : 35;
 		break;
@@ -248,7 +248,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 				*out_text = heavies[idx];
 			}
 			return true;
-		}, nullptr, IM_ARRAYSIZE(heavies));
+		}, nullptr, IM_ARRAYSIZE(heavies), 15);
 
 		currentWeapon = currentHeavy ? currentHeavy + 10 : 36;
 		break;
@@ -270,7 +270,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 				*out_text = smgs[idx];
 			}
 			return true;
-		}, nullptr, IM_ARRAYSIZE(smgs));
+		}, nullptr, IM_ARRAYSIZE(smgs), 15);
 
 		currentWeapon = currentSmg ? currentSmg + 16 : 37;
 		break;
@@ -292,7 +292,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 				*out_text = rifles[idx];
 			}
 			return true;
-		}, nullptr, IM_ARRAYSIZE(rifles));
+		}, nullptr, IM_ARRAYSIZE(rifles), 15);
 
 		currentWeapon = currentRifle ? currentRifle + 23 : 38;
 		break;
@@ -415,7 +415,6 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SetTooltip("Turn off AA when moving");
 		ImGui::Checkbox("Increase clamp", &config->antiAim.clamped);
 		ImGui::Checkbox("Extended", &config->antiAim.extended);
-		ImGui::Checkbox("Flip on overlap", &config->antiAim.avoidOverlap);
 		ImGuiCustom::keyBind("Flip key", &config->antiAim.flipKey);
 		ImGui::EndPopup();
 	}

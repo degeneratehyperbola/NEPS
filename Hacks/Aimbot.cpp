@@ -25,7 +25,9 @@ void Aimbot::run(UserCmd *cmd) noexcept
 {
 	if (!localPlayer) return;
 
-	if (localPlayer->nextAttack() > memory->globalVars->serverTime() || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
+	const auto time = memory->globalVars->serverTime();
+
+	if (localPlayer->nextAttack() > time || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
 		return;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
@@ -104,7 +106,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					interfaces->engine->setViewAngles(cmd->viewangles);
 			}
 
-			if (config->aimbot[weaponIndex].autoShot && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime() && (!clamped || activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver))
+			if (config->aimbot[weaponIndex].autoShot && activeWeapon->nextPrimaryAttack() <= time)
 				cmd->buttons |= UserCmd::IN_ATTACK;
 
 			if (clamped)

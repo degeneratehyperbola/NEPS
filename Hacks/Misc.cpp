@@ -496,7 +496,7 @@ void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 
 void Misc::prepareRevolver(UserCmd *cmd) noexcept
 {
-	constexpr float revolverPrepareTime{0.234375f};
+	constexpr float revolverPrepareTime = 0.234375f;
 
 	static float readyTime;
 	if (static Helpers::KeyBindState flag; flag[config->misc.prepareRevolver])

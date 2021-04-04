@@ -491,7 +491,7 @@ bool Helpers::attacking(bool cmdAttack, bool cmdAttack2) noexcept
 		const auto activeWeapon = localPlayer->getActiveWeapon();
 		if (activeWeapon)
 		{
-			if (activeWeapon->getClientClass()->classId == ClassId::Healthshot)
+			if (activeWeapon->itemDefinitionIndex2() == WeaponId::Healthshot)
 				return false;
 
 			if (activeWeapon->isGrenade())
@@ -507,7 +507,7 @@ bool Helpers::attacking(bool cmdAttack, bool cmdAttack2) noexcept
 
 				if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
 				{
-					return cmdAttack2 || cmdAttack && activeWeapon->nextPrimaryAttack() < time && activeWeapon->postponeFireReadyTime() < time;
+					return cmdAttack2 || cmdAttack && activeWeapon->nextPrimaryAttack() < time && activeWeapon->postponeFireReadyTime() <= time;
 				}
 
 				return (!localPlayer->shotsFired() || activeWeapon->isFullAuto()) && cmdAttack;

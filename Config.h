@@ -102,7 +102,6 @@ public:
 		bool corrected = true;
 		bool clamped = false;
 		bool extended = false;
-		bool avoidOverlap = false;
 		bool fakeUp = false;
 		int flipKey = 0;
 		KeyBind fakeDuck;
