@@ -44,35 +44,36 @@ static auto playerByHandleWritable(int handle) noexcept
 
 void GameData::update() noexcept
 {
-    static int lastFrame;
-    if (lastFrame == memory->globalVars->framecount)
-        return;
+	static int lastFrame;
+	if (lastFrame == memory->globalVars->framecount)
+		return;
 
-    lastFrame = memory->globalVars->framecount;
+	lastFrame = memory->globalVars->framecount;
 
-    Lock lock;
+	Lock lock;
 
-    observerData.clear();
-    weaponData.clear();
-    entityData.clear();
-    lootCrateData.clear();
+	observerData.clear();
+	weaponData.clear();
+	entityData.clear();
+	lootCrateData.clear();
 	infernoData.clear();
 	smokeData.clear();
 
-    localPlayerData.update();
+	localPlayerData.update();
 	bombData.update();
 	matchData.update();
 
-    if (!localPlayer) {
-        playerData.clear();
-        projectileData.clear();
-        return;
-    }
+	if (!localPlayer)
+	{
+		playerData.clear();
+		projectileData.clear();
+		return;
+	}
 
-    viewMatrix = interfaces->engine->worldToScreenMatrix();
+	viewMatrix = interfaces->engine->worldToScreenMatrix();
 
 	const auto observerMode = localPlayer->getObserverMode();
-    const auto observerTarget = observerMode != ObsMode::Roaming && observerMode != ObsMode::Deathcam ? localPlayer->getObserverTarget() : nullptr;
+	const auto observerTarget = observerMode != ObsMode::Roaming && observerMode != ObsMode::Deathcam ? localPlayer->getObserverTarget() : nullptr;
 
 	for (int i = 1; i <= interfaces->entityList->getHighestEntityIndex(); ++i)
 	{
@@ -110,7 +111,9 @@ void GameData::update() noexcept
 					weaponData.emplace_back(entity);
 			} else
 			{
-				switch (entity->getClientClass()->classId)
+				auto classId = entity->getClientClass()->classId;
+
+				switch (classId)
 				{
 				case ClassId::GrenadeProjectile:
 					if (entity->grenadeExploded())
@@ -121,9 +124,6 @@ void GameData::update() noexcept
 					}
 					[[fallthrough]];
 				case ClassId::SmokeGrenadeProjectile:
-					if (entity->didSmokeEffect())
-						smokeData.emplace_back(entity);
-					[[fallthrough]];
 				case ClassId::BreachChargeProjectile:
 				case ClassId::BumpMineProjectile:
 				case ClassId::DecoyProjectile:
@@ -157,14 +157,17 @@ void GameData::update() noexcept
 					infernoData.emplace_back(entity);
 					break;
 				}
+
+				if (classId == ClassId::SmokeGrenadeProjectile && entity->didSmokeEffect())
+					smokeData.emplace_back(entity);
 			}
 		}
 	}
 
-    std::sort(playerData.begin(), playerData.end());
-    std::sort(weaponData.begin(), weaponData.end());
-    std::sort(entityData.begin(), entityData.end());
-    std::sort(lootCrateData.begin(), lootCrateData.end());
+	std::sort(playerData.begin(), playerData.end());
+	std::sort(weaponData.begin(), weaponData.end());
+	std::sort(entityData.begin(), entityData.end());
+	std::sort(lootCrateData.begin(), lootCrateData.end());
 
 	std::for_each(projectileData.begin(), projectileData.end(), [](auto &projectile)
 	{
@@ -183,13 +186,13 @@ void GameData::update() noexcept
 
 void GameData::clearProjectileList() noexcept
 {
-    Lock lock;
-    projectileData.clear();
+	Lock lock;
+	projectileData.clear();
 }
 
-const Matrix4x4& GameData::toScreenMatrix() noexcept
+const Matrix4x4 &GameData::toScreenMatrix() noexcept
 {
-    return viewMatrix;
+	return viewMatrix;
 }
 
 GlobalData &GameData::global() noexcept
@@ -197,39 +200,39 @@ GlobalData &GameData::global() noexcept
 	return globalData;
 }
 
-const LocalPlayerData& GameData::local() noexcept
+const LocalPlayerData &GameData::local() noexcept
 {
-    return localPlayerData;
+	return localPlayerData;
 }
 
-const std::vector<PlayerData>& GameData::players() noexcept
+const std::vector<PlayerData> &GameData::players() noexcept
 {
-    return playerData;
+	return playerData;
 }
 
-const std::vector<ObserverData>& GameData::observers() noexcept
+const std::vector<ObserverData> &GameData::observers() noexcept
 {
-    return observerData;
+	return observerData;
 }
 
-const std::vector<WeaponData>& GameData::weapons() noexcept
+const std::vector<WeaponData> &GameData::weapons() noexcept
 {
-    return weaponData;
+	return weaponData;
 }
 
-const std::vector<EntityData>& GameData::entities() noexcept
+const std::vector<EntityData> &GameData::entities() noexcept
 {
-    return entityData;
+	return entityData;
 }
 
-const std::vector<LootCrateData>& GameData::lootCrates() noexcept
+const std::vector<LootCrateData> &GameData::lootCrates() noexcept
 {
-    return lootCrateData;
+	return lootCrateData;
 }
 
-const std::list<ProjectileData>& GameData::projectiles() noexcept
+const std::list<ProjectileData> &GameData::projectiles() noexcept
 {
-    return projectileData;
+	return projectileData;
 }
 
 const BombData &GameData::plantedC4() noexcept
@@ -254,28 +257,30 @@ const MatchData &GameData::match() noexcept
 
 void LocalPlayerData::update() noexcept
 {
-    if (!localPlayer) {
-        exists = false;
-        return;
-    }
+	if (!localPlayer)
+	{
+		exists = false;
+		return;
+	}
 
-    exists = true;
-    alive = localPlayer->isAlive();
+	exists = true;
+	alive = localPlayer->isAlive();
 
-    if (const auto activeWeapon = localPlayer->getActiveWeapon()) {
-        inReload = activeWeapon->isInReload();
-        shooting = localPlayer->shotsFired() > 1;
-        scoped = localPlayer->isScoped();
-        nextWeaponAttack = activeWeapon->nextPrimaryAttack();
-    }
-    fov = localPlayer->fov() ? localPlayer->fov() : localPlayer->defaultFov();
+	if (const auto activeWeapon = localPlayer->getActiveWeapon())
+	{
+		inReload = activeWeapon->isInReload();
+		shooting = localPlayer->shotsFired() > 1;
+		scoped = localPlayer->isScoped();
+		nextWeaponAttack = activeWeapon->nextPrimaryAttack();
+	}
+	fov = localPlayer->fov() ? localPlayer->fov() : localPlayer->defaultFov();
 	handle = localPlayer->handle();
-    flashDuration = localPlayer->flashDuration();
+	flashDuration = localPlayer->flashDuration();
 
-    aimPunch = localPlayer->getEyePosition() + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000.0f;
+	aimPunch = localPlayer->getEyePosition() + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000.0f;
 	aimPunchAngle = localPlayer->getAimPunch();
 
-    const auto obsMode = localPlayer->getObserverMode();
+	const auto obsMode = localPlayer->getObserverMode();
 	if (const auto obs = localPlayer->getObserverTarget(); obs && obsMode != ObsMode::Roaming && obsMode != ObsMode::Deathcam)
 	{
 		observerTargetHandle = obs->handle();
@@ -289,8 +294,7 @@ void LocalPlayerData::update() noexcept
 
 		colMaxs = collidable->obbMaxs();
 		colMins = collidable->obbMins();
-	}
-	else
+	} else
 	{
 		observerTargetHandle = -1;
 
@@ -306,83 +310,90 @@ void LocalPlayerData::update() noexcept
 	}
 }
 
-BaseData::BaseData(Entity* entity) noexcept
+BaseData::BaseData(Entity *entity) noexcept
 {
-    distanceToLocal = entity->getAbsOrigin().distTo(localPlayerData.origin);
- 
-    if (entity->isPlayer()) {
-        const auto collideable = entity->getCollideable();
-        obbMins = collideable->obbMins();
-        obbMaxs = collideable->obbMaxs();
-    } else if (const auto model = entity->getModel()) {
-        obbMins = model->mins;
-        obbMaxs = model->maxs;
-    }
+	distanceToLocal = entity->getAbsOrigin().distTo(localPlayerData.origin);
 
-    coordinateFrame = entity->toWorldTransform();
+	if (entity->isPlayer())
+	{
+		const auto collideable = entity->getCollideable();
+		obbMins = collideable->obbMins();
+		obbMaxs = collideable->obbMaxs();
+	} else if (const auto model = entity->getModel())
+	{
+		obbMins = model->mins;
+		obbMaxs = model->maxs;
+	}
+
+	coordinateFrame = entity->toWorldTransform();
 }
 
-EntityData::EntityData(Entity* entity) noexcept : BaseData{ entity }
+EntityData::EntityData(Entity *entity) noexcept : BaseData{entity}
 {
-    name = [](Entity *entity) {
-        switch (entity->getClientClass()->classId) {
-        case ClassId::EconEntity: return "Defuse Kit";
-        case ClassId::Chicken: return "Chicken";
-        case ClassId::PlantedC4: return "Planted C4";
-        case ClassId::Hostage: return "Hostage";
-        case ClassId::Dronegun: return "Sentry";
-        case ClassId::Cash: return "Cash";
-        case ClassId::AmmoBox: return "Ammo Box";
-        case ClassId::RadarJammer: return "Radar Jammer";
-        case ClassId::SnowballPile: return "Snowball Pile";
+	name = [](Entity *entity)
+	{
+		switch (entity->getClientClass()->classId)
+		{
+		case ClassId::EconEntity: return "Defuse Kit";
+		case ClassId::Chicken: return "Chicken";
+		case ClassId::PlantedC4: return "Planted C4";
+		case ClassId::Hostage: return "Hostage";
+		case ClassId::Dronegun: return "Sentry";
+		case ClassId::Cash: return "Cash";
+		case ClassId::AmmoBox: return "Ammo Box";
+		case ClassId::RadarJammer: return "Radar Jammer";
+		case ClassId::SnowballPile: return "Snowball Pile";
 		case ClassId::PropDynamic: return "Collectable Coin";
-        default: assert(false); return "unknown";
-        }
-    }(entity);
+		default: assert(false); return "unknown";
+		}
+	}(entity);
 }
 
-ProjectileData::ProjectileData(Entity* projectile) noexcept : BaseData {projectile}
+ProjectileData::ProjectileData(Entity *projectile) noexcept : BaseData{projectile}
 {
-    name = [](Entity* projectile) {
-        switch (projectile->getClientClass()->classId) {
-        case ClassId::GrenadeProjectile:
-            if (const auto model = projectile->getModel(); model && strstr(model->name, "flashbang"))
-                return "Flashbang";
-            else
-                return "HE Grenade";
-        case ClassId::BreachChargeProjectile: return "Breach Charge";
-        case ClassId::BumpMineProjectile: return "Bump Mine";
-        case ClassId::DecoyProjectile: return "Decoy Grenade";
-        case ClassId::MolotovProjectile: return "Molotov";
-        case ClassId::SensorGrenadeProjectile: return "TA Grenade";
-        case ClassId::SmokeGrenadeProjectile: return "Smoke Grenade";
-        case ClassId::SnowballProjectile: return "Snowball";
-        default: assert(false); return "unknown";
-        }
-    }(projectile);
+	name = [](Entity *projectile)
+	{
+		switch (projectile->getClientClass()->classId)
+		{
+		case ClassId::GrenadeProjectile:
+			if (const auto model = projectile->getModel(); model && strstr(model->name, "flashbang"))
+				return "Flashbang";
+			else
+				return "HE Grenade";
+		case ClassId::BreachChargeProjectile: return "Breach Charge";
+		case ClassId::BumpMineProjectile: return "Bump Mine";
+		case ClassId::DecoyProjectile: return "Decoy Grenade";
+		case ClassId::MolotovProjectile: return "Molotov";
+		case ClassId::SensorGrenadeProjectile: return "TA Grenade";
+		case ClassId::SmokeGrenadeProjectile: return "Smoke Grenade";
+		case ClassId::SnowballProjectile: return "Snowball";
+		default: assert(false); return "unknown";
+		}
+	}(projectile);
 
-    if (const auto thrower = interfaces->entityList->getEntityFromHandle(projectile->thrower()); thrower && localPlayer) {
-        if (thrower == localPlayer.get())
-            thrownByLocalPlayer = true;
-        else
-            thrownByEnemy = memory->isOtherEnemy(localPlayer.get(), thrower);
-    }
+	if (const auto thrower = interfaces->entityList->getEntityFromHandle(projectile->thrower()); thrower && localPlayer)
+	{
+		if (thrower == localPlayer.get())
+			thrownByLocalPlayer = true;
+		else
+			thrownByEnemy = memory->isOtherEnemy(localPlayer.get(), thrower);
+	}
 
-    handle = projectile->handle();
+	handle = projectile->handle();
 }
 
-void ProjectileData::update(Entity* projectile) noexcept
+void ProjectileData::update(Entity *projectile) noexcept
 {
-    static_cast<BaseData&>(*this) = {projectile};
+	static_cast<BaseData &>(*this) = {projectile};
 
-    if (const auto& pos = projectile->getAbsOrigin(); trajectory.size() < 1 || trajectory[trajectory.size() - 1].second != pos)
-        trajectory.emplace_back(memory->globalVars->realtime, pos);
+	if (const auto &pos = projectile->getAbsOrigin(); trajectory.size() < 1 || trajectory[trajectory.size() - 1].second != pos)
+		trajectory.emplace_back(memory->globalVars->realtime, pos);
 }
 
-PlayerData::PlayerData(Entity* entity) noexcept : BaseData{ entity }
+PlayerData::PlayerData(Entity *entity) noexcept : BaseData{entity}
 {
-    handle = entity->handle();
-    update(entity);
+	handle = entity->handle();
+	update(entity);
 }
 
 void PlayerData::update(Entity *entity) noexcept
@@ -490,123 +501,131 @@ void PlayerData::update(Entity *entity) noexcept
 	}
 }
 
-WeaponData::WeaponData(Entity* entity) noexcept : BaseData{ entity }
+WeaponData::WeaponData(Entity *entity) noexcept : BaseData{entity}
 {
-    clip = entity->clip();
-    reserveAmmo = entity->reserveAmmoCount();
+	clip = entity->clip();
+	reserveAmmo = entity->reserveAmmoCount();
 
-    if (const auto weaponInfo = entity->getWeaponData()) {
-        group = [](WeaponType type, WeaponId weaponId) {
-            switch (type) {
-            case WeaponType::Pistol: return "Pistols";
-            case WeaponType::SubMachinegun: return "SMGs";
-            case WeaponType::Rifle: return "Rifles";
-            case WeaponType::SniperRifle: return "Sniper Rifles";
-            case WeaponType::Shotgun: return "Shotguns";
-            case WeaponType::Machinegun: return "Machineguns";
-            case WeaponType::Grenade: return "Grenades";
-            case WeaponType::Melee: return "Melee";
-            default:
-                switch (weaponId) {
-                case WeaponId::C4:
-                case WeaponId::Healthshot:
-                case WeaponId::BumpMine:
-                case WeaponId::ZoneRepulsor:
-                case WeaponId::Shield:
-                    return "Other";
-                default: return "All";
-                }
-            }
-        }(weaponInfo->type, entity->itemDefinitionIndex2());
-        name = [](WeaponId weaponId) {
-            switch (weaponId) {
-            default: return "All";
+	if (const auto weaponInfo = entity->getWeaponData())
+	{
+		group = [](WeaponType type, WeaponId weaponId)
+		{
+			switch (type)
+			{
+			case WeaponType::Pistol: return "Pistols";
+			case WeaponType::SubMachinegun: return "SMGs";
+			case WeaponType::Rifle: return "Rifles";
+			case WeaponType::SniperRifle: return "Sniper Rifles";
+			case WeaponType::Shotgun: return "Shotguns";
+			case WeaponType::Machinegun: return "Machineguns";
+			case WeaponType::Grenade: return "Grenades";
+			case WeaponType::Melee: return "Melee";
+			default:
+				switch (weaponId)
+				{
+				case WeaponId::C4:
+				case WeaponId::Healthshot:
+				case WeaponId::BumpMine:
+				case WeaponId::ZoneRepulsor:
+				case WeaponId::Shield:
+					return "Other";
+				default: return "All";
+				}
+			}
+		}(weaponInfo->type, entity->itemDefinitionIndex2());
+		name = [](WeaponId weaponId)
+		{
+			switch (weaponId)
+			{
+			default: return "All";
 
-            case WeaponId::Glock: return "Glock-18";
-            case WeaponId::Hkp2000: return "P2000";
-            case WeaponId::Usp_s: return "USP-S";
-            case WeaponId::Elite: return "Dual Berettas";
-            case WeaponId::P250: return "P250";
-            case WeaponId::Tec9: return "Tec-9";
-            case WeaponId::Fiveseven: return "Five-SeveN";
-            case WeaponId::Cz75a: return "CZ75-Auto";
-            case WeaponId::Deagle: return "Desert Eagle";
-            case WeaponId::Revolver: return "R8 Revolver";
+			case WeaponId::Glock: return "Glock-18";
+			case WeaponId::Hkp2000: return "P2000";
+			case WeaponId::Usp_s: return "USP-S";
+			case WeaponId::Elite: return "Dual Berettas";
+			case WeaponId::P250: return "P250";
+			case WeaponId::Tec9: return "Tec-9";
+			case WeaponId::Fiveseven: return "Five-SeveN";
+			case WeaponId::Cz75a: return "CZ75-Auto";
+			case WeaponId::Deagle: return "Desert Eagle";
+			case WeaponId::Revolver: return "R8 Revolver";
 
-            case WeaponId::Mac10: return "MAC-10";
-            case WeaponId::Mp9: return "MP9";
-            case WeaponId::Mp7: return "MP7";
-            case WeaponId::Mp5sd: return "MP5-SD";
-            case WeaponId::Ump45: return "UMP-45";
-            case WeaponId::P90: return "P90";
-            case WeaponId::Bizon: return "PP-Bizon";
+			case WeaponId::Mac10: return "MAC-10";
+			case WeaponId::Mp9: return "MP9";
+			case WeaponId::Mp7: return "MP7";
+			case WeaponId::Mp5sd: return "MP5-SD";
+			case WeaponId::Ump45: return "UMP-45";
+			case WeaponId::P90: return "P90";
+			case WeaponId::Bizon: return "PP-Bizon";
 
-            case WeaponId::GalilAr: return "Galil AR";
-            case WeaponId::Famas: return "FAMAS";
-            case WeaponId::Ak47: return "AK-47";
-            case WeaponId::M4A1: return "M4A4";
-            case WeaponId::M4a1_s: return "M4A1-S";
-            case WeaponId::Sg553: return "SG 553";
-            case WeaponId::Aug: return "AUG";
+			case WeaponId::GalilAr: return "Galil AR";
+			case WeaponId::Famas: return "FAMAS";
+			case WeaponId::Ak47: return "AK-47";
+			case WeaponId::M4A1: return "M4A4";
+			case WeaponId::M4a1_s: return "M4A1-S";
+			case WeaponId::Sg553: return "SG 553";
+			case WeaponId::Aug: return "AUG";
 
-            case WeaponId::Ssg08: return "SSG 08";
-            case WeaponId::Awp: return "AWP";
-            case WeaponId::G3SG1: return "G3SG1";
-            case WeaponId::Scar20: return "SCAR-20";
+			case WeaponId::Ssg08: return "SSG 08";
+			case WeaponId::Awp: return "AWP";
+			case WeaponId::G3SG1: return "G3SG1";
+			case WeaponId::Scar20: return "SCAR-20";
 
-            case WeaponId::Nova: return "Nova";
-            case WeaponId::Xm1014: return "XM1014";
-            case WeaponId::Sawedoff: return "Sawed-Off";
-            case WeaponId::Mag7: return "MAG-7";
+			case WeaponId::Nova: return "Nova";
+			case WeaponId::Xm1014: return "XM1014";
+			case WeaponId::Sawedoff: return "Sawed-Off";
+			case WeaponId::Mag7: return "MAG-7";
 
-            case WeaponId::M249: return "M249";
-            case WeaponId::Negev: return "Negev";
+			case WeaponId::M249: return "M249";
+			case WeaponId::Negev: return "Negev";
 
-            case WeaponId::Flashbang: return "Flashbang";
-            case WeaponId::HeGrenade: return "HE Grenade";
-            case WeaponId::SmokeGrenade: return "Smoke Grenade";
-            case WeaponId::Molotov: return "Molotov";
-            case WeaponId::Decoy: return "Decoy Grenade";
-            case WeaponId::IncGrenade: return "Incendiary";
-            case WeaponId::TaGrenade: return "TA Grenade";
-            case WeaponId::Firebomb: return "Fire Bomb";
-            case WeaponId::Diversion: return "Diversion";
-            case WeaponId::FragGrenade: return "Frag Grenade";
-            case WeaponId::Snowball: return "Snowball";
+			case WeaponId::Flashbang: return "Flashbang";
+			case WeaponId::HeGrenade: return "HE Grenade";
+			case WeaponId::SmokeGrenade: return "Smoke Grenade";
+			case WeaponId::Molotov: return "Molotov";
+			case WeaponId::Decoy: return "Decoy Grenade";
+			case WeaponId::IncGrenade: return "Incendiary";
+			case WeaponId::TaGrenade: return "TA Grenade";
+			case WeaponId::Firebomb: return "Fire Bomb";
+			case WeaponId::Diversion: return "Diversion";
+			case WeaponId::FragGrenade: return "Frag Grenade";
+			case WeaponId::Snowball: return "Snowball";
 
-            case WeaponId::Axe: return "Axe";
-            case WeaponId::Hammer: return "Hammer";
-            case WeaponId::Spanner: return "Wrench";
+			case WeaponId::Axe: return "Axe";
+			case WeaponId::Hammer: return "Hammer";
+			case WeaponId::Spanner: return "Wrench";
 
-            case WeaponId::C4: return "C4";
-            case WeaponId::Healthshot: return "Healthshot";
-            case WeaponId::BumpMine: return "Bump Mine";
-            case WeaponId::ZoneRepulsor: return "Zone Repulsor";
-            case WeaponId::Shield: return "Shield";
-            }
-        }(entity->itemDefinitionIndex2());
+			case WeaponId::C4: return "C4";
+			case WeaponId::Healthshot: return "Healthshot";
+			case WeaponId::BumpMine: return "Bump Mine";
+			case WeaponId::ZoneRepulsor: return "Zone Repulsor";
+			case WeaponId::Shield: return "Shield";
+			}
+		}(entity->itemDefinitionIndex2());
 
-        displayName = interfaces->localize->findAsUTF8(weaponInfo->name);
-    }
+		displayName = interfaces->localize->findAsUTF8(weaponInfo->name);
+	}
 }
 
-LootCrateData::LootCrateData(Entity* entity) noexcept : BaseData{ entity }
+LootCrateData::LootCrateData(Entity *entity) noexcept : BaseData{entity}
 {
-    const auto model = entity->getModel();
-    if (!model)
-        return;
+	const auto model = entity->getModel();
+	if (!model)
+		return;
 
-    name = [](const char* modelName) -> const char* {
-        switch (fnv::hashRuntime(modelName)) {
-        case fnv::hash("models/props_survival/cases/case_pistol.mdl"): return "Pistol Case";
-        case fnv::hash("models/props_survival/cases/case_light_weapon.mdl"): return "Light Case";
-        case fnv::hash("models/props_survival/cases/case_heavy_weapon.mdl"): return "Heavy Case";
-        case fnv::hash("models/props_survival/cases/case_explosive.mdl"): return "Explosive Case";
-        case fnv::hash("models/props_survival/cases/case_tools.mdl"): return "Tools Case";
-        case fnv::hash("models/props_survival/cash/dufflebag.mdl"): return "Cash Dufflebag";
-        default: return nullptr;
-        }
-    }(model->name);
+	name = [](const char *modelName) -> const char *
+	{
+		switch (fnv::hashRuntime(modelName))
+		{
+		case fnv::hash("models/props_survival/cases/case_pistol.mdl"): return "Pistol Case";
+		case fnv::hash("models/props_survival/cases/case_light_weapon.mdl"): return "Light Case";
+		case fnv::hash("models/props_survival/cases/case_heavy_weapon.mdl"): return "Heavy Case";
+		case fnv::hash("models/props_survival/cases/case_explosive.mdl"): return "Explosive Case";
+		case fnv::hash("models/props_survival/cases/case_tools.mdl"): return "Tools Case";
+		case fnv::hash("models/props_survival/cash/dufflebag.mdl"): return "Cash Dufflebag";
+		default: return nullptr;
+		}
+	}(model->name);
 }
 
 const PlayerData *GameData::playerByHandle(int handle) noexcept
@@ -614,12 +633,12 @@ const PlayerData *GameData::playerByHandle(int handle) noexcept
 	return playerByHandleWritable(handle);
 }
 
-ObserverData::ObserverData(Entity* entity, Entity* obs, bool targetIsLocalPlayer, bool targetIsObservedByLocalPlayer) noexcept
+ObserverData::ObserverData(Entity *entity, Entity *obs, bool targetIsLocalPlayer, bool targetIsObservedByLocalPlayer) noexcept
 {
-    entity->getPlayerName(name);
-    obs->getPlayerName(target);
-    this->targetIsLocalPlayer = targetIsLocalPlayer;
-    this->targetIsObservedByLocalPlayer = targetIsObservedByLocalPlayer;
+	entity->getPlayerName(name);
+	obs->getPlayerName(target);
+	this->targetIsLocalPlayer = targetIsLocalPlayer;
+	this->targetIsObservedByLocalPlayer = targetIsObservedByLocalPlayer;
 }
 
 void BombData::update() noexcept
