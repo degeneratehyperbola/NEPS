@@ -343,10 +343,11 @@ public:
 
 	struct Misc
 	{
-		int menuKey = 0x2E; // VK_DELETE
+		int menuKey = 0x2E; // VK_DELETEk
 		bool autoPistol = false;
 		bool autoReload = false;
 		bool autoAccept = false;
+		bool spamUse = false;
 		bool fixAnimationLOD = true;
 		bool fixBoneMatrix = true;
 		bool fixMovement = true;
@@ -387,12 +388,13 @@ public:
 		bool quickReload = false;
 		bool fastPlant = false;
 		bool fixTabletSignal = false;
-		Color4Toggle noscopeCrosshair;
-		Color4Toggle recoilCrosshair;
+		Color4 overlayCrosshair;
+		int overlayCrosshairType;
+		Color4 recoilCrosshair;
+		int recoilCrosshairType;
 		bool bombTimer = false;
 		Color4Toggle offscreenEnemies = {1.0f, 0.0f, 0.0f, 0.2f};
 		bool nadePredict = false;
-		bool spamUse = false;
 		bool indicators = false;
 	} misc;
 

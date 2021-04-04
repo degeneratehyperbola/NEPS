@@ -650,8 +650,10 @@ static void from_json(const json& j, Config::Misc& m)
 	read(j, "Quick reload", m.quickReload);
 	read(j, "Fix tablet signal", m.fixTabletSignal);
 	read(j, "Aimstep", m.maxAngleDelta);
-	read<value_t::object>(j, "Noscope crosshair", m.noscopeCrosshair);
+	read<value_t::object>(j, "Noscope crosshair", m.overlayCrosshair);
+	read(j, "Noscope crosshair type", m.overlayCrosshairType);
 	read<value_t::object>(j, "Recoil crosshair", m.recoilCrosshair);
+	read(j, "Recoil crosshair type", m.recoilCrosshairType);
 	read<value_t::object>(j, "Offscreen Enemies", m.offscreenEnemies);
 	read(j, "Bomb timer", m.bombTimer);
 	read(j, "Grenade predict", m.nadePredict);
@@ -1076,8 +1078,10 @@ static void to_json(json& j, const Config::Misc& o)
 {
     const Config::Misc dummy;
 
-	WRITE("Noscope crosshair", noscopeCrosshair);
+	WRITE("Noscope crosshair", overlayCrosshair);
+	WRITE("Noscope crosshair type", overlayCrosshairType);
 	WRITE("Recoil crosshair", recoilCrosshair);
+	WRITE("Recoil crosshair type", recoilCrosshairType);
 	WRITE("Offscreen Enemies", offscreenEnemies);
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Grenade predict", nadePredict);

@@ -1183,7 +1183,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGuiCustom::colorPicker("Player bounds", config->visuals.playerBounds);
 	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVel);
 
-	ImGuiCustom::colorPicker("Own beams", config->visuals.selfBeams.color.data(), nullptr, nullptr, nullptr, &config->visuals.selfBeams.enabled);
+	ImGuiCustom::colorPicker("Own beams", config->visuals.selfBeams.color.data(), &config->visuals.selfBeams.color[3], nullptr, nullptr, &config->visuals.selfBeams.enabled);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("bself", ImGuiDir_Right))
 		ImGui::OpenPopup("##bself");
@@ -1208,7 +1208,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
-	ImGuiCustom::colorPicker("Ally beams", config->visuals.allyBeams.color.data(), nullptr, nullptr, nullptr, &config->visuals.allyBeams.enabled);
+	ImGuiCustom::colorPicker("Ally beams", config->visuals.allyBeams.color.data(), &config->visuals.allyBeams.color[3], nullptr, nullptr, &config->visuals.allyBeams.enabled);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("bally", ImGuiDir_Right))
 		ImGui::OpenPopup("##bally");
@@ -1233,7 +1233,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
-	ImGuiCustom::colorPicker("Enemy beams", config->visuals.enemyBeams.color.data(), nullptr, nullptr, nullptr, &config->visuals.enemyBeams.enabled);
+	ImGuiCustom::colorPicker("Enemy beams", config->visuals.enemyBeams.color.data(), &config->visuals.enemyBeams.color[3], nullptr, nullptr, &config->visuals.enemyBeams.enabled);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("benemy", ImGuiDir_Right))
 		ImGui::OpenPopup("##benemy");
@@ -1786,6 +1786,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Full-auto", &config->misc.autoPistol);
 	ImGui::Checkbox("Auto reload", &config->misc.autoReload);
 	ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
+	ImGui::Checkbox("Spam use", &config->misc.spamUse);
 
 	#ifdef LEGACY_WATERMARK
 	ImGuiCustom::colorPicker("Spectator list", config->misc.spectatorList);
@@ -1799,11 +1800,18 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);
 	#endif // LEGACY_WATERMARK
 
-	ImGuiCustom::colorPicker("Crosshair overlay", config->misc.noscopeCrosshair);
-	ImGuiCustom::colorPicker("Recoil crosshair", config->misc.recoilCrosshair);
-	ImGuiCustom::colorPicker("Offscreen Enemies", config->misc.offscreenEnemies);
+	ImGui::AlignTextToFramePadding();
+	ImGui::TextUnformatted("Crosshair");
+	ImGui::PushItemWidth(95.0f);
+	ImGuiCustom::colorPicker("##oxhair", config->misc.overlayCrosshair);
+	ImGui::SameLine();
+	ImGui::Combo("Overlay", &config->misc.overlayCrosshairType, "None\0Circle dot\0Dot\0Cross\0Empty cross\0");
+	ImGuiCustom::colorPicker("##rxhair", config->misc.recoilCrosshair);
+	ImGui::SameLine();
+	ImGui::Combo("Recoil", &config->misc.recoilCrosshairType, "None\0Circle dot\0Dot\0Cross\0Empty cross\0");
+	ImGui::PopItemWidth();
+
 	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
-	ImGui::Checkbox("Bomb timer", &config->misc.bombTimer);
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
 	ImGui::Checkbox("Fix bone matrix", &config->misc.fixBoneMatrix);
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
@@ -1820,6 +1828,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
 	ImGui::Checkbox("No panorama blur", &config->misc.disablePanoramablur);
+	ImGuiCustom::colorPicker("Offscreen Enemies", config->misc.offscreenEnemies);
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
 	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
 	ImGui::SetNextItemWidth(190.0f);
@@ -1852,7 +1861,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
-	ImGui::Checkbox("Spam use", &config->misc.spamUse);
+	ImGui::Checkbox("Bomb timer", &config->misc.bombTimer);
 	ImGui::Checkbox("Indicators", &config->misc.indicators);
 
 	if (!contentOnly)
@@ -1878,7 +1887,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 
 	ImGui::PushItemWidth(160.0f);
 
-	if (ImGui::Button("Reload configs", {160.0f, 25.0f}))
+	if (ImGui::Button("Reload configs", {160.0f, 27.0f}))
 		config->listConfigs();
 
 	auto &configItems = config->getConfigs();
@@ -1907,7 +1916,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 	ImGui::NextColumn();
 
 	ImGui::PopItemWidth();
-	static const ImVec2 size = {110.0f, 26.0f};
+	static const ImVec2 size = {110.0f, 27.0f};
 
 	if (ImGui::Button("Open folder", size))
 		config->openConfigDir();

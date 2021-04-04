@@ -153,56 +153,57 @@ void Misc::updateClanTag() noexcept
 
 void Misc::spectatorList() noexcept
 {
-    if (!config->misc.spectatorList.enabled)
-        return;
+	if (!config->misc.spectatorList.enabled)
+		return;
 
-    if (!localPlayer || !localPlayer->isAlive())
-        return;
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
-    interfaces->surface->setTextFont(Surface::font);
+	interfaces->surface->setTextFont(Surface::font);
 
-    const auto [width, height] = interfaces->surface->getScreenSize();
+	const auto [width, height] = interfaces->surface->getScreenSize();
 
-    auto textPositionY = static_cast<int>(0.5f * height);
+	auto textPositionY = static_cast<int>(0.5f * height);
 
-    for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i) {
-        const auto entity = interfaces->entityList->getEntity(i);
-        if (!entity || entity->isDormant() || entity->isAlive() || entity->getObserverTarget() != localPlayer.get())
-            continue;
+	for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i)
+	{
+		const auto entity = interfaces->entityList->getEntity(i);
+		if (!entity || entity->isDormant() || entity->isAlive() || entity->getObserverTarget() != localPlayer.get())
+			continue;
 
-        PlayerInfo playerInfo;
+		PlayerInfo playerInfo;
 
-        if (!interfaces->engine->getPlayerInfo(i, playerInfo))
-            continue;
+		if (!interfaces->engine->getPlayerInfo(i, playerInfo))
+			continue;
 
-        if (wchar_t name[128]; MultiByteToWideChar(CP_UTF8, 0, playerInfo.name, -1, name, 128))
+		if (wchar_t name[128]; MultiByteToWideChar(CP_UTF8, 0, playerInfo.name, -1, name, 128))
 		{
-            const auto [textWidth, textHeight] = interfaces->surface->getTextSize(Surface::font, name);
+			const auto [textWidth, textHeight] = interfaces->surface->getTextSize(Surface::font, name);
 
 			interfaces->surface->setTextColor(0, 0, 0, 100);
 
-            interfaces->surface->setTextPosition(width - textWidth - 5, textPositionY + 2);
-            interfaces->surface->printText(name);
-            interfaces->surface->setTextPosition(width - textWidth - 6, textPositionY + 1);
-            interfaces->surface->printText(name);
+			interfaces->surface->setTextPosition(width - textWidth - 5, textPositionY + 2);
+			interfaces->surface->printText(name);
+			interfaces->surface->setTextPosition(width - textWidth - 6, textPositionY + 1);
+			interfaces->surface->printText(name);
 
 			if (config->misc.spectatorList.rainbow)
 				interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed));
 			else
 				interfaces->surface->setTextColor(config->misc.spectatorList.color);
 
-            interfaces->surface->setTextPosition(width - textWidth - 7, textPositionY);
-            interfaces->surface->printText(name);
+			interfaces->surface->setTextPosition(width - textWidth - 7, textPositionY);
+			interfaces->surface->printText(name);
 
-            textPositionY += textHeight;
-        }
-    }
+			textPositionY += textHeight;
+		}
+	}
 
 	const auto title = L"Spectators";
 
 	const auto [titleWidth, titleHeight] = interfaces->surface->getTextSize(Surface::font, title);
 	textPositionY = static_cast<int>(0.5f * height);
-	
+
 	if (config->misc.specBg.rainbow)
 		interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.specBg.rainbowSpeed), static_cast<int>(config->misc.specBg.color[3] * 255));
 	else
@@ -241,7 +242,7 @@ void Misc::spectatorList(ImDrawList *drawList) noexcept
 
 	if (!localPlayer)
 		return;
-	
+
 	std::vector<const char *> observers;
 
 	GameData::Lock lock;
@@ -270,23 +271,24 @@ void Misc::spectatorList(ImDrawList *drawList) noexcept
 
 void Misc::watermark() noexcept
 {
-    if (config->misc.watermark.enabled) {
-        interfaces->surface->setTextFont(Surface::font);
+	if (config->misc.watermark.enabled)
+	{
+		interfaces->surface->setTextFont(Surface::font);
 
 		const auto watermark = L"Welcome to NEPS.PP";
 
-        static auto frameRate = 1.0f;
-        frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
-        const auto [screenWidth, screenHeight] = interfaces->surface->getScreenSize();
-        std::wstring fps{ std::to_wstring(static_cast<int>(1 / frameRate)) + L" fps" };
-        const auto [fpsWidth, fpsHeight] = interfaces->surface->getTextSize(Surface::font, fps.c_str());
+		static auto frameRate = 1.0f;
+		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
+		const auto [screenWidth, screenHeight] = interfaces->surface->getScreenSize();
+		std::wstring fps{std::to_wstring(static_cast<int>(1 / frameRate)) + L" fps"};
+		const auto [fpsWidth, fpsHeight] = interfaces->surface->getTextSize(Surface::font, fps.c_str());
 
-        float latency = 0.0f;
-        if (auto networkChannel = interfaces->engine->getNetworkChannel(); networkChannel && networkChannel->getLatency(0) > 0.0f)
-            latency = networkChannel->getLatency(0);
+		float latency = 0.0f;
+		if (auto networkChannel = interfaces->engine->getNetworkChannel(); networkChannel && networkChannel->getLatency(0) > 0.0f)
+			latency = networkChannel->getLatency(0);
 
-        std::wstring ping{ L"Ping: " + std::to_wstring(static_cast<int>(latency * 1000)) + L" ms" };
-        const auto [pingWidth, pingHeight] = interfaces->surface->getTextSize(Surface::font, ping.c_str());
+		std::wstring ping{L"Ping: " + std::to_wstring(static_cast<int>(latency * 1000)) + L" ms"};
+		const auto [pingWidth, pingHeight] = interfaces->surface->getTextSize(Surface::font, ping.c_str());
 
 		const auto [waterWidth, waterHeight] = interfaces->surface->getTextSize(Surface::font, watermark);
 
@@ -321,8 +323,8 @@ void Misc::watermark() noexcept
 		else
 			interfaces->surface->setTextColor(config->misc.watermark.color);
 
-        interfaces->surface->setTextPosition(screenWidth - pingWidth - 7, fpsHeight + 5);
-        interfaces->surface->printText(ping.c_str());
+		interfaces->surface->setTextPosition(screenWidth - pingWidth - 7, fpsHeight + 5);
+		interfaces->surface->printText(ping.c_str());
 
 		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 7, 5);
 		interfaces->surface->printText(fps.c_str());
@@ -337,7 +339,7 @@ void Misc::watermark() noexcept
 
 		interfaces->surface->drawOutlinedRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
 		interfaces->surface->drawOutlinedRect(0, 0, waterWidth + 14, waterHeight + 11);
-    }
+	}
 }
 
 void Misc::watermark(ImDrawList *drawList) noexcept
@@ -422,7 +424,7 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 	}
 }
 
-static void drawCrosshair(ImDrawList *drawList, ImVec2 pos, ImU32 color)
+static void drawCrosshair(ImDrawList *drawList, ImVec2 pos, ImU32 color, int type)
 {
 	bool aa = false;
 	if (drawList->Flags & ImDrawListFlags_AntiAliasedFill)
@@ -431,56 +433,64 @@ static void drawCrosshair(ImDrawList *drawList, ImVec2 pos, ImU32 color)
 		aa = true;
 	}
 
-	float th = interfaces->cvar->findVar("cl_crosshairthickness")->getFloat();
-	float gp = interfaces->cvar->findVar("cl_crosshairgap")->getFloat();
-	float sz = interfaces->cvar->findVar("cl_crosshairsize")->getFloat();
-	pos = pos + ImVec2(0.5f, 0.5f);
-	th += 1.0f;
-	gp *= 2.0f;
-	gp += th;
-	sz *= 2.0f;
-	sz -= th;
-	th *= 0.5f;
-	drawList->AddRectFilled(pos + ImVec2(-th, -gp - sz), pos + ImVec2(th, -gp), color);
-	drawList->AddRectFilled(pos + ImVec2(-th, gp), pos + ImVec2(th, gp + sz), color);
-	drawList->AddRectFilled(pos + ImVec2(-gp - sz, -th), pos + ImVec2(-gp, th), color);
-	drawList->AddRectFilled(pos + ImVec2(gp, -th), pos + ImVec2(gp + sz, th), color);
+	switch (type)
+	{
+	case 1:
+		drawList->AddCircle(pos, 15.0f, color, 0, 2.0f);
+		drawList->AddRectFilled(pos - ImVec2{1.0f, 1.0f}, pos + ImVec2{1.0f, 1.0f}, color);
+		break;
+	case 2:
+		drawList->AddRectFilled(pos - ImVec2{1.0f, 1.0f}, pos + ImVec2{1.0f, 1.0f}, color);
+		break;
+	case 3:
+		drawList->AddRectFilled(pos - ImVec2{1.0f, 15.0f}, pos + ImVec2{1.0f, 15.0f}, color);
+		drawList->AddRectFilled(pos - ImVec2{15.0f, 1.0f}, pos + ImVec2{15.0f, 1.0f}, color);
+		break;
+	case 4:
+		drawList->AddRectFilled(pos - ImVec2{1.0f, 15.0f}, pos - ImVec2{-1.0f, 5.0f}, color);
+		drawList->AddRectFilled(pos + ImVec2{1.0f, 15.0f}, pos + ImVec2{-1.0f, 5.0f}, color);
+		drawList->AddRectFilled(pos - ImVec2{15.0f, 1.0f}, pos - ImVec2{5.0f, -1.0f}, color);
+		drawList->AddRectFilled(pos + ImVec2{15.0f, 1.0f}, pos + ImVec2{5.0f, -1.0f}, color);
+		break;
+	default:
+		break;
+	}
 
 	if (aa)
 		drawList->Flags |= ImDrawListFlags_AntiAliasedFill;
 }
 
-void Misc::noscopeCrosshair(ImDrawList* drawList) noexcept
+void Misc::overlayCrosshair(ImDrawList *drawList) noexcept
 {
-    if (!config->misc.noscopeCrosshair.enabled)
-        return;
+	if (!config->misc.overlayCrosshairType)
+		return;
 
-    GameData::Lock lock;
-    const auto& local = GameData::local();
+	GameData::Lock lock;
+	const auto &local = GameData::local();
 
-    if (!local.exists || !local.alive /*|| !local.noScope*/) // Changed to overlay
-        return;
+	if (!local.exists || !local.alive || local.scoped)
+		return;
 
-	drawCrosshair(drawList, ImGui::GetIO().DisplaySize / 2, Helpers::calculateColor(config->misc.noscopeCrosshair));
+	drawCrosshair(drawList, ImGui::GetIO().DisplaySize / 2, Helpers::calculateColor(config->misc.overlayCrosshair), config->misc.overlayCrosshairType);
 }
 
-void Misc::recoilCrosshair(ImDrawList* drawList) noexcept
+void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 {
-    if (!config->misc.recoilCrosshair.enabled)
-        return;
+	if (!config->misc.recoilCrosshairType)
+		return;
 
-    if (!localPlayer || !localPlayer->isAlive())
-        return;
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
 	GameData::Lock lock;
 	const auto aimPunch = GameData::local().aimPunch;
 
 	auto col = config->misc.recoilCrosshair;
 	col.color[3] *= std::clamp(GameData::local().aimPunchAngle.length2D() * 10.0f, 0.0f, 1.0f);
-	
+
 	if (ImVec2 pos; Helpers::worldToScreen(aimPunch, pos))
 	{
-		drawCrosshair(drawList, pos, Helpers::calculateColor(col));
+		drawCrosshair(drawList, pos, Helpers::calculateColor(col), config->misc.recoilCrosshairType);
 	}
 }
 
@@ -503,61 +513,61 @@ void Misc::prepareRevolver(UserCmd *cmd) noexcept
 	}
 }
 
-void Misc::fastPlant(UserCmd* cmd) noexcept
+void Misc::fastPlant(UserCmd *cmd) noexcept
 {
-    if (!config->misc.fastPlant)
-        return;
+	if (!config->misc.fastPlant)
+		return;
 
-    static auto plantAnywhere = interfaces->cvar->findVar("mp_plant_c4_anywhere");
+	static auto plantAnywhere = interfaces->cvar->findVar("mp_plant_c4_anywhere");
 
-    if (plantAnywhere->getInt())
-        return;
+	if (plantAnywhere->getInt())
+		return;
 
-    if (!localPlayer || !localPlayer->isAlive() || (localPlayer->inBombZone() && localPlayer->flags() & Entity::FL_ONGROUND))
-        return;
+	if (!localPlayer || !localPlayer->isAlive() || (localPlayer->inBombZone() && localPlayer->flags() & Entity::FL_ONGROUND))
+		return;
 
-    const auto activeWeapon = localPlayer->getActiveWeapon();
-    if (!activeWeapon || !activeWeapon->isC4())
-        return;
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+	if (!activeWeapon || !activeWeapon->isC4())
+		return;
 
-    cmd->buttons &= ~UserCmd::IN_ATTACK;
+	cmd->buttons &= ~UserCmd::IN_ATTACK;
 
-    constexpr auto doorRange = 200.0f;
+	constexpr auto doorRange = 200.0f;
 
-    Trace trace;
-    const auto startPos = localPlayer->getEyePosition();
-    const auto endPos = startPos + Vector::fromAngle(cmd->viewangles) * doorRange;
-    interfaces->engineTrace->traceRay({ startPos, endPos }, 0x46004009, localPlayer.get(), trace);
+	Trace trace;
+	const auto startPos = localPlayer->getEyePosition();
+	const auto endPos = startPos + Vector::fromAngle(cmd->viewangles) * doorRange;
+	interfaces->engineTrace->traceRay({startPos, endPos}, 0x46004009, localPlayer.get(), trace);
 
-    if (!trace.entity || trace.entity->getClientClass()->classId != ClassId::PropDoorRotating)
-        cmd->buttons &= ~UserCmd::IN_USE;
+	if (!trace.entity || trace.entity->getClientClass()->classId != ClassId::PropDoorRotating)
+		cmd->buttons &= ~UserCmd::IN_USE;
 }
 
-void Misc::fastStop(UserCmd* cmd) noexcept
+void Misc::fastStop(UserCmd *cmd) noexcept
 {
-    if (!config->movement.fastStop)
-        return;
+	if (!config->movement.fastStop)
+		return;
 
-    if (!localPlayer || !localPlayer->isAlive())
-        return;
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
-    if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER || !(localPlayer->flags() & 1) || cmd->buttons & UserCmd::IN_JUMP)
-        return;
+	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER || !(localPlayer->flags() & 1) || cmd->buttons & UserCmd::IN_JUMP)
+		return;
 
-    if (cmd->buttons & (UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT | UserCmd::IN_FORWARD | UserCmd::IN_BACK))
-        return;
-    
-    const auto velocity = localPlayer->velocity();
-    const auto speed = velocity.length2D();
-    if (speed < 15.0f)
-        return;
-    
-    float direction = velocity.toAngle2D();
-    direction = cmd->viewangles.y - direction;
+	if (cmd->buttons & (UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT | UserCmd::IN_FORWARD | UserCmd::IN_BACK))
+		return;
 
-    const auto negatedDirection = Vector::fromAngle2D(direction) * -speed;
-    cmd->forwardmove = negatedDirection.x;
-    cmd->sidemove = negatedDirection.y;
+	const auto velocity = localPlayer->velocity();
+	const auto speed = velocity.length2D();
+	if (speed < 15.0f)
+		return;
+
+	float direction = velocity.toAngle2D();
+	direction = cmd->viewangles.y - direction;
+
+	const auto negatedDirection = Vector::fromAngle2D(direction) * -speed;
+	cmd->forwardmove = negatedDirection.x;
+	cmd->sidemove = negatedDirection.y;
 }
 
 void Misc::drawBombTimer() noexcept
@@ -624,123 +634,136 @@ void Misc::drawBombTimer() noexcept
 
 void Misc::stealNames() noexcept
 {
-    if (!config->griefing.nameStealer)
-        return;
+	if (!config->griefing.nameStealer)
+		return;
 
-    if (!localPlayer)
-        return;
+	if (!localPlayer)
+		return;
 
-    static std::vector<int> stolenIds;
+	static std::vector<int> stolenIds;
 
-    for (int i = 1; i <= memory->globalVars->maxClients; ++i) {
-        const auto entity = interfaces->entityList->getEntity(i);
+	for (int i = 1; i <= memory->globalVars->maxClients; ++i)
+	{
+		const auto entity = interfaces->entityList->getEntity(i);
 
-        if (!entity || entity == localPlayer.get())
-            continue;
+		if (!entity || entity == localPlayer.get())
+			continue;
 
-        PlayerInfo playerInfo;
-        if (!interfaces->engine->getPlayerInfo(entity->index(), playerInfo))
-            continue;
+		PlayerInfo playerInfo;
+		if (!interfaces->engine->getPlayerInfo(entity->index(), playerInfo))
+			continue;
 
-        if (playerInfo.fakeplayer || std::find(stolenIds.cbegin(), stolenIds.cend(), playerInfo.userId) != stolenIds.cend())
-            continue;
+		if (playerInfo.fakeplayer || std::find(stolenIds.cbegin(), stolenIds.cend(), playerInfo.userId) != stolenIds.cend())
+			continue;
 
-        if (changeName(false, (std::string{ playerInfo.name } + '\x1').c_str(), 1.0f))
-            stolenIds.emplace_back(playerInfo.userId);
+		if (changeName(false, (std::string{playerInfo.name} + '\x1').c_str(), 1.0f))
+			stolenIds.emplace_back(playerInfo.userId);
 
-        return;
-    }
-    stolenIds.clear();
+		return;
+	}
+	stolenIds.clear();
 }
 
-void Misc::quickReload(UserCmd* cmd) noexcept
+void Misc::quickReload(UserCmd *cmd) noexcept
 {
-    if (config->misc.quickReload) {
-        static Entity* reloadedWeapon{ nullptr };
+	if (config->misc.quickReload)
+	{
+		static Entity *reloadedWeapon{nullptr};
 
-        if (reloadedWeapon) {
-            for (auto weaponHandle : localPlayer->weapons()) {
-                if (weaponHandle == -1)
-                    break;
+		if (reloadedWeapon)
+		{
+			for (auto weaponHandle : localPlayer->weapons())
+			{
+				if (weaponHandle == -1)
+					break;
 
-                if (interfaces->entityList->getEntityFromHandle(weaponHandle) == reloadedWeapon) {
-                    cmd->weaponselect = reloadedWeapon->index();
-                    cmd->weaponsubtype = reloadedWeapon->getWeaponSubType();
-                    break;
-                }
-            }
-            reloadedWeapon = nullptr;
-        }
+				if (interfaces->entityList->getEntityFromHandle(weaponHandle) == reloadedWeapon)
+				{
+					cmd->weaponselect = reloadedWeapon->index();
+					cmd->weaponsubtype = reloadedWeapon->getWeaponSubType();
+					break;
+				}
+			}
+			reloadedWeapon = nullptr;
+		}
 
-        if (auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && activeWeapon->isInReload() && activeWeapon->clip() == activeWeapon->getWeaponData()->maxClip) {
-            reloadedWeapon = activeWeapon;
+		if (auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && activeWeapon->isInReload() && activeWeapon->clip() == activeWeapon->getWeaponData()->maxClip)
+		{
+			reloadedWeapon = activeWeapon;
 
-            for (auto weaponHandle : localPlayer->weapons()) {
-                if (weaponHandle == -1)
-                    break;
+			for (auto weaponHandle : localPlayer->weapons())
+			{
+				if (weaponHandle == -1)
+					break;
 
-                if (auto weapon = interfaces->entityList->getEntityFromHandle(weaponHandle); weapon && weapon != reloadedWeapon) {
-                    cmd->weaponselect = weapon->index();
-                    cmd->weaponsubtype = weapon->getWeaponSubType();
-                    break;
-                }
-            }
-        }
-    }
+				if (auto weapon = interfaces->entityList->getEntityFromHandle(weaponHandle); weapon && weapon != reloadedWeapon)
+				{
+					cmd->weaponselect = weapon->index();
+					cmd->weaponsubtype = weapon->getWeaponSubType();
+					break;
+				}
+			}
+		}
+	}
 }
 
-bool Misc::changeName(bool reconnect, const char* newName, float delay) noexcept
+bool Misc::changeName(bool reconnect, const char *newName, float delay) noexcept
 {
-    static auto exploitInitialized = false;
+	static auto exploitInitialized = false;
 
-    static auto name = interfaces->cvar->findVar("name");
+	static auto name = interfaces->cvar->findVar("name");
 
-    if (reconnect) {
-        exploitInitialized = false;
-        return false;
-    }
+	if (reconnect)
+	{
+		exploitInitialized = false;
+		return false;
+	}
 
-    if (!exploitInitialized && interfaces->engine->isInGame()) {
-        if (PlayerInfo playerInfo; localPlayer && interfaces->engine->getPlayerInfo(localPlayer->index(), playerInfo) && (!strcmp(playerInfo.name, "?empty") || !strcmp(playerInfo.name, "\n\xAD\xAD\xAD"))) {
-            exploitInitialized = true;
-        } else {
-            name->onChangeCallbacks.size = 0;
-            name->setValue("\n\xAD\xAD\xAD");
-            return false;
-        }
-    }
+	if (!exploitInitialized && interfaces->engine->isInGame())
+	{
+		if (PlayerInfo playerInfo; localPlayer && interfaces->engine->getPlayerInfo(localPlayer->index(), playerInfo) && (!strcmp(playerInfo.name, "?empty") || !strcmp(playerInfo.name, "\n\xAD\xAD\xAD")))
+		{
+			exploitInitialized = true;
+		} else
+		{
+			name->onChangeCallbacks.size = 0;
+			name->setValue("\n\xAD\xAD\xAD");
+			return false;
+		}
+	}
 
-    static auto nextChangeTime{ 0.0f };
-    if (nextChangeTime <= memory->globalVars->realtime) {
-        name->setValue(newName);
-        nextChangeTime = memory->globalVars->realtime + delay;
-        return true;
-    }
-    return false;
+	static auto nextChangeTime{0.0f};
+	if (nextChangeTime <= memory->globalVars->realtime)
+	{
+		name->setValue(newName);
+		nextChangeTime = memory->globalVars->realtime + delay;
+		return true;
+	}
+	return false;
 }
 
-void Misc::bunnyHop(UserCmd* cmd) noexcept
+void Misc::bunnyHop(UserCmd *cmd) noexcept
 {
-    if (!localPlayer)
-        return;
+	if (!localPlayer)
+		return;
 
-    static auto wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
+	static auto wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
 
-    if (config->movement.bunnyHop && !(localPlayer->flags() & Entity::FL_ONGROUND) && localPlayer->moveType() != MoveType::LADDER && !wasLastTimeOnGround)
-        cmd->buttons &= ~UserCmd::IN_JUMP;
+	if (config->movement.bunnyHop && !(localPlayer->flags() & Entity::FL_ONGROUND) && localPlayer->moveType() != MoveType::LADDER && !wasLastTimeOnGround)
+		cmd->buttons &= ~UserCmd::IN_JUMP;
 
-    wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
+	wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
 }
 
 void Misc::fakeBan(bool set) noexcept
 {
-    static bool shouldSet = false;
+	static bool shouldSet = false;
 
-    if (set)
-        shouldSet = set;
+	if (set)
+		shouldSet = set;
 
-    if (shouldSet && interfaces->engine->isInGame() && changeName(false, std::string{"\x1\xB"}.append(std::string{static_cast<char>(config->griefing.banColor + 1)}).append(config->griefing.banText).append("\x1").c_str(), 5.0f))
-        shouldSet = false;
+	if (shouldSet && interfaces->engine->isInGame() && changeName(false, std::string{"\x1\xB"}.append(std::string{static_cast<char>(config->griefing.banColor + 1)}).append(config->griefing.banText).append("\x1").c_str(), 5.0f))
+		shouldSet = false;
 }
 
 void Misc::changeConVarsTick() noexcept
@@ -751,8 +774,8 @@ void Misc::changeConVarsTick() noexcept
 	static auto impactsVar = interfaces->cvar->findVar("sv_showimpacts");
 	impactsVar->onChangeCallbacks.size = 0;
 	impactsVar->setValue(config->visuals.bulletImpacts);
-    static auto nadeVar = interfaces->cvar->findVar("cl_grenadepreview");
-    nadeVar->onChangeCallbacks.size = 0;
+	static auto nadeVar = interfaces->cvar->findVar("cl_grenadepreview");
+	nadeVar->onChangeCallbacks.size = 0;
 	nadeVar->setValue(config->misc.nadePredict);
 	static auto shadowVar = interfaces->cvar->findVar("cl_csm_enabled");
 	shadowVar->setValue(!config->visuals.noShadows);
@@ -766,29 +789,32 @@ void Misc::changeConVarsTick() noexcept
 
 static void oppositeHandKnife(FrameStage stage) noexcept
 {
-    static const auto rightHandVar = interfaces->cvar->findVar("cl_righthand");
+	static const auto rightHandVar = interfaces->cvar->findVar("cl_righthand");
 	static bool original = rightHandVar->getInt();
 
-    if (!localPlayer)
-        return;
+	if (!localPlayer)
+		return;
 
-    if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
-        return;
+	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+		return;
 
-    if (!config->visuals.oppositeHandKnife)
-    {
-        rightHandVar->setValue(original);
-        return;
-    }
-
-    if (stage == FrameStage::RENDER_START) {
-        if (const auto activeWeapon = localPlayer->getActiveWeapon()) {
-            if (const auto classId = activeWeapon->getClientClass()->classId; classId == ClassId::Knife || classId == ClassId::KnifeGG)
-				rightHandVar->setValue(!original);
-        }
-    } else {
+	if (!config->visuals.oppositeHandKnife)
+	{
 		rightHandVar->setValue(original);
-    }
+		return;
+	}
+
+	if (stage == FrameStage::RENDER_START)
+	{
+		if (const auto activeWeapon = localPlayer->getActiveWeapon())
+		{
+			if (const auto classId = activeWeapon->getClientClass()->classId; classId == ClassId::Knife || classId == ClassId::KnifeGG)
+				rightHandVar->setValue(!original);
+		}
+	} else
+	{
+		rightHandVar->setValue(original);
+	}
 }
 
 static void camDist(FrameStage stage)
@@ -846,109 +872,119 @@ void Misc::changeConVarsFrame(FrameStage stage)
 	oppositeHandKnife(stage);
 }
 
-void Misc::quickHealthshot(UserCmd* cmd) noexcept
+void Misc::quickHealthshot(UserCmd *cmd) noexcept
 {
-    if (!localPlayer)
-        return;
+	if (!localPlayer)
+		return;
 
-    static bool inProgress{ false };
+	static bool inProgress{false};
 
-    if (GetAsyncKeyState(config->misc.quickHealthshotKey) & 1)
-        inProgress = true;
+	if (GetAsyncKeyState(config->misc.quickHealthshotKey) & 1)
+		inProgress = true;
 
-    if (auto activeWeapon{ localPlayer->getActiveWeapon() }; activeWeapon && inProgress) {
-        if (activeWeapon->getClientClass()->classId == ClassId::Healthshot && localPlayer->nextAttack() <= memory->globalVars->serverTime() && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime())
-            cmd->buttons |= UserCmd::IN_ATTACK;
-        else {
-            for (auto weaponHandle : localPlayer->weapons()) {
-                if (weaponHandle == -1)
-                    break;
+	if (auto activeWeapon{localPlayer->getActiveWeapon()}; activeWeapon && inProgress)
+	{
+		if (activeWeapon->getClientClass()->classId == ClassId::Healthshot && localPlayer->nextAttack() <= memory->globalVars->serverTime() && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime())
+			cmd->buttons |= UserCmd::IN_ATTACK;
+		else
+		{
+			for (auto weaponHandle : localPlayer->weapons())
+			{
+				if (weaponHandle == -1)
+					break;
 
-                if (const auto weapon{ interfaces->entityList->getEntityFromHandle(weaponHandle) }; weapon && weapon->getClientClass()->classId == ClassId::Healthshot) {
-                    cmd->weaponselect = weapon->index();
-                    cmd->weaponsubtype = weapon->getWeaponSubType();
-                    return;
-                }
-            }
-        }
-        inProgress = false;
-    }
+				if (const auto weapon{interfaces->entityList->getEntityFromHandle(weaponHandle)}; weapon && weapon->getClientClass()->classId == ClassId::Healthshot)
+				{
+					cmd->weaponselect = weapon->index();
+					cmd->weaponsubtype = weapon->getWeaponSubType();
+					return;
+				}
+			}
+		}
+		inProgress = false;
+	}
 }
 
 void Misc::fixTabletSignal() noexcept
 {
-    if (config->misc.fixTabletSignal && localPlayer) {
-        if (auto activeWeapon{ localPlayer->getActiveWeapon() }; activeWeapon && activeWeapon->getClientClass()->classId == ClassId::Tablet)
-            activeWeapon->tabletReceptionIsBlocked() = false;
-    }
+	if (config->misc.fixTabletSignal && localPlayer)
+	{
+		if (auto activeWeapon{localPlayer->getActiveWeapon()}; activeWeapon && activeWeapon->getClientClass()->classId == ClassId::Tablet)
+			activeWeapon->tabletReceptionIsBlocked() = false;
+	}
 }
 
 void Misc::fakePrime() noexcept
 {
-    static bool lastState = false;
+	static bool lastState = false;
 
-    if (config->griefing.fakePrime != lastState) {
-        lastState = config->griefing.fakePrime;
+	if (config->griefing.fakePrime != lastState)
+	{
+		lastState = config->griefing.fakePrime;
 
-        if (DWORD oldProtect; VirtualProtect(memory->fakePrime, 1, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-            constexpr uint8_t patch[]{ 0x74, 0xEB };
-            *memory->fakePrime = patch[config->griefing.fakePrime];
-            VirtualProtect(memory->fakePrime, 1, oldProtect, nullptr);
-        }
-    }
+		if (DWORD oldProtect; VirtualProtect(memory->fakePrime, 1, PAGE_EXECUTE_READWRITE, &oldProtect))
+		{
+			constexpr uint8_t patch[]{0x74, 0xEB};
+			*memory->fakePrime = patch[config->griefing.fakePrime];
+			VirtualProtect(memory->fakePrime, 1, oldProtect, nullptr);
+		}
+	}
 }
 
-void Misc::killMessage(GameEvent& event) noexcept
+void Misc::killMessage(GameEvent &event) noexcept
 {
-    if (!config->griefing.killMessage)
-        return;
+	if (!config->griefing.killMessage)
+		return;
 
-    if (!localPlayer || !localPlayer->isAlive())
-        return;
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
-    if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
-        return;
+	if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
+		return;
 
-    std::string cmd = "say \"";
-    cmd += config->griefing.killMessageString;
-    cmd += '"';
-    interfaces->engine->clientCmdUnrestricted(cmd.c_str());
+	std::string cmd = "say \"";
+	cmd += config->griefing.killMessageString;
+	cmd += '"';
+	interfaces->engine->clientCmdUnrestricted(cmd.c_str());
 }
 
-void Misc::fixMovement(UserCmd* cmd, float yaw) noexcept
+void Misc::fixMovement(UserCmd *cmd, float yaw) noexcept
 {
-    if (config->misc.fixMovement) {
-        float oldYaw = yaw + (yaw < 0.0f ? 360.0f : 0.0f);
-        float newYaw = cmd->viewangles.y + (cmd->viewangles.y < 0.0f ? 360.0f : 0.0f);
-        float yawDelta = newYaw < oldYaw ? fabsf(newYaw - oldYaw) : 360.0f - fabsf(newYaw - oldYaw);
-        yawDelta = 360.0f - yawDelta;
+	if (config->misc.fixMovement)
+	{
+		float oldYaw = yaw + (yaw < 0.0f ? 360.0f : 0.0f);
+		float newYaw = cmd->viewangles.y + (cmd->viewangles.y < 0.0f ? 360.0f : 0.0f);
+		float yawDelta = newYaw < oldYaw ? fabsf(newYaw - oldYaw) : 360.0f - fabsf(newYaw - oldYaw);
+		yawDelta = 360.0f - yawDelta;
 
-        const float forwardmove = cmd->forwardmove;
-        const float sidemove = cmd->sidemove;
-        cmd->forwardmove = std::cos(Helpers::degreesToRadians(yawDelta)) * forwardmove + std::cos(Helpers::degreesToRadians(yawDelta + 90.0f)) * sidemove;
-        cmd->sidemove = std::sin(Helpers::degreesToRadians(yawDelta)) * forwardmove + std::sin(Helpers::degreesToRadians(yawDelta + 90.0f)) * sidemove;
-    }
+		const float forwardmove = cmd->forwardmove;
+		const float sidemove = cmd->sidemove;
+		cmd->forwardmove = std::cos(Helpers::degreesToRadians(yawDelta)) * forwardmove + std::cos(Helpers::degreesToRadians(yawDelta + 90.0f)) * sidemove;
+		cmd->sidemove = std::sin(Helpers::degreesToRadians(yawDelta)) * forwardmove + std::sin(Helpers::degreesToRadians(yawDelta + 90.0f)) * sidemove;
+	}
 }
 
-void Misc::antiAfkKick(UserCmd* cmd) noexcept
+void Misc::antiAfkKick(UserCmd *cmd) noexcept
 {
-    if (config->exploits.antiAfkKick && cmd->commandNumber % 2)
-        cmd->buttons |= 1 << 26;
+	if (config->exploits.antiAfkKick && cmd->commandNumber % 2)
+		cmd->buttons |= 1 << 26;
 }
 
 void Misc::fixAnimationLOD(FrameStage stage) noexcept
 {
-    if (config->misc.fixAnimationLOD && stage == FrameStage::RENDER_START) {
-        if (!localPlayer)
-            return;
+	if (config->misc.fixAnimationLOD && stage == FrameStage::RENDER_START)
+	{
+		if (!localPlayer)
+			return;
 
-        for (int i = 1; i <= interfaces->engine->getMaxClients(); i++) {
-            Entity* entity = interfaces->entityList->getEntity(i);
-            if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive()) continue;
-            *reinterpret_cast<int*>(entity + 0xA28) = 0;
-            *reinterpret_cast<int*>(entity + 0xA30) = memory->globalVars->framecount;
-        }
-    }
+		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
+		{
+			Entity *entity = interfaces->entityList->getEntity(i);
+			if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive()) continue;
+			*reinterpret_cast<int *>(entity + 0xA28) = 0;
+			*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->framecount;
+		}
+	}
 }
 
 void Misc::autoPistol(UserCmd *cmd) noexcept
@@ -966,19 +1002,20 @@ void Misc::autoPistol(UserCmd *cmd) noexcept
 	}
 }
 
-void Misc::autoReload(UserCmd* cmd) noexcept
+void Misc::autoReload(UserCmd *cmd) noexcept
 {
-    if (config->misc.autoReload && localPlayer) {
-        const auto activeWeapon = localPlayer->getActiveWeapon();
-        if (activeWeapon && getWeaponIndex(activeWeapon->itemDefinitionIndex2()) && !activeWeapon->clip())
-            cmd->buttons &= ~(UserCmd::IN_ATTACK | UserCmd::IN_ATTACK2);
-    }
+	if (config->misc.autoReload && localPlayer)
+	{
+		const auto activeWeapon = localPlayer->getActiveWeapon();
+		if (activeWeapon && getWeaponIndex(activeWeapon->itemDefinitionIndex2()) && !activeWeapon->clip())
+			cmd->buttons &= ~(UserCmd::IN_ATTACK | UserCmd::IN_ATTACK2);
+	}
 }
 
-void Misc::revealRanks(UserCmd* cmd) noexcept
+void Misc::revealRanks(UserCmd *cmd) noexcept
 {
-    if (config->misc.revealRanks && cmd->buttons & UserCmd::IN_SCORE)
-        interfaces->client->dispatchUserMessage(50, 0, 0, nullptr);
+	if (config->misc.revealRanks && cmd->buttons & UserCmd::IN_SCORE)
+		interfaces->client->dispatchUserMessage(50, 0, 0, nullptr);
 }
 
 static float idealAngleDelta2(float speed)
@@ -1001,7 +1038,7 @@ static float idealAngleDelta3(float speed)
 	return std::fminf(std::atanf(maxWishSpeedVar->getFloat() / speed), PI / 2);
 }
 
-void Misc::autoStrafe(UserCmd* cmd) noexcept
+void Misc::autoStrafe(UserCmd *cmd) noexcept
 {
 	if (!config->movement.autoStrafe)
 		return;
@@ -1035,13 +1072,13 @@ void Misc::autoStrafe(UserCmd* cmd) noexcept
 	wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
 }
 
-void Misc::removeCrouchCooldown(UserCmd* cmd) noexcept
+void Misc::removeCrouchCooldown(UserCmd *cmd) noexcept
 {
-    if (config->exploits.fastDuck)
-        cmd->buttons |= UserCmd::IN_BULLRUSH;
+	if (config->exploits.fastDuck)
+		cmd->buttons |= UserCmd::IN_BULLRUSH;
 }
 
-void Misc::moonwalk(UserCmd* cmd, bool &sendPacket) noexcept
+void Misc::moonwalk(UserCmd *cmd, bool &sendPacket) noexcept
 {
 	if (!localPlayer || localPlayer->moveType() == MoveType::LADDER)
 		return;
@@ -1119,8 +1156,7 @@ void Misc::playKillSound(GameEvent &event) noexcept
 			soundprecache->addString(false, killSounds[config->sound.killSound - 1]);
 
 		interfaces->surface->playSound(killSounds[config->sound.killSound - 1]);
-	}
-	else if (config->sound.killSound == 5)
+	} else if (config->sound.killSound == 5)
 	{
 		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
 			soundprecache->addString(false, config->sound.customKillSound.c_str());
@@ -1129,10 +1165,10 @@ void Misc::playKillSound(GameEvent &event) noexcept
 	}
 }
 
-void Misc::purchaseList(GameEvent* event) noexcept
+void Misc::purchaseList(GameEvent *event) noexcept
 {
-    static std::mutex mtx;
-    std::scoped_lock _{ mtx };
+	static std::mutex mtx;
+	std::scoped_lock _{mtx};
 
 	struct PlayerPurchases
 	{
@@ -1141,40 +1177,46 @@ void Misc::purchaseList(GameEvent* event) noexcept
 	};
 
 	static std::unordered_map<int, PlayerPurchases> playerPurchases;
-    static std::unordered_map<std::string, int> purchaseTotal;
-    static int totalCost;
+	static std::unordered_map<std::string, int> purchaseTotal;
+	static int totalCost;
 
-    static auto freezeEnd = 0.0f;
+	static auto freezeEnd = 0.0f;
 
-    if (event) {
-        switch (fnv::hashRuntime(event->getName())) {
-        case fnv::hash("item_purchase"): {
-            const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
+	if (event)
+	{
+		switch (fnv::hashRuntime(event->getName()))
+		{
+		case fnv::hash("item_purchase"):
+		{
+			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
 
-            if (player && localPlayer && memory->isOtherEnemy(player, localPlayer.get())) {
-                if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(event->getString("weapon"))) {
+			if (player && localPlayer && memory->isOtherEnemy(player, localPlayer.get()))
+			{
+				if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(event->getString("weapon")))
+				{
 					auto &purchase = playerPurchases[player->handle()];
-                    if (const auto weaponInfo = memory->weaponSystem->getWeaponInfo(definition->getWeaponId())) {
+					if (const auto weaponInfo = memory->weaponSystem->getWeaponInfo(definition->getWeaponId()))
+					{
 						purchase.totalCost += weaponInfo->price;
-                        totalCost += weaponInfo->price;
-                    }
-                    const std::string weapon = interfaces->localize->findAsUTF8(definition->getItemBaseName());
-                    ++purchaseTotal[weapon];
+						totalCost += weaponInfo->price;
+					}
+					const std::string weapon = interfaces->localize->findAsUTF8(definition->getItemBaseName());
+					++purchaseTotal[weapon];
 					++purchase.items[weapon];
-                }
-            }
-            break;
-        }
-        case fnv::hash("round_start"):
-            freezeEnd = 0.0f;
+				}
+			}
+			break;
+		}
+		case fnv::hash("round_start"):
+			freezeEnd = 0.0f;
 			playerPurchases.clear();
-            purchaseTotal.clear();
-            totalCost = 0;
-            break;
-        case fnv::hash("round_freeze_end"):
-            freezeEnd = memory->globalVars->realtime;
-            break;
-        }
+			purchaseTotal.clear();
+			totalCost = 0;
+			break;
+		case fnv::hash("round_freeze_end"):
+			freezeEnd = memory->globalVars->realtime;
+			break;
+		}
 	} else
 	{
 		if (!config->misc.purchaseList.enabled)

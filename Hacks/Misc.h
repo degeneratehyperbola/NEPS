@@ -13,7 +13,7 @@ namespace Misc
     void updateClanTag() noexcept;
     void spectatorList() noexcept;
     void spectatorList(ImDrawList *drawList) noexcept;
-    void noscopeCrosshair(ImDrawList* drawlist) noexcept;
+    void overlayCrosshair(ImDrawList* drawlist) noexcept;
     void recoilCrosshair(ImDrawList* drawList) noexcept;
     void watermark() noexcept;
     void watermark(ImDrawList *drawlist) noexcept;

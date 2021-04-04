@@ -104,7 +104,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					interfaces->engine->setViewAngles(cmd->viewangles);
 			}
 
-			if (config->aimbot[weaponIndex].autoShot && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime() && !clamped)
+			if (config->aimbot[weaponIndex].autoShot && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime() && (!clamped || activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver))
 				cmd->buttons |= UserCmd::IN_ATTACK;
 
 			if (clamped)

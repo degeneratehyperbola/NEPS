@@ -124,7 +124,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Visuals::hitMarker(nullptr, ImGui::GetBackgroundDrawList());
 	Visuals::drawSmokeHull(ImGui::GetBackgroundDrawList());
 	Visuals::drawMolotovHull(ImGui::GetBackgroundDrawList());
-	Misc::noscopeCrosshair(ImGui::GetBackgroundDrawList());
+	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::drawBombTimer();
 	Misc::indicators(ImGui::GetBackgroundDrawList());
@@ -213,7 +213,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	Misc::prepareRevolver(cmd); // Bruh, I know...
 
-	auto viewAnglesDelta{cmd->viewangles - previousViewAngles};
+	auto viewAnglesDelta = cmd->viewangles - previousViewAngles;
 	viewAnglesDelta.normalize();
 	viewAnglesDelta.x = std::clamp(viewAnglesDelta.x, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
 	viewAnglesDelta.y = std::clamp(viewAnglesDelta.y, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);

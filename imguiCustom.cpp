@@ -38,7 +38,8 @@ void ImGuiCustom::colorPicker(const char *name, float color[3], float *alpha, bo
 	}
 	ImGui::SameLine();
 
-	ImGui::TextUnformatted(name, std::strstr(name, "##"));
+	if (std::strncmp(name, "##", 2))
+		ImGui::TextUnformatted(name, std::strstr(name, "##"));
 
 	if (openPopup)
 		ImGui::OpenPopup("##popup");
