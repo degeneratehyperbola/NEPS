@@ -57,7 +57,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 	if (!config->aimbot[weaponIndex].hitgroup)
 		return;
 
-    if (!config->aimbot[weaponIndex].betweenShots && activeWeapon->nextPrimaryAttack() > memory->globalVars->serverTime())
+    if (!config->aimbot[weaponIndex].betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
         return;
 
     if (!config->aimbot[weaponIndex].ignoreFlash && localPlayer->isFlashed())
