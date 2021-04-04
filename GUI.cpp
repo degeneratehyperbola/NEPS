@@ -307,8 +307,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Aimlock", &config->aimbot[currentWeapon].aimlock);
 	ImGui::Checkbox("Silent", &config->aimbot[currentWeapon].silent);
-	if (!config->aimbot[currentWeapon].silent)
-		ImGui::Checkbox("Stop on reach", &config->aimbot[currentWeapon].targetStop);
 	ImGui::Checkbox("Friendly fire", &config->aimbot[currentWeapon].friendlyFire);
 	ImGui::Checkbox("Visible only", &config->aimbot[currentWeapon].visibleOnly);
 	ImGui::Checkbox("Scoped only", &config->aimbot[currentWeapon].scopedOnly);

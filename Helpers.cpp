@@ -183,9 +183,8 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 			if (trace.entity->gunGameImmunity())
 				break;
 
-			if (hitgroupFlags != (1 << 7) - 1)
-				if (!(hitgroupFlags & (1 << (trace.hitgroup - 1))))
-					break;
+			if (~hitgroupFlags & (1 << (trace.hitgroup - 1)))
+				break;
 
 			const auto m = std::strstr(weaponData->name, "Taser") ? 1.0f : HitGroup::getDamageMultiplier(trace.hitgroup);
 			damage = m * damage * std::powf(weaponData->rangeModifier, trace.fraction * traveled / 500.0f);

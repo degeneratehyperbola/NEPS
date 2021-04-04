@@ -55,11 +55,10 @@ public:
 		int interpolation = 0;
 		float smooth = 0.0f;
 		float linearSpeed = 255.0f;
-		int hitgroup = (1 << 7) - 1;
+		int hitgroup = 127;
 		bool betweenShots = true;
 		KeyBind safeOnly;
-		int safeHitgroup = 0;
-		bool targetStop = false;
+		int safeHitgroup = 12;
 	};
 	std::array<Aimbot, 40> aimbot;
 
@@ -71,7 +70,7 @@ public:
 		bool scopedOnly = true;
 		bool ignoreFlash = false;
 		bool ignoreSmoke = false;
-		int hitgroup = (1 << 7) - 1;
+		int hitgroup = 127;
 		int shotDelay = 0;
 		float maxShotInaccuracy = 1.0f;
 		float hitchance = 0.0f;

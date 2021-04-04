@@ -173,19 +173,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 			bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
 
 			if (trace.entity == entity && canHit && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
-			{
 				cmd->buttons |= UserCmd::IN_ATTACK2;
-			}
-		}
-
-		if (config->aimbot[weaponIndex].targetStop && !config->aimbot[weaponIndex].silent)
-		{
-			Vector looking = localPlayerEyePosition + Vector::fromAngle(cmd->viewangles + aimPunch) * weaponData->range;
-			bool goesThroughWall = false;
-			Trace trace;
-			bool reached = Helpers::canHit(looking, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
-			if (trace.entity == target && reached && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
-				return;
 		}
 
 		auto allowedHitgroup = config->aimbot[weaponIndex].hitgroup;
