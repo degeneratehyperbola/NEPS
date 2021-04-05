@@ -13,7 +13,7 @@ class Chams
 {
 public:
 	// Redirect entity models to draw with DrawModelExecute
-	static void toSlowPipeline() noexcept;
+	static void toSlowPipeline(Entity *) noexcept;
 
 	Chams() noexcept;
 	bool render(void *, void *, const ModelRenderInfo &, Matrix3x4 *) noexcept;

@@ -334,7 +334,6 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 
 	if (stage == FrameStage::START)
 	{
-		Chams::toSlowPipeline();
 		GameData::update();
 	}
 

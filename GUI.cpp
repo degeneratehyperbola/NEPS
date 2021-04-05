@@ -190,7 +190,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 	{
 		if (!window.aimbot)
 			return;
-		ImGui::SetNextWindowSize({377.0f, 0.0f});
+		ImGui::SetNextWindowSize({380.0f, 0.0f});
 		ImGui::Begin("Aimbot", &window.aimbot, windowFlags);
 	}
 	static int currentCategory{0};
@@ -1267,9 +1267,19 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Zoom", config->visuals.zoom);
 	ImGui::PushItemWidth(255.0f);
 	ImGui::SliderInt("##zoom", &config->visuals.zoomFac, 0, 99, "Zoom factor %d%%");
+
 	ImGuiCustom::keyBind("Thirdperson", config->visuals.thirdPerson);
-	ImGui::SliderInt("##thirdperson_dist", &config->visuals.thirdpersonDistance, 0, 500, "Thirdperson distance %du");
-	ImGui::Checkbox("Thirdperson collision", &config->visuals.thirdpersonCollision);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("tp", ImGuiDir_Right))
+		ImGui::OpenPopup("##tp_edit");
+
+	if (ImGui::BeginPopup("##tp_edit"))
+	{
+		ImGui::SliderInt("##distance", &config->visuals.thirdpersonDistance, 0, 500, "Distance %du");
+		ImGui::Checkbox("Camera collision", &config->visuals.thirdpersonCollision);
+		ImGui::EndPopup();
+	}
+
 	ImGuiCustom::keyBind("Flashlight", config->visuals.flashlight);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("flashlight", ImGuiDir_Right))
@@ -1278,7 +1288,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	if (ImGui::BeginPopup("##flashlight_edit"))
 	{
 		ImGui::SliderFloat("##bright", &config->visuals.flashlightBrightness, 0.0f, 3.0f, "Brightness %.3f");
-		ImGui::SliderFloat("##distance", &config->visuals.flashlightDistance, 100.0f, 1000.0f, "Distance %.0fu");
+		ImGui::SliderInt("##distance", &config->visuals.flashlightDistance, 0, 1000, "Distance %du");
 		ImGui::SliderInt("##fov", &config->visuals.flashlightFov, 1, 170, "FOV %ddeg");
 		ImGui::EndPopup();
 	}

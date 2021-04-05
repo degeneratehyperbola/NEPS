@@ -21,6 +21,8 @@
 #include "SDK/WeaponId.h"
 #include "SDK/WeaponData.h"
 
+#include "Hacks/Chams.h"
+
 static Matrix4x4 viewMatrix;
 static LocalPlayerData localPlayerData;
 static std::vector<PlayerData> playerData;
@@ -80,6 +82,8 @@ void GameData::update() noexcept
 		const auto entity = interfaces->entityList->getEntity(i);
 		if (!entity)
 			continue;
+
+		Chams::toSlowPipeline(entity);
 
 		if (entity->isPlayer())
 		{

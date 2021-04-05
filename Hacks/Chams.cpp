@@ -19,38 +19,34 @@
 #include "../SDK/StudioRender.h"
 #include "../SDK/KeyValues.h"
 
-void Chams::toSlowPipeline() noexcept
+void Chams::toSlowPipeline(Entity *entity) noexcept
 {
 	if (!localPlayer || !interfaces->engine->isInGame())
 		return;
 
-	for (int i = 1; i <= interfaces->entityList->getHighestEntityIndex(); i++)
+	if (!entity) return;
+
+	if (entity->isWeapon())
 	{
-		auto entity = interfaces->entityList->getEntity(i);
-		if (!entity) continue;
+		entity->useFastPipeline() = false;
+		return;
+	}
 
-		if (entity->isWeapon())
-		{
-			entity->useFastPipeline() = false;
-			continue;
-		}
-
-		switch (entity->getClientClass()->classId)
-		{
-		case ClassId::PropPhysicsMultiplayer:
-		case ClassId::PropDynamic:
-		case ClassId::EconEntity:
-		case ClassId::WeaponWorldModel:
-		case ClassId::BaseAnimating:
-		case ClassId::Ragdoll:
-		case ClassId::MolotovGrenade:
-		case ClassId::DecoyGrenade:
-		case ClassId::HEGrenade:
-		case ClassId::Flashbang:
-		case ClassId::BumpMine:
-			entity->useFastPipeline() = false;
-			continue;
-		}
+	switch (entity->getClientClass()->classId)
+	{
+	case ClassId::PropPhysicsMultiplayer:
+	case ClassId::PropDynamic:
+	case ClassId::EconEntity:
+	case ClassId::WeaponWorldModel:
+	case ClassId::BaseAnimating:
+	case ClassId::Ragdoll:
+	case ClassId::MolotovGrenade:
+	case ClassId::DecoyGrenade:
+	case ClassId::HEGrenade:
+	case ClassId::Flashbang:
+	case ClassId::BumpMine:
+		entity->useFastPipeline() = false;
+		return;
 	}
 }
 
