@@ -1,6 +1,7 @@
 #include <functional>
 #include <intrin.h>
 #include <string>
+#include <sstream>
 #include <Windows.h>
 #include <Psapi.h>
 
@@ -64,24 +65,23 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 		ImGui_ImplWin32_Init(window);
 		config = std::make_unique<Config>("NEPS");
 		gui = std::make_unique<GUI>();
-
 		hooks->install();
 
-		const char *loaded = config->load(u8"default", false) ? "\n\nConfig \"default\" has been automatically loaded." : "";
+		const auto loaded = config->load(u8"default", false);
 
 		gui->updateColors();
 		SkinChanger::scheduleHudUpdate();
 
-		std::string welcomeMsg =
-			R"_msg(We do have a resolver now >:)
+		std::ostringstream welcomeMsg;
+		welcomeMsg << "Let's get started!\n";
+		welcomeMsg << "To open GUI press \"";
+		welcomeMsg << interfaces->inputSystem->virtualKeyToString(config->misc.menuKey);
+		welcomeMsg << "\" on your keyboard.\n\n";
+		welcomeMsg << "Configs are stored in Documents\\\\NEPS\\\\ directory.\n";
+		welcomeMsg << "NEPS tries to load a config named \"default\" on start-up,\nand it appears that it was ";
+		welcomeMsg << (loaded ? "loaded successfuly." : "not found.");
 
-Let's get started!
-To open UI press %button on your keyboard.%loaded)_msg";
-
-		Helpers::replace(welcomeMsg, "%button", interfaces->inputSystem->virtualKeyToString(config->misc.menuKey));
-		Helpers::replace(welcomeMsg, "%loaded", loaded);
-
-		interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.c_str());
+		interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.str().c_str());
 
 		return true;
 	}(window);
@@ -348,11 +348,12 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 
 	if (interfaces->engine->isInGame())
 	{
+		Visuals::flashlight(stage);
 		Visuals::skybox(stage);
 		Visuals::removeBlur(stage);
 		Visuals::removeGrass(stage);
-		Visuals::removeFire(stage);
 		Visuals::modifySmoke(stage);
+		Visuals::modifyFire(stage);
 		Visuals::playerModel(stage);
 		Visuals::disablePostProcessing(stage);
 		Visuals::removeVisualRecoil(stage);
@@ -669,7 +670,7 @@ static float __stdcall getScreenAspectRatio(int width, int height) noexcept
 
 static void __stdcall renderSmokeOverlay(bool update) noexcept
 {
-	if (config->visuals.noSmoke || config->visuals.wireframeSmoke)
+	if (config->visuals.smoke)
 		*reinterpret_cast<float *>(std::uintptr_t(memory->viewRender) + 0x588) = 0.0f;
 	else
 		hooks->viewRender.callOriginal<void, 41>(update);

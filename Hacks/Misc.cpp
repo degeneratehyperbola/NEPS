@@ -853,18 +853,26 @@ void Misc::changeConVarsFrame(FrameStage stage)
 		blurVar->setValue(config->misc.disablePanoramablur);
 		static auto lagVar = interfaces->cvar->findVar("cam_ideallag");
 		lagVar->setValue(0);
+		static auto camVar = interfaces->cvar->findVar("cam_collision");
+		camVar->setValue(config->visuals.thirdpersonCollision);
 		static auto minVar = interfaces->cvar->findVar("c_mindistance");
 		minVar->setValue(-FLT_MAX);
 		static auto maxVar = interfaces->cvar->findVar("c_maxdistance");
 		maxVar->setValue(FLT_MAX);
 		static auto propsVar = interfaces->cvar->findVar("r_DrawSpecificStaticProp");
 		propsVar->setValue(config->visuals.props.enabled ? 0 : -1);
+		static auto fbrightVar = interfaces->cvar->findVar("r_flashlightbrightness");
+		fbrightVar->setValue(config->visuals.flashlightBrightness);
+		static auto fdistVar = interfaces->cvar->findVar("r_flashlightfar");
+		fdistVar->setValue(config->visuals.flashlightDistance);
+		static auto ffovVar = interfaces->cvar->findVar("r_flashlightfov");
+		ffovVar->setValue(config->visuals.flashlightFov);
 		break;
 	case FrameStage::RENDER_END:
-		static auto sky = interfaces->cvar->findVar("r_3dsky");
-		sky->setValue(!config->visuals.no3dSky);
-		static auto brightness = interfaces->cvar->findVar("mat_force_tonemap_scale");
-		brightness->setValue(config->visuals.brightness);
+		static auto skyVar = interfaces->cvar->findVar("r_3dsky");
+		skyVar->setValue(!config->visuals.no3dSky);
+		static auto brightVar = interfaces->cvar->findVar("mat_force_tonemap_scale");
+		brightVar->setValue(config->visuals.brightness);
 		break;
 	}
 

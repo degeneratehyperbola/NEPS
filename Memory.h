@@ -45,9 +45,10 @@ static std::pair<void *, std::size_t> getModuleInformation(const char *name) noe
 	return {};
 }
 
-class Memory {
+class Memory
+{
 public:
-    Memory() noexcept;
+	Memory() noexcept;
 
 	uintptr_t present;
 	uintptr_t reset;
@@ -79,7 +80,7 @@ public:
 	std::add_pointer_t<bool __cdecl(float, float, float, float, float, float, Trace &)> traceToExit;
 	ViewRender *viewRender;
 	uintptr_t drawScreenEffectMaterial;
-    std::add_pointer_t<bool __stdcall(const char*, const char*)> submitReport;
+	std::add_pointer_t<bool __stdcall(const char *, const char *)> submitReport;
 	uint8_t *fakePrime;
 	std::add_pointer_t<void __cdecl(const char *msg, ...)> debugMsg;
 	std::add_pointer_t<void __cdecl(const std::array<std::uint8_t, 4> &color, const char *msg, ...)> conColorMsg;
@@ -94,7 +95,7 @@ public:
 	WeaponSystem *weaponSystem;
 	std::add_pointer_t<const char **__fastcall(const char *playerModelName)> getPlayerViewmodelArmConfigForPlayerModel;
 	GameEventDescriptor *(__thiscall *getEventDescriptor)(GameEventManager *_this, const char *name, int *cookie);
-    ActiveChannels* activeChannels;
+	ActiveChannels *activeChannels;
 	Channel *channels;
 	PlayerResource **playerResource;
 	Entity **gameRules;

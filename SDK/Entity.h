@@ -220,8 +220,8 @@ public:
 		if (config->misc.fixBoneMatrix && localPlayer && this == localPlayer.get())
 		{
 			int *render = reinterpret_cast<int *>(this + 0x274);
-			int *effects = (int *)(this + 0xF0);
-			int *shouldSkipFrame = (int *)(this + 0xA68);
+			int *effects = reinterpret_cast<int *>(this + 0xF0);
+			int *shouldSkipFrame = reinterpret_cast<int *>(this + 0xA68);
 			int backupRender = *render;
 			int backupEffects = *effects;
 			int backupShouldSkipFrame = *shouldSkipFrame;
@@ -352,6 +352,11 @@ public:
 	bool isFlashed() noexcept
 	{
 		return flashDuration() > 75.0f;
+	}
+
+	int &effectFlags() noexcept
+	{
+		return *reinterpret_cast<int *>(this + 0xF0);
 	}
 
 	NETVAR(clientAnimations, "CBaseAnimating", "m_bClientSideAnimation", bool)

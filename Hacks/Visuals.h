@@ -10,6 +10,7 @@ namespace Visuals
     void playerModel(FrameStage stage) noexcept;
     void colorWorld() noexcept;
     void modifySmoke(FrameStage stage) noexcept;
+    void modifyFire(FrameStage stage) noexcept;
     void thirdperson() noexcept;
     void removeVisualRecoil(FrameStage stage) noexcept;
     void removeBlur(FrameStage stage) noexcept;
@@ -23,9 +24,9 @@ namespace Visuals
     bool removeHands(const char* modelName) noexcept;
     bool removeSleeves(const char* modelName) noexcept;
     bool removeWeapons(const char* modelName) noexcept;
-    void removeFire(FrameStage stage) noexcept;
     void skybox(FrameStage stage) noexcept;
     void bulletBeams(GameEvent *event);
     void drawMolotovHull(ImDrawList *drawList) noexcept;
 	void drawSmokeHull(ImDrawList *drawList) noexcept;
+    void flashlight(FrameStage stage) noexcept;
 }

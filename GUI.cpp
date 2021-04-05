@@ -1167,13 +1167,15 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("No hands", &config->visuals.noHands);
 	ImGui::Checkbox("No sleeves", &config->visuals.noSleeves);
 	ImGui::Checkbox("No weapons", &config->visuals.noWeapons);
-	ImGui::Checkbox("No smoke", &config->visuals.noSmoke);
-	ImGui::Checkbox("No molotov fire", &config->visuals.noFire);
 	ImGui::Checkbox("No blur", &config->visuals.noBlur);
 	ImGui::Checkbox("No scope overlay", &config->visuals.noScopeOverlay);
 	ImGui::Checkbox("No grass", &config->visuals.noGrass);
 	ImGui::Checkbox("No shadows", &config->visuals.noShadows);
-	ImGui::Checkbox("Wireframe smoke", &config->visuals.wireframeSmoke);
+
+	ImGui::PushItemWidth(100.0f);
+	ImGui::Combo("Smoke", &config->visuals.smoke, "Normal\0Disable\0Wireframe");
+	ImGui::Combo("Molotov fire", &config->visuals.inferno, "Normal\0Disable\0Wireframe");
+	ImGui::PopItemWidth();
 
 	ImGuiCustom::colorPicker("Molotov radius", config->visuals.molotovHull);
 	ImGuiCustom::colorPicker("Smoke radius", config->visuals.smokeHull);
@@ -1266,8 +1268,22 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::PushItemWidth(255.0f);
 	ImGui::SliderInt("##zoom", &config->visuals.zoomFac, 0, 99, "Zoom factor %d%%");
 	ImGuiCustom::keyBind("Thirdperson", config->visuals.thirdPerson);
-	ImGui::SliderInt("##tpdist", &config->visuals.thirdpersonDistance, 0, 500, "Thirdperson distance %du");
-	ImGui::SliderInt("##fovmod", &config->visuals.fov, 1, 170, "FOV %ddeg");
+	ImGui::SliderInt("##thirdperson_dist", &config->visuals.thirdpersonDistance, 0, 500, "Thirdperson distance %du");
+	ImGui::Checkbox("Thirdperson collision", &config->visuals.thirdpersonCollision);
+	ImGuiCustom::keyBind("Flashlight", config->visuals.flashlight);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("flashlight", ImGuiDir_Right))
+		ImGui::OpenPopup("##flashlight_edit");
+
+	if (ImGui::BeginPopup("##flashlight_edit"))
+	{
+		ImGui::SliderFloat("##bright", &config->visuals.flashlightBrightness, 0.0f, 3.0f, "Brightness %.3f");
+		ImGui::SliderFloat("##distance", &config->visuals.flashlightDistance, 100.0f, 1000.0f, "Distance %.0fu");
+		ImGui::SliderInt("##fov", &config->visuals.flashlightFov, 1, 170, "FOV %ddeg");
+		ImGui::EndPopup();
+	}
+
+	ImGui::SliderInt("##fov", &config->visuals.fov, 1, 170, "FOV %ddeg");
 	ImGui::Checkbox("Keep FOV", &config->visuals.forceFov);
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Keep FOV when scoped");
@@ -2163,10 +2179,10 @@ void GUI::renderDebugWindow() noexcept
 		ImGui::TextColored({0.0f, 0.3f, 1.0f, 1.0f}, "%i", entClassId);
 	}
 
-	static std::array<float, 3> lightColor = {};
+	static std::array<float, 3> lightColor = {1.0f, 1.0f, 1.0f};
 	static float radius = 120.0f;
 	static float life = 20.0f;
-	static int exponent = 0;
+	static int exponent = 2;
 
 	ImGuiCustom::colorPicker("Light color", lightColor.data());
 	ImGui::SliderFloat("##radius", &radius, 0.0f, 5000.0f, "Light radius %.3f", ImGuiSliderFlags_Logarithmic);
@@ -2219,65 +2235,76 @@ void GUI::renderDebugWindow() noexcept
 
 	auto playerResource = *memory->playerResource;
 
-	if (ImGui::BeginTable("shrek", 4))
+	if (localPlayer)
 	{
-		ImGui::TableSetupColumn("Name");
-		ImGui::TableSetupColumn("Wins");
-		ImGui::TableSetupColumn("Level");
-		ImGui::TableSetupColumn("Ranking");
-		ImGui::TableHeadersRow();
-
-		if (localPlayer)
+		if (playerResource)
 		{
-			ImGui::TableNextRow();
-			ImGui::PushID(ImGui::TableGetRowIndex());
+			if (ImGui::BeginTable("shrek", 4))
+			{
+				ImGui::TableSetupColumn("Name");
+				ImGui::TableSetupColumn("Wins");
+				ImGui::TableSetupColumn("Level");
+				ImGui::TableSetupColumn("Ranking");
+				ImGui::TableHeadersRow();
 
-			if (ImGui::TableNextColumn())
-				ImGui::TextUnformatted("Local player");
+				ImGui::TableNextRow();
+				ImGui::PushID(ImGui::TableGetRowIndex());
 
-			if (ImGui::TableNextColumn())
-				ImGui::Text("%i", playerResource->competitiveWins()[localPlayer->index()]);
+				if (ImGui::TableNextColumn())
+					ImGui::TextUnformatted("Local player");
 
-			if (ImGui::TableNextColumn())
-				ImGui::Text("%i", playerResource->level()[localPlayer->index()]);
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%i", playerResource->competitiveWins()[localPlayer->index()]);
 
-			if (ImGui::TableNextColumn())
-				ImGui::Text("%i", playerResource->competitiveRanking()[localPlayer->index()]);
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%i", playerResource->level()[localPlayer->index()]);
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%i", playerResource->competitiveRanking()[localPlayer->index()]);
+
+				GameData::Lock lock;
+				for (auto &player : GameData::players())
+				{
+					ImGui::TableNextRow();
+					ImGui::PushID(ImGui::TableGetRowIndex());
+
+					auto *entity = interfaces->entityList->getEntityFromHandle(player.handle);
+					if (!entity) continue;
+
+					if (ImGui::TableNextColumn())
+						ImGui::TextUnformatted(player.name);
+
+					if (ImGui::TableNextColumn())
+						ImGui::Text("%i", playerResource->competitiveWins()[entity->index()]);
+
+					if (ImGui::TableNextColumn())
+						ImGui::Text("%i", playerResource->level()[entity->index()]);
+
+					if (ImGui::TableNextColumn())
+						ImGui::Text("%i", playerResource->competitiveRanking()[entity->index()]);
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::InputInt("Wins", &playerResource->competitiveWins()[localPlayer->index()]);
+			ImGui::InputInt("Level", &playerResource->level()[localPlayer->index()]);
+			ImGui::InputInt("Ranking", &playerResource->competitiveRanking()[localPlayer->index()]);
 		}
 
-		GameData::Lock lock;
-		for (auto &player : GameData::players())
-		{
-			ImGui::TableNextRow();
-			ImGui::PushID(ImGui::TableGetRowIndex());
+		ImGui::TextColored({1.0f, 0.8f, 0.0f, 1.0f}, "Local player");
+		ImGui::SameLine();
+		ImGui::TextUnformatted("at");
+		ImGui::SameLine();
+		ImGui::TextColored({0.0f, 0.2f, 1.0f, 1.0f}, "0x%p", localPlayer.get());
+		ImGui::SameLine();
 
-			if (!playerResource)
-				continue;
+		char buffer[9];
+		sprintf(buffer, "%p", localPlayer.get());
+		if (ImGui::Button("Copy"))
+			ImGui::SetClipboardText(buffer);
 
-			auto *entity = interfaces->entityList->getEntityFromHandle(player.handle);
-			if (!entity) continue;
-
-			if (ImGui::TableNextColumn())
-				ImGui::TextUnformatted(player.name);
-
-			if (ImGui::TableNextColumn())
-				ImGui::Text("%i", playerResource->competitiveWins()[entity->index()]);
-
-			if (ImGui::TableNextColumn())
-				ImGui::Text("%i", playerResource->level()[entity->index()]);
-
-			if (ImGui::TableNextColumn())
-				ImGui::Text("%i", playerResource->competitiveRanking()[entity->index()]);
-		}
-
-		ImGui::EndTable();
-	}
-
-	if (localPlayer && playerResource)
-	{
-		ImGui::InputInt("Wins", &playerResource->competitiveWins()[localPlayer->index()]);
-		ImGui::InputInt("Level", &playerResource->level()[localPlayer->index()]);
-		ImGui::InputInt("Ranking", &playerResource->competitiveRanking()[localPlayer->index()]);
+		ImGui::InputInt("Effect flags", &localPlayer->effectFlags());
 	}
 }
 #endif // _DEBUG_NEPS

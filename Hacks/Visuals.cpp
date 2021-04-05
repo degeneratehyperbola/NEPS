@@ -190,8 +190,35 @@ void Visuals::modifySmoke(FrameStage stage) noexcept
 	for (const auto mat : smokeMaterials)
 	{
 		const auto material = interfaces->materialSystem->findMaterial(mat);
-		material->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noSmoke);
-		material->setMaterialVarFlag(MaterialVarFlag::WIREFRAME, stage == FrameStage::RENDER_START && config->visuals.wireframeSmoke);
+		if (material)
+		{
+			material->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.smoke == 1);
+			material->setMaterialVarFlag(MaterialVarFlag::WIREFRAME, stage == FrameStage::RENDER_START && config->visuals.smoke == 2);
+		}
+	}
+}
+
+void Visuals::modifyFire(FrameStage stage) noexcept
+{
+	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+		return;
+
+	constexpr std::array fireMaterials = {
+		"decals/molotovscorch",
+		"particle/fire_explosion_1/fire_explosion_1_oriented",
+		"particle/fire_burning_character/fire_env_fire_depthblend",
+		"particle/fire_burning_character/fire_env_fire",
+		"particle/vistasmokev1/vistasmokev1_nearcull_nodepth"
+	};
+
+	for (const auto mat : fireMaterials)
+	{
+		const auto material = interfaces->materialSystem->findMaterial(mat);
+		if (material)
+		{
+			material->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.inferno == 1);
+			material->setMaterialVarFlag(MaterialVarFlag::WIREFRAME, stage == FrameStage::RENDER_START && config->visuals.inferno == 2);
+		}
 	}
 }
 
@@ -471,27 +498,6 @@ bool Visuals::removeWeapons(const char* modelName) noexcept
         && !std::strstr(modelName, "parachute") && !std::strstr(modelName, "fists");
 }
 
-void Visuals::removeFire(FrameStage stage) noexcept
-{
-	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
-		return;
-
-	constexpr std::array fireMaterials = {
-		"decals/molotovscorch",
-		"particle/fire_explosion_1/fire_explosion_1",
-		"particle/fire_explosion_1/fire_explosion_1_oriented",
-		"particle/fire_burning_character/fire_molotov_crop",
-		"particle/fire_burning_character/fire_env_fire_depthblend",
-		"particle/fire_burning_character/fire_env_fire",
-		"particle/vistasmokev1/vistasmokev1_nearcull_nodepth"
-	};
-
-	for (const auto mat : fireMaterials)
-	{
-		interfaces->materialSystem->findMaterial(mat)->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noFire);
-	}
-}
-
 void Visuals::skybox(FrameStage stage) noexcept
 {
     if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
@@ -693,4 +699,18 @@ void Visuals::drawSmokeHull(ImDrawList *drawList) noexcept
 		drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
 		drawList->AddPolyline(screenPoints.data(), count, colorB, true, config->visuals.smokeHull.thickness);
 	}
+}
+
+void Visuals::flashlight(FrameStage stage) noexcept
+{
+	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+		return;
+
+	if (!localPlayer)
+		return;
+
+	if (static Helpers::KeyBindState flag; flag[config->visuals.flashlight] && stage == FrameStage::RENDER_START)
+		localPlayer->effectFlags() |= 4;
+	else
+		localPlayer->effectFlags() &= ~4;
 }
