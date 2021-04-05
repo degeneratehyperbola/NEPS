@@ -66,6 +66,9 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	} else if (static Helpers::KeyBindState flag; flag[config->antiAim.choke] && config->antiAim.chokedPackets)
 		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= config->antiAim.chokedPackets;
 
+	if (config->antiAim.corrected && localPlayer->velocity().length2D() > 10.0f)
+		return;
+
 	static bool flip = true;
 
 	if (config->antiAim.flipKey && GetAsyncKeyState(config->antiAim.flipKey) & 1)
@@ -91,7 +94,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			}
 		} else
 		{
-			if (!sendPacket && (!config->antiAim.corrected || localPlayer->velocity().length2D() < 0.1f))
+			if (!sendPacket)
 			{
 				cmd->viewangles.y += desyncAngle;
 			}

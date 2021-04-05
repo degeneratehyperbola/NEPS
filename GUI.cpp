@@ -190,7 +190,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 	{
 		if (!window.aimbot)
 			return;
-		ImGui::SetNextWindowSize({430.0f, 0.0f});
+		ImGui::SetNextWindowSize({377.0f, 0.0f});
 		ImGui::Begin("Aimbot", &window.aimbot, windowFlags);
 	}
 	static int currentCategory{0};
@@ -325,7 +325,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("About 23%% less performant");
 
-	ImGui::PushItemWidth(250.0f);
+	ImGui::PushItemWidth(200.0f);
 	ImGui::SliderFloat("##scale", &config->aimbot[currentWeapon].multipointScale, 0.5f, 1.0f, "Multipoint scale %.5f");
 	ImGui::SliderFloat("##inaccuracy", &config->aimbot[currentWeapon].maxAimInaccuracy, 0.0f, 1.0f, "Max aim inaccuracy %.5f", ImGuiSliderFlags_Logarithmic);
 	ImGui::SliderFloat("##fov", &config->aimbot[currentWeapon].fov, 0.0f, 255.0f, "FOV %.2fdeg", ImGuiSliderFlags_Logarithmic);
@@ -642,7 +642,7 @@ void GUI::renderGlowWindow(bool contentOnly) noexcept
 	ImGui::Columns(2, nullptr, false);
 	ImGui::Checkbox("Health based", &config->glow[currentItem].healthBased);
 
-	ImGuiCustom::colorPicker("Color", config->glow[currentItem].color.data(), nullptr, &config->glow[currentItem].rainbow, &config->glow[currentItem].rainbowSpeed);
+	ImGuiCustom::colorPicker("Color", config->glow[currentItem]);
 
 	ImGui::NextColumn();
 	ImGui::SetNextItemWidth(100.0f);
@@ -698,12 +698,12 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 	ImGui::Combo("Material", &chams.material, "Diffuse\0Flat\0Flat additive\0Animated\0Glass\0Chrome\0Crystal\0Phong\0Fresnel\0Glow\0Pearlescent\0");
 
 	constexpr auto spacing = 130.0f;
+	ImGuiCustom::colorPicker("Color", chams);
+	ImGui::SameLine(spacing);
+	ImGui::Checkbox("Cover", &chams.cover);
 	ImGui::Checkbox("Health based", &chams.healthBased);
 	ImGui::SameLine(spacing);
 	ImGui::Checkbox("Blinking", &chams.blinking);
-	ImGuiCustom::colorPicker("Color", chams.color.data(), nullptr, &chams.rainbow, &chams.rainbowSpeed);
-	ImGui::SameLine(spacing);
-	ImGui::Checkbox("Cover", &chams.cover);
 	ImGui::Checkbox("Wireframe", &chams.wireframe);
 	ImGui::SameLine(spacing);
 	ImGui::Checkbox("Ignore-Z", &chams.ignorez);
@@ -1041,7 +1041,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		ImGuiCustom::colorPicker("Tracer", sharedConfig.snapline);
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(90.0f);
-		ImGui::Combo("##1", &sharedConfig.snapline.type, "Bottom\0Top\0Crosshair\0");
+		ImGui::Combo("##snapline", &sharedConfig.snapline.type, "Bottom\0Top\0Crosshair\0");
 		ImGui::SameLine(spacing);
 		ImGuiCustom::colorPicker("Box", sharedConfig.box);
 		ImGui::SameLine();
@@ -1055,7 +1055,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGui::Combo("Type", &sharedConfig.box.type, "2D\0" "2D corners\0" "3D\0" "3D corners\0");
 			ImGui::SetNextItemWidth(275.0f);
 			ImGui::SliderFloat3("Scale", sharedConfig.box.scale.data(), 0.0f, 0.50f, "%.2f");
-			ImGuiCustom::colorPicker("##fill", sharedConfig.box.fill.color.data(), nullptr, &sharedConfig.box.fill.rainbow, &sharedConfig.box.fill.rainbowSpeed);
+			ImGuiCustom::colorPicker("##fill", sharedConfig.box.fill.color.data(), &sharedConfig.box.fill.color[3], &sharedConfig.box.fill.rainbow, &sharedConfig.box.fill.rainbowSpeed);
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(85.0f);
 			ImGuiCustom::boolCombo("##fill_outline", sharedConfig.box.fill.enabled, "Outline\0Fill\0");
@@ -1089,7 +1089,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 				ImGui::Combo("Type", &playerConfig.headBox.type, "2D\0" "Corner 2D\0" "3D\0" "Corner 3D\0");
 				ImGui::SetNextItemWidth(275.0f);
 				ImGui::SliderFloat3("Scale", playerConfig.headBox.scale.data(), 0.0f, 0.50f, "%.2f");
-				ImGuiCustom::colorPicker("##fill", playerConfig.headBox.fill.color.data(), nullptr, &playerConfig.headBox.fill.rainbow, &playerConfig.headBox.fill.rainbowSpeed);
+				ImGuiCustom::colorPicker("##fill", playerConfig.headBox.fill.color.data(), &playerConfig.headBox.fill.color[3], &playerConfig.headBox.fill.rainbow, &playerConfig.headBox.fill.rainbowSpeed);
 				ImGui::SameLine();
 				ImGui::SetNextItemWidth(85.0f);
 				ImGuiCustom::boolCombo("##fill_outline", playerConfig.headBox.fill.enabled, "Outline\0Fill\0");

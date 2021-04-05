@@ -1499,7 +1499,8 @@ bool Config::loadScheduledFonts() noexcept
 		if (fontDataSize == GDI_ERROR)
 			continue;
 
-		if (fonts.find(fontName) == fonts.cend())
+		auto loadedFont = fonts.find(fontName);
+		if (loadedFont == fonts.cend())
 		{
 			const auto ranges = Helpers::getFontGlyphRanges();
 			ImFontConfig cfg;

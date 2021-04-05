@@ -389,7 +389,7 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 
 		std::ostringstream watermark;
 		watermark << "NEPS > ";
-		watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % (otherOnes.size() - 1)];
+		watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % otherOnes.size()];
 		static float frameRate = 1.0f;
 		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 
