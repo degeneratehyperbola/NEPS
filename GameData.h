@@ -80,7 +80,7 @@ struct Indicators
 
 struct GlobalData
 {
-	UserCmd lastCmd = UserCmd{};
+	UserCmd lastCmd;
 	bool sentPacket = true;
 	Matrix3x4 lerpedBones[MAXSTUDIOBONES];
 	
@@ -93,14 +93,15 @@ struct LocalPlayerData
 
 	bool exists = false;
 	bool alive = false;
-	bool inReload = false;
+	bool reloading = false;
 	bool shooting = false;
 	bool scoped = false;
-	float nextWeaponAttack = 0.0f;
-	int fov;
-	int handle;
-	float flashDuration;
-	int observerTargetHandle;
+	bool sniper = false;
+	float nextAttack = 0.0f;
+	int fov = 90;
+	int handle = 0;
+	float flashDuration = 0.0f;
+	int observerTargetHandle = 0;
 	Vector aimPunch;
 	Vector aimPunchAngle;
 	Vector origin;
@@ -119,7 +120,7 @@ struct BaseData
 		return distanceToLocal > other.distanceToLocal;
 	}
 
-	float distanceToLocal;
+	float distanceToLocal = 0.0f;
 	Vector obbMins, obbMaxs;
 	Matrix3x4 coordinateFrame;
 };
@@ -128,7 +129,7 @@ struct EntityData final : BaseData
 {
 	EntityData(Entity *entity) noexcept;
 
-	const char *name;
+	const char *name = nullptr;
 };
 
 struct ProjectileData : BaseData
@@ -145,7 +146,7 @@ struct ProjectileData : BaseData
 	bool exploded = false;
 	bool thrownByLocalPlayer = false;
 	bool thrownByEnemy = false;
-	int handle;
+	int handle = 0;
 	const char *name = nullptr;
 	std::vector<std::pair<float, Vector>> trajectory;
 };
@@ -160,26 +161,26 @@ struct PlayerData : BaseData
 
 	void update(Entity *entity) noexcept;
 
-	bool dormant;
-	float becameDormant;
+	bool dormant = true;
+	float becameDormant = 0.0f;
 	bool enemy = false;
 	bool visible = false;
-	bool audible;
-	bool spotted;
-	bool inViewFrustum;
-	bool alive;
-	bool isBot;
-	bool hasBomb;
-	bool isVip;
-	bool hasDefuser;
-	bool ducking;
-	bool scoped;
-	bool reloading;
-	float flashDuration;
-	int health;
-	int armor;
-	int handle;
-	char name[128];
+	bool scoped = false;
+	bool reloading = false;
+	bool audible = false;
+	bool spotted = false;
+	bool inViewFrustum = false;
+	bool alive = false;
+	bool isBot = false;
+	bool hasBomb = false;
+	bool isVip = false;
+	bool hasDefuser = false;
+	bool ducking = false;
+	float flashDuration = 0.0f;
+	int health = 0;
+	int armor = 0;
+	int handle = 0;
+	char name[128] = "\0";
 	Vector headMins, headMaxs;
 	Vector colMins, colMaxs;
 	Vector origin;
@@ -192,8 +193,8 @@ struct WeaponData : BaseData
 {
 	WeaponData(Entity *entity) noexcept;
 
-	int clip;
-	int reserveAmmo;
+	int clip = -1;
+	int reserveAmmo = -1;
 	const char *group = "All";
 	const char *name = "All";
 	std::string displayName;
@@ -212,20 +213,20 @@ struct ObserverData
 
 	char name[128];
 	char target[128];
-	bool targetIsLocalPlayer;
-	bool targetIsObservedByLocalPlayer;
+	bool targetIsLocalPlayer = false;
+	bool targetIsObservedByLocalPlayer = false;
 };
 
 struct BombData
 {
 	void update() noexcept;
 
-	float blowTime;
-	float timerLength;
-	int defuserHandle;
-	float defuseCountDown;
-	float defuseLength;
-	int bombsite;
+	float blowTime = 0.0f;
+	float timerLength = 0.0f;
+	int defuserHandle = 0;
+	float defuseCountDown = 0.0f;
+	float defuseLength = 0.0f;
+	int bombsite = -1;
 };
 
 struct InfernoData

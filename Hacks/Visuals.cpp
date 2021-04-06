@@ -716,3 +716,110 @@ void Visuals::flashlight(FrameStage stage) noexcept
 	else
 		localPlayer->effectFlags() &= ~4;
 }
+
+void Visuals::playerBounds(ImDrawList *drawList) noexcept
+{
+	if (!config->visuals.playerBounds.enabled)
+		return;
+
+	GameData::Lock lock;
+	const auto &local = GameData::local();
+
+	if (!local.exists || !local.alive)
+		return;
+
+	Vector max = local.colMaxs + local.origin;
+	Vector min = local.colMins + local.origin;
+	const auto z = local.origin.z;
+
+	ImVec2 points[4];
+
+	bool draw = Helpers::worldToScreen(Vector{max.x, max.y, z}, points[0]);
+	draw = draw && Helpers::worldToScreen(Vector{max.x, min.y, z}, points[1]);
+	draw = draw && Helpers::worldToScreen(Vector{min.x, min.y, z}, points[2]);
+	draw = draw && Helpers::worldToScreen(Vector{min.x, max.y, z}, points[3]);
+
+	if (draw)
+	{
+		const auto color = Helpers::calculateColor(config->visuals.playerBounds);
+		drawList->AddLine(points[0], points[1], color, config->visuals.playerBounds.thickness);
+		drawList->AddLine(points[1], points[2], color, config->visuals.playerBounds.thickness);
+		drawList->AddLine(points[2], points[3], color, config->visuals.playerBounds.thickness);
+		drawList->AddLine(points[3], points[0], color, config->visuals.playerBounds.thickness);
+	}
+}
+
+void Visuals::playerVelocity(ImDrawList *drawList) noexcept
+{
+	if (!config->visuals.playerVel.enabled)
+		return;
+
+	GameData::Lock lock;
+	const auto &local = GameData::local();
+
+	if (!local.exists || !local.alive)
+		return;
+
+	Vector curDir = local.velocity * 0.12f;
+	curDir.z = 0.0f;
+
+	ImVec2 pos, dir;
+
+	bool draw = Helpers::worldToScreen(local.origin, pos);
+	draw = draw && Helpers::worldToScreen(curDir + local.origin, dir);
+
+	if (draw)
+	{
+		const auto color = Helpers::calculateColor(config->visuals.playerVel);
+		drawList->AddLine(pos, dir, color, config->visuals.playerVel.thickness);
+	}
+}
+
+void Visuals::visualiseBlockBot(ImDrawList *drawList) noexcept
+{
+	if (!config->griefing.blockbot.visualise.enabled)
+		return;
+
+	GameData::Lock lock;
+	const auto &global = GameData::global();
+	const auto &local = GameData::local();
+
+	if (!local.exists || !local.alive)
+		return;
+
+	auto target = GameData::playerByHandle(global.indicators.blockTarget);
+	if (!target || target->dormant || !target->alive)
+		return;
+
+	Vector curDir = target->velocity * 0.12f;
+	curDir.z = 0.0f;
+	Vector max = target->colMaxs + target->origin;
+	Vector min = target->colMins + target->origin;
+	const auto z = target->origin.z;
+
+	ImVec2 pos, dir;
+	ImVec2 points[4];
+
+	const auto color = Helpers::calculateColor(config->griefing.blockbot.visualise);
+
+	bool draw = Helpers::worldToScreen(target->origin, pos);
+	draw = draw && Helpers::worldToScreen(curDir + target->origin, dir);
+
+	if (draw)
+	{
+		drawList->AddLine(pos, dir, color);
+	}
+
+	draw = Helpers::worldToScreen(Vector{max.x, max.y, z}, points[0]);
+	draw = draw && Helpers::worldToScreen(Vector{max.x, min.y, z}, points[1]);
+	draw = draw && Helpers::worldToScreen(Vector{min.x, min.y, z}, points[2]);
+	draw = draw && Helpers::worldToScreen(Vector{min.x, max.y, z}, points[3]);
+
+	if (draw)
+	{
+		drawList->AddLine(points[0], points[1], color, config->griefing.blockbot.visualise.thickness);
+		drawList->AddLine(points[1], points[2], color, config->griefing.blockbot.visualise.thickness);
+		drawList->AddLine(points[2], points[3], color, config->griefing.blockbot.visualise.thickness);
+		drawList->AddLine(points[3], points[0], color, config->griefing.blockbot.visualise.thickness);
+	}
+}

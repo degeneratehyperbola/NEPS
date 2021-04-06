@@ -29,4 +29,7 @@ namespace Visuals
     void drawMolotovHull(ImDrawList *drawList) noexcept;
 	void drawSmokeHull(ImDrawList *drawList) noexcept;
     void flashlight(FrameStage stage) noexcept;
+    void playerBounds(ImDrawList *drawList) noexcept;
+    void playerVelocity(ImDrawList *drawList) noexcept;
+    void visualiseBlockBot(ImDrawList *drawList) noexcept;
 }

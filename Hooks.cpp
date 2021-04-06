@@ -118,13 +118,19 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	StreamProofESP::render();
-	Misc::purchaseList();
-	Visuals::hitMarker(nullptr, ImGui::GetBackgroundDrawList());
 	Visuals::drawSmokeHull(ImGui::GetBackgroundDrawList());
 	Visuals::drawMolotovHull(ImGui::GetBackgroundDrawList());
-	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
+	Visuals::playerBounds(ImGui::GetBackgroundDrawList());
+	Visuals::playerVelocity(ImGui::GetBackgroundDrawList());
+	Visuals::visualiseBlockBot(ImGui::GetBackgroundDrawList());
+
+	StreamProofESP::render();
+
+	Visuals::hitMarker(nullptr, ImGui::GetBackgroundDrawList());
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
+	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
+
+	Misc::purchaseList();
 	Misc::drawBombTimer();
 	Misc::indicators(ImGui::GetBackgroundDrawList());
 

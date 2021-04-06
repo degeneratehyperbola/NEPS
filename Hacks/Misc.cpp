@@ -61,7 +61,7 @@ void Misc::slowwalk(UserCmd *cmd) noexcept
 	if (static Helpers::KeyBindState flag; !flag[config->exploits.slowwalk])
 		return;
 
-	if (!localPlayer || !localPlayer->isAlive())
+	if (!localPlayer || !localPlayer->isAlive() || ~localPlayer->flags() & Entity::FL_ONGROUND || localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
 		return;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
@@ -468,7 +468,7 @@ void Misc::overlayCrosshair(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 	const auto &local = GameData::local();
 
-	if (!local.exists || !local.alive || local.scoped)
+	if (!local.exists || !local.alive || local.scoped && (!config->visuals.noWeapons || local.sniper))
 		return;
 
 	drawCrosshair(drawList, ImGui::GetIO().DisplaySize / 2, Helpers::calculateColor(config->misc.overlayCrosshair), config->misc.overlayCrosshairType);
@@ -1503,85 +1503,6 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 	if (!local.exists || !local.alive)
 		return;
-
-	if (config->griefing.blockbot.visualise.enabled)
-	{
-		auto target = GameData::playerByHandle(global.indicators.blockTarget);
-		if (target && !target->dormant && target->alive)
-		{
-			Vector curDir = target->velocity * 0.12f;
-			curDir.z = 0.0f;
-			Vector max = target->colMaxs + target->origin;
-			Vector min = target->colMins + target->origin;
-			const auto z = target->origin.z;
-
-			ImVec2 pos, dir;
-			ImVec2 points[4];
-
-			const auto color = Helpers::calculateColor(config->griefing.blockbot.visualise);
-
-			bool draw = Helpers::worldToScreen(target->origin, pos);
-			draw = draw && Helpers::worldToScreen(curDir + target->origin, dir);
-
-			if (draw)
-			{
-				drawList->AddLine(pos, dir, color);
-			}
-
-			draw = Helpers::worldToScreen(Vector{max.x, max.y, z}, points[0]);
-			draw = draw && Helpers::worldToScreen(Vector{max.x, min.y, z}, points[1]);
-			draw = draw && Helpers::worldToScreen(Vector{min.x, min.y, z}, points[2]);
-			draw = draw && Helpers::worldToScreen(Vector{min.x, max.y, z}, points[3]);
-
-			if (draw)
-			{
-				drawList->AddLine(points[0], points[1], color, config->griefing.blockbot.visualise.thickness);
-				drawList->AddLine(points[1], points[2], color, config->griefing.blockbot.visualise.thickness);
-				drawList->AddLine(points[2], points[3], color, config->griefing.blockbot.visualise.thickness);
-				drawList->AddLine(points[3], points[0], color, config->griefing.blockbot.visualise.thickness);
-			}
-		}
-	}
-
-	if (config->visuals.playerVel.enabled)
-	{
-		Vector curDir = local.velocity * 0.12f;
-		curDir.z = 0.0f;
-
-		ImVec2 pos, dir;
-
-		bool draw = Helpers::worldToScreen(local.origin, pos);
-		draw = draw && Helpers::worldToScreen(curDir + local.origin, dir);
-
-		if (draw)
-		{
-			const auto color = Helpers::calculateColor(config->visuals.playerVel);
-			drawList->AddLine(pos, dir, color, config->visuals.playerVel.thickness);
-		}
-	}
-
-	if (config->visuals.playerBounds.enabled)
-	{
-		Vector max = local.colMaxs + local.origin;
-		Vector min = local.colMins + local.origin;
-		const auto z = local.origin.z;
-
-		ImVec2 points[4];
-
-		bool draw = Helpers::worldToScreen(Vector{max.x, max.y, z}, points[0]);
-		draw = draw && Helpers::worldToScreen(Vector{max.x, min.y, z}, points[1]);
-		draw = draw && Helpers::worldToScreen(Vector{min.x, min.y, z}, points[2]);
-		draw = draw && Helpers::worldToScreen(Vector{min.x, max.y, z}, points[3]);
-
-		if (draw)
-		{
-			const auto color = Helpers::calculateColor(config->visuals.playerBounds);
-			drawList->AddLine(points[0], points[1], color, config->visuals.playerBounds.thickness);
-			drawList->AddLine(points[1], points[2], color, config->visuals.playerBounds.thickness);
-			drawList->AddLine(points[2], points[3], color, config->visuals.playerBounds.thickness);
-			drawList->AddLine(points[3], points[0], color, config->visuals.playerBounds.thickness);
-		}
-	}
 
 	#ifdef _DEBUG_NEPS
 	for (auto &p : global.indicators.multipoints)
