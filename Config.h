@@ -395,7 +395,6 @@ public:
 		Color4 recoilCrosshair;
 		int recoilCrosshairType;
 		bool bombTimer = false;
-		Color4Toggle offscreenEnemies = {1.0f, 0.0f, 0.0f, 0.2f};
 		bool nadePredict = false;
 		bool indicators = false;
 	} misc;

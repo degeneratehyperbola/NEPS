@@ -346,7 +346,10 @@ static void drawHealthBar(const ImVec2 &pos, float height, int health, const Col
 
 static void renderPlayerBox(const PlayerData &playerData, const Player &config) noexcept
 {
-	const BoundingBox bbox{playerData, config.box.scale};
+	if (!playerData.inViewFrustum)
+		return;
+
+	const BoundingBox bbox = {playerData, config.box.scale};
 
 	if (!bbox)
 		return;
@@ -494,6 +497,9 @@ static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const 
 	if (!config.enabled)
 		return;
 
+	if (!playerData.inViewFrustum)
+		return;
+
 	const auto color = Helpers::calculateColor(config);
 
 	std::vector<std::pair<ImVec2, ImVec2>> points, shadowPoints;
@@ -520,6 +526,39 @@ static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const 
 		drawList->AddLine(bonePoint, parentPoint, color, config.thickness);
 }
 
+static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerData) noexcept
+{
+	if (!config.enabled)
+		return;
+
+	if (playerData.inViewFrustum)
+		return;
+
+	const auto yaw = Helpers::degreesToRadians(interfaces->engine->getViewAngles().y);
+	const auto color = Helpers::calculateColor(config);
+	const auto color2 = Helpers::calculateColor(config.color[0], config.color[1], config.color[2], 1.0f);
+
+	const auto positionDiff = GameData::local().origin - playerData.origin;
+
+	const auto sin = std::sin(yaw);
+	const auto cos = std::cos(yaw);
+	ImVec2 pos = {cos * positionDiff.y - sin * positionDiff.x, cos * positionDiff.x + sin * positionDiff.y};
+	const auto l = std::sqrtf(ImLengthSqr(pos));
+	if (l == 0.0f) return;
+	pos /= l;
+	const auto center = ImGui::GetIO().DisplaySize / 2 + pos * 300;
+
+	const ImVec2 trianglePoints[] = {
+		center + ImVec2{0.4f * pos.y, -0.4f * pos.x} * 30,
+		center + ImVec2{1.0f * pos.x, 1.0f * pos.y} * 30,
+		center + ImVec2{-0.4f * pos.y, 0.4f * pos.x} * 30
+	};
+	
+	drawList->AddConvexPolyFilled(trianglePoints, 3, color);
+	if (config.color[3] <= 0.75f)
+		drawList->AddPolyline(trianglePoints, 3, color2, 0, 8.0f);
+}
+
 static void renderPlayerEsp(const PlayerData &playerData, const Player &playerConfig) noexcept
 {
 	if (!playerConfig.enabled)
@@ -541,8 +580,10 @@ static void renderPlayerEsp(const PlayerData &playerData, const Player &playerCo
 	renderPlayerBox(playerData, playerConfig);
 	drawPlayerSkeleton(playerConfig.skeleton, playerData);
 
-	if (const BoundingBox headBbox{playerData.headMins, playerData.headMaxs, playerConfig.headBox.scale})
+	if (const BoundingBox headBbox = {playerData.headMins, playerData.headMaxs, playerConfig.headBox.scale}; headBbox && playerData.inViewFrustum)
 		renderBox(headBbox, playerConfig.headBox);
+
+	drawOffscreen(playerConfig.offscreen, playerData);
 
 	Helpers::setAlphaFactor(1.0f);
 	return;
@@ -613,7 +654,6 @@ void StreamProofESP::render() noexcept
 	for (const auto &player : GameData::players())
 	{
 		if (!player.alive) continue;
-		if (!player.inViewFrustum) continue;
 		if (player.handle == GameData::local().observerTargetHandle) continue;
 
 		auto &playerConfig = player.enemy ? config->esp.enemies : config->esp.allies;

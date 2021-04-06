@@ -120,7 +120,6 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 
 	StreamProofESP::render();
 	Misc::purchaseList();
-	Misc::drawOffscreenEnemies(ImGui::GetBackgroundDrawList());
 	Visuals::hitMarker(nullptr, ImGui::GetBackgroundDrawList());
 	Visuals::drawSmokeHull(ImGui::GetBackgroundDrawList());
 	Visuals::drawMolotovHull(ImGui::GetBackgroundDrawList());

@@ -310,6 +310,7 @@ static void from_json(const json& j, Player& p)
     read<value_t::object>(j, "Skeleton", p.skeleton);
     read<value_t::object>(j, "Head Box", p.headBox);
     read<value_t::object>(j, "Flags", p.flags);
+    read<value_t::object>(j, "Offscreen", p.offscreen);
 }
 
 static void from_json(const json& j, ImVec2& v)
@@ -656,7 +657,6 @@ static void from_json(const json& j, Config::Misc& m)
 	read(j, "Noscope crosshair type", m.overlayCrosshairType);
 	read<value_t::object>(j, "Recoil crosshair", m.recoilCrosshair);
 	read(j, "Recoil crosshair type", m.recoilCrosshairType);
-	read<value_t::object>(j, "Offscreen Enemies", m.offscreenEnemies);
 	read(j, "Bomb timer", m.bombTimer);
 	read(j, "Grenade predict", m.nadePredict);
 	read(j, "Spam use", m.spamUse);
@@ -883,6 +883,7 @@ static void to_json(json& j, const Player& o, const Player& dummy = {})
     WRITE("Skeleton", skeleton);
     WRITE("Head Box", headBox);
     WRITE("Flags", flags);
+    WRITE("Offscreen", offscreen);
 }
 
 static void to_json(json& j, const Weapon& o, const Weapon& dummy = {})
@@ -1082,7 +1083,6 @@ static void to_json(json& j, const Config::Misc& o)
 	WRITE("Noscope crosshair type", overlayCrosshairType);
 	WRITE("Recoil crosshair", recoilCrosshair);
 	WRITE("Recoil crosshair type", recoilCrosshairType);
-	WRITE("Offscreen Enemies", offscreenEnemies);
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Grenade predict", nadePredict);
     WRITE("Menu key", menuKey);

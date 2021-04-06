@@ -749,7 +749,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		}
 	};
 
-	if (ImGui::BeginListBox("##list", {170.0f, 250.0f}))
+	if (ImGui::BeginListBox("##list", {180.0f, 250.0f}))
 	{
 		constexpr std::array categories{"Enemies", "Allies", "Weapons", "Projectiles", "Loot Crates", "Other Entities"};
 
@@ -1101,6 +1101,8 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGuiCustom::colorPicker("Health bar", playerConfig.healthBar);
 			ImGui::SameLine(spacing);
 			ImGuiCustom::colorPicker("Flags", playerConfig.flags);
+			ImGuiCustom::colorPicker("Offscreen", playerConfig.offscreen);
+			ImGui::SameLine(spacing);
 		} else if (currentCategory == 2)
 		{
 			auto &weaponConfig = config->esp.weapons[currentItem];
@@ -1851,7 +1853,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
 	ImGui::Checkbox("No panorama blur", &config->misc.disablePanoramablur);
-	ImGuiCustom::colorPicker("Offscreen Enemies", config->misc.offscreenEnemies);
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
 	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
 	ImGui::SetNextItemWidth(190.0f);

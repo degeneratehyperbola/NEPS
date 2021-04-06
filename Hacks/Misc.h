@@ -48,7 +48,6 @@ namespace Misc
     void resetReportbot() noexcept;
     void preserveKillfeed(bool roundStart = false) noexcept;
     void fixAnimation() noexcept;
-    void drawOffscreenEnemies(ImDrawList *drawList) noexcept;
     void blockBot(UserCmd *cmd) noexcept;
     void useSpam(UserCmd *cmd);
     void indicators(ImDrawList *drawList) noexcept;

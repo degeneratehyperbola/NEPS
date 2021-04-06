@@ -602,7 +602,7 @@ void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 		return;
 
 	const auto color = Helpers::calculateColor(config->visuals.molotovHull);
-	const auto colorB = Helpers::calculateColor(config->visuals.molotovHull.color[0], config->visuals.molotovHull.color[1], config->visuals.molotovHull.color[2], 1.0f);
+	const auto color2 = Helpers::calculateColor(config->visuals.molotovHull.color[0], config->visuals.molotovHull.color[1], config->visuals.molotovHull.color[2], 1.0f);
 
 	GameData::Lock lock;
 
@@ -645,7 +645,8 @@ void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 			std::sort(screenPoints.begin() + 1, screenPoints.begin() + count, [&](const auto &a, const auto &b) { return orientation(screenPoints[0], a, b) > 0.0f; });
 
 			drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
-			drawList->AddPolyline(screenPoints.data(), count, colorB, true, config->visuals.molotovHull.thickness);
+			if (config->visuals.molotovHull.color[3] != 1.0f)
+				drawList->AddPolyline(screenPoints.data(), count, color2, true, config->visuals.molotovHull.thickness);
 		}
 	}
 }
@@ -656,7 +657,7 @@ void Visuals::drawSmokeHull(ImDrawList *drawList) noexcept
 		return;
 
 	const auto color = Helpers::calculateColor(config->visuals.smokeHull);
-	const auto colorB = Helpers::calculateColor(config->visuals.smokeHull.color[0], config->visuals.smokeHull.color[1], config->visuals.smokeHull.color[2], 1.0f);
+	const auto color2 = Helpers::calculateColor(config->visuals.smokeHull.color[0], config->visuals.smokeHull.color[1], config->visuals.smokeHull.color[2], 1.0f);
 
 	GameData::Lock lock;
 
@@ -697,7 +698,8 @@ void Visuals::drawSmokeHull(ImDrawList *drawList) noexcept
 		std::sort(screenPoints.begin() + 1, screenPoints.begin() + count, [&](const auto &a, const auto &b) { return orientation(screenPoints[0], a, b) > 0.0f; });
 
 		drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
-		drawList->AddPolyline(screenPoints.data(), count, colorB, true, config->visuals.smokeHull.thickness);
+		if (config->visuals.smokeHull.color[3] != 1.0f)
+			drawList->AddPolyline(screenPoints.data(), count, color2, true, config->visuals.smokeHull.thickness);
 	}
 }
 

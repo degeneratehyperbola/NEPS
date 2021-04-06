@@ -1400,43 +1400,6 @@ void Misc::fixAnimation() noexcept
 	Animations::animSync(&global.lastCmd, global.sentPacket, &global.indicators.serverHead);
 }
 
-void Misc::drawOffscreenEnemies(ImDrawList *drawList) noexcept
-{
-	if (!config->misc.offscreenEnemies.enabled)
-		return;
-
-	GameData::Lock lock;
-
-	const auto yaw = Helpers::degreesToRadians(interfaces->engine->getViewAngles().y);
-	const auto color = Helpers::calculateColor(config->misc.offscreenEnemies);
-	const auto colorB = Helpers::calculateColor(config->misc.offscreenEnemies.color[0], config->misc.offscreenEnemies.color[1], config->misc.offscreenEnemies.color[2], 1.0f);
-
-	for (auto &player : GameData::players())
-	{
-		if (player.dormant || !player.alive || !player.enemy || player.inViewFrustum)
-			continue;
-
-		const auto positionDiff = GameData::local().origin - player.origin;
-
-		auto x = std::cos(yaw) * positionDiff.y - std::sin(yaw) * positionDiff.x;
-		auto y = std::cos(yaw) * positionDiff.x + std::sin(yaw) * positionDiff.y;
-		auto cx = std::sin(yaw) * positionDiff.y + std::cos(yaw) * positionDiff.x;
-		auto cy = std::sin(yaw) * positionDiff.x - std::cos(yaw) * positionDiff.y;
-		const auto len = std::sqrt(x * x + y * y);
-		const auto clen = std::sqrt(cx * cx + cy * cy);
-		x /= len;
-		y /= len;
-		cx /= clen;
-		cy /= clen;
-
-		const auto center = ImGui::GetIO().DisplaySize / 2;
-		const auto pos = center + ImVec2{x, y} * 170;
-		const auto posfar = center + ImVec2{x, y} * 200;
-		drawList->AddTriangleFilled(posfar, pos + ImVec2{cx, cy} *15, pos + ImVec2{cx, cy} *-15, color);
-		drawList->AddTriangle(posfar, pos + ImVec2{cx, cy} *15, pos + ImVec2{cx, cy} *-15, colorB);
-	}
-}
-
 void Misc::blockBot(UserCmd *cmd) noexcept
 {
 	if (!config->griefing.blockbot.bind.keyMode) return;

@@ -404,10 +404,11 @@ void PlayerData::update(Entity *entity) noexcept
 {
 	entity->getPlayerName(name);
 
-	if (entity->isDormant() && !dormant)
+	const auto isDormant = entity->isDormant();
+	if (isDormant && !dormant)
 		becameDormant = memory->globalVars->realtime;
 
-	dormant = entity->isDormant();
+	dormant = isDormant;
 	if (dormant)
 		return;
 
@@ -420,7 +421,7 @@ void PlayerData::update(Entity *entity) noexcept
 	if (localPlayer)
 	{
 		enemy = memory->isOtherEnemy(entity, localPlayer.get());
-		visible = inViewFrustum && alive && entity->visibleTo(localPlayer.get());
+		visible = alive && entity->visibleTo(localPlayer.get());
 	}
 
 	constexpr auto isEntityAudible = [](int entityIndex) noexcept
