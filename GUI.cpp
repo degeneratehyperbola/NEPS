@@ -1383,6 +1383,10 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		{
 			if (ImGui::Selectable(SkinChanger::weapon_names[i].name, i == itemIndex))
 				itemIndex = i;
+			#ifdef _DEBUG_NEPS
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Item #%i", SkinChanger::weapon_names[i].definition_index);
+			#endif // _DEBUG_NEPS
 		}
 		ImGui::EndListBox();
 	}
@@ -1460,6 +1464,10 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 							selected_entry.paint_kit_vector_index = i;
 						if (selected && lastItemIndex != itemIndex)
 							ImGui::SetScrollHereY();
+						#ifdef _DEBUG_NEPS
+						if (ImGui::IsItemHovered())
+							ImGui::SetTooltip("Paint kit #%i", kits[i].id);
+						#endif // _DEBUG_NEPS
 						ImGui::PopStyleColor();
 						ImGui::PopID();
 					}
@@ -1523,7 +1531,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 					ImGui::PushID(i);
 					const auto kit_vector_index = config->skinChanger[itemIndex].stickers[i].kit_vector_index;
 					std::ostringstream ss;
-					ss << '#' << i + 1 << "  " << kits[kit_vector_index].name;
+					ss << '#' << i + 1 << ' ' << kits[kit_vector_index].name;
 					if (ImGui::Selectable(ss.str().c_str(), i == selectedStickerSlot))
 						selectedStickerSlot = i;
 					ImGui::PopID();
@@ -1551,6 +1559,10 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 							selected_sticker.kit_vector_index = i;
 						if (selected && lastItemIndex != itemIndex)
 							ImGui::SetScrollHereY();
+						#ifdef _DEBUG_NEPS
+						if (ImGui::IsItemHovered())
+							ImGui::SetTooltip("Sticker #%i", kits[i].id);
+						#endif // _DEBUG_NEPS
 						ImGui::PopStyleColor();
 						ImGui::PopID();
 					}

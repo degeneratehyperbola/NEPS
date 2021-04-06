@@ -364,7 +364,7 @@ public:
 		Color3Toggle spectatorList;
 		Color4 specBg = {0.0f, 0.0f, 0.0f, 0.5f};
 		Color3Toggle watermark;
-		int watermarkPos;
+		int watermarkPos = 1;
 		Color4 bg = {0.0f, 0.0f, 0.0f, 0.5f};
 		KeyBind prepareRevolver;
 		int quickHealthshotKey = 0;
@@ -391,9 +391,9 @@ public:
 		bool fastPlant = false;
 		bool fixTabletSignal = false;
 		Color4 overlayCrosshair;
-		int overlayCrosshairType;
+		int overlayCrosshairType = 0;
 		Color4 recoilCrosshair;
-		int recoilCrosshairType;
+		int recoilCrosshairType = 0;
 		bool bombTimer = false;
 		bool nadePredict = false;
 		bool indicators = false;

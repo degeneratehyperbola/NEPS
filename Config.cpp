@@ -13,35 +13,38 @@
 #include "Gui.h"
 
 #ifdef _WIN32
-int CALLBACK fontCallback(const LOGFONTW* lpelfe, const TEXTMETRICW*, DWORD, LPARAM lParam)
+int CALLBACK fontCallback(const LOGFONTW *lpelfe, const TEXTMETRICW *, DWORD, LPARAM lParam)
 {
-    const wchar_t* const fontName = reinterpret_cast<const ENUMLOGFONTEXW*>(lpelfe)->elfFullName;
+	const wchar_t *const fontName = reinterpret_cast<const ENUMLOGFONTEXW *>(lpelfe)->elfFullName;
 
-    if (fontName[0] == L'@')
-        return TRUE;
+	if (fontName[0] == L'@')
+		return TRUE;
 
-    if (HFONT font = CreateFontW(0, 0, 0, 0,
-        FW_NORMAL, FALSE, FALSE, FALSE,
-        ANSI_CHARSET, OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-        DEFAULT_PITCH, fontName)) {
+	if (HFONT font = CreateFontW(0, 0, 0, 0,
+		FW_NORMAL, FALSE, FALSE, FALSE,
+		ANSI_CHARSET, OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+		DEFAULT_PITCH, fontName))
+	{
 
-        DWORD fontData = GDI_ERROR;
+		DWORD fontData = GDI_ERROR;
 
-        if (HDC hdc = CreateCompatibleDC(nullptr)) {
-            SelectObject(hdc, font);
-            // Do not use TTC fonts as we only support TTF fonts
-            fontData = GetFontData(hdc, 'fctt', 0, NULL, 0);
-            DeleteDC(hdc);
-        }
-        DeleteObject(font);
+		if (HDC hdc = CreateCompatibleDC(nullptr))
+		{
+			SelectObject(hdc, font);
+			// Do not use TTC fonts as we only support TTF fonts
+			fontData = GetFontData(hdc, 'fctt', 0, NULL, 0);
+			DeleteDC(hdc);
+		}
+		DeleteObject(font);
 
-        if (fontData == GDI_ERROR) {
-            if (char buff[1024]; WideCharToMultiByte(CP_UTF8, 0, fontName, -1, buff, sizeof(buff), nullptr, nullptr))
-                reinterpret_cast<std::vector<std::string>*>(lParam)->emplace_back(buff);
-        }
-    }
-    return TRUE;
+		if (fontData == GDI_ERROR)
+		{
+			if (char buff[1024]; WideCharToMultiByte(CP_UTF8, 0, fontName, -1, buff, sizeof(buff), nullptr, nullptr))
+				reinterpret_cast<std::vector<std::string> *>(lParam)->emplace_back(buff);
+		}
+	}
+	return TRUE;
 }
 #endif
 
@@ -74,40 +77,40 @@ using json = nlohmann::basic_json<std::map, std::vector, std::string, bool, std:
 using value_t = json::value_t;
 
 template <value_t Type, typename T>
-static typename std::enable_if_t<!std::is_same_v<T, bool>> read(const json& j, const char* key, T& o) noexcept
+static typename std::enable_if_t<!std::is_same_v<T, bool>> read(const json &j, const char *key, T &o) noexcept
 {
-    if (!j.contains(key))
-        return;
+	if (!j.contains(key))
+		return;
 
-    if (const auto& val = j[key]; val.type() == Type)
-        val.get_to(o);
+	if (const auto &val = j[key]; val.type() == Type)
+		val.get_to(o);
 }
 
-static void read(const json& j, const char* key, bool& o) noexcept
+static void read(const json &j, const char *key, bool &o) noexcept
 {
-    if (!j.contains(key))
-        return;
+	if (!j.contains(key))
+		return;
 
-    if (const auto& val = j[key]; val.type() == value_t::boolean)
-        val.get_to(o);
+	if (const auto &val = j[key]; val.type() == value_t::boolean)
+		val.get_to(o);
 }
 
-static void read(const json& j, const char* key, float& o) noexcept
+static void read(const json &j, const char *key, float &o) noexcept
 {
-    if (!j.contains(key))
-        return;
+	if (!j.contains(key))
+		return;
 
-    if (const auto& val = j[key]; val.type() == value_t::number_float)
-        val.get_to(o);
+	if (const auto &val = j[key]; val.type() == value_t::number_float)
+		val.get_to(o);
 }
 
-static void read(const json& j, const char* key, int& o) noexcept
+static void read(const json &j, const char *key, int &o) noexcept
 {
-    if (!j.contains(key))
-        return;
+	if (!j.contains(key))
+		return;
 
-    if (const auto& val = j[key]; val.is_number_integer())
-        val.get_to(o);
+	if (const auto &val = j[key]; val.is_number_integer())
+		val.get_to(o);
 }
 
 static void read(const json &j, const char *key, WeaponId &o) noexcept
@@ -120,44 +123,49 @@ static void read(const json &j, const char *key, WeaponId &o) noexcept
 }
 
 template <typename T, size_t Size>
-static void read_array_opt(const json& j, const char* key, std::array<T, Size>& o) noexcept
+static void read_array_opt(const json &j, const char *key, std::array<T, Size> &o) noexcept
 {
-    if (j.contains(key) && j[key].type() == value_t::array) {
-        std::size_t i = 0;
-        for (const auto& e : j[key]) {
-            if (i >= o.size())
-                break;
+	if (j.contains(key) && j[key].type() == value_t::array)
+	{
+		std::size_t i = 0;
+		for (const auto &e : j[key])
+		{
+			if (i >= o.size())
+				break;
 
-            if (e.is_null())
-                continue;
+			if (e.is_null())
+				continue;
 
-            e.get_to(o[i]);
-            ++i;
-        }
-    }
+			e.get_to(o[i]);
+			++i;
+		}
+	}
 }
 
 template <typename T, size_t Size>
-static void read(const json& j, const char* key, std::array<T, Size>& o) noexcept
+static void read(const json &j, const char *key, std::array<T, Size> &o) noexcept
 {
-    if (!j.contains(key))
-        return;
+	if (!j.contains(key))
+		return;
 
-    if (const auto& val = j[key]; val.type() == value_t::array && val.size() == o.size()) {
-        for (std::size_t i = 0; i < val.size(); ++i) {
-            if (!val[i].empty())
-                val[i].get_to(o[i]);
-        }
-    }
+	if (const auto &val = j[key]; val.type() == value_t::array && val.size() == o.size())
+	{
+		for (std::size_t i = 0; i < val.size(); ++i)
+		{
+			if (!val[i].empty())
+				val[i].get_to(o[i]);
+		}
+	}
 }
 
 template <typename T>
-static void read(const json& j, const char* key, std::unordered_map<std::string, T>& o) noexcept
+static void read(const json &j, const char *key, std::unordered_map<std::string, T> &o) noexcept
 {
-    if (j.contains(key) && j[key].is_object()) {
-        for (auto& element : j[key].items())
-            element.value().get_to(o[element.key()]);
-    }
+	if (j.contains(key) && j[key].is_object())
+	{
+		for (auto &element : j[key].items())
+			element.value().get_to(o[element.key()]);
+	}
 }
 
 static void from_json(const json &j, KeyBind &c)
@@ -175,8 +183,8 @@ static void from_json(const json &j, Color4 &c)
 
 static void from_json(const json &j, Color4Border &cb)
 {
-    from_json(j, static_cast<Color4&>(cb));
-    read(j, "Border", cb.border);
+	from_json(j, static_cast<Color4 &>(cb));
+	read(j, "Border", cb.border);
 }
 
 static void from_json(const json &j, Color4BorderToggle &cbt)
@@ -241,210 +249,210 @@ static void from_json(const json &j, Font &f)
 		f.index = 0;
 }
 
-static void from_json(const json& j, Snapline& s)
+static void from_json(const json &j, Snapline &s)
 {
-    from_json(j, static_cast<Color4ToggleThickness&>(s));
+	from_json(j, static_cast<Color4ToggleThickness &>(s));
 
-    read(j, "Type", s.type);
+	read(j, "Type", s.type);
 }
 
-static void from_json(const json& j, Box& b)
+static void from_json(const json &j, Box &b)
 {
-    from_json(j, static_cast<Color4ToggleRounding&>(b));
+	from_json(j, static_cast<Color4ToggleRounding &>(b));
 
-    read(j, "Type", b.type);
-    read(j, "Scale", b.scale);
-    read<value_t::object>(j, "Fill", b.fill);
+	read(j, "Type", b.type);
+	read(j, "Scale", b.scale);
+	read<value_t::object>(j, "Fill", b.fill);
 }
 
-static void from_json(const json& j, Shared& s)
+static void from_json(const json &j, Shared &s)
 {
-    read(j, "Enabled", s.enabled);
-    read<value_t::object>(j, "Font", s.font);
-    read<value_t::object>(j, "Snapline", s.snapline);
-    read<value_t::object>(j, "Box", s.box);
-    read<value_t::object>(j, "Name", s.name);
-    read(j, "Text Cull Distance", s.textCullDistance);
+	read(j, "Enabled", s.enabled);
+	read<value_t::object>(j, "Font", s.font);
+	read<value_t::object>(j, "Snapline", s.snapline);
+	read<value_t::object>(j, "Box", s.box);
+	read<value_t::object>(j, "Name", s.name);
+	read(j, "Text Cull Distance", s.textCullDistance);
 }
 
-static void from_json(const json& j, Weapon& w)
+static void from_json(const json &j, Weapon &w)
 {
-    from_json(j, static_cast<Shared&>(w));
+	from_json(j, static_cast<Shared &>(w));
 
-    read<value_t::object>(j, "Ammo", w.ammo);
+	read<value_t::object>(j, "Ammo", w.ammo);
 }
 
-static void from_json(const json& j, Trail& t)
+static void from_json(const json &j, Trail &t)
 {
-    from_json(j, static_cast<Color4BorderToggleThickness&>(t));
+	from_json(j, static_cast<Color4BorderToggleThickness &>(t));
 
-    read(j, "Type", t.type);
-    read(j, "Time", t.time);
+	read(j, "Type", t.type);
+	read(j, "Time", t.time);
 }
 
-static void from_json(const json& j, Trails& t)
+static void from_json(const json &j, Trails &t)
 {
-    read(j, "Enabled", t.enabled);
-    read<value_t::object>(j, "Local Player", t.localPlayer);
-    read<value_t::object>(j, "Allies", t.allies);
-    read<value_t::object>(j, "Enemies", t.enemies);
+	read(j, "Enabled", t.enabled);
+	read<value_t::object>(j, "Local Player", t.localPlayer);
+	read<value_t::object>(j, "Allies", t.allies);
+	read<value_t::object>(j, "Enemies", t.enemies);
 }
 
-static void from_json(const json& j, Projectile& p)
+static void from_json(const json &j, Projectile &p)
 {
-    from_json(j, static_cast<Shared&>(p));
+	from_json(j, static_cast<Shared &>(p));
 
-    read<value_t::object>(j, "Trails", p.trails);
+	read<value_t::object>(j, "Trails", p.trails);
 }
 
-static void from_json(const json& j, Player& p)
+static void from_json(const json &j, Player &p)
 {
-    from_json(j, static_cast<Shared&>(p));
+	from_json(j, static_cast<Shared &>(p));
 
-    read<value_t::object>(j, "Weapon", p.weapon);
-    read<value_t::object>(j, "Flash Duration", p.flashDuration);
-    read(j, "Audible Only", p.audibleOnly);
-    read(j, "Spotted Only", p.spottedOnly);
-    read<value_t::object>(j, "Health Bar", p.healthBar);
-    read<value_t::object>(j, "Health", p.health);
-    read<value_t::object>(j, "Skeleton", p.skeleton);
-    read<value_t::object>(j, "Head Box", p.headBox);
-    read<value_t::object>(j, "Flags", p.flags);
-    read<value_t::object>(j, "Offscreen", p.offscreen);
+	read<value_t::object>(j, "Weapon", p.weapon);
+	read<value_t::object>(j, "Flash Duration", p.flashDuration);
+	read(j, "Audible Only", p.audibleOnly);
+	read(j, "Spotted Only", p.spottedOnly);
+	read<value_t::object>(j, "Health Bar", p.healthBar);
+	read<value_t::object>(j, "Health", p.health);
+	read<value_t::object>(j, "Skeleton", p.skeleton);
+	read<value_t::object>(j, "Head Box", p.headBox);
+	read<value_t::object>(j, "Flags", p.flags);
+	read<value_t::object>(j, "Offscreen", p.offscreen);
 }
 
-static void from_json(const json& j, ImVec2& v)
+static void from_json(const json &j, ImVec2 &v)
 {
-    read(j, "X", v.x);
-    read(j, "Y", v.y);
+	read(j, "X", v.x);
+	read(j, "Y", v.y);
 }
 
-static void from_json(const json& j, Config::Aimbot& a)
+static void from_json(const json &j, Config::Aimbot &a)
 {
-    read<value_t::object>(j, "Bind", a.bind);
-    read(j, "Aimlock", a.aimlock);
-    read(j, "Multipoint", a.multipoint);
-    read(j, "Multipoint scale", a.multipointScale);
-    read(j, "Silent", a.silent);
-    read(j, "Friendly fire", a.friendlyFire);
-    read(j, "Visible only", a.visibleOnly);
-    read(j, "Scoped only", a.scopedOnly);
-    read(j, "Ignore flash", a.ignoreFlash);
-    read(j, "Ignore smoke", a.ignoreSmoke);
-    read(j, "Auto shot", a.autoShot);
-    read(j, "Auto scope", a.autoScope);
-    read(j, "Distance", a.distance);
-    read(j, "Fov", a.fov);
-    read(j, "Smooth start", a.smooth);
+	read<value_t::object>(j, "Bind", a.bind);
+	read(j, "Aimlock", a.aimlock);
+	read(j, "Multipoint", a.multipoint);
+	read(j, "Multipoint scale", a.multipointScale);
+	read(j, "Silent", a.silent);
+	read(j, "Friendly fire", a.friendlyFire);
+	read(j, "Visible only", a.visibleOnly);
+	read(j, "Scoped only", a.scopedOnly);
+	read(j, "Ignore flash", a.ignoreFlash);
+	read(j, "Ignore smoke", a.ignoreSmoke);
+	read(j, "Auto shot", a.autoShot);
+	read(j, "Auto scope", a.autoScope);
+	read(j, "Distance", a.distance);
+	read(j, "Fov", a.fov);
+	read(j, "Smooth start", a.smooth);
 	read(j, "Linear speed", a.linearSpeed);
 	read(j, "Interpolation", a.interpolation);
-    read(j, "Hitgroup", a.hitgroup);
-    read(j, "Targeting", a.targeting);
-    read(j, "Max aim inaccuracy", a.maxAimInaccuracy);
-    read(j, "Hitchance", a.shotHitchance);
-    read(j, "Min damage", a.minDamage);
-    read(j, "Min damage auto-wall", a.minDamageAutoWall);
-    read(j, "Killshot", a.killshot);
-    read(j, "Killshot auto-wall", a.killshotAutoWall);
-    read(j, "Between shots", a.betweenShots);
-    read<value_t::object>(j, "Safe only", a.safeOnly);
-    read(j, "Safe mode", a.safeHitgroup);
+	read(j, "Hitgroup", a.hitgroup);
+	read(j, "Targeting", a.targeting);
+	read(j, "Max aim inaccuracy", a.maxAimInaccuracy);
+	read(j, "Hitchance", a.shotHitchance);
+	read(j, "Min damage", a.minDamage);
+	read(j, "Min damage auto-wall", a.minDamageAutoWall);
+	read(j, "Killshot", a.killshot);
+	read(j, "Killshot auto-wall", a.killshotAutoWall);
+	read(j, "Between shots", a.betweenShots);
+	read<value_t::object>(j, "Safe only", a.safeOnly);
+	read(j, "Safe mode", a.safeHitgroup);
 }
 
-static void from_json(const json& j, Config::Triggerbot& t)
+static void from_json(const json &j, Config::Triggerbot &t)
 {
-    read<value_t::object>(j, "Bind", t.bind);
-    read(j, "Friendly fire", t.friendlyFire);
-    read(j, "Visible only", t.visibleOnly);
-    read(j, "Scoped only", t.scopedOnly);
-    read(j, "Ignore flash", t.ignoreFlash);
-    read(j, "Ignore smoke", t.ignoreSmoke);
-    read(j, "Hitgroup", t.hitgroup);
-    read(j, "Hitchance", t.hitchance);
-    read(j, "Distance", t.distance);
-    read(j, "Shot delay", t.shotDelay);
-    read(j, "Max inaccuracy", t.maxShotInaccuracy);
-    read(j, "Min damage", t.minDamage);
-    read(j, "Min damage auto-wall", t.minDamageAutoWall);
-    read(j, "Killshot", t.killshot);
-    read(j, "Killshot auto-wall", t.killshotAutoWall);
-    read(j, "Burst Time", t.burstTime);
+	read<value_t::object>(j, "Bind", t.bind);
+	read(j, "Friendly fire", t.friendlyFire);
+	read(j, "Visible only", t.visibleOnly);
+	read(j, "Scoped only", t.scopedOnly);
+	read(j, "Ignore flash", t.ignoreFlash);
+	read(j, "Ignore smoke", t.ignoreSmoke);
+	read(j, "Hitgroup", t.hitgroup);
+	read(j, "Hitchance", t.hitchance);
+	read(j, "Distance", t.distance);
+	read(j, "Shot delay", t.shotDelay);
+	read(j, "Max inaccuracy", t.maxShotInaccuracy);
+	read(j, "Min damage", t.minDamage);
+	read(j, "Min damage auto-wall", t.minDamageAutoWall);
+	read(j, "Killshot", t.killshot);
+	read(j, "Killshot auto-wall", t.killshotAutoWall);
+	read(j, "Burst Time", t.burstTime);
 }
 
-static void from_json(const json& j, Config::Backtrack& b)
+static void from_json(const json &j, Config::Backtrack &b)
 {
-    read(j, "Enabled", b.enabled);
-    read(j, "Ignore smoke", b.ignoreSmoke);
-    read(j, "Recoil based fov", b.recoilBasedFov);
-    read(j, "Time limit", b.timeLimit);
+	read(j, "Enabled", b.enabled);
+	read(j, "Ignore smoke", b.ignoreSmoke);
+	read(j, "Recoil based fov", b.recoilBasedFov);
+	read(j, "Time limit", b.timeLimit);
 }
 
-static void from_json(const json& j, Config::AntiAim& a)
+static void from_json(const json &j, Config::AntiAim &a)
 {
-    read(j, "Pitch", a.pitch);
-    read(j, "Pitch angle", a.pitchAngle);
-    read(j, "Yaw", a.yaw);
-    read(j, "Yaw angle", a.yawAngle);
-    read(j, "Desync", a.desync);
-    read(j, "Desync cor", a.corrected);
-    read(j, "Desync clamp", a.clamped);
-    read(j, "Desync ext", a.extended);
-    read(j, "Fake up", a.fakeUp);
-    read(j, "Flip key", a.flipKey);
+	read(j, "Pitch", a.pitch);
+	read(j, "Pitch angle", a.pitchAngle);
+	read(j, "Yaw", a.yaw);
+	read(j, "Yaw angle", a.yawAngle);
+	read(j, "Desync", a.desync);
+	read(j, "Desync cor", a.corrected);
+	read(j, "Desync clamp", a.clamped);
+	read(j, "Desync ext", a.extended);
+	read(j, "Fake up", a.fakeUp);
+	read(j, "Flip key", a.flipKey);
 	read<value_t::object>(j, "Fake duck", a.fakeDuck);
 	read(j, "Fake duck packets", a.fakeDuckPackets);
 	read(j, "Choked packets", a.chokedPackets);
 	read<value_t::object>(j, "Choke", a.choke);
 }
 
-static void from_json(const json& j, Config::Glow& g)
+static void from_json(const json &j, Config::Glow &g)
 {
-    from_json(j, static_cast<Color4&>(g));
+	from_json(j, static_cast<Color4 &>(g));
 
-    read(j, "Enabled", g.enabled);
-    read(j, "Health based", g.healthBased);
-    read(j, "Style", g.style);
-    read(j, "Full bloom", g.full);
+	read(j, "Enabled", g.enabled);
+	read(j, "Health based", g.healthBased);
+	read(j, "Style", g.style);
+	read(j, "Full bloom", g.full);
 }
 
-static void from_json(const json& j, Config::Chams::Material& m)
+static void from_json(const json &j, Config::Chams::Material &m)
 {
-    from_json(j, static_cast<Color4&>(m));
+	from_json(j, static_cast<Color4 &>(m));
 
-    read(j, "Enabled", m.enabled);
-    read(j, "Health based", m.healthBased);
-    read(j, "Blinking", m.blinking);
-    read(j, "Wireframe", m.wireframe);
-    read(j, "Cover", m.cover);
-    read(j, "Ignore-Z", m.ignorez);
-    read(j, "Material", m.material);
+	read(j, "Enabled", m.enabled);
+	read(j, "Health based", m.healthBased);
+	read(j, "Blinking", m.blinking);
+	read(j, "Wireframe", m.wireframe);
+	read(j, "Cover", m.cover);
+	read(j, "Ignore-Z", m.ignorez);
+	read(j, "Material", m.material);
 }
 
-static void from_json(const json& j, Config::Chams& c)
+static void from_json(const json &j, Config::Chams &c)
 {
-    read_array_opt(j, "Materials", c.materials);
+	read_array_opt(j, "Materials", c.materials);
 }
 
-static void from_json(const json& j, Config::ESP& e)
+static void from_json(const json &j, Config::ESP &e)
 {
-    read(j, "Allies", e.allies);
-    read(j, "Enemies", e.enemies);
-    read(j, "Weapons", e.weapons);
-    read(j, "Projectiles", e.projectiles);
-    read(j, "Loot Crates", e.lootCrates);
-    read(j, "Other Entities", e.otherEntities);
+	read(j, "Allies", e.allies);
+	read(j, "Enemies", e.enemies);
+	read(j, "Weapons", e.weapons);
+	read(j, "Projectiles", e.projectiles);
+	read(j, "Loot Crates", e.lootCrates);
+	read(j, "Other Entities", e.otherEntities);
 }
 
-static void from_json(const json& j, Config::Visuals::ColorCorrection& c)
+static void from_json(const json &j, Config::Visuals::ColorCorrection &c)
 {
-    read(j, "Enabled", c.enabled);
-    read(j, "Blue", c.blue);
-    read(j, "Red", c.red);
-    read(j, "Mono", c.mono);
-    read(j, "Saturation", c.saturation);
-    read(j, "Ghost", c.ghost);
-    read(j, "Green", c.green);
-    read(j, "Yellow", c.yellow);
+	read(j, "Enabled", c.enabled);
+	read(j, "Blue", c.blue);
+	read(j, "Red", c.red);
+	read(j, "Mono", c.mono);
+	read(j, "Saturation", c.saturation);
+	read(j, "Ghost", c.ghost);
+	read(j, "Green", c.green);
+	read(j, "Yellow", c.yellow);
 }
 
 static void from_json(const json &j, Config::Visuals::Viewmodel &vxyz)
@@ -476,53 +484,53 @@ static void from_json(const json &j, Config::Visuals::Dlights &b)
 	read(j, "Radius", b.radius);
 }
 
-static void from_json(const json& j, Config::Visuals& v)
+static void from_json(const json &j, Config::Visuals &v)
 {
-    read(j, "Disable post-processing", v.disablePostProcessing);
-    read(j, "Inverse ragdoll gravity", v.inverseRagdollGravity);
-    read(j, "No fog", v.noFog);
-    read(j, "No 3d sky", v.no3dSky);
-    read(j, "No aim punch", v.noAimPunch);
-    read(j, "No view punch", v.noViewPunch);
-    read(j, "No hands", v.noHands);
-    read(j, "No sleeves", v.noSleeves);
-    read(j, "No weapons", v.noWeapons);
-    read(j, "No smoke", v.smoke);
-    read(j, "No fire", v.inferno);
-    read(j, "No blur", v.noBlur);
-    read(j, "No scope overlay", v.noScopeOverlay);
-    read(j, "No grass", v.noGrass);
-    read(j, "No shadows", v.noShadows);
+	read(j, "Disable post-processing", v.disablePostProcessing);
+	read(j, "Inverse ragdoll gravity", v.inverseRagdollGravity);
+	read(j, "No fog", v.noFog);
+	read(j, "No 3d sky", v.no3dSky);
+	read(j, "No aim punch", v.noAimPunch);
+	read(j, "No view punch", v.noViewPunch);
+	read(j, "No hands", v.noHands);
+	read(j, "No sleeves", v.noSleeves);
+	read(j, "No weapons", v.noWeapons);
+	read(j, "No smoke", v.smoke);
+	read(j, "No fire", v.inferno);
+	read(j, "No blur", v.noBlur);
+	read(j, "No scope overlay", v.noScopeOverlay);
+	read(j, "No grass", v.noGrass);
+	read(j, "No shadows", v.noShadows);
 	read<value_t::object>(j, "Viewmodel", v.viewmodel);
-    read<value_t::object>(j, "Zoom", v.zoom);
+	read<value_t::object>(j, "Zoom", v.zoom);
 	read(j, "Zoom factor", v.zoomFac);
-    read<value_t::object>(j, "Thirdperson", v.thirdPerson);
-    read(j, "Thirdperson distance", v.thirdpersonDistance);
-    read(j, "Thirdperson collision", v.thirdpersonCollision);
-    read<value_t::object>(j, "Flashlight", v.flashlight);
+	read<value_t::object>(j, "Thirdperson", v.thirdPerson);
+	read(j, "Thirdperson distance", v.thirdpersonDistance);
+	read(j, "Thirdperson collision", v.thirdpersonCollision);
+	read<value_t::object>(j, "Flashlight", v.flashlight);
 	read(j, "Flashlight brightness", v.flashlightBrightness);
 	read(j, "Flashlight distance", v.flashlightDistance);
 	read(j, "Flashlight fov", v.flashlightFov);
-    read(j, "FOV", v.fov);
-    read(j, "Force keep FOV", v.forceFov);
-    read(j, "Far Z", v.farZ);
-    read(j, "Flash reduction", v.flashReduction);
-    read(j, "Brightness", v.brightness);
-    read(j, "Skybox", v.skybox);
-    read<value_t::object>(j, "World", v.world);
-    read<value_t::object>(j, "Props", v.props);
-    read<value_t::object>(j, "Sky", v.sky);
-    read(j, "Deagle spinner", v.deagleSpinner);
-    read(j, "Screen effect", v.screenEffect);
-    read(j, "Hit effect", v.hitEffect);
-    read(j, "Hit effect time", v.hitEffectTime);
-    read(j, "Kill effect", v.killEffect);
-    read(j, "Kill effect time", v.killEffectTime);
-    read(j, "Hit marker", v.hitMarker);
-    read(j, "Hit marker time", v.hitMarkerTime);
-    read(j, "Playermodel T", v.playerModelT);
-    read(j, "Playermodel CT", v.playerModelCT);
-    read<value_t::object>(j, "Color correction", v.colorCorrection);
+	read(j, "FOV", v.fov);
+	read(j, "Force keep FOV", v.forceFov);
+	read(j, "Far Z", v.farZ);
+	read(j, "Flash reduction", v.flashReduction);
+	read(j, "Brightness", v.brightness);
+	read(j, "Skybox", v.skybox);
+	read<value_t::object>(j, "World", v.world);
+	read<value_t::object>(j, "Props", v.props);
+	read<value_t::object>(j, "Sky", v.sky);
+	read(j, "Deagle spinner", v.deagleSpinner);
+	read(j, "Screen effect", v.screenEffect);
+	read(j, "Hit effect", v.hitEffect);
+	read(j, "Hit effect time", v.hitEffectTime);
+	read(j, "Kill effect", v.killEffect);
+	read(j, "Kill effect time", v.killEffectTime);
+	read(j, "Hit marker", v.hitMarker);
+	read(j, "Hit marker time", v.hitMarkerTime);
+	read(j, "Playermodel T", v.playerModelT);
+	read(j, "Playermodel CT", v.playerModelCT);
+	read<value_t::object>(j, "Color correction", v.colorCorrection);
 	read(j, "Aspect ratio", v.aspectratio);
 	read(j, "Opposite hand knife", v.oppositeHandKnife);
 	read(j, "Bullet impacts", v.bulletImpacts);
@@ -539,45 +547,45 @@ static void from_json(const json& j, Config::Visuals& v)
 	read<value_t::object>(j, "Player velocity", v.playerVel);
 }
 
-static void from_json(const json& j, sticker_setting& s)
+static void from_json(const json &j, sticker_setting &s)
 {
-    read(j, "Kit", s.kit);
-    read(j, "Wear", s.wear);
-    read(j, "Scale", s.scale);
-    read(j, "Rotation", s.rotation);
+	read(j, "Kit", s.kit);
+	read(j, "Wear", s.wear);
+	read(j, "Scale", s.scale);
+	read(j, "Rotation", s.rotation);
 
 	s.onLoad();
 }
 
-static void from_json(const json& j, item_setting& i)
+static void from_json(const json &j, item_setting &i)
 {
-    read(j, "Enabled", i.enabled);
-    read(j, "Definition index", i.itemId);
-    read(j, "Quality", i.quality);
-    read(j, "Paint Kit", i.paintKit);
-    read(j, "Definition override", i.definition_override_index);
-    read(j, "Seed", i.seed);
-    read(j, "StatTrak", i.stat_trak);
-    read(j, "Wear", i.wear);
-    if (j.contains("Custom name"))
-        strncpy_s(i.custom_name, j["Custom name"].get<std::string>().c_str(), _TRUNCATE);
-    read(j, "Stickers", i.stickers);
+	read(j, "Enabled", i.enabled);
+	read(j, "Definition index", i.itemId);
+	read(j, "Quality", i.quality);
+	read(j, "Paint Kit", i.paintKit);
+	read(j, "Definition override", i.definition_override_index);
+	read(j, "Seed", i.seed);
+	read(j, "StatTrak", i.stat_trak);
+	read(j, "Wear", i.wear);
+	if (j.contains("Custom name"))
+		strncpy_s(i.custom_name, j["Custom name"].get<std::string>().c_str(), _TRUNCATE);
+	read(j, "Stickers", i.stickers);
 
 	i.onLoad();
 }
 
-static void from_json(const json& j, Config::Sound::Player& p)
+static void from_json(const json &j, Config::Sound::Player &p)
 {
-    read(j, "Master volume", p.masterVolume);
-    read(j, "Headshot volume", p.headshotVolume);
-    read(j, "Weapon volume", p.weaponVolume);
-    read(j, "Footstep volume", p.footstepVolume);
+	read(j, "Master volume", p.masterVolume);
+	read(j, "Headshot volume", p.headshotVolume);
+	read(j, "Weapon volume", p.weaponVolume);
+	read(j, "Footstep volume", p.footstepVolume);
 }
 
-static void from_json(const json& j, Config::Sound& s)
+static void from_json(const json &j, Config::Sound &s)
 {
-    read(j, "Chicken volume", s.chickenVolume);
-    read(j, "Players", s.players);
+	read(j, "Chicken volume", s.chickenVolume);
+	read(j, "Players", s.players);
 	read(j, "Hit sound", s.hitSound);
 	read(j, "Kill sound", s.killSound);
 	read(j, "Hit sound volume", s.hitSoundVol);
@@ -586,63 +594,66 @@ static void from_json(const json& j, Config::Sound& s)
 	read<value_t::string>(j, "Custom kill sound", s.customKillSound);
 }
 
-static void from_json(const json& j, Config::Style& s)
+static void from_json(const json &j, Config::Style &s)
 {
-    read(j, "Menu style", s.menuStyle);
-    read(j, "Menu colors", s.menuColors);
+	read(j, "Menu style", s.menuStyle);
+	read(j, "Menu colors", s.menuColors);
 
-    if (j.contains("Colors") && j["Colors"].is_object()) {
-        const auto& colors = j["Colors"];
+	if (j.contains("Colors") && j["Colors"].is_object())
+	{
+		const auto &colors = j["Colors"];
 
-        ImGuiStyle& style = ImGui::GetStyle();
+		ImGuiStyle &style = ImGui::GetStyle();
 
-        for (int i = 0; i < ImGuiCol_COUNT; i++) {
-            if (const char* name = ImGui::GetStyleColorName(i); colors.contains(name)) {
+		for (int i = 0; i < ImGuiCol_COUNT; i++)
+		{
+			if (const char *name = ImGui::GetStyleColorName(i); colors.contains(name))
+			{
 				std::array<float, 4> temp;
 				read(colors, name, temp);
 				style.Colors[i].x = temp[0];
 				style.Colors[i].y = temp[1];
 				style.Colors[i].z = temp[2];
 				style.Colors[i].w = temp[3];
-            }
-        }
-    }
+			}
+		}
+	}
 }
 
-static void from_json(const json& j, Config::Misc::PurchaseList& pl)
+static void from_json(const json &j, Config::Misc::PurchaseList &pl)
 {
-    read(j, "Enabled", pl.enabled);
-    read(j, "Only During Freeze Time", pl.onlyDuringFreezeTime);
-    read(j, "Show Prices", pl.showPrices);
-    read(j, "No Title Bar", pl.noTitleBar);
-    read(j, "Mode", pl.mode);
+	read(j, "Enabled", pl.enabled);
+	read(j, "Only During Freeze Time", pl.onlyDuringFreezeTime);
+	read(j, "Show Prices", pl.showPrices);
+	read(j, "No Title Bar", pl.noTitleBar);
+	read(j, "Mode", pl.mode);
 }
 
-static void from_json(const json& j, Config::Misc::PreserveKillfeed& o)
+static void from_json(const json &j, Config::Misc::PreserveKillfeed &o)
 {
-    read(j, "Enabled", o.enabled);
-    read(j, "Only Headshots", o.onlyHeadshots);
+	read(j, "Enabled", o.enabled);
+	read(j, "Only Headshots", o.onlyHeadshots);
 }
 
-static void from_json(const json& j, Config::Misc& m)
+static void from_json(const json &j, Config::Misc &m)
 {
-    read(j, "Menu key", m.menuKey);
-    read(j, "Auto pistol", m.autoPistol);
-    read(j, "Auto reload", m.autoReload);
-    read(j, "Auto accept", m.autoAccept);
-    read<value_t::object>(j, "Spectator list", m.spectatorList);
+	read(j, "Menu key", m.menuKey);
+	read(j, "Auto pistol", m.autoPistol);
+	read(j, "Auto reload", m.autoReload);
+	read(j, "Auto accept", m.autoAccept);
+	read<value_t::object>(j, "Spectator list", m.spectatorList);
 	read<value_t::object>(j, "Spectator list background", m.specBg);
-    read<value_t::object>(j, "Watermark", m.watermark);
+	read<value_t::object>(j, "Watermark", m.watermark);
 	read<value_t::object>(j, "Watermark background", m.bg);
 	read(j, "Watermark pos", m.watermarkPos);
-    read(j, "Fix animation LOD", m.fixAnimationLOD);
-    read(j, "Fix bone matrix", m.fixBoneMatrix);
-    read(j, "Fix movement", m.fixMovement);
-    read(j, "Fix animations", m.fixAnimation);
-    read(j, "Disable model occlusion", m.disableModelOcclusion);
-    read(j, "Disable HUD blur", m.disablePanoramablur);
-    read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
-    read<value_t::object>(j, "Purchase list", m.purchaseList);
+	read(j, "Fix animation LOD", m.fixAnimationLOD);
+	read(j, "Fix bone matrix", m.fixBoneMatrix);
+	read(j, "Fix movement", m.fixMovement);
+	read(j, "Fix animations", m.fixAnimation);
+	read(j, "Disable model occlusion", m.disableModelOcclusion);
+	read(j, "Disable HUD blur", m.disablePanoramablur);
+	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
+	read<value_t::object>(j, "Purchase list", m.purchaseList);
 	read<value_t::object>(j, "Preserve killfeed", m.preserveKillfeed);
 	read(j, "Quick healthshot key", m.quickHealthshotKey);
 	read(j, "Radar hack", m.radarHack);
@@ -691,20 +702,20 @@ static void from_json(const json &j, Config::Griefing &s)
 	read(j, "Vote reveal", s.revealVotes);
 }
 
-static void from_json(const json& j, Config::Griefing::Reportbot& r)
+static void from_json(const json &j, Config::Griefing::Reportbot &r)
 {
-    read(j, "Enabled", r.enabled);
-    read(j, "Target", r.target);
-    read(j, "Delay", r.delay);
-    read(j, "Rounds", r.rounds);
-    read(j, "Abusive Communications", r.textAbuse);
-    read(j, "Griefing", r.griefing);
-    read(j, "Wall Hacking", r.wallhack);
-    read(j, "Aim Hacking", r.aimbot);
-    read(j, "Other Hacking", r.other);
+	read(j, "Enabled", r.enabled);
+	read(j, "Target", r.target);
+	read(j, "Delay", r.delay);
+	read(j, "Rounds", r.rounds);
+	read(j, "Abusive Communications", r.textAbuse);
+	read(j, "Griefing", r.griefing);
+	read(j, "Wall Hacking", r.wallhack);
+	read(j, "Aim Hacking", r.aimbot);
+	read(j, "Other Hacking", r.other);
 }
 
-static void from_json(const json& j, Config::Griefing::Blockbot& b)
+static void from_json(const json &j, Config::Griefing::Blockbot &b)
 {
 	read<value_t::object>(j, "Bind", b.bind);
 	read<value_t::object>(j, "Target", b.target);
@@ -731,8 +742,7 @@ bool Config::load(const char8_t *name, bool incremental) noexcept
 		j = json::parse(in, nullptr, false);
 		if (j.is_discarded())
 			return false;
-	}
-	else return false;
+	} else return false;
 
 	if (!incremental)
 		reset();
@@ -768,10 +778,10 @@ bool Config::load(size_t id, bool incremental) noexcept
 #define WRITE(name, valueName) to_json(j[name], o.valueName, dummy.valueName)
 
 template <typename T>
-static void to_json(json& j, const T& o, const T& dummy)
+static void to_json(json &j, const T &o, const T &dummy)
 {
-    if (o != dummy)
-        j = o;
+	if (o != dummy)
+		j = o;
 }
 
 static void to_json(json &j, const KeyBind &o, const KeyBind &dummy = {})
@@ -842,216 +852,216 @@ static void to_json(json &j, const Color4ToggleThicknessRounding &o, const Color
 	WRITE("Thickness", thickness);
 }
 
-static void to_json(json& j, const Font& o, const Font& dummy = {})
+static void to_json(json &j, const Font &o, const Font &dummy = {})
 {
-    WRITE("Name", name);
+	WRITE("Name", name);
 }
 
-static void to_json(json& j, const Snapline& o, const Snapline& dummy = {})
+static void to_json(json &j, const Snapline &o, const Snapline &dummy = {})
 {
-    to_json(j, static_cast<const Color4ToggleThickness&>(o), dummy);
-    WRITE("Type", type);
+	to_json(j, static_cast<const Color4ToggleThickness &>(o), dummy);
+	WRITE("Type", type);
 }
 
-static void to_json(json& j, const Box& o, const Box& dummy = {})
+static void to_json(json &j, const Box &o, const Box &dummy = {})
 {
-    to_json(j, static_cast<const Color4ToggleRounding&>(o), dummy);
-    WRITE("Type", type);
-    WRITE("Scale", scale);
-    WRITE("Fill", fill);
+	to_json(j, static_cast<const Color4ToggleRounding &>(o), dummy);
+	WRITE("Type", type);
+	WRITE("Scale", scale);
+	WRITE("Fill", fill);
 }
 
-static void to_json(json& j, const Shared& o, const Shared& dummy = {})
+static void to_json(json &j, const Shared &o, const Shared &dummy = {})
 {
-    WRITE("Enabled", enabled);
-    WRITE("Font", font);
-    WRITE("Snapline", snapline);
-    WRITE("Box", box);
-    WRITE("Name", name);
-    WRITE("Text Cull Distance", textCullDistance);
+	WRITE("Enabled", enabled);
+	WRITE("Font", font);
+	WRITE("Snapline", snapline);
+	WRITE("Box", box);
+	WRITE("Name", name);
+	WRITE("Text Cull Distance", textCullDistance);
 }
 
-static void to_json(json& j, const Player& o, const Player& dummy = {})
+static void to_json(json &j, const Player &o, const Player &dummy = {})
 {
-    to_json(j, static_cast<const Shared&>(o), dummy);
-    WRITE("Weapon", weapon);
-    WRITE("Flash Duration", flashDuration);
-    WRITE("Audible Only", audibleOnly);
-    WRITE("Spotted Only", spottedOnly);
-    WRITE("Health Bar", healthBar);
-    WRITE("Health", health);
-    WRITE("Skeleton", skeleton);
-    WRITE("Head Box", headBox);
-    WRITE("Flags", flags);
-    WRITE("Offscreen", offscreen);
+	to_json(j, static_cast<const Shared &>(o), dummy);
+	WRITE("Weapon", weapon);
+	WRITE("Flash Duration", flashDuration);
+	WRITE("Audible Only", audibleOnly);
+	WRITE("Spotted Only", spottedOnly);
+	WRITE("Health Bar", healthBar);
+	WRITE("Health", health);
+	WRITE("Skeleton", skeleton);
+	WRITE("Head Box", headBox);
+	WRITE("Flags", flags);
+	WRITE("Offscreen", offscreen);
 }
 
-static void to_json(json& j, const Weapon& o, const Weapon& dummy = {})
+static void to_json(json &j, const Weapon &o, const Weapon &dummy = {})
 {
-    to_json(j, static_cast<const Shared&>(o), dummy);
-    WRITE("Ammo", ammo);
+	to_json(j, static_cast<const Shared &>(o), dummy);
+	WRITE("Ammo", ammo);
 }
 
-static void to_json(json& j, const Trail& o, const Trail& dummy = {})
+static void to_json(json &j, const Trail &o, const Trail &dummy = {})
 {
-    to_json(j, static_cast<const Color4BorderToggleThickness&>(o), dummy);
-    WRITE("Type", type);
-    WRITE("Time", time);
+	to_json(j, static_cast<const Color4BorderToggleThickness &>(o), dummy);
+	WRITE("Type", type);
+	WRITE("Time", time);
 }
 
-static void to_json(json& j, const Trails& o, const Trails& dummy = {})
+static void to_json(json &j, const Trails &o, const Trails &dummy = {})
 {
-    WRITE("Enabled", enabled);
-    WRITE("Local Player", localPlayer);
-    WRITE("Allies", allies);
-    WRITE("Enemies", enemies);
+	WRITE("Enabled", enabled);
+	WRITE("Local Player", localPlayer);
+	WRITE("Allies", allies);
+	WRITE("Enemies", enemies);
 }
 
-static void to_json(json& j, const Projectile& o, const Projectile& dummy = {})
+static void to_json(json &j, const Projectile &o, const Projectile &dummy = {})
 {
-    j = static_cast<const Shared&>(o);
+	j = static_cast<const Shared &>(o);
 
-    WRITE("Trails", trails);
+	WRITE("Trails", trails);
 }
 
-static void to_json(json& j, const ImVec2& o, const ImVec2& dummy = {})
+static void to_json(json &j, const ImVec2 &o, const ImVec2 &dummy = {})
 {
-    WRITE("X", x);
-    WRITE("Y", y);
+	WRITE("X", x);
+	WRITE("Y", y);
 }
 
-static void to_json(json& j, const Config::Aimbot& o, const Config::Aimbot& dummy = {})
+static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dummy = {})
 {
-    WRITE("Bind", bind);
-    WRITE("Aimlock", aimlock);
-    WRITE("Multipoint", multipoint);
-    WRITE("Multipoint scale", multipointScale);
-    WRITE("Silent", silent);
-    WRITE("Friendly fire", friendlyFire);
-    WRITE("Visible only", visibleOnly);
-    WRITE("Scoped only", scopedOnly);
-    WRITE("Ignore flash", ignoreFlash);
-    WRITE("Ignore smoke", ignoreSmoke);
-    WRITE("Auto shot", autoShot);
-    WRITE("Auto scope", autoScope);
-    WRITE("Distance", distance);
-    WRITE("Fov", fov);
-    WRITE("Smooth start", smooth);
+	WRITE("Bind", bind);
+	WRITE("Aimlock", aimlock);
+	WRITE("Multipoint", multipoint);
+	WRITE("Multipoint scale", multipointScale);
+	WRITE("Silent", silent);
+	WRITE("Friendly fire", friendlyFire);
+	WRITE("Visible only", visibleOnly);
+	WRITE("Scoped only", scopedOnly);
+	WRITE("Ignore flash", ignoreFlash);
+	WRITE("Ignore smoke", ignoreSmoke);
+	WRITE("Auto shot", autoShot);
+	WRITE("Auto scope", autoScope);
+	WRITE("Distance", distance);
+	WRITE("Fov", fov);
+	WRITE("Smooth start", smooth);
 	WRITE("Linear speed", linearSpeed);
 	WRITE("Interpolation", interpolation);
-    WRITE("Hitgroup", hitgroup);
-    WRITE("Targeting", targeting);
-    WRITE("Max aim inaccuracy", maxAimInaccuracy);
-    WRITE("Hitchance", shotHitchance);
-    WRITE("Min damage", minDamage);
-    WRITE("Min damage auto-wall", minDamageAutoWall);
-    WRITE("Killshot", killshot);
-    WRITE("Killshot auto-wall", killshotAutoWall);
-    WRITE("Between shots", betweenShots);
+	WRITE("Hitgroup", hitgroup);
+	WRITE("Targeting", targeting);
+	WRITE("Max aim inaccuracy", maxAimInaccuracy);
+	WRITE("Hitchance", shotHitchance);
+	WRITE("Min damage", minDamage);
+	WRITE("Min damage auto-wall", minDamageAutoWall);
+	WRITE("Killshot", killshot);
+	WRITE("Killshot auto-wall", killshotAutoWall);
+	WRITE("Between shots", betweenShots);
 	WRITE("Safe only", safeOnly);
 	WRITE("Safe mode", safeHitgroup);
 }
 
-static void to_json(json& j, const Config::Triggerbot& o, const Config::Triggerbot& dummy = {})
+static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerbot &dummy = {})
 {
-    WRITE("Bind", bind);
-    WRITE("Friendly fire", friendlyFire);
-    WRITE("Visible only", visibleOnly);
-    WRITE("Scoped only", scopedOnly);
-    WRITE("Ignore flash", ignoreFlash);
-    WRITE("Ignore smoke", ignoreSmoke);
-    WRITE("Hitgroup", hitgroup);
-    WRITE("Hitchance", hitchance);
-    WRITE("Distance", distance);
-    WRITE("Shot delay", shotDelay);
-    WRITE("Max inaccuracy", maxShotInaccuracy);
-    WRITE("Min damage", minDamage);
-    WRITE("Min damage auto-wall", minDamageAutoWall);
-    WRITE("Killshot", killshot);
-    WRITE("Killshot auto-wall", killshotAutoWall);
-    WRITE("Burst Time", burstTime);
+	WRITE("Bind", bind);
+	WRITE("Friendly fire", friendlyFire);
+	WRITE("Visible only", visibleOnly);
+	WRITE("Scoped only", scopedOnly);
+	WRITE("Ignore flash", ignoreFlash);
+	WRITE("Ignore smoke", ignoreSmoke);
+	WRITE("Hitgroup", hitgroup);
+	WRITE("Hitchance", hitchance);
+	WRITE("Distance", distance);
+	WRITE("Shot delay", shotDelay);
+	WRITE("Max inaccuracy", maxShotInaccuracy);
+	WRITE("Min damage", minDamage);
+	WRITE("Min damage auto-wall", minDamageAutoWall);
+	WRITE("Killshot", killshot);
+	WRITE("Killshot auto-wall", killshotAutoWall);
+	WRITE("Burst Time", burstTime);
 }
 
-static void to_json(json& j, const Config::Backtrack& o, const Config::Backtrack& dummy = {})
+static void to_json(json &j, const Config::Backtrack &o, const Config::Backtrack &dummy = {})
 {
-    WRITE("Enabled", enabled);
-    WRITE("Ignore smoke", ignoreSmoke);
-    WRITE("Recoil based fov", recoilBasedFov);
-    WRITE("Time limit", timeLimit);
+	WRITE("Enabled", enabled);
+	WRITE("Ignore smoke", ignoreSmoke);
+	WRITE("Recoil based fov", recoilBasedFov);
+	WRITE("Time limit", timeLimit);
 }
 
-static void to_json(json& j, const Config::AntiAim& o, const Config::AntiAim& dummy = {})
+static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &dummy = {})
 {
-    WRITE("Pitch", pitch);
-    WRITE("Pitch angle", pitchAngle);
-    WRITE("Yaw", yaw);
-    WRITE("Yaw angle", yawAngle);
-    WRITE("Desync", desync);
-    WRITE("Desync cor", corrected);
-    WRITE("Desync clamp", clamped);
-    WRITE("Desync ext", extended);
-    WRITE("Fake up", fakeUp);
-    WRITE("Flip key", flipKey);
+	WRITE("Pitch", pitch);
+	WRITE("Pitch angle", pitchAngle);
+	WRITE("Yaw", yaw);
+	WRITE("Yaw angle", yawAngle);
+	WRITE("Desync", desync);
+	WRITE("Desync cor", corrected);
+	WRITE("Desync clamp", clamped);
+	WRITE("Desync ext", extended);
+	WRITE("Fake up", fakeUp);
+	WRITE("Flip key", flipKey);
 	WRITE("Fake duck", fakeDuck);
 	WRITE("Fake duck packets", fakeDuckPackets);
 	WRITE("Choked packets", chokedPackets);
 	WRITE("Choke", choke);
 }
 
-static void to_json(json& j, const Config::Glow& o, const Config::Glow& dummy = {})
+static void to_json(json &j, const Config::Glow &o, const Config::Glow &dummy = {})
 {
-    to_json(j, static_cast<const Color4&>(o), dummy);
-    WRITE("Enabled", enabled);
-    WRITE("Health based", healthBased);
-    WRITE("Style", style);
-    WRITE("Full bloom", full);
+	to_json(j, static_cast<const Color4 &>(o), dummy);
+	WRITE("Enabled", enabled);
+	WRITE("Health based", healthBased);
+	WRITE("Style", style);
+	WRITE("Full bloom", full);
 }
 
-static void to_json(json& j, const Config::Chams::Material& o)
+static void to_json(json &j, const Config::Chams::Material &o)
 {
-    const Config::Chams::Material dummy;
+	const Config::Chams::Material dummy;
 
-    to_json(j, static_cast<const Color4&>(o), dummy);
-    WRITE("Enabled", enabled);
-    WRITE("Health based", healthBased);
-    WRITE("Blinking", blinking);
-    WRITE("Wireframe", wireframe);
-    WRITE("Cover", cover);
-    WRITE("Ignore-Z", ignorez);
-    WRITE("Material", material);
+	to_json(j, static_cast<const Color4 &>(o), dummy);
+	WRITE("Enabled", enabled);
+	WRITE("Health based", healthBased);
+	WRITE("Blinking", blinking);
+	WRITE("Wireframe", wireframe);
+	WRITE("Cover", cover);
+	WRITE("Ignore-Z", ignorez);
+	WRITE("Material", material);
 }
 
-static void to_json(json& j, const Config::Chams& o)
+static void to_json(json &j, const Config::Chams &o)
 {
-    j["Materials"] = o.materials;
+	j["Materials"] = o.materials;
 }
 
-static void to_json(json& j, const Config::ESP& o)
+static void to_json(json &j, const Config::ESP &o)
 {
-    j["Allies"] = o.allies;
-    j["Enemies"] = o.enemies;
-    j["Weapons"] = o.weapons;
-    j["Projectiles"] = o.projectiles;
-    j["Loot Crates"] = o.lootCrates;
-    j["Other Entities"] = o.otherEntities;
+	j["Allies"] = o.allies;
+	j["Enemies"] = o.enemies;
+	j["Weapons"] = o.weapons;
+	j["Projectiles"] = o.projectiles;
+	j["Loot Crates"] = o.lootCrates;
+	j["Other Entities"] = o.otherEntities;
 }
 
-static void to_json(json& j, const Config::Sound::Player& o)
+static void to_json(json &j, const Config::Sound::Player &o)
 {
-    const Config::Sound::Player dummy;
+	const Config::Sound::Player dummy;
 
-    WRITE("Master volume", masterVolume);
-    WRITE("Headshot volume", headshotVolume);
-    WRITE("Weapon volume", weaponVolume);
-    WRITE("Footstep volume", footstepVolume);
+	WRITE("Master volume", masterVolume);
+	WRITE("Headshot volume", headshotVolume);
+	WRITE("Weapon volume", weaponVolume);
+	WRITE("Footstep volume", footstepVolume);
 }
 
-static void to_json(json& j, const Config::Sound& o)
+static void to_json(json &j, const Config::Sound &o)
 {
-    const Config::Sound dummy;
+	const Config::Sound dummy;
 
-    WRITE("Chicken volume", chickenVolume);
-    j["Players"] = o.players;
+	WRITE("Chicken volume", chickenVolume);
+	j["Players"] = o.players;
 	WRITE("Hit sound", hitSound);
 	WRITE("Kill sound", killSound);
 	WRITE("Hit sound volume", hitSoundVol);
@@ -1060,24 +1070,24 @@ static void to_json(json& j, const Config::Sound& o)
 	WRITE("Custom kill sound", customKillSound);
 }
 
-static void to_json(json& j, const Config::Misc::PurchaseList& o, const Config::Misc::PurchaseList& dummy = {})
+static void to_json(json &j, const Config::Misc::PurchaseList &o, const Config::Misc::PurchaseList &dummy = {})
 {
-    WRITE("Enabled", enabled);
-    WRITE("Only During Freeze Time", onlyDuringFreezeTime);
-    WRITE("Show Prices", showPrices);
-    WRITE("No Title Bar", noTitleBar);
-    WRITE("Mode", mode);
+	WRITE("Enabled", enabled);
+	WRITE("Only During Freeze Time", onlyDuringFreezeTime);
+	WRITE("Show Prices", showPrices);
+	WRITE("No Title Bar", noTitleBar);
+	WRITE("Mode", mode);
 }
 
-static void to_json(json& j, const Config::Misc::PreserveKillfeed& o, const Config::Misc::PreserveKillfeed& dummy = {})
+static void to_json(json &j, const Config::Misc::PreserveKillfeed &o, const Config::Misc::PreserveKillfeed &dummy = {})
 {
-    WRITE("Enabled", enabled);
-    WRITE("Only Headshots", onlyHeadshots);
+	WRITE("Enabled", enabled);
+	WRITE("Only Headshots", onlyHeadshots);
 }
 
-static void to_json(json& j, const Config::Misc& o)
+static void to_json(json &j, const Config::Misc &o)
 {
-    const Config::Misc dummy;
+	const Config::Misc dummy;
 
 	WRITE("Noscope crosshair", overlayCrosshair);
 	WRITE("Noscope crosshair type", overlayCrosshairType);
@@ -1085,25 +1095,25 @@ static void to_json(json& j, const Config::Misc& o)
 	WRITE("Recoil crosshair type", recoilCrosshairType);
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Grenade predict", nadePredict);
-    WRITE("Menu key", menuKey);
-    WRITE("Auto pistol", autoPistol);
-    WRITE("Auto reload", autoReload);
-    WRITE("Auto accept", autoAccept);
-    WRITE("Spectator list", spectatorList);
-    WRITE("Spectator list background", specBg);
-    WRITE("Watermark", watermark);
-    WRITE("Watermark background", bg);
-    WRITE("Watermark pos", watermarkPos);
-    WRITE("Fix animation LOD", fixAnimationLOD);
-    WRITE("Fix bone matrix", fixBoneMatrix);
-    WRITE("Fix movement", fixMovement);
-    WRITE("Fix animations", fixAnimation);
-    WRITE("Disable model occlusion", disableModelOcclusion);
-    WRITE("Disable HUD blur", disablePanoramablur);
-    WRITE("Prepare revolver", prepareRevolver);
-    WRITE("Quick healthshot key", quickHealthshotKey);
-    WRITE("Purchase list", purchaseList);
-    WRITE("Preserve killfeed", preserveKillfeed);
+	WRITE("Menu key", menuKey);
+	WRITE("Auto pistol", autoPistol);
+	WRITE("Auto reload", autoReload);
+	WRITE("Auto accept", autoAccept);
+	WRITE("Spectator list", spectatorList);
+	WRITE("Spectator list background", specBg);
+	WRITE("Watermark", watermark);
+	WRITE("Watermark background", bg);
+	WRITE("Watermark pos", watermarkPos);
+	WRITE("Fix animation LOD", fixAnimationLOD);
+	WRITE("Fix bone matrix", fixBoneMatrix);
+	WRITE("Fix movement", fixMovement);
+	WRITE("Fix animations", fixAnimation);
+	WRITE("Disable model occlusion", disableModelOcclusion);
+	WRITE("Disable HUD blur", disablePanoramablur);
+	WRITE("Prepare revolver", prepareRevolver);
+	WRITE("Quick healthshot key", quickHealthshotKey);
+	WRITE("Purchase list", purchaseList);
+	WRITE("Preserve killfeed", preserveKillfeed);
 	WRITE("Reveal ranks", revealRanks);
 	WRITE("Reveal money", revealMoney);
 	WRITE("Reveal suspect", revealSuspect);
@@ -1289,117 +1299,120 @@ static void to_json(json &j, const Config::Visuals &o)
 	WRITE("Player velocity", playerVel);
 }
 
-static void to_json(json& j, const ImVec4& o)
+static void to_json(json &j, const ImVec4 &o)
 {
-    j[0] = o.x;
-    j[1] = o.y;
-    j[2] = o.z;
-    j[3] = o.w;
+	j[0] = o.x;
+	j[1] = o.y;
+	j[2] = o.z;
+	j[3] = o.w;
 }
 
-static void to_json(json& j, const Config::Style& o)
+static void to_json(json &j, const Config::Style &o)
 {
-    const Config::Style dummy;
+	const Config::Style dummy;
 
-    WRITE("Menu style", menuStyle);
-    WRITE("Menu colors", menuColors);
+	WRITE("Menu style", menuStyle);
+	WRITE("Menu colors", menuColors);
 
-    auto& colors = j["Colors"];
-    ImGuiStyle& style = ImGui::GetStyle();
+	auto &colors = j["Colors"];
+	ImGuiStyle &style = ImGui::GetStyle();
 
-    for (int i = 0; i < ImGuiCol_COUNT; i++)
-        colors[ImGui::GetStyleColorName(i)] = style.Colors[i];
+	for (int i = 0; i < ImGuiCol_COUNT; i++)
+		colors[ImGui::GetStyleColorName(i)] = style.Colors[i];
 }
 
-static void to_json(json& j, const sticker_setting& o)
+static void to_json(json &j, const sticker_setting &o)
 {
-    const sticker_setting dummy;
+	const sticker_setting dummy;
 
-    WRITE("Kit", kit);
-    WRITE("Wear", wear);
-    WRITE("Scale", scale);
-    WRITE("Rotation", rotation);
+	WRITE("Kit", kit);
+	WRITE("Wear", wear);
+	WRITE("Scale", scale);
+	WRITE("Rotation", rotation);
 }
 
-static void to_json(json& j, const item_setting& o)
+static void to_json(json &j, const item_setting &o)
 {
-    const item_setting dummy;
+	const item_setting dummy;
 
-    WRITE("Enabled", enabled);
-    WRITE("Definition index", itemId);
-    WRITE("Quality", quality);
-    WRITE("Paint Kit", paintKit);
-    WRITE("Definition override", definition_override_index);
-    WRITE("Seed", seed);
-    WRITE("StatTrak", stat_trak);
-    WRITE("Wear", wear);
-    if (o.custom_name[0])
-        j["Custom name"] = o.custom_name;
-    WRITE("Stickers", stickers);
+	WRITE("Enabled", enabled);
+	WRITE("Definition index", itemId);
+	WRITE("Quality", quality);
+	WRITE("Paint Kit", paintKit);
+	WRITE("Definition override", definition_override_index);
+	WRITE("Seed", seed);
+	WRITE("StatTrak", stat_trak);
+	WRITE("Wear", wear);
+	if (o.custom_name[0])
+		j["Custom name"] = o.custom_name;
+	WRITE("Stickers", stickers);
 }
 
-void removeEmptyObjects(json& j) noexcept
+void removeEmptyObjects(json &j) noexcept
 {
-    for (auto it = j.begin(); it != j.end();) {
-        auto& val = it.value();
-        if (val.is_object() || val.is_array())
-            removeEmptyObjects(val);
-        if (val.empty() && !j.is_array())
-            it = j.erase(it);
-        else
-            ++it;
-    }
+	for (auto it = j.begin(); it != j.end();)
+	{
+		auto &val = it.value();
+		if (val.is_object() || val.is_array())
+			removeEmptyObjects(val);
+		if (val.empty() && !j.is_array())
+			it = j.erase(it);
+		else
+			++it;
+	}
 }
 
 void Config::save(size_t id) const noexcept
 {
-    std::error_code ec;
-    std::filesystem::create_directory(path, ec);
+	std::error_code ec;
+	std::filesystem::create_directory(path, ec);
 
-    if (std::ofstream out{ path / (const char8_t*)configs[id].c_str() }; out.good()) {
-        json j;
+	if (std::ofstream out{path / (const char8_t *)configs[id].c_str()}; out.good())
+	{
+		json j;
 
-        j["Aimbot"] = aimbot;
-        j["Triggerbot"] = triggerbot;
-        j["Backtrack"] = backtrack;
-        j["Anti aim"] = antiAim;
-        j["Glow"] = glow;
-        j["Chams"] = chams;
-        j["ESP"] = esp;
-        j["Sound"] = sound;
-        j["Visuals"] = visuals;
-        j["Misc"] = misc;
-        j["Style"] = style;
-        j["Skin changer"] = skinChanger;
+		j["Aimbot"] = aimbot;
+		j["Triggerbot"] = triggerbot;
+		j["Backtrack"] = backtrack;
+		j["Anti aim"] = antiAim;
+		j["Glow"] = glow;
+		j["Chams"] = chams;
+		j["ESP"] = esp;
+		j["Sound"] = sound;
+		j["Visuals"] = visuals;
+		j["Misc"] = misc;
+		j["Style"] = style;
+		j["Skin changer"] = skinChanger;
 		j["Exploits"] = exploits;
 		j["Movement"] = movement;
 		j["Griefing"] = griefing;
 
-        removeEmptyObjects(j);
-        out << std::setw(2) << j;
-    }
+		removeEmptyObjects(j);
+		out << std::setw(2) << j;
+	}
 }
 
-void Config::add(const char* name) noexcept
+void Config::add(const char *name) noexcept
 {
-    if (*name && std::find(configs.cbegin(), configs.cend(), name) == configs.cend()) {
-        configs.emplace_back(name);
-        save(configs.size() - 1);
-    }
+	if (*name && std::find(configs.cbegin(), configs.cend(), name) == configs.cend())
+	{
+		configs.emplace_back(name);
+		save(configs.size() - 1);
+	}
 }
 
 void Config::remove(size_t id) noexcept
 {
-    std::error_code ec;
-    std::filesystem::remove(path / (const char8_t*)configs[id].c_str(), ec);
-    configs.erase(configs.cbegin() + id);
+	std::error_code ec;
+	std::filesystem::remove(path / (const char8_t *)configs[id].c_str(), ec);
+	configs.erase(configs.cbegin() + id);
 }
 
-void Config::rename(size_t item, const char* newName) noexcept
+void Config::rename(size_t item, const char *newName) noexcept
 {
-    std::error_code ec;
-    std::filesystem::rename(path / (const char8_t*)configs[item].c_str(), path / (const char8_t*)newName, ec);
-    configs[item] = newName;
+	std::error_code ec;
+	std::filesystem::rename(path / (const char8_t *)configs[item].c_str(), path / (const char8_t *)newName, ec);
+	configs[item] = newName;
 }
 
 void Config::reset() noexcept
@@ -1423,13 +1436,13 @@ void Config::reset() noexcept
 
 void Config::listConfigs() noexcept
 {
-    configs.clear();
+	configs.clear();
 
-    std::error_code ec;
-    std::transform(std::filesystem::directory_iterator{ path, ec },
-        std::filesystem::directory_iterator{ },
-        std::back_inserter(configs),
-        [](const auto& entry) { return std::string{ (const char*)entry.path().filename().u8string().c_str() }; });
+	std::error_code ec;
+	std::transform(std::filesystem::directory_iterator{path, ec},
+		std::filesystem::directory_iterator{ },
+		std::back_inserter(configs),
+		[](const auto &entry) { return std::string{(const char *)entry.path().filename().u8string().c_str()}; });
 }
 
 void Config::openConfigDir() const noexcept
@@ -1445,36 +1458,39 @@ void Config::scheduleFontLoad(const std::string &name) noexcept
 }
 
 #ifdef _WIN32
-static auto getFontData(const std::string& fontName) noexcept
+static auto getFontData(const std::string &fontName) noexcept
 {
-    HFONT font = CreateFontA(0, 0, 0, 0,
-        FW_NORMAL, FALSE, FALSE, FALSE,
-        ANSI_CHARSET, OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-        DEFAULT_PITCH, fontName.c_str());
+	HFONT font = CreateFontA(0, 0, 0, 0,
+		FW_NORMAL, FALSE, FALSE, FALSE,
+		ANSI_CHARSET, OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+		DEFAULT_PITCH, fontName.c_str());
 
-    std::unique_ptr<std::byte[]> data;
-    DWORD dataSize = GDI_ERROR;
+	std::unique_ptr<std::byte[]> data;
+	DWORD dataSize = GDI_ERROR;
 
-    if (font) {
-        HDC hdc = CreateCompatibleDC(nullptr);
+	if (font)
+	{
+		HDC hdc = CreateCompatibleDC(nullptr);
 
-        if (hdc) {
-            SelectObject(hdc, font);
-            dataSize = GetFontData(hdc, 0, 0, nullptr, 0);
+		if (hdc)
+		{
+			SelectObject(hdc, font);
+			dataSize = GetFontData(hdc, 0, 0, nullptr, 0);
 
-            if (dataSize != GDI_ERROR) {
-                data = std::make_unique<std::byte[]>(dataSize);
-                dataSize = GetFontData(hdc, 0, 0, data.get(), dataSize);
+			if (dataSize != GDI_ERROR)
+			{
+				data = std::make_unique<std::byte[]>(dataSize);
+				dataSize = GetFontData(hdc, 0, 0, data.get(), dataSize);
 
-                if (dataSize == GDI_ERROR)
-                    data.reset();
-            }
-            DeleteDC(hdc);
-        }
-        DeleteObject(font);
-    }
-    return std::make_pair(std::move(data), dataSize);
+				if (dataSize == GDI_ERROR)
+					data.reset();
+			}
+			DeleteDC(hdc);
+		}
+		DeleteObject(font);
+	}
+	return std::make_pair(std::move(data), dataSize);
 }
 #endif
 
