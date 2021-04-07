@@ -108,8 +108,8 @@ namespace Helpers
 		}
 	};
 
-	float angleDiffDeg(float a1, float a2) noexcept;
-	float angleDiffRad(float a1, float a2) noexcept;
+	float angleDiffDeg(float, float) noexcept;
+	float angleDiffRad(float, float) noexcept;
 
 	float approachAngleDeg(float target, float value, float speed) noexcept;
 	float approachAngleRad(float target, float value, float speed) noexcept;
@@ -143,7 +143,7 @@ namespace Helpers
 	float approxRadius(const StudioBbox &hitbox, int i) noexcept;
 
 	template<typename T>
-	std::vector<T> join(const std::vector<T> &first, const std::vector<T> &second) noexcept
+	constexpr std::vector<T> join(const std::vector<T> &first, const std::vector<T> &second) noexcept
 	{
 		std::vector<T> buffer;
 		buffer.reserve(first.size() + second.size());

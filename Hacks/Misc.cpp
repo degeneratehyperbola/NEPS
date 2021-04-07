@@ -1030,6 +1030,19 @@ void Misc::revealRanks(UserCmd *cmd) noexcept
 		interfaces->client->dispatchUserMessage(50, 0, 0, nullptr);
 }
 
+static float perfectDelta(float speed) noexcept
+{
+	static auto speedVar = interfaces->cvar->findVar("sv_maxspeed");
+	static auto airVar = interfaces->cvar->findVar("sv_airaccelerate");
+
+	const auto term = (30.0f - airVar->getFloat() * speedVar->getFloat() / 100.0f) / speed;
+
+	if (term < 1.0f && term > -1.0f)
+		return std::acosf(term);
+
+	return 0.0f;
+}
+
 void Misc::autoStrafe(UserCmd *cmd) noexcept
 {
 	if (!config->movement.autoStrafe)
@@ -1039,24 +1052,26 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 		return;
 
 	static auto wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
-
 	if (~cmd->buttons & UserCmd::IN_JUMP || localPlayer->flags() & Entity::FL_ONGROUND && wasLastTimeOnGround)
 		return;
 
-	const float curSpeed = localPlayer->velocity().length2D();
-	if (curSpeed < 5.0f)
+	const float speed = localPlayer->velocity().length2D();
+	if (speed < 5.0f)
+		return;
+
+	const float pDelta = perfectDelta(speed);
+	if (pDelta == 0.0f)
 		return;
 
 	const float yaw = Helpers::degreesToRadians(cmd->viewangles.y);
-
-	const float curVel = std::atan2f(localPlayer->velocity().y, localPlayer->velocity().x) - yaw;
+	const float velDir = std::atan2f(localPlayer->velocity().y, localPlayer->velocity().x) - yaw;
 	const float wishAng = std::atan2f(-cmd->sidemove, cmd->forwardmove);
+	const float delta = Helpers::angleDiffRad(velDir, wishAng);
 
-	const float angleDelta = Helpers::angleDiffRad(curVel, wishAng);
-	float move = angleDelta < 0.0f ? curVel + PI / 2 : curVel - PI / 2;
+	float moveDir = delta < 0.0f ? velDir + pDelta : velDir - pDelta;
 
-	cmd->forwardmove = std::cosf(move) * 450.0f;
-	cmd->sidemove = -std::sinf(move) * 450.0f;
+	cmd->forwardmove = std::cosf(moveDir) * 450.0f;
+	cmd->sidemove = -std::sinf(moveDir) * 450.0f;
 
 	wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
 }
