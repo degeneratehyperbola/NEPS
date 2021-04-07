@@ -135,8 +135,8 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::indicators(ImGui::GetBackgroundDrawList());
 
 	#ifndef LEGACY_WATERMARK
-	Misc::spectatorList(ImGui::GetBackgroundDrawList());
-	Misc::watermark(ImGui::GetBackgroundDrawList());
+	Misc::spectatorList();
+	Misc::watermark();
 	#endif // !LEGACY_WATERMARK
 
 	if (gui->open)

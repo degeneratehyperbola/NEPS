@@ -101,16 +101,7 @@ void GUI::render() noexcept
 
 	if (ImGui::BeginPopup("##context_menu", ImGuiWindowFlags_NoMove))
 	{
-		if (ImGui::Selectable("Close all"))
-			window = {};
-		if (ImGui::Selectable("Open console"))
-			interfaces->engine->clientCmdUnrestricted("toggleconsole");
-		if (ImGui::Selectable("Fog UI"))
-			interfaces->engine->clientCmdUnrestricted("fogui");
-		if (ImGui::Selectable("Loaded textures"))
-			interfaces->cvar->findVar("mat_texture_list")->setValue(true);
-		if (ImGui::Selectable("Unload"))
-			hooks->uninstall();
+		renderContextMenu();
 		ImGui::EndPopup();
 	}
 
@@ -139,6 +130,24 @@ static void menuBarItem(const char *name, bool &enabled) noexcept
 	}
 }
 
+void GUI::renderContextMenu() noexcept
+{
+	if (ImGui::MenuItem("Close all"))
+		window = {};
+	if (ImGui::MenuItem("Open console"))
+		interfaces->engine->clientCmdUnrestricted("toggleconsole");
+
+	#ifdef _DEBUG_NEPS
+	if (ImGui::MenuItem("Fog UI"))
+		interfaces->engine->clientCmdUnrestricted("fogui");
+	if (ImGui::MenuItem("Loaded textures"))
+		interfaces->cvar->findVar("mat_texture_list")->setValue(true);
+	#endif // _DEBUG_NEPS
+
+	if (ImGui::MenuItem("Unload"))
+		hooks->uninstall();
+}
+
 void GUI::renderMenuBar() noexcept
 {
 	if (ImGui::BeginMainMenuBar())
@@ -163,16 +172,7 @@ void GUI::renderMenuBar() noexcept
 		ImGui::Separator();
 		if (ImGui::BeginMenu("Context menu"))
 		{
-			if (ImGui::MenuItem("Close all"))
-				window = {};
-			if (ImGui::MenuItem("Open console"))
-				interfaces->engine->clientCmdUnrestricted("toggleconsole");
-			if (ImGui::MenuItem("Fog UI"))
-				interfaces->engine->clientCmdUnrestricted("fogui");
-			if (ImGui::MenuItem("Loaded textures"))
-				interfaces->cvar->findVar("mat_texture_list")->setValue(true);
-			if (ImGui::MenuItem("Unload"))
-				hooks->uninstall();
+			renderContextMenu();
 			ImGui::EndMenu();
 		}
 		ImGui::Separator();
@@ -1308,6 +1308,8 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 
 	ImGuiCustom::colorPicker("World color", config->visuals.world);
 	ImGuiCustom::colorPicker("Props color", config->visuals.props);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("About 42%% less performant (not recommended to enable)");
 	ImGuiCustom::colorPicker("Sky color", config->visuals.sky);
 	;
 	ImGui::PushItemWidth(255.0f);

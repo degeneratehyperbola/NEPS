@@ -151,6 +151,7 @@ void Misc::updateClanTag() noexcept
 	}
 }
 
+#ifdef LEGACY_WATERMARK
 void Misc::spectatorList() noexcept
 {
 	if (!config->misc.spectatorList.enabled)
@@ -234,8 +235,8 @@ void Misc::spectatorList() noexcept
 	interfaces->surface->setTextPosition(width - titleWidth - 7, textPositionY - titleHeight - 7);
 	interfaces->surface->printText(title);
 }
-
-void Misc::spectatorList(ImDrawList *drawList) noexcept
+#else // LEGACY_WATERMARK
+void Misc::spectatorList() noexcept
 {
 	if (!config->misc.spectatorList.enabled)
 		return;
@@ -268,7 +269,9 @@ void Misc::spectatorList(ImDrawList *drawList) noexcept
 		ImGui::PopStyleVar();
 	}
 }
+#endif // !LEGACY_WATERMARK
 
+#ifdef LEGACY_WATERMARK
 void Misc::watermark() noexcept
 {
 	if (config->misc.watermark.enabled)
@@ -341,8 +344,8 @@ void Misc::watermark() noexcept
 		interfaces->surface->drawOutlinedRect(0, 0, waterWidth + 14, waterHeight + 11);
 	}
 }
-
-void Misc::watermark(ImDrawList *drawList) noexcept
+#else // LEGACY_WATERMARK
+void Misc::watermark() noexcept
 {
 	if (!config->misc.watermark.enabled)
 		return;
@@ -375,13 +378,13 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 		if (gui->open && ImGui::BeginPopup("##pos_sel", ImGuiWindowFlags_NoMove))
 		{
 			bool selected = pos == 0;
-			if (ImGui::Selectable("Top left", &selected)) pos = 0;
+			if (ImGui::MenuItem("Top left", nullptr, selected)) pos = 0;
 			selected = pos == 1;
-			if (ImGui::Selectable("Top right", &selected)) pos = 1;
+			if (ImGui::MenuItem("Top right", nullptr, selected)) pos = 1;
 			selected = pos == 2;
-			if (ImGui::Selectable("Bottom right", &selected)) pos = 2;
+			if (ImGui::MenuItem("Bottom right", nullptr, selected)) pos = 2;
 			selected = pos == 3;
-			if (ImGui::Selectable("Bottom left", &selected)) pos = 3;
+			if (ImGui::MenuItem("Bottom left", nullptr, selected)) pos = 3;
 			ImGui::EndPopup();
 		}
 
@@ -423,6 +426,7 @@ void Misc::watermark(ImDrawList *drawList) noexcept
 		ImGui::End();
 	}
 }
+#endif // !LEGACY_WATERMARK
 
 static void drawCrosshair(ImDrawList *drawList, ImVec2 pos, ImU32 color, int type)
 {

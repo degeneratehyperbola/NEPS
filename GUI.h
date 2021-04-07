@@ -17,6 +17,7 @@ public:
 	const auto &getFont() noexcept { return font; };
 	void updateColors() const noexcept;
 private:
+	void renderContextMenu() noexcept;
 	void renderMenuBar() noexcept;
 	void renderDebugWindow() noexcept;
 	void renderAimbotWindow(bool contentOnly = false) noexcept;
