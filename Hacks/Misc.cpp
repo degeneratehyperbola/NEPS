@@ -1026,26 +1026,6 @@ void Misc::revealRanks(UserCmd *cmd) noexcept
 		interfaces->client->dispatchUserMessage(50, 0, 0, nullptr);
 }
 
-static float idealAngleDelta2(float speed)
-{
-	if (!localPlayer) return 0.0f;
-	const auto activeWeapon = localPlayer->getActiveWeapon();
-	if (!activeWeapon) return 0.0f;
-	const auto weaponData = activeWeapon->getWeaponData();
-	if (!weaponData) return 0.0f;
-
-	float steer = localPlayer->flags() & Entity::FL_DUCKING ? config->movement.steerSpeed / 3 : config->movement.steerSpeed;
-	steer *= localPlayer->isScoped() ? weaponData->maxSpeed / 250 : weaponData->maxSpeedAlt / 250;
-	return std::fminf(std::asinf(steer / speed), PI / 2);
-}
-
-static float idealAngleDelta3(float speed)
-{
-	static const auto maxWishSpeedVar = interfaces->cvar->findVar("sv_air_max_wishspeed");
-
-	return std::fminf(std::atanf(maxWishSpeedVar->getFloat() / speed), PI / 2);
-}
-
 void Misc::autoStrafe(UserCmd *cmd) noexcept
 {
 	if (!config->movement.autoStrafe)
@@ -1060,19 +1040,16 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 		return;
 
 	const float curSpeed = localPlayer->velocity().length2D();
-	const float idealDelta = idealAngleDelta2(curSpeed);
-	const float deltaAt90 = idealAngleDelta3(curSpeed);
-
-	if (idealDelta == 0.0f)
+	if (curSpeed < 5.0f)
 		return;
 
-	const float yawRad = Helpers::degreesToRadians(cmd->viewangles.y);
+	const float yaw = Helpers::degreesToRadians(cmd->viewangles.y);
 
-	const float curVel = curSpeed != 0.0f ? std::atan2f(localPlayer->velocity().y, localPlayer->velocity().x) - yawRad : 0.0f;
+	const float curVel = std::atan2f(localPlayer->velocity().y, localPlayer->velocity().x) - yaw;
 	const float wishAng = std::atan2f(-cmd->sidemove, cmd->forwardmove);
 
 	const float angleDelta = Helpers::angleDiffRad(curVel, wishAng);
-	float move = angleDelta < 0.0f ? curVel + PI / 2 - deltaAt90 + idealDelta : curVel - PI / 2 + deltaAt90 - idealDelta;
+	float move = angleDelta < 0.0f ? curVel + PI / 2 : curVel - PI / 2;
 
 	cmd->forwardmove = std::cosf(move) * 450.0f;
 	cmd->sidemove = -std::sinf(move) * 450.0f;
