@@ -69,8 +69,8 @@ namespace GameData
 struct Indicators
 {
 	int blockTarget = 0;
-	Vector serverHead = Vector{};
-	Vector desyncHead = Vector{};
+	Vector serverHead;
+	Vector desyncHead;
 	float deltaLby = 0.0f;
 
 	#ifdef _DEBUG_NEPS
@@ -95,8 +95,7 @@ struct LocalPlayerData
 	bool alive = false;
 	bool reloading = false;
 	bool shooting = false;
-	bool scoped = false;
-	bool sniper = false;
+	bool scopeOverlay = false;
 	float nextAttack = 0.0f;
 	int fov = 90;
 	int handle = 0;

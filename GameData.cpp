@@ -274,8 +274,7 @@ void LocalPlayerData::update() noexcept
 	{
 		reloading = activeWeapon->isInReload();
 		shooting = localPlayer->shotsFired() > 1;
-		scoped = localPlayer->isScoped();
-		sniper = activeWeapon->isSniperRifle();
+		scopeOverlay = localPlayer->isScoped() && (!config->visuals.noWeapons || activeWeapon->isSniperRifle());
 		nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), localPlayer->nextAttack());
 	}
 	fov = localPlayer->fov() ? localPlayer->fov() : localPlayer->defaultFov();

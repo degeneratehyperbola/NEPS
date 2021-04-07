@@ -468,7 +468,7 @@ void Misc::overlayCrosshair(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 	const auto &local = GameData::local();
 
-	if (!local.exists || !local.alive || local.scoped && (!config->visuals.noWeapons || local.sniper))
+	if (!local.exists || !local.alive || local.scopeOverlay)
 		return;
 
 	drawCrosshair(drawList, ImGui::GetIO().DisplaySize / 2, Helpers::calculateColor(config->misc.overlayCrosshair), config->misc.overlayCrosshairType);
