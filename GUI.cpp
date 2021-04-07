@@ -1800,8 +1800,6 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Bunnyhop", &config->movement.bunnyHop);
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
-	ImGui::SetNextItemWidth(100.0f);
-	ImGui::SliderFloat("##steer", &config->movement.steerSpeed, 0.0f, 30.0f, "Steer %.1f");
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
 	if (!contentOnly)

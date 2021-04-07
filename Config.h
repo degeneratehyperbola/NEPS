@@ -338,7 +338,6 @@ public:
 	{
 		bool bunnyHop = false;
 		bool autoStrafe = false;
-		float steerSpeed = 20.0f;
 		KeyBind edgeJump;
 		bool fastStop = false;
 	} movement;
