@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "EngineTrace.h"
 #include "EntityList.h"
+#include "Input.h"
 #include "LocalPlayer.h"
 #include "Matrix3x4.h"
 #include "ModelRender.h"
@@ -33,12 +34,14 @@
 struct AnimState;
 struct AnimLayer;
 
-enum class MoveType {
+enum class MoveType
+{
     NOCLIP = 8,
     LADDER = 9
 };
 
-enum class ObsMode {
+enum class ObsMode
+{
     None = 0,
     Deathcam,
     Freezecam,
@@ -48,7 +51,8 @@ enum class ObsMode {
     Roaming
 };
 
-class Collideable {
+class Collideable
+{
 public:
     VIRTUAL_METHOD(const Vector&, obbMins, 1, (), (this))
     VIRTUAL_METHOD(const Vector&, obbMaxs, 2, (), (this))
@@ -62,7 +66,8 @@ enum class Team
 	CT
 };
 
-class Entity {
+class Entity
+{
 public:
     VIRTUAL_METHOD(void, release, 1, (), (this + 8))
     VIRTUAL_METHOD(ClientClass*, getClientClass, 2, (), (this + 8))
@@ -217,7 +222,7 @@ public:
 
 	bool setupBones(Matrix3x4 *out, int maxBones, int boneMask, float currentTime) noexcept
 	{
-		if (config->misc.fixBoneMatrix && localPlayer && this == localPlayer.get())
+		if (config->misc.fixBoneMatrix && this == localPlayer.get() && memory->input->isCameraInThirdPerson)
 		{
 			int *render = reinterpret_cast<int *>(this + 0x274);
 			int *effects = reinterpret_cast<int *>(this + 0xF0);
@@ -367,6 +372,7 @@ public:
 
     NETVAR(modelIndex, "CBaseEntity", "m_nModelIndex", unsigned)
     NETVAR(origin, "CBaseEntity", "m_vecOrigin", Vector)
+    NETVAR(rotation, "CBaseEntity", "m_angRotation", Vector)
     NETVAR_OFFSET(moveType, "CBaseEntity", "m_nRenderMode", 1, MoveType)
     NETVAR(simulationTime, "CBaseEntity", "m_flSimulationTime", float)
     NETVAR_OFFSET(oldSimulationTime, "CBaseEntity", "m_flSimulationTime", 4, float)
