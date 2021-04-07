@@ -23,7 +23,11 @@ static int weaponIndex = 0;
 
 void Aimbot::run(UserCmd *cmd) noexcept
 {
-	if (!localPlayer) return;
+	if (!localPlayer)
+		return;
+
+	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
+		return;
 
 	const auto time = memory->globalVars->serverTime();
 

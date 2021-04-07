@@ -6,16 +6,17 @@
 
 class Matrix3x4;
 
-struct Vector {
+struct Vector
+{
 	constexpr auto notNull() const noexcept
-    {
-        return x || y || z;
-    }
-    
-	constexpr auto operator==(const Vector& v) const noexcept
-    {
-        return x == v.x && y == v.y && z == v.z;
-    }
+	{
+		return x || y || z;
+	}
+
+	constexpr auto operator==(const Vector &v) const noexcept
+	{
+		return x == v.x && y == v.y && z == v.z;
+	}
 
 	constexpr auto operator>=(const Vector &v) const noexcept
 	{
@@ -34,76 +35,76 @@ struct Vector {
 
 	constexpr auto operator<(const Vector &v) const noexcept
 	{
-		return x < v.x && y < v.y && z < v.z;
+		return x < v.x &&y < v.y &&z < v.z;
 	}
 
-	constexpr auto operator!=(const Vector& v) const noexcept
-    {
-        return !(*this == v);
-    }
+	constexpr auto operator!=(const Vector &v) const noexcept
+	{
+		return !(*this == v);
+	}
 
-	constexpr Vector& operator=(const float array[3]) noexcept
-    {
-        x = array[0];
-        y = array[1];
-        z = array[2];
-        return *this;
-    }
+	constexpr Vector &operator=(const float array[3]) noexcept
+	{
+		x = array[0];
+		y = array[1];
+		z = array[2];
+		return *this;
+	}
 
-	constexpr Vector& operator+=(const Vector& v) noexcept
-    {
-        x += v.x;
-        y += v.y;
-        z += v.z;
-        return *this;
-    }
+	constexpr Vector &operator+=(const Vector &v) noexcept
+	{
+		x += v.x;
+		y += v.y;
+		z += v.z;
+		return *this;
+	}
 
-	constexpr Vector& operator+=(float f) noexcept
-    {
-        x += f;
-        y += f;
-        z += f;
-        return *this;
-    }
+	constexpr Vector &operator+=(float f) noexcept
+	{
+		x += f;
+		y += f;
+		z += f;
+		return *this;
+	}
 
-	constexpr Vector& operator-=(const Vector& v) noexcept
-    {
-        x -= v.x;
-        y -= v.y;
-        z -= v.z;
-        return *this;
-    }
+	constexpr Vector &operator-=(const Vector &v) noexcept
+	{
+		x -= v.x;
+		y -= v.y;
+		z -= v.z;
+		return *this;
+	}
 
-	constexpr Vector& operator-=(float f) noexcept
-    {
-        x -= f;
-        y -= f;
-        z -= f;
-        return *this;
-    }
+	constexpr Vector &operator-=(float f) noexcept
+	{
+		x -= f;
+		y -= f;
+		z -= f;
+		return *this;
+	}
 
-	constexpr auto operator-(const Vector& v) const noexcept
-    {
-        return Vector{ x - v.x, y - v.y, z - v.z };
-    }
+	constexpr auto operator-(const Vector &v) const noexcept
+	{
+		return Vector{x - v.x, y - v.y, z - v.z};
+	}
 
-	constexpr auto operator+(const Vector& v) const noexcept
-    {
-        return Vector{ x + v.x, y + v.y, z + v.z };
-    }
+	constexpr auto operator+(const Vector &v) const noexcept
+	{
+		return Vector{x + v.x, y + v.y, z + v.z};
+	}
 
-	constexpr auto operator*(const Vector& v) const noexcept
-    {
-        return Vector{ x * v.x, y * v.y, z * v.z };
-    }
+	constexpr auto operator*(const Vector &v) const noexcept
+	{
+		return Vector{x * v.x, y * v.y, z * v.z};
+	}
 
-	constexpr Vector& operator/=(float div) noexcept
-    {
-        x /= div;
-        y /= div;
-        z /= div;
-        return *this;
-    }
+	constexpr Vector &operator/=(float div) noexcept
+	{
+		x /= div;
+		y /= div;
+		z /= div;
+		return *this;
+	}
 
 	constexpr Vector &operator*=(float mul) noexcept
 	{
@@ -114,9 +115,9 @@ struct Vector {
 	}
 
 	constexpr auto operator*(float mul) const noexcept
-    {
-        return Vector{ x * mul, y * mul, z * mul };
-    }
+	{
+		return Vector{x * mul, y * mul, z * mul};
+	}
 
 	constexpr auto operator/(float div) const noexcept
 	{
@@ -124,47 +125,47 @@ struct Vector {
 	}
 
 	constexpr auto operator-(float sub) const noexcept
-    {
-        return Vector{ x - sub, y - sub, z - sub };
-    }
+	{
+		return Vector{x - sub, y - sub, z - sub};
+	}
 
 	constexpr auto operator+(float add) const noexcept
-    {
-        return Vector{ x + add, y + add, z + add };
-    }
+	{
+		return Vector{x + add, y + add, z + add};
+	}
 
-	Vector& normalize() noexcept
-    {
-        x = std::isfinite(x) ? std::remainder(x, 360.0f) : 0.0f;
-        y = std::isfinite(y) ? std::remainder(y, 360.0f) : 0.0f;
-        z = 0.0f;
-        return *this;
-    }
+	Vector &normalize() noexcept
+	{
+		x = std::isfinite(x) ? std::remainder(x, 360.0f) : 0.0f;
+		y = std::isfinite(y) ? std::remainder(y, 360.0f) : 0.0f;
+		z = 0.0f;
+		return *this;
+	}
 
 	auto length() const noexcept
-    {
-        return std::sqrt(x * x + y * y + z * z);
-    }
+	{
+		return std::sqrt(x * x + y * y + z * z);
+	}
 
 	auto length2D() const noexcept
-    {
-        return std::sqrt(x * x + y * y);
-    }
+	{
+		return std::sqrt(x * x + y * y);
+	}
 
 	constexpr auto squareLength() const noexcept
-    {
-        return x * x + y * y + z * z;
-    }
+	{
+		return x * x + y * y + z * z;
+	}
 
 	constexpr auto squareLength2D() const noexcept
 	{
 		return x * x + y * y;
 	}
 
-	constexpr auto dotProduct(const Vector& v) const noexcept
-    {
-        return x * v.x + y * v.y + z * v.z;
-    }
+	constexpr auto dotProduct(const Vector &v) const noexcept
+	{
+		return x * v.x + y * v.y + z * v.z;
+	}
 
 	constexpr auto dotProduct2D(const Vector &v) const noexcept
 	{
@@ -183,12 +184,12 @@ struct Vector {
 		return *this * cos + axis.crossProduct(*this) * sin + axis * axis.dotProduct(*this) * (1.0f - cos);
 	}
 
-	constexpr auto transform(const Matrix3x4& mat) const noexcept;
+	constexpr auto transform(const Matrix3x4 &mat) const noexcept;
 
-	auto distTo(const Vector& v) const noexcept
-    {
-        return (*this - v).length();
-    }
+	auto distTo(const Vector &v) const noexcept
+	{
+		return (*this - v).length();
+	}
 
 	auto toAngle() const noexcept
 	{
@@ -198,9 +199,9 @@ struct Vector {
 	}
 
 	auto toAngle2D() const noexcept
-    {
-        return Helpers::radiansToDegrees(std::atan2f(y, x));
-    }
+	{
+		return Helpers::radiansToDegrees(std::atan2f(y, x));
+	}
 
 	auto snapTo4() const noexcept
 	{
@@ -220,12 +221,12 @@ struct Vector {
 		return Vector{};
 	}
 
-	static auto fromAngle(const Vector& angle) noexcept
-    {
+	static auto fromAngle(const Vector &angle) noexcept
+	{
 		return Vector{std::cos(Helpers::degreesToRadians(angle.x)) * std::cos(Helpers::degreesToRadians(angle.y)),
 					  std::cos(Helpers::degreesToRadians(angle.x)) * std::sin(Helpers::degreesToRadians(angle.y)),
 					  -std::sin(Helpers::degreesToRadians(angle.x))};
-    }
+	}
 
 	static auto fromAngle2D(float angle) noexcept
 	{
@@ -264,7 +265,7 @@ struct Vector {
 		return Vector{0.0f, -1.0f, 0.0f};
 	}
 
-    float x, y, z;
+	float x, y, z;
 };
 
 #include "Matrix3x4.h"

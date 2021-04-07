@@ -209,6 +209,7 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 
 	return -1;
 }
+
 bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendlyFire, bool *goesThroughWall) noexcept
 {
 	if (!localPlayer)
@@ -264,7 +265,6 @@ bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendly
 float Helpers::findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept
 {
 	float f = targetRadius / (std::tan(spread + inaccuracy) * distance);
-	f *= f;
 	return std::clamp(f, 0.0f, 1.0f) * 100.0f;
 }
 
