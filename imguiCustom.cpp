@@ -89,8 +89,9 @@ void ImGuiCustom::colorPicker(const char *name, float color[3], float *alpha, bo
 				}
 
 				ImGui::PopItemWidth();
-				ImGui::EndChild();
 			}
+
+			ImGui::EndChild();
 		}
 		ImGui::EndPopup();
 	}

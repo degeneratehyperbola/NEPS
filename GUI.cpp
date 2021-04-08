@@ -1592,9 +1592,9 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 
 		if (ImGui::Button("Update", {130.0f, 30.0f}))
 			SkinChanger::scheduleHudUpdate();
-
-		ImGui::EndChild();
 	}
+
+	ImGui::EndChild();
 
 	lastItemIndex = itemIndex;
 
