@@ -670,7 +670,6 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Recoil crosshair type", m.recoilCrosshairType);
 	read(j, "Bomb timer", m.bombTimer);
 	read(j, "Grenade predict", m.nadePredict);
-	read(j, "Spam use", m.spamUse);
 	read(j, "Indicators", m.indicators);
 }
 
@@ -684,22 +683,23 @@ static void from_json(const json &j, Config::Exploits &e)
 	read(j, "Bypass sv_pure", e.bypassPure);
 }
 
-static void from_json(const json &j, Config::Griefing &s)
+static void from_json(const json &j, Config::Griefing &g)
 {
-	read(j, "Custom clantag", s.customClanTag);
-	read(j, "Clock tag", s.clocktag);
+	read(j, "Custom clantag", g.customClanTag);
+	read(j, "Clock tag", g.clocktag);
 	if (j.contains("Clantag"))
-		strncpy_s(s.clanTag, j["Clantag"].get<std::string>().c_str(), _TRUNCATE);
-	read(j, "Animated clantag", s.animatedClanTag);
-	read(j, "Kill message", s.killMessage);
-	read<value_t::string>(j, "Kill message string", s.killMessageString);
-	read(j, "Name stealer", s.nameStealer);
-	read(j, "Ban color", s.banColor);
-	read<value_t::string>(j, "Ban text", s.banText);
-	read<value_t::object>(j, "Reportbot", s.reportbot);
-	read<value_t::object>(j, "Blockbot", s.blockbot);
-	read(j, "Fake prime", s.fakePrime);
-	read(j, "Vote reveal", s.revealVotes);
+		strncpy_s(g.clanTag, j["Clantag"].get<std::string>().c_str(), _TRUNCATE);
+	read(j, "Animated clantag", g.animatedClanTag);
+	read(j, "Kill message", g.killMessage);
+	read<value_t::string>(j, "Kill message string", g.killMessageString);
+	read(j, "Name stealer", g.nameStealer);
+	read(j, "Ban color", g.banColor);
+	read<value_t::string>(j, "Ban text", g.banText);
+	read<value_t::object>(j, "Reportbot", g.reportbot);
+	read<value_t::object>(j, "Blockbot", g.blockbot);
+	read(j, "Fake prime", g.fakePrime);
+	read(j, "Vote reveal", g.revealVotes);
+	read(j, "Spam use", g.spamUse);
 }
 
 static void from_json(const json &j, Config::Griefing::Reportbot &r)
@@ -1121,7 +1121,6 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Quick reload", quickReload);
 	WRITE("Fix tablet signal", fixTabletSignal);
 	WRITE("Aimstep", maxAngleDelta);
-	WRITE("Spam use", spamUse);
 	WRITE("Indicators", indicators);
 }
 
@@ -1179,6 +1178,7 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Blockbot", blockbot);
 	WRITE("Fake prime", fakePrime);
 	WRITE("Vote reveal", revealVotes);
+	WRITE("Spam use", spamUse);
 }
 
 static void to_json(json &j, const Config::Movement &o)

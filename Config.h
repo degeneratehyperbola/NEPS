@@ -309,6 +309,7 @@ public:
 		std::string killMessageString;
 		int banColor = 6;
 		std::string banText = "Cheater has been permanently banned from official CS:GO servers.";
+		bool spamUse = false;
 
 		struct Blockbot
 		{
@@ -348,7 +349,6 @@ public:
 		bool autoPistol = false;
 		bool autoReload = false;
 		bool autoAccept = false;
-		bool spamUse = false;
 		bool fixAnimationLOD = true;
 		bool fixBoneMatrix = true;
 		bool fixMovement = true;

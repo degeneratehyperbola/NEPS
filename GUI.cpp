@@ -1791,6 +1791,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	ImGui::PopItemWidth();
 	ImGuiCustom::keyBind("Blockbot target", config->griefing.blockbot.target);
 	ImGuiCustom::colorPicker("Visualise blockbot", config->griefing.blockbot.visualise);
+	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
 	if (!contentOnly)
 		ImGui::End();
@@ -1828,7 +1829,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Full-auto", &config->misc.autoPistol);
 	ImGui::Checkbox("Auto reload", &config->misc.autoReload);
 	ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
-	ImGui::Checkbox("Spam use", &config->misc.spamUse);
 
 	#ifdef LEGACY_WATERMARK
 	ImGuiCustom::colorPicker("Spectator list", config->misc.spectatorList);
