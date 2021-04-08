@@ -1842,8 +1842,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);
 	#endif // LEGACY_WATERMARK
 
-	ImGui::AlignTextToFramePadding();
-	ImGui::TextUnformatted("Crosshair");
 	ImGui::PushItemWidth(95.0f);
 	ImGuiCustom::colorPicker("##oxhair", config->misc.overlayCrosshair);
 	ImGui::SameLine();
