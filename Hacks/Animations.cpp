@@ -83,12 +83,14 @@ bool Animations::clientLerped(Matrix3x4 *out, const UserCmd *cmd, bool sendPacke
 	return matrixUpdated;
 }
 
-void Animations::animSync(const UserCmd *cmd, bool sendPacket) noexcept
+bool Animations::animSync(const UserCmd *cmd, bool sendPacket) noexcept
 {
-	if (!localPlayer) return;
+	bool matrixUpdated = false;
+
+	if (!localPlayer) return matrixUpdated;
 
 	if (!memory->input->isCameraInThirdPerson || !config->misc.fixAnimation)
-		return;
+		return matrixUpdated;
 
 	static auto bPoseParam = localPlayer->poseParam();
 	static auto bAbsYaw = localPlayer->getAnimState()->feetYaw;
@@ -104,7 +106,7 @@ void Animations::animSync(const UserCmd *cmd, bool sendPacket) noexcept
 	memory->updateState(localPlayer->getAnimState(), NULL, NULL, cmd->viewangles.y, cmd->viewangles.x, NULL);
 	localPlayer->clientAnimations() = false;
 
-	localPlayer->setupBones(nullptr, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, 0.0f);
+	matrixUpdated = localPlayer->setupBones(nullptr, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, 0.0f);
 
 	if (sendPacket)
 	{
@@ -118,4 +120,6 @@ void Animations::animSync(const UserCmd *cmd, bool sendPacket) noexcept
 	std::copy(networkedLayers.begin(), networkedLayers.end(), localPlayer->animOverlays());
 	localPlayer->poseParam() = bPoseParam;
 	localPlayer->clientAnimations() = true;
+
+	return matrixUpdated;
 }
