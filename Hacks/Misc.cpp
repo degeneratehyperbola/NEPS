@@ -1469,7 +1469,7 @@ void Misc::useSpam(UserCmd *cmd)
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (!config->misc.spamUse)
+	if (!config->griefing.spamUse)
 		return;
 
 	static auto plantAnywhere = interfaces->cvar->findVar("mp_plant_c4_anywhere");
