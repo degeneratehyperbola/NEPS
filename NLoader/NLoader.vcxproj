@@ -111,8 +111,8 @@
     <ClInclude Include="curl\system.h" />
     <ClInclude Include="curl\typecheck-gcc.h" />
     <ClInclude Include="curl\urlapi.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="version.h" />
+    <ClInclude Include="resource.hpp" />
+    <ClInclude Include="version.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NLoader.rc" />
