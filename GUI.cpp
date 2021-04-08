@@ -180,6 +180,9 @@ void GUI::renderMenuBar() noexcept
 			ShellExecuteW(nullptr, nullptr, L"https://github.com/degeneratehyperbola/NEPS", nullptr, nullptr, SW_SHOW);
 		if (ImGui::MenuItem("My Discord"))
 			ShellExecuteW(nullptr, nullptr, L"https://discord.gg/pwB3XBppVr", nullptr, nullptr, SW_SHOW);
+		if (ImGui::MenuItem("My Patreon"))
+			ShellExecuteW(nullptr, nullptr, L"https://www.patreon.com/hyperbola", nullptr, nullptr, SW_SHOW);
+
 		ImGui::EndMainMenuBar();
 	}
 }
@@ -323,7 +326,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 	ImGui::NextColumn();
 	ImGui::Checkbox("Multipoint", &config->aimbot[currentWeapon].multipoint);
 	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("About 23%% less performant");
+		ImGui::SetTooltip("About 15%% performance drop");
 
 	ImGui::PushItemWidth(200.0f);
 	ImGui::SliderFloat("##scale", &config->aimbot[currentWeapon].multipointScale, 0.5f, 1.0f, "Multipoint scale %.5f");
@@ -1309,7 +1312,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGuiCustom::colorPicker("World color", config->visuals.world);
 	ImGuiCustom::colorPicker("Props color", config->visuals.props);
 	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("About 42%% less performant (not recommended to enable)");
+		ImGui::SetTooltip("About 34%% performance drop");
 	ImGuiCustom::colorPicker("Sky color", config->visuals.sky);
 	;
 	ImGui::PushItemWidth(255.0f);
@@ -2255,79 +2258,82 @@ void GUI::renderDebugWindow() noexcept
 		ImGui::SetClipboardText(ss.str().c_str());
 
 	ImGui::NextColumn();
-
-	auto playerResource = *memory->playerResource;
-
-	if (localPlayer)
 	{
-		if (playerResource)
+		GameData::Lock lock;
+
+		auto playerResource = *memory->playerResource;
+
+		if (localPlayer)
 		{
-			if (ImGui::BeginTable("shrek", 4))
+			if (playerResource)
 			{
-				ImGui::TableSetupColumn("Name");
-				ImGui::TableSetupColumn("Wins");
-				ImGui::TableSetupColumn("Level");
-				ImGui::TableSetupColumn("Ranking");
-				ImGui::TableHeadersRow();
-
-				ImGui::TableNextRow();
-				ImGui::PushID(ImGui::TableGetRowIndex());
-
-				if (ImGui::TableNextColumn())
-					ImGui::TextUnformatted("Local player");
-
-				if (ImGui::TableNextColumn())
-					ImGui::Text("%i", playerResource->competitiveWins()[localPlayer->index()]);
-
-				if (ImGui::TableNextColumn())
-					ImGui::Text("%i", playerResource->level()[localPlayer->index()]);
-
-				if (ImGui::TableNextColumn())
-					ImGui::Text("%i", playerResource->competitiveRanking()[localPlayer->index()]);
-
-				GameData::Lock lock;
-				for (auto &player : GameData::players())
+				if (ImGui::BeginTable("shrek", 4))
 				{
+					ImGui::TableSetupColumn("Name");
+					ImGui::TableSetupColumn("Wins");
+					ImGui::TableSetupColumn("Level");
+					ImGui::TableSetupColumn("Ranking");
+					ImGui::TableHeadersRow();
+
 					ImGui::TableNextRow();
 					ImGui::PushID(ImGui::TableGetRowIndex());
 
-					auto *entity = interfaces->entityList->getEntityFromHandle(player.handle);
-					if (!entity) continue;
+					if (ImGui::TableNextColumn())
+						ImGui::TextUnformatted("Local player");
 
 					if (ImGui::TableNextColumn())
-						ImGui::TextUnformatted(player.name);
+						ImGui::Text("%i", playerResource->competitiveWins()[localPlayer->index()]);
 
 					if (ImGui::TableNextColumn())
-						ImGui::Text("%i", playerResource->competitiveWins()[entity->index()]);
+						ImGui::Text("%i", playerResource->level()[localPlayer->index()]);
 
 					if (ImGui::TableNextColumn())
-						ImGui::Text("%i", playerResource->level()[entity->index()]);
+						ImGui::Text("%i", playerResource->competitiveRanking()[localPlayer->index()]);
 
-					if (ImGui::TableNextColumn())
-						ImGui::Text("%i", playerResource->competitiveRanking()[entity->index()]);
+					for (auto &player : GameData::players())
+					{
+						ImGui::TableNextRow();
+						ImGui::PushID(ImGui::TableGetRowIndex());
+
+						auto *entity = interfaces->entityList->getEntityFromHandle(player.handle);
+						if (!entity) continue;
+
+						if (ImGui::TableNextColumn())
+							ImGui::TextUnformatted(player.name);
+
+						if (ImGui::TableNextColumn())
+							ImGui::Text("%i", playerResource->competitiveWins()[entity->index()]);
+
+						if (ImGui::TableNextColumn())
+							ImGui::Text("%i", playerResource->level()[entity->index()]);
+
+						if (ImGui::TableNextColumn())
+							ImGui::Text("%i", playerResource->competitiveRanking()[entity->index()]);
+					}
+
+					ImGui::EndTable();
 				}
 
-				ImGui::EndTable();
+				ImGui::InputInt("Wins", &playerResource->competitiveWins()[localPlayer->index()]);
+				ImGui::InputInt("Level", &playerResource->level()[localPlayer->index()]);
+				ImGui::InputInt("Ranking", &playerResource->competitiveRanking()[localPlayer->index()]);
 			}
 
-			ImGui::InputInt("Wins", &playerResource->competitiveWins()[localPlayer->index()]);
-			ImGui::InputInt("Level", &playerResource->level()[localPlayer->index()]);
-			ImGui::InputInt("Ranking", &playerResource->competitiveRanking()[localPlayer->index()]);
+			ImGui::TextColored({1.0f, 0.8f, 0.0f, 1.0f}, "Local player");
+			ImGui::SameLine();
+			ImGui::TextUnformatted("at");
+			ImGui::SameLine();
+			ImGui::TextColored({0.0f, 0.2f, 1.0f, 1.0f}, "0x%p", localPlayer.get());
+			ImGui::SameLine();
+
+			char buffer[9];
+			sprintf(buffer, "%p", localPlayer.get());
+			if (ImGui::Button("Copy"))
+				ImGui::SetClipboardText(buffer);
+
+			auto &global = GameData::global();
+			ImGui::SliderInt("##effects", &global.scheduledEffectFlags, 0, 255, "Effect flag #%d");
 		}
-
-		ImGui::TextColored({1.0f, 0.8f, 0.0f, 1.0f}, "Local player");
-		ImGui::SameLine();
-		ImGui::TextUnformatted("at");
-		ImGui::SameLine();
-		ImGui::TextColored({0.0f, 0.2f, 1.0f, 1.0f}, "0x%p", localPlayer.get());
-		ImGui::SameLine();
-
-		char buffer[9];
-		sprintf(buffer, "%p", localPlayer.get());
-		if (ImGui::Button("Copy"))
-			ImGui::SetClipboardText(buffer);
-
-		ImGui::InputInt("Effect flags", &localPlayer->effectFlags());
 	}
 }
 #endif // _DEBUG_NEPS
