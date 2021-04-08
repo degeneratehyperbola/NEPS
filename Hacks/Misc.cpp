@@ -1051,8 +1051,8 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 	if (!localPlayer || localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
 		return;
 
-	static auto wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
-	if (~cmd->buttons & UserCmd::IN_JUMP || localPlayer->flags() & Entity::FL_ONGROUND && wasLastTimeOnGround)
+	static bool lastHeldJump = cmd->buttons & UserCmd::IN_JUMP;
+	if (~cmd->buttons & UserCmd::IN_JUMP && !lastHeldJump)
 		return;
 
 	const float speed = localPlayer->velocity().length2D();
@@ -1073,7 +1073,7 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 	cmd->forwardmove = std::cosf(moveDir) * 450.0f;
 	cmd->sidemove = -std::sinf(moveDir) * 450.0f;
 
-	wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
+	lastHeldJump = cmd->buttons & UserCmd::IN_JUMP;
 }
 
 void Misc::removeCrouchCooldown(UserCmd *cmd) noexcept
