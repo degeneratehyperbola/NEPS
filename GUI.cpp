@@ -398,6 +398,8 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 	ImGui::SameLine();
 	ImGui::SliderFloat("##yaw_sl", &config->antiAim.yawAngle, -180.0f, 180.0f, "Yaw %.2fdeg");
 	ImGui::Checkbox("Fake pitch up", &config->antiAim.fakeUp);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("May get you insta-overwatch");
 	if (!config->antiAim.fakeUp)
 	{
 		ImGui::Checkbox("##pitch", &config->antiAim.pitch);
