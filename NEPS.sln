@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NEPS", "NEPS\NEPS.vcxproj", "{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NLoader", "NLoader\NLoader.vcxproj", "{F0A6BE3C-9C9F-45DE-B1C2-BB0BE77EED04}"
+	ProjectSection(ProjectDependencies) = postProject
+		{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48} = {81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DebugMin|x86 = DebugMin|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}.DebugMin|x86.ActiveCfg = DebugMin|Win32
+		{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}.DebugMin|x86.Build.0 = DebugMin|Win32
+		{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}.Release|x86.ActiveCfg = Release|Win32
+		{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}.Release|x86.Build.0 = Release|Win32
+		{F0A6BE3C-9C9F-45DE-B1C2-BB0BE77EED04}.DebugMin|x86.ActiveCfg = Release|Win32
+		{F0A6BE3C-9C9F-45DE-B1C2-BB0BE77EED04}.DebugMin|x86.Build.0 = Release|Win32
+		{F0A6BE3C-9C9F-45DE-B1C2-BB0BE77EED04}.Release|x86.ActiveCfg = Release|Win32
+		{F0A6BE3C-9C9F-45DE-B1C2-BB0BE77EED04}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E987F481-29B0-4891-B45F-2F2B99F8AE39}
+	EndGlobalSection
+EndGlobal

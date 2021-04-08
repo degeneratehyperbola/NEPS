@@ -211,12 +211,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <IntDir>$(SolutionDir)$(Configuration)\db\</IntDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(MSBuildProjectName)\obj\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\$(MSBuildProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugMin|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <IntDir>$(SolutionDir)$(Configuration)\db\</IntDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(MSBuildProjectName)\obj\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\$(MSBuildProjectName)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
