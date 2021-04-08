@@ -66,25 +66,18 @@ namespace GameData
 	GlobalData &global() noexcept;
 }
 
-struct Indicators
-{
-	int blockTarget = 0;
-	Vector serverHead;
-	Vector desyncHead;
-	float deltaLby = 0.0f;
-
-	#ifdef _DEBUG_NEPS
-	std::vector<Vector> multipoints;
-	#endif // _DEBUG_NEPS
-};
-
 struct GlobalData
 {
 	UserCmd lastCmd;
-	bool sentPacket = true;
+	bool lastSendPacket = true;
 	Matrix3x4 lerpedBones[MAXSTUDIOBONES];
 	
-	Indicators indicators;
+	int blockTargetHandle = 0;
+
+	#ifdef _DEBUG_NEPS
+	int scheduledEffectFlags;
+	std::vector<Vector> multipoints;
+	#endif // _DEBUG_NEPS
 };
 
 struct LocalPlayerData

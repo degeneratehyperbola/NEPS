@@ -190,6 +190,8 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 			if (remoteActiveWep && Helpers::timeToTicks(remoteActiveWep->lastShotTime()) == Helpers::timeToTicks(simulationTime));
 			else if (const auto delta = simulationTime - oldSimulationTime; !Helpers::timeToTicks(delta));
 			else if (entity->getMaxDesyncAngle() < 55.0f);
+			else if (entity->moveType() == MoveType::LADDER);
+			else if (entity->moveType() == MoveType::NOCLIP);
 			else
 			{
 				allowedHitgroup = config->aimbot[weaponIndex].safeHitgroup;
@@ -408,8 +410,8 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 	#ifdef _DEBUG_NEPS
 	{
 		GameData::Lock lock;
-		GameData::global().indicators.multipoints.clear();
-		GameData::global().indicators.multipoints = multipoints;
+		GameData::global().multipoints.clear();
+		GameData::global().multipoints = multipoints;
 	}
 	#endif // _DEBUG_NEPS
 }

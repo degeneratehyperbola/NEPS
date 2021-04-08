@@ -242,14 +242,14 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	auto &global = GameData::global();
 
-	global.sentPacket = sendPacket;
+	global.lastSendPacket = sendPacket;
 	global.lastCmd = *cmd;
 
 	if (config->antiAim.desync || config->antiAim.fakeUp)
 	{
 		if (fakePitchPerformed)
 			cmd->viewangles.x = -89.0f; // Fake pitch visualisation
-		Animations::clientLerped(global.lerpedBones, cmd, sendPacket, &global.indicators.desyncHead, &global.indicators.deltaLby);
+		Animations::clientLerped(global.lerpedBones, cmd, sendPacket);
 		cmd->viewangles.x = previousViewAngles.x; // Restore view angles after visualising fake pitch
 	}
 

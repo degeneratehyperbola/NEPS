@@ -1393,7 +1393,7 @@ void Misc::fixAnimation() noexcept
 	GameData::Lock lock;
 	auto &global = GameData::global();
 
-	Animations::animSync(&global.lastCmd, global.sentPacket, &global.indicators.serverHead);
+	Animations::animSync(&global.lastCmd, global.lastSendPacket);
 }
 
 void Misc::blockBot(UserCmd *cmd) noexcept
@@ -1422,14 +1422,14 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 			if (fov < best)
 			{
 				best = fov;
-				global.indicators.blockTarget = entity->handle();
+				global.blockTargetHandle = entity->handle();
 			}
 		}
 	}
 
 	if (static Helpers::KeyBindState flag; !flag[config->griefing.blockbot.bind]) return;
 
-	const auto target = interfaces->entityList->getEntityFromHandle(global.indicators.blockTarget);
+	const auto target = interfaces->entityList->getEntityFromHandle(global.blockTargetHandle);
 	if (target && target->isPlayer() && target != localPlayer.get() && !target->isDormant() && target->isAlive())
 	{
 		const auto targetVec = (target->getAbsOrigin() + target->velocity() * memory->globalVars->intervalPerTick * config->griefing.blockbot.trajectoryFac - localPlayer->getAbsOrigin()) * config->griefing.blockbot.distanceFac;
@@ -1494,14 +1494,14 @@ void Misc::useSpam(UserCmd *cmd)
 void Misc::indicators(ImDrawList *drawList) noexcept
 {
 	GameData::Lock lock;
-	auto &local = GameData::local();
+	const auto &local = GameData::local();
 	const auto &global = GameData::global();
 
 	if (!local.exists || !local.alive)
 		return;
 
 	#ifdef _DEBUG_NEPS
-	for (auto &p : global.indicators.multipoints)
+	for (auto &p : global.multipoints)
 	{
 		ImVec2 pos;
 		Helpers::worldToScreen(p, pos);
@@ -1521,35 +1521,13 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 		if (networkChannel)
 		{
 			ImGui::TextUnformatted("Choke");
-			ImGuiCustom::progressBarFullWidth(static_cast<float>(networkChannel->chokedPackets) / static_cast<float>(config->antiAim.chokedPackets));
+			ImGuiCustom::progressBarFullWidth(static_cast<float>(networkChannel->chokedPackets) / 16);
 		}
 
 		ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(local.velocity.length2D())) + "u").c_str());
 
 		if (memory->input->isCameraInThirdPerson)
-		{
 			ImGui::TextUnformatted("In thirdperson");
-			if (config->antiAim.desync)
-			{
-				const auto deltaU = global.indicators.serverHead.distTo(global.indicators.desyncHead);
-				const auto deltaA = std::fabsf(global.indicators.deltaLby);
-
-				#ifdef _DEBUG_NEPS
-				ImGui::TextUnformatted(("Delta LBY " + std::to_string(global.indicators.deltaLby) + "deg").c_str());
-				ImGui::TextUnformatted(("Desync " + std::to_string(deltaU) + "u").c_str());
-				ImGui::TextUnformatted(("Desync " + std::to_string(deltaA) + "deg").c_str());
-				#endif // _DEBUG_NEPS
-
-				if (deltaU < 3.5f)
-					ImGui::TextColored(ImVec4{1.0f, 0.0f, 0.0f, 1.0f}, "Desync overlap!");
-				else if (deltaU < 6.0f)
-					ImGui::TextUnformatted("Desync unsafe");
-				else if (deltaA > 90.0f)
-					ImGui::TextUnformatted("Desync extended");
-				else
-					ImGui::TextUnformatted("Desync ok");
-			}
-		}
 
 		ImGui::End();
 	}

@@ -344,7 +344,7 @@ public:
 
 	struct Misc
 	{
-		int menuKey = 0x2E; // VK_DELETEk
+		int menuKey = 0x2E; // VK_DELETE
 		bool autoPistol = false;
 		bool autoReload = false;
 		bool autoAccept = false;

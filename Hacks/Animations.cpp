@@ -20,7 +20,7 @@
 #include "../Interfaces.h"
 #include "../Memory.h"
 
-bool Animations::clientLerped(Matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Vector *headPos, float *feetYawDelta) noexcept
+bool Animations::clientLerped(Matrix3x4 *out, const UserCmd *cmd, bool sendPacket) noexcept
 {
 	bool matrixUpdated = false;
 
@@ -69,15 +69,6 @@ bool Animations::clientLerped(Matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Ve
 
 		matrixUpdated = localPlayer->setupBones(out, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
-		if (headPos) *headPos = localPlayer->getBonePosition(8);
-
-		if (feetYawDelta)
-		{
-			auto real = Helpers::angleDiffDeg(localPlayer->getAnimState()->feetYaw, cmd->viewangles.y);
-			auto fake = Helpers::angleDiffDeg(lerpedState->feetYaw, cmd->viewangles.y);
-			*feetYawDelta = Helpers::angleDiffDeg(real, fake);
-		}
-
 		const auto &origin = localPlayer->getRenderOrigin();
 		if (matrixUpdated)
 			for (int i = 0; i < MAXSTUDIOBONES; i++)
@@ -92,7 +83,7 @@ bool Animations::clientLerped(Matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Ve
 	return matrixUpdated;
 }
 
-void Animations::animSync(UserCmd *cmd, bool &sendPacket, Vector *headPos) noexcept
+void Animations::animSync(const UserCmd *cmd, bool sendPacket) noexcept
 {
 	if (!localPlayer) return;
 
@@ -118,8 +109,6 @@ void Animations::animSync(UserCmd *cmd, bool &sendPacket, Vector *headPos) noexc
 		bPoseParam = localPlayer->poseParam();
 		bAbsYaw = localPlayer->getAnimState()->feetYaw;
 	}
-
-	if (headPos) *headPos = localPlayer->getBonePosition(8);
 
 	localPlayer->getAnimState()->duckAmount = std::clamp(localPlayer->getAnimState()->duckAmount, 0.0f, 1.0f);
 	localPlayer->getAnimState()->feetYawRate = 0.0f;

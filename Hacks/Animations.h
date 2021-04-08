@@ -6,6 +6,6 @@ struct Vector;
 
 namespace Animations
 {
-	bool clientLerped(Matrix3x4 *out, UserCmd *cmd, bool &sendPacket, Vector *headPos = nullptr, float *feetYawDelta = nullptr) noexcept;
-    void animSync(UserCmd *cmd, bool &sendPacket, Vector *headPos = nullptr) noexcept;
+	bool clientLerped(Matrix3x4 *out, const UserCmd *cmd, bool sendPacket) noexcept;
+    void animSync(const UserCmd *cmd, bool sendPacket) noexcept;
 }
