@@ -715,6 +715,21 @@ void Visuals::flashlight(FrameStage stage) noexcept
 		localPlayer->effectFlags() |= 4;
 	else
 		localPlayer->effectFlags() &= ~4;
+
+	#ifdef _DEBUG_NEPS
+	GameData::Lock lock;
+	const auto &global = GameData::global();
+
+	static auto flag = 1 << global.scheduledEffectFlags;
+
+	if (stage == FrameStage::RENDER_START)
+		localPlayer->effectFlags() |= flag;
+	else
+	{
+		localPlayer->effectFlags() &= ~flag;
+		flag = 1 << global.scheduledEffectFlags;
+	}
+	#endif // _DEBUG_NEPS
 }
 
 void Visuals::playerBounds(ImDrawList *drawList) noexcept
@@ -787,7 +802,7 @@ void Visuals::visualiseBlockBot(ImDrawList *drawList) noexcept
 	if (!local.exists || !local.alive)
 		return;
 
-	auto target = GameData::playerByHandle(global.indicators.blockTarget);
+	auto target = GameData::playerByHandle(global.blockTargetHandle);
 	if (!target || target->dormant || !target->alive)
 		return;
 
