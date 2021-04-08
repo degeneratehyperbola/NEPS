@@ -1830,18 +1830,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Auto reload", &config->misc.autoReload);
 	ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
 
-	#ifdef LEGACY_WATERMARK
-	ImGuiCustom::colorPicker("Spectator list", config->misc.spectatorList);
-	ImGui::SameLine();
-	ImGuiCustom::colorPicker("Background", config->misc.specBg.color, &config->misc.specBg.rainbow, &config->misc.specBg.rainbowSpeed);
-	ImGuiCustom::colorPicker("Watermark", config->misc.watermark);
-	ImGui::SameLine();
-	ImGuiCustom::colorPicker("Background", config->misc.bg.color, &config->misc.bg.rainbow, &config->misc.bg.rainbowSpeed);
-	#else
-	ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
-	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);
-	#endif // LEGACY_WATERMARK
-
 	ImGui::PushItemWidth(95.0f);
 	ImGuiCustom::colorPicker("##oxhair", config->misc.overlayCrosshair);
 	ImGui::SameLine();
@@ -1902,6 +1890,17 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Bomb timer", &config->misc.bombTimer);
 	ImGui::Checkbox("Indicators", &config->misc.indicators);
+	#ifdef LEGACY_WATERMARK
+	ImGuiCustom::colorPicker("Spectator list", config->misc.spectatorList);
+	ImGui::SameLine();
+	ImGuiCustom::colorPicker("BG", config->misc.specBg.color, &config->misc.specBg.rainbow, &config->misc.specBg.rainbowSpeed);
+	ImGuiCustom::colorPicker("Watermark", config->misc.watermark);
+	ImGui::SameLine();
+	ImGuiCustom::colorPicker("BG", config->misc.bg.color, &config->misc.bg.rainbow, &config->misc.bg.rainbowSpeed);
+	#else
+	ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
+	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);
+	#endif // LEGACY_WATERMARK
 
 	if (!contentOnly)
 		ImGui::End();

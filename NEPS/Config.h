@@ -361,10 +361,8 @@ public:
 			bool onlyHeadshots = false;
 		} preserveKillfeed;
 		Color3Toggle spectatorList;
-		Color4 specBg = {0.0f, 0.0f, 0.0f, 0.5f};
 		Color3Toggle watermark;
 		int watermarkPos = 1;
-		Color4 bg = {0.0f, 0.0f, 0.0f, 0.5f};
 		KeyBind prepareRevolver;
 		int quickHealthshotKey = 0;
 		float maxAngleDelta = 255.0f;

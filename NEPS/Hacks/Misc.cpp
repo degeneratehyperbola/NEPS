@@ -205,10 +205,7 @@ void Misc::spectatorList() noexcept
 	const auto [titleWidth, titleHeight] = interfaces->surface->getTextSize(Surface::font, title);
 	textPositionY = static_cast<int>(0.5f * height);
 
-	if (config->misc.specBg.rainbow)
-		interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.specBg.rainbowSpeed), static_cast<int>(config->misc.specBg.color[3] * 255));
-	else
-		interfaces->surface->setDrawColor(static_cast<int>(config->misc.specBg.color[0] * 255), static_cast<int>(config->misc.specBg.color[1] * 255), static_cast<int>(config->misc.specBg.color[2] * 255), static_cast<int>(config->misc.specBg.color[3] * 255));
+	interfaces->surface->setDrawColor(0, 0, 0, 127);
 
 	interfaces->surface->drawFilledRect(width - titleWidth - 15, textPositionY - titleHeight - 12, width, textPositionY);
 
@@ -296,11 +293,7 @@ void Misc::watermark() noexcept
 		const auto [waterWidth, waterHeight] = interfaces->surface->getTextSize(Surface::font, watermark);
 
 		interfaces->surface->setTextColor(0, 0, 0, 100);
-
-		if (config->misc.bg.rainbow)
-			interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.bg.rainbowSpeed), static_cast<int>(config->misc.bg.color[3] * 255));
-		else
-			interfaces->surface->setDrawColor(static_cast<int>(config->misc.bg.color[0] * 255), static_cast<int>(config->misc.bg.color[1] * 255), static_cast<int>(config->misc.bg.color[2] * 255), static_cast<int>(config->misc.bg.color[3] * 255));
+		interfaces->surface->setDrawColor(0, 0, 0, 127);
 
 		interfaces->surface->drawFilledRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
 

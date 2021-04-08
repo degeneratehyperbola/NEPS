@@ -642,9 +642,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Auto reload", m.autoReload);
 	read(j, "Auto accept", m.autoAccept);
 	read<value_t::object>(j, "Spectator list", m.spectatorList);
-	read<value_t::object>(j, "Spectator list background", m.specBg);
 	read<value_t::object>(j, "Watermark", m.watermark);
-	read<value_t::object>(j, "Watermark background", m.bg);
 	read(j, "Watermark pos", m.watermarkPos);
 	read(j, "Fix animation LOD", m.fixAnimationLOD);
 	read(j, "Fix bone matrix", m.fixBoneMatrix);
@@ -1099,9 +1097,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Auto reload", autoReload);
 	WRITE("Auto accept", autoAccept);
 	WRITE("Spectator list", spectatorList);
-	WRITE("Spectator list background", specBg);
 	WRITE("Watermark", watermark);
-	WRITE("Watermark background", bg);
 	WRITE("Watermark pos", watermarkPos);
 	WRITE("Fix animation LOD", fixAnimationLOD);
 	WRITE("Fix bone matrix", fixBoneMatrix);
