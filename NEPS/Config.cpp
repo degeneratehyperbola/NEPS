@@ -545,6 +545,11 @@ static void from_json(const json &j, Config::Visuals &v)
 	read<value_t::object>(j, "Smoke hull", v.smokeHull);
 	read<value_t::object>(j, "Player bounds", v.playerBounds);
 	read<value_t::object>(j, "Player velocity", v.playerVel);
+	read<value_t::object>(j, "Noscope crosshair", v.overlayCrosshair);
+	read(j, "Noscope crosshair type", v.overlayCrosshairType);
+	read<value_t::object>(j, "Recoil crosshair", v.recoilCrosshair);
+	read(j, "Recoil crosshair type", v.recoilCrosshairType);
+	read(j, "Force crosshair", v.forceCrosshair);
 }
 
 static void from_json(const json &j, sticker_setting &s)
@@ -662,10 +667,6 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Quick reload", m.quickReload);
 	read(j, "Fix tablet signal", m.fixTabletSignal);
 	read(j, "Aimstep", m.maxAngleDelta);
-	read<value_t::object>(j, "Noscope crosshair", m.overlayCrosshair);
-	read(j, "Noscope crosshair type", m.overlayCrosshairType);
-	read<value_t::object>(j, "Recoil crosshair", m.recoilCrosshair);
-	read(j, "Recoil crosshair type", m.recoilCrosshairType);
 	read(j, "Bomb timer", m.bombTimer);
 	read(j, "Grenade predict", m.nadePredict);
 	read(j, "Indicators", m.indicators);
@@ -1086,10 +1087,6 @@ static void to_json(json &j, const Config::Misc &o)
 {
 	const Config::Misc dummy;
 
-	WRITE("Noscope crosshair", overlayCrosshair);
-	WRITE("Noscope crosshair type", overlayCrosshairType);
-	WRITE("Recoil crosshair", recoilCrosshair);
-	WRITE("Recoil crosshair type", recoilCrosshairType);
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Grenade predict", nadePredict);
 	WRITE("Menu key", menuKey);
@@ -1291,6 +1288,11 @@ static void to_json(json &j, const Config::Visuals &o)
 	WRITE("Smoke hull", smokeHull);
 	WRITE("Player bounds", playerBounds);
 	WRITE("Player velocity", playerVel);
+	WRITE("Noscope crosshair", overlayCrosshair);
+	WRITE("Noscope crosshair type", overlayCrosshairType);
+	WRITE("Recoil crosshair", recoilCrosshair);
+	WRITE("Recoil crosshair type", recoilCrosshairType);
+	WRITE("Force crosshair", forceCrosshair);
 }
 
 static void to_json(json &j, const ImVec4 &o)

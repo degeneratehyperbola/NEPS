@@ -459,7 +459,7 @@ static void drawCrosshair(ImDrawList *drawList, ImVec2 pos, ImU32 color, int typ
 
 void Misc::overlayCrosshair(ImDrawList *drawList) noexcept
 {
-	if (!config->misc.overlayCrosshairType)
+	if (!config->visuals.overlayCrosshairType)
 		return;
 
 	GameData::Lock lock;
@@ -468,12 +468,12 @@ void Misc::overlayCrosshair(ImDrawList *drawList) noexcept
 	if (!local.exists || !local.alive || local.scopeOverlay)
 		return;
 
-	drawCrosshair(drawList, ImGui::GetIO().DisplaySize / 2, Helpers::calculateColor(config->misc.overlayCrosshair), config->misc.overlayCrosshairType);
+	drawCrosshair(drawList, ImGui::GetIO().DisplaySize / 2, Helpers::calculateColor(config->visuals.overlayCrosshair), config->visuals.overlayCrosshairType);
 }
 
 void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 {
-	if (!config->misc.recoilCrosshairType)
+	if (!config->visuals.recoilCrosshairType)
 		return;
 
 	if (!localPlayer || !localPlayer->isAlive())
@@ -482,12 +482,12 @@ void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 	const auto aimPunch = GameData::local().aimPunch;
 
-	auto col = config->misc.recoilCrosshair;
+	auto col = config->visuals.recoilCrosshair;
 	col.color[3] *= std::clamp(GameData::local().aimPunchAngle.length2D() * 10.0f, 0.0f, 1.0f);
 
 	if (ImVec2 pos; Helpers::worldToScreen(aimPunch, pos))
 	{
-		drawCrosshair(drawList, pos, Helpers::calculateColor(col), config->misc.recoilCrosshairType);
+		drawCrosshair(drawList, pos, Helpers::calculateColor(col), config->visuals.recoilCrosshairType);
 	}
 }
 
@@ -864,6 +864,10 @@ void Misc::changeConVarsFrame(FrameStage stage)
 		fdistVar->setValue(config->visuals.flashlightDistance);
 		static auto ffovVar = interfaces->cvar->findVar("r_flashlightfov");
 		ffovVar->setValue(config->visuals.flashlightFov);
+		static auto hairVar = interfaces->cvar->findVar("crosshair");
+		hairVar->setValue(config->visuals.forceCrosshair != 2);
+		static auto shairVar = interfaces->cvar->findVar("weapon_debug_spread_show");
+		shairVar->setValue(config->visuals.forceCrosshair == 1 ? 3 : 0);
 		break;
 	case FrameStage::RENDER_END:
 		static auto skyVar = interfaces->cvar->findVar("r_3dsky");
@@ -1027,8 +1031,9 @@ static float perfectDelta(float speed) noexcept
 {
 	static auto speedVar = interfaces->cvar->findVar("sv_maxspeed");
 	static auto airVar = interfaces->cvar->findVar("sv_airaccelerate");
+	static auto wishVar = interfaces->cvar->findVar("sv_air_max_wishspeed");
 
-	const auto term = (30.0f - airVar->getFloat() * speedVar->getFloat() / 100.0f) / speed;
+	const auto term = wishVar->getFloat() / airVar->getFloat() / speedVar->getFloat() * 100.0f / speed;
 
 	if (term < 1.0f && term > -1.0f)
 		return std::acosf(term);

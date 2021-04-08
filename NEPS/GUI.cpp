@@ -1167,21 +1167,36 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::Columns(2, nullptr, false);
 	ImGui::Checkbox("Disable post-processing", &config->visuals.disablePostProcessing);
 	ImGui::Checkbox("Inverse ragdoll gravity", &config->visuals.inverseRagdollGravity);
+
+	constexpr auto spacing = 130.0f;
 	ImGui::Checkbox("No fog", &config->visuals.noFog);
+	ImGui::SameLine(spacing);
 	ImGui::Checkbox("No 3d sky", &config->visuals.no3dSky);
 	ImGui::Checkbox("No aim punch", &config->visuals.noAimPunch);
+	ImGui::SameLine(spacing);
 	ImGui::Checkbox("No view punch", &config->visuals.noViewPunch);
 	ImGui::Checkbox("No hands", &config->visuals.noHands);
+	ImGui::SameLine(spacing);
 	ImGui::Checkbox("No sleeves", &config->visuals.noSleeves);
 	ImGui::Checkbox("No weapons", &config->visuals.noWeapons);
+	ImGui::SameLine(spacing);
 	ImGui::Checkbox("No blur", &config->visuals.noBlur);
-	ImGui::Checkbox("No scope overlay", &config->visuals.noScopeOverlay);
-	ImGui::Checkbox("No grass", &config->visuals.noGrass);
 	ImGui::Checkbox("No shadows", &config->visuals.noShadows);
+	ImGui::SameLine(spacing);
+	ImGui::Checkbox("No grass", &config->visuals.noGrass);
+	ImGui::Checkbox("No scope overlay", &config->visuals.noScopeOverlay);
 
 	ImGui::PushItemWidth(100.0f);
-	ImGui::Combo("Smoke", &config->visuals.smoke, "Normal\0Disable\0Wireframe");
-	ImGui::Combo("Molotov fire", &config->visuals.inferno, "Normal\0Disable\0Wireframe");
+	ImGui::Combo("Crosshair", &config->visuals.forceCrosshair, "Normal\0Force\0Disable\0");
+	ImGuiCustom::colorPicker("##oxhair", config->visuals.overlayCrosshair);
+	ImGui::SameLine();
+	ImGui::Combo("Overlay crosshair", &config->visuals.overlayCrosshairType, "None\0Circle dot\0Dot\0Cross\0Empty cross\0");
+	ImGuiCustom::colorPicker("##rxhair", config->visuals.recoilCrosshair);
+	ImGui::SameLine();
+	ImGui::Combo("Recoil crosshair", &config->visuals.recoilCrosshairType, "None\0Circle dot\0Dot\0Cross\0Empty cross\0");
+
+	ImGui::Combo("Smoke", &config->visuals.smoke, "Normal\0Disable\0Wireframe\0");
+	ImGui::Combo("Molotov fire", &config->visuals.inferno, "Normal\0Disable\0Wireframe\0");
 	ImGui::PopItemWidth();
 
 	ImGuiCustom::colorPicker("Molotov radius", config->visuals.molotovHull);
@@ -1309,7 +1324,8 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::SliderFloat("##brightness", &config->visuals.brightness, 0.0f, 1.0f, "Brightness %.2f");
 	ImGui::PopItemWidth();
 
-	ImGui::Combo("Skybox", &config->visuals.skybox, Helpers::skyboxList.data(), Helpers::skyboxList.size());
+	ImGui::SetNextItemWidth(170.0f);
+	ImGui::Combo("Skybox", &config->visuals.skybox, Helpers::skyboxList.data(), Helpers::skyboxList.size(), 20);
 
 	ImGuiCustom::colorPicker("World color", config->visuals.world);
 	ImGuiCustom::colorPicker("Props color", config->visuals.props);
@@ -1322,15 +1338,43 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Deagle spinner", &config->visuals.deagleSpinner);
 	ImGui::SetNextItemWidth(130.0f);
 	ImGui::Combo("Screen effect", &config->visuals.screenEffect, "None\0Drone cam\0Noisy drone\0Underwater\0Healthboost\0Dangerzone\0");
+
 	ImGui::SetNextItemWidth(130.0f);
 	ImGui::Combo("Hit effect", &config->visuals.hitEffect, "None\0Drone cam\0Noisy drone\0Underwater\0Healthboost\0Dangerzone\0");
-	ImGui::SliderFloat("##heff_time", &config->visuals.hitEffectTime, 0.1f, 1.5f, "Hit effect time %.2fs");
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("hit_effect", ImGuiDir_Right))
+		ImGui::OpenPopup("##hit_effect");
+
+	if (ImGui::BeginPopup("##hit_effect"))
+	{
+		ImGui::SliderFloat("##time", &config->visuals.hitEffectTime, 0.1f, 1.5f, "Time %.2fs");
+		ImGui::EndPopup();
+	}
+
 	ImGui::SetNextItemWidth(130.0f);
 	ImGui::Combo("Kill effect", &config->visuals.killEffect, "None\0Drone cam\0Noisy drone\0Underwater\0Healthboost\0Dangerzone\0");
-	ImGui::SliderFloat("##keff_time", &config->visuals.killEffectTime, 0.1f, 1.5f, "Kill effect time %.2fs");
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("kill_effect", ImGuiDir_Right))
+		ImGui::OpenPopup("##kill_effect");
+
+	if (ImGui::BeginPopup("##kill_effect"))
+	{
+		ImGui::SliderFloat("##time", &config->visuals.killEffectTime, 0.1f, 1.5f, "Time %.2fs");
+		ImGui::EndPopup();
+	}
+
 	ImGui::SetNextItemWidth(130.0f);
-	ImGui::Combo("Hit marker", &config->visuals.hitMarker, "None\0Cross\0Circle");
-	ImGui::SliderFloat("##hmark_time", &config->visuals.hitMarkerTime, 0.1f, 1.5f, "Hit marker time %.2fs");
+	ImGui::Combo("Hit marker", &config->visuals.hitMarker, "None\0Cross\0Circle\0");
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("hit_marker", ImGuiDir_Right))
+		ImGui::OpenPopup("##hit_marker");
+
+	if (ImGui::BeginPopup("##hit_marker"))
+	{
+		ImGui::SliderFloat("##time", &config->visuals.hitMarkerTime, 0.1f, 1.5f, "Time %.2fs");
+		ImGui::EndPopup();
+	}
+
 	ImGui::SliderFloat("##aspect_ratio", &config->visuals.aspectratio, 0.0f, 5.0f, "Aspect ratio %.2f");
 	ImGui::PopItemWidth();
 
@@ -1830,21 +1874,14 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Auto reload", &config->misc.autoReload);
 	ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
 
-	ImGui::PushItemWidth(95.0f);
-	ImGuiCustom::colorPicker("##oxhair", config->misc.overlayCrosshair);
-	ImGui::SameLine();
-	ImGui::Combo("Overlay", &config->misc.overlayCrosshairType, "None\0Circle dot\0Dot\0Cross\0Empty cross\0");
-	ImGuiCustom::colorPicker("##rxhair", config->misc.recoilCrosshair);
-	ImGui::SameLine();
-	ImGui::Combo("Recoil", &config->misc.recoilCrosshairType, "None\0Circle dot\0Dot\0Cross\0Empty cross\0");
-	ImGui::PopItemWidth();
-
 	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
 	ImGui::Checkbox("Fix bone matrix", &config->misc.fixBoneMatrix);
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
 	ImGui::Checkbox("Sync client animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
+	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
+	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
 
 	ImGui::NextColumn();
 
@@ -1856,8 +1893,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
 	ImGui::Checkbox("No panorama blur", &config->misc.disablePanoramablur);
-	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
-	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
 	ImGui::SetNextItemWidth(190.0f);
 	ImGui::SliderFloat("##angle_delta", &config->misc.maxAngleDelta, 0.0f, 255.0f, "Aimstep %.2f");
 	ImGui::Checkbox("Preserve killfeed", &config->misc.preserveKillfeed.enabled);
@@ -1892,11 +1927,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Indicators", &config->misc.indicators);
 	#ifdef LEGACY_WATERMARK
 	ImGuiCustom::colorPicker("Spectator list", config->misc.spectatorList);
-	ImGui::SameLine();
-	ImGuiCustom::colorPicker("BG", config->misc.specBg.color, &config->misc.specBg.rainbow, &config->misc.specBg.rainbowSpeed);
 	ImGuiCustom::colorPicker("Watermark", config->misc.watermark);
-	ImGui::SameLine();
-	ImGuiCustom::colorPicker("BG", config->misc.bg.color, &config->misc.bg.rainbow, &config->misc.bg.rainbowSpeed);
 	#else
 	ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
 	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);

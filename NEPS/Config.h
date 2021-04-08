@@ -200,6 +200,11 @@ public:
 		bool oppositeHandKnife = false;
 		int bulletImpacts = 0;
 		int accuracyTracers = 0;
+		Color4 overlayCrosshair;
+		int overlayCrosshairType = 0;
+		Color4 recoilCrosshair;
+		int recoilCrosshairType = 0;
+		int forceCrosshair = 0;
 
 		struct Beams
 		{
@@ -387,10 +392,6 @@ public:
 		bool quickReload = false;
 		bool fastPlant = false;
 		bool fixTabletSignal = false;
-		Color4 overlayCrosshair;
-		int overlayCrosshairType = 0;
-		Color4 recoilCrosshair;
-		int recoilCrosshairType = 0;
 		bool bombTimer = false;
 		bool nadePredict = false;
 		bool indicators = false;
