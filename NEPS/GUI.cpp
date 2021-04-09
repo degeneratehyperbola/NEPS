@@ -1873,6 +1873,10 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Full-auto", &config->misc.autoPistol);
 	ImGui::Checkbox("Auto reload", &config->misc.autoReload);
 	ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
+	ImGui::Checkbox("Fast plant", &config->misc.fastPlant);
+	ImGui::Checkbox("Quick reload", &config->misc.quickReload);
+	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
+	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
 
 	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
@@ -1880,13 +1884,9 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
 	ImGui::Checkbox("Sync client animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
-	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
-	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
 
 	ImGui::NextColumn();
 
-	ImGui::Checkbox("Fast plant", &config->misc.fastPlant);
-	ImGui::Checkbox("Quick reload", &config->misc.quickReload);
 	ImGui::Checkbox("Fix tablet signal", &config->misc.fixTabletSignal);
 	ImGui::Checkbox("Radar hack", &config->misc.radarHack);
 	ImGui::Checkbox("Reveal ranks", &config->misc.revealRanks);
