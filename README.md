@@ -1,9 +1,8 @@
 ![COVER](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/cover.png)
 
-<h1 align="center">NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
-
 <div align="center">
 
+# NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
 ![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)
 ![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)
 
