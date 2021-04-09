@@ -21,7 +21,7 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 
 ### Step-by-step:
 - Download a release NEPS loader
-[![DOWNLOAD BUTTON](https://img.shields.io/badge/Download-latest-orange)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
+[![DOWNLOAD BUTTON](https://img.shields.io/badge/Download-latest-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 - Place it somewhere memorable ;)
 - Open CS:GO
 - Run the loader with administrator privileges<sup>*</sup>
@@ -29,8 +29,7 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 - *Voila!*
 
 ### <sup>*</sup>Concerned?
-##### Feel free to compile your own version of NEPS loader!
-##### Source code of it is available right in this repository.
+#### Feel free to compile your own version of NEPS loader! Source code of it is available right in this repository.
 
 # NEPcord
 **NEPS has official Discord as well!**
