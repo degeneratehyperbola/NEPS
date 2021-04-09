@@ -1,6 +1,6 @@
 ![COVER](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/cover.png)
 
-<h1 align="center">NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS
+<h1 align="center">NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
 
 ![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)
 ![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)
@@ -21,6 +21,7 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 
 ### Step-by-step:
 - Download a release NEPS loader
+[![DOWNLOAD BUTTON](https://img.shields.io/badge/Download-latest-orange)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 - Place it somewhere memorable ;)
 - Open CS:GO
 - Run the loader with administrator privileges<sup>*</sup>
@@ -28,8 +29,8 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 - *Voila!*
 
 ### <sup>*</sup>Concerned?
-Feel free to compile your own version of NEPS loader!
-Source code of it is available right in this repository.
+##### Feel free to compile your own version of NEPS loader!
+##### Source code of it is available right in this repository.
 
 # NEPcord
 **NEPS has official Discord as well!**
@@ -48,6 +49,6 @@ It'd be very generous of you to support this project at creator's Patreon.
 
 https://www.patreon.com/hyperbola
 
-### NEPS downloads:
+# NEPS downloads:
 ![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
 ![LATEST DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/latest/total?color=orange&label=Latest%20release&style=plastic)
