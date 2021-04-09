@@ -21,7 +21,9 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 
 ### Step-by-step:
 - Download a release NEPS loader
+
 [![DOWNLOAD BUTTON](https://img.shields.io/badge/Download-latest-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
+
 - Place it somewhere memorable ;)
 - Open CS:GO
 - Run the loader with administrator privileges<sup>*</sup>
