@@ -48,7 +48,7 @@ constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 
 GUI::GUI() noexcept
 {
-	ImGui::StyleColorsClassic();
+	ImGuiCustom::StyleColorsClassic();
 
 	ImGuiIO &io = ImGui::GetIO();
 	// We do be wanting to save window positions
@@ -115,9 +115,11 @@ void GUI::updateColors() const noexcept
 {
 	switch (config->style.menuColors)
 	{
-	case 0: ImGui::StyleColorsDark(); break;
-	case 1: ImGui::StyleColorsLight(); break;
-	case 2: ImGui::StyleColorsClassic(); break;
+	case 0: ImGuiCustom::StyleColorsClassic(); break;
+	case 1: ImGuiCustom::StyleColors1(); break;
+	case 2: ImGuiCustom::StyleColors2(); break;
+	case 3: ImGuiCustom::StyleColors3(); break;
+	case 4: ImGuiCustom::StyleColors4(); break;
 	}
 }
 
@@ -1718,11 +1720,11 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 	ImGui::PushItemWidth(150.0f);
 	//if (ImGui::Combo("Menu style", &config->style.menuStyle, "Classic\0One window\0"))
 	//    window = { };
-	if (ImGui::Combo("Menu colors", &config->style.menuColors, "Frontier\0Eastern Sun\0NEPS\0Custom\0"))
+	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Frontier\0Eastern Sun\0Coca-Cola\0Twotap\0Custom\0"))
 		updateColors();
 	ImGui::PopItemWidth();
 
-	if (config->style.menuColors == 3)
+	if (config->style.menuColors == 5)
 	{
 		ImGuiStyle &style = ImGui::GetStyle();
 		for (int i = 0; i < ImGuiCol_COUNT; i++)

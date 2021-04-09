@@ -27,4 +27,9 @@ namespace ImGuiCustom
 	void keyBind(const char *name, KeyBind &bind) noexcept;
 	void multiCombo(const char *name, int &flagValue, const char *items) noexcept;
 	void boolCombo(const char *name, bool &value, const char *items) noexcept;
+	void StyleColorsClassic(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColors1(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColors2(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColors3(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColors4(ImGuiStyle *dst = nullptr) noexcept;
 }

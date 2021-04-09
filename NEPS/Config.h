@@ -288,7 +288,7 @@ public:
 	struct Style
 	{
 		int menuStyle = 0;
-		int menuColors = 2;
+		int menuColors = 0;
 	} style;
 
 	struct Exploits
