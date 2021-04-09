@@ -46,14 +46,13 @@ std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 
 std::array<float, 3U> Helpers::hsvToRgb(float h, float s, float v) noexcept
 {
-	h = std::remainder(h, 1.0f) + 0.5f;
+	h = h < 0.0f ? std::fmodf(h, 1.0f) + 1.0f : std::fmodf(h, 1.0f);
 	s = std::clamp(s, 0.0f, 1.0f);
 	v = std::clamp(v, 0.0f, 1.0f);
 	const auto c = s * v;
 	const auto x = c * (1.0f - std::fabsf(std::fmodf(h * 6.0f, 2.0f) - 1.0f));
 	const auto m = v - c;
 
-	//constexpr std::array hues = {0.0f, 1.0f / 6.0f, 1.0f / 3.0f, 0.5f, 1.0f / 3.0f * 2.0f, 1.0f / 6.0f * 5.0f, 1.0f};
 	float r = 0.0f, g = 0.0f, b = 0.0f;
 
 	if (0.0f <= h && h < 1.0f / 6.0f)
@@ -79,7 +78,7 @@ std::array<float, 3U> Helpers::rainbowColor(float speed) noexcept
 
 std::array<float, 4U> Helpers::rainbowColor(float speed, float alpha) noexcept
 {
-	auto [r, g, b] = hsvToRgb(speed * memory->globalVars->realtime * 0.1f, 1.0f, 1.0f);
+	auto &&[r, g, b] = hsvToRgb(speed * memory->globalVars->realtime * 0.1f, 1.0f, 1.0f);
 	return {r, g, b, alpha};
 }
 
@@ -279,13 +278,13 @@ unsigned int Helpers::calculateColor(Color4 color) noexcept
 {
 	color.color[3] *= (255.0f - GameData::local().flashDuration) / 255.0f;
 	color.color[3] *= alphaFactor;
-	auto [r, g, b, a] = color.rainbow ? rainbowColor(color.rainbowSpeed, color.color[3]) : color.color;
+	auto &&[r, g, b, a] = color.rainbow ? rainbowColor(color.rainbowSpeed, color.color[3]) : color.color;
 	return ImGui::ColorConvertFloat4ToU32({r, g, b, a});
 }
 
 unsigned int Helpers::calculateColor(Color3 color) noexcept
 {
-	auto [r, g, b] = color.rainbow ? rainbowColor(color.rainbowSpeed) : color.color;
+	auto &&[r, g, b] = color.rainbow ? rainbowColor(color.rainbowSpeed) : color.color;
 	return ImGui::ColorConvertFloat4ToU32({r, g, b, 1.0f});
 }
 
@@ -341,8 +340,6 @@ std::wstring Helpers::toUpper(std::wstring str) noexcept
 
 float Helpers::angleDiffDeg(float a1, float a2) noexcept
 {
-	const float pi = std::numbers::pi_v<float>;
-
 	float delta;
 
 	delta = std::remainder(a1 - a2, 360.0f);

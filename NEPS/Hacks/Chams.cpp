@@ -254,12 +254,13 @@ void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int 
 		float r, g, b;
 		if (cham.healthBased && health)
 		{
-			r = 1.0f - health / 100.0f;
-			g = health / 100.0f;
-			b = 0.0f;
+			auto &&[red, green, blue] = Helpers::hsvToRgb(std::lerp(0.0f, 1.0f / 3.0f, std::clamp(health / 100.0f, 0.0f, 1.0f)), 1.0f, 1.0f);
+			r = red;
+			g = green;
+			b = blue;
 		} else if (cham.rainbow)
 		{
-			auto [red, green, blue] = Helpers::rainbowColor(cham.rainbowSpeed);
+			auto &&[red, green, blue] = Helpers::rainbowColor(cham.rainbowSpeed);
 			r = red;
 			g = green;
 			b = blue;
@@ -310,12 +311,14 @@ void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int 
 		float r, g, b;
 		if (cham.healthBased && health)
 		{
-			r = 1.0f - health / 100.0f;
-			g = health / 100.0f;
-			b = 0.0f;
+			auto &&[red, green, blue] = Helpers::hsvToRgb(std::lerp(0.0f, 1.0f / 3.0f, std::clamp(health / 100.0f, 0.0f, 1.0f)), 1.0f, 1.0f);
+			r = red;
+			g = green;
+			b = blue;
+
 		} else if (cham.rainbow)
 		{
-			auto [red, green, blue] = Helpers::rainbowColor(cham.rainbowSpeed);
+			auto &&[red, green, blue] = Helpers::rainbowColor(cham.rainbowSpeed);
 			r = red;
 			g = green;
 			b = blue;
