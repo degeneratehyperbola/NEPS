@@ -8,9 +8,7 @@
 
 </div>
 
-An open source bloat-free CS:GO cheat for Windows, based on Osiris.
-You should probably give it a go, as it was in development for about a year.
-With many, MANY features added, many, MANY fixes pushed (even the ones CS:GO itself needed), many, MANY optimizations and more!
+An open source bloat-free CS:GO cheat for Windows, based on Osiris. You should probably give it a go, as it was in development for about a year. With many, MANY features added, many, MANY fixes pushed (even the ones CS:GO itself needed), many, MANY optimizations and more!
 
 ### Some NEPS features:
 ![SCREENSHOT](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/menu_neps.png)
@@ -43,9 +41,8 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 [![DISCORD JOIN](https://img.shields.io/badge/%E2%80%8E%20%20Join-%20-orange?labelColor=orange&style=plastic)](https://discord.gg/pwB3XBppVr)
 
 # We demand support for NEPS!
-If you fell like supporting me, or, perhaps, further maintaining and updating of this project,
-this includes addition of new exciting features, testing and bug fixing.
-It'd be very generous of you to support this project at creator's Patreon.
+If you fell like supporting me, or, perhaps, want me to further maintain and update this project,
+this includes addition of new exciting features, testing and bug fixing. It'd be very generous of you to support this project at creator's Patreon.
 
 *pwease*
 
