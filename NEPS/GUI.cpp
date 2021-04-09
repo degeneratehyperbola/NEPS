@@ -120,6 +120,7 @@ void GUI::updateColors() const noexcept
 	case 2: ImGuiCustom::StyleColors2(); break;
 	case 3: ImGuiCustom::StyleColors3(); break;
 	case 4: ImGuiCustom::StyleColors4(); break;
+	case 5: ImGuiCustom::StyleColors5(); break;
 	}
 }
 
@@ -1720,11 +1721,11 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 	ImGui::PushItemWidth(150.0f);
 	//if (ImGui::Combo("Menu style", &config->style.menuStyle, "Classic\0One window\0"))
 	//    window = { };
-	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Frontier\0Eastern Sun\0Coca-Cola\0Twotap\0Custom\0"))
+	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Frontier\0Eastern Sun\0Coca-Cola\0Twotap\0Cherry\0Custom\0"))
 		updateColors();
 	ImGui::PopItemWidth();
 
-	if (config->style.menuColors == 5)
+	if (config->style.menuColors == 6)
 	{
 		ImGuiStyle &style = ImGui::GetStyle();
 		for (int i = 0; i < ImGuiCol_COUNT; i++)

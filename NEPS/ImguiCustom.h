@@ -32,4 +32,5 @@ namespace ImGuiCustom
 	void StyleColors2(ImGuiStyle *dst = nullptr) noexcept;
 	void StyleColors3(ImGuiStyle *dst = nullptr) noexcept;
 	void StyleColors4(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColors5(ImGuiStyle *dst = nullptr) noexcept;
 }
