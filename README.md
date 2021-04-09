@@ -1,10 +1,12 @@
 ![COVER](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/cover.png)
 
+<h1 align="center">NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
+
 <div align="center">
-# NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS
 
 ![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)
 ![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)
+
 </div>
 
 An open source bloat-free CS:GO cheat for Windows, based on Osiris.
@@ -22,9 +24,9 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 If you are not a nerd, than good for you as it is pretty simple to get started!
 
 ### Step-by-step:
-- Download a release NEPS loader
+- Download a release NEPS loader (NLoader.exe under assets)
 
-[![DOWNLOAD BUTTON](https://img.shields.io/badge/Download-latest-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
+[![DOWNLOAD BUTTON](https://img.shields.io/badge/%E2%80%8E%20%20Download-%20-orange?labelColor=orange&style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 
 - Place it somewhere memorable ;)
 - Open CS:GO
@@ -38,9 +40,8 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 # NEPcord
 **NEPS has official Discord as well!**
 
-![DISCORD ONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic)
-
-https://discord.gg/pwB3XBppVr
+[![DISCORD ONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic)](https://discord.gg/pwB3XBppVr)
+[![DISCORD JOIN](https://img.shields.io/badge/%E2%80%8E%20%20Join-%20-orange?labelColor=orange&style=plastic)](https://discord.gg/pwB3XBppVr)
 
 # We demand support for NEPS!
 If you fell like supporting me, or, perhaps, further maintaining and updating of this project,
@@ -49,7 +50,7 @@ It'd be very generous of you to support this project at creator's Patreon.
 
 *pwease*
 
-https://www.patreon.com/hyperbola
+[![PATREON](https://img.shields.io/badge/%E2%80%8E%20%20Patreon-%20-orange?labelColor=orange&style=plastic)](https://www.patreon.com/hyperbola)
 
 # NEPS downloads:
 ![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
