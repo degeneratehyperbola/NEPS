@@ -1,9 +1,11 @@
 ![COVER](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/cover.png)
 
-<h1 align="center">NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
+<div align="center">
+# NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS
 
 ![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)
 ![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)
+</div>
 
 An open source bloat-free CS:GO cheat for Windows, based on Osiris.
 You should probably give it a go, as it was in development for about a year.
@@ -36,8 +38,7 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 # NEPcord
 **NEPS has official Discord as well!**
 
-![CHANGELOG](https://img.shields.io/discord/715296405513830442?color=orange&label=Changelog&style=plastic)
-![Discord](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic)
+![DISCORD ONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic)
 
 https://discord.gg/pwB3XBppVr
 
