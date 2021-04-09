@@ -13,7 +13,7 @@ using namespace std;
 typedef HMODULE(__stdcall *PLOADLIBRARY)(LPCSTR);
 typedef FARPROC(__stdcall *PGETPROCADDRESS)(HMODULE, LPCSTR);
 
-typedef INT(__stdcall *DLLMAIN)(HMODULE, DWORD, LPVOID);
+typedef BOOL(__stdcall *DLLMAIN)(HMODULE, DWORD, LPVOID);
 
 struct LOADERDATA
 {
@@ -57,7 +57,7 @@ static DWORD FindPID(wstring processName)
 }
 
 #ifdef _NET
-static BOOL RequestBinary()
+static BOOL RequestBinary(LPVOID out)
 {
 	auto curl = curl_easy_init();
 
@@ -69,7 +69,7 @@ static BOOL RequestBinary()
 }
 #endif // _NET
 
-DWORD __stdcall LibraryLoader(LPVOID memory)
+BOOL __stdcall LibraryLoader(LPVOID memory)
 {
 	LOADERDATA *LoaderParams = (LOADERDATA *)memory;
 
@@ -171,7 +171,7 @@ DWORD __stdcall LibraryLoader(LPVOID memory)
 		// Call the entry point with exclusive parameters
 		return EntryPoint((HMODULE)LoaderParams->ImageBase, DLL_PROCESS_ATTACH | SIGNATURE, NULL);
 	}
-	return TRUE;
+	return FALSE;
 }
 
 DWORD __stdcall Stub()
@@ -181,7 +181,14 @@ DWORD __stdcall Stub()
 
 BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
 {
+	// Find CS:GO
 	DWORD ProcessID = FindPID(L"csgo.exe");
+
+	if (!ProcessID)
+	{
+		MessageBoxA(NULL, "Falied to load NEPS.\nYou need to run CS:GO before running the loader.", "NEPS", MB_OK | MB_ICONERROR);
+		return FALSE;
+	}
 
 	LOADERDATA LoaderParams;
 
@@ -241,8 +248,16 @@ BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLin
 	// Wait for the loader to finish executing
 	WaitForSingleObject(hThread, INFINITE);
 
+	// Get loader's return value to determine DllMain's return value
+	DWORD dwReturnValue = 0;
+	GetExitCodeThread(hThread, &dwReturnValue);
+
+	// Inform user about errors
+	if (!dwReturnValue) MessageBoxA(NULL, "Falied to load NEPS.\nTry running the loader with administrator privileges.", "NEPS", MB_OK | MB_ICONERROR);
+	else MessageBoxA(NULL, "Success! NEPS is now loaded.", "NEPS", MB_OK | MB_ICONINFORMATION);
+
 	// Free the allocated loader code
 	VirtualFreeEx(hProcess, LoaderMemory, 0, MEM_RELEASE);
 
-	return 0;
+	return TRUE;
 }
