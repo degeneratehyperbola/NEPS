@@ -5,6 +5,9 @@ An open source bloat-free CS:GO cheat for Windows, based on Osiris.
 You should probably give it a go, as it was in development for about a year.
 With many, MANY features added, many, MANY fixes pushed (even the ones CS:GO itself needed), many, MANY optimizations and more!
 
+### Some NEPS features:
+![SCREENSHOT](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/menu_neps.png)
+
 # NEPS O_O
 This software is optimized as far as I was able to keep it clean.
 As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at making anyone's CS:GO experience with NEPS, at least, not as stuttery and laggy.
@@ -12,7 +15,7 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 # NEPcord
 **NEPS has official Discord as well!**
 
-https://discord.gg/pwB3XBppVr 
+https://discord.gg/pwB3XBppVr
 
 # We demand support for NEPS!
 If you fell like supporting me, or, perhaps, further maintaining and updating of this project,
