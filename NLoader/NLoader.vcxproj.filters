@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="version.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,6 +51,9 @@
     <ClInclude Include="curl\urlapi.h">
       <Filter>Header Files\curl</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NLoader.rc">
@@ -66,6 +66,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Release\NEPS\NEPS.dll" />
+    <Image Include="Resources\icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Release\NEPS\NEPS.dll">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

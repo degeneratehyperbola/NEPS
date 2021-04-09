@@ -2,7 +2,7 @@
 //
 #pragma code_page(65001)
 
-#include "resource.hpp"
+#include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -48,10 +48,20 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// bin
+// BIN
 //
 
-IDR_BIN1                bin                     "..\\Release\\NEPS\\NEPS.dll"
+IDR_BIN1                BIN                     "..\\Release\\NEPS\\NEPS.dll"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "Resources\\icon.ico"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

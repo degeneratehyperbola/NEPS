@@ -111,7 +111,7 @@
     <ClInclude Include="curl\system.h" />
     <ClInclude Include="curl\typecheck-gcc.h" />
     <ClInclude Include="curl\urlapi.h" />
-    <ClInclude Include="resource.hpp" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="version.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +119,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Release\NEPS\NEPS.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

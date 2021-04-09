@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{8c56775f-e99a-4a14-b8c8-21f63aca4485}</UniqueIdentifier>
     </Filter>
@@ -30,10 +22,18 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{dc2dfc23-a5f7-4c52-b439-b75bdab747c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui.cpp">
       <Filter>imgui</Filter>
@@ -54,13 +54,13 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="Hooks.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Memory.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Config.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Hacks\Misc.cpp">
       <Filter>Hacks</Filter>
@@ -78,7 +78,7 @@
       <Filter>Hacks</Filter>
     </ClCompile>
     <ClCompile Include="Netvars.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Hacks\Visuals.cpp">
       <Filter>Hacks</Filter>
@@ -105,7 +105,7 @@
       <Filter>SDK</Filter>
     </ClCompile>
     <ClCompile Include="EventListener.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="SDK\Entity.cpp">
       <Filter>SDK</Filter>
@@ -135,22 +135,22 @@
       <Filter>Hooks</Filter>
     </ClCompile>
     <ClCompile Include="GameData.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Hacks\StreamProofESP.cpp">
       <Filter>Hacks</Filter>
     </ClCompile>
     <ClCompile Include="Helpers.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Hacks\Animations.cpp">
       <Filter>Hacks</Filter>
     </ClCompile>
     <ClCompile Include="Neps.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="ImguiCustom.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui_tables.cpp">
       <Filter>imgui</Filter>
@@ -158,7 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
       <Filter>imgui</Filter>
@@ -185,16 +185,16 @@
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="Hooks.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Memory.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Interfaces.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="SDK\UserCmd.h">
       <Filter>SDK</Filter>
@@ -257,7 +257,7 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="Netvars.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="SDK\Client.h">
       <Filter>SDK</Filter>
@@ -329,7 +329,7 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="fnv.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="SDK\AnimState.h">
       <Filter>SDK</Filter>
@@ -371,10 +371,10 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="EventListener.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="ConfigStructs.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="SDK\WeaponSystem.h">
       <Filter>SDK</Filter>
@@ -419,13 +419,13 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="GameData.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Hacks\StreamProofESP.h">
       <Filter>Hacks</Filter>
     </ClInclude>
     <ClInclude Include="Helpers.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="nlohmann\json.hpp">
       <Filter>nlohmann</Filter>
@@ -467,7 +467,7 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="ImguiCustom.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="SDK\SteamId.h">
       <Filter>SDK</Filter>
@@ -479,6 +479,8 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\LogoA.png" />
+    <Image Include="Resources\LogoA.png">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

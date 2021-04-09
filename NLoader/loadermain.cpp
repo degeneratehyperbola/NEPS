@@ -6,7 +6,7 @@
 #include "curl/curl.h"
 
 #include "resource.h"
-#include "version.h"
+#include "version.hpp"
 
 using namespace std;
 
@@ -186,7 +186,7 @@ BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLin
 	LOADERDATA LoaderParams;
 
 	HMODULE hModule = GetModuleHandleA(NULL);
-	HRSRC hResource = FindResourceA(hModule, MAKEINTRESOURCEA(IDR_BIN1), "bin");
+	HRSRC hResource = FindResourceA(hModule, MAKEINTRESOURCEA(IDR_BIN1), "BIN");
 	PVOID Buffer = LoadResource(hModule, hResource);
 
 	// Target DLL's DOS Header
