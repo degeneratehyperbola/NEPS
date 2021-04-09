@@ -3,7 +3,9 @@
 #include <Windows.h>
 #include <TlHelp32.h>
 
+#ifdef REQ_NET
 #include "curl/curl.h"
+#endif // REQ_NET
 
 #include "resource.h"
 #include "version.hpp"
@@ -56,7 +58,7 @@ static DWORD FindPID(wstring processName)
 	return 0;
 }
 
-#ifdef _NET
+#ifdef REQ_NET
 static BOOL RequestBinary(LPVOID out)
 {
 	auto curl = curl_easy_init();
@@ -67,7 +69,7 @@ static BOOL RequestBinary(LPVOID out)
 		curl_easy_cleanup(curl);
 	}
 }
-#endif // _NET
+#endif // REQ_NET
 
 BOOL __stdcall LibraryLoader(LPVOID memory)
 {
