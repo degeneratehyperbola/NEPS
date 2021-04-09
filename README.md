@@ -31,8 +31,8 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 - By default menu key is set to DEL on the number pad
 - *Voila!*
 
-### <sup>*</sup>Concerned?
-#### Feel free to compile your own version of NEPS loader! Source code of it is available right in this repository.
+## <sup>*</sup>Concerned?
+### Feel free to compile your own version of NEPS loader! Source code of it is available right in this repository.
 
 # NEPcord
 **NEPS has official Discord as well!**
