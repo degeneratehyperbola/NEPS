@@ -16,7 +16,7 @@ enum
 	FBEAM_SHADEOUT = 0x00000080,
 	FBEAM_ONLYNOISEONCE = 0x00000100, // Only calculate our noise once
 	FBEAM_NOTILE = 0x00000200,
-	FBEAM_USE_HITBOXES = 0x00000400, // Attachment indices represent hitbox indices instead when this is set.
+	FBEAM_USE_HITBOXES = 0x00000400, // Attachment indices represent hitbox indices instead when this is set
 	FBEAM_STARTVISIBLE = 0x00000800, // Has this client actually seen this beam's start entity yet?
 	FBEAM_ENDVISIBLE = 0x00001000, // Has this client actually seen this beam's end entity yet?
 	FBEAM_ISACTIVE = 0x00002000,

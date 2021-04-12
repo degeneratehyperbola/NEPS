@@ -94,7 +94,7 @@ bool Chams::render(void* ctx, void* state, const ModelRenderInfo& info, Matrix3x
     this->info = &info;
 	this->customBoneToWorld = customBoneToWorld;
 
-    if (std::string_view{ info.model->name }.starts_with("models/weapons/v_")) {
+    if (std::string_view{info.model->name}.starts_with("models/weapons/v_")) {
         // info.model->name + 17 -> small optimization, skip "models/weapons/v_"
         if (std::strstr(info.model->name + 17, "sleeve"))
             renderSleeves();

@@ -346,17 +346,20 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Smooth start", a.smooth);
 	read(j, "Linear speed", a.linearSpeed);
 	read(j, "Interpolation", a.interpolation);
-	read(j, "Hitgroup", a.hitgroup);
+	read(j, "Hitgroup", a.hitGroup);
 	read(j, "Targeting", a.targeting);
 	read(j, "Max aim inaccuracy", a.maxAimInaccuracy);
 	read(j, "Hitchance", a.shotHitchance);
 	read(j, "Min damage", a.minDamage);
 	read(j, "Min damage auto-wall", a.minDamageAutoWall);
+	read<value_t::object>(j, "Override damage", a.damageOverride);
+	read(j, "Min damage override", a.minDamageOverride);
+	read(j, "Min damage auto-wall override", a.minDamageAutoWallOverride);
 	read(j, "Killshot", a.killshot);
 	read(j, "Killshot auto-wall", a.killshotAutoWall);
 	read(j, "Between shots", a.betweenShots);
-	read<value_t::object>(j, "Safe only", a.safeOnly);
-	read(j, "Safe mode", a.safeHitgroup);
+	read(j, "Safe only", a.safeOnly);
+	read(j, "Safe mode", a.safeHitGroup);
 }
 
 static void from_json(const json &j, Config::Triggerbot &t)
@@ -367,7 +370,7 @@ static void from_json(const json &j, Config::Triggerbot &t)
 	read(j, "Scoped only", t.scopedOnly);
 	read(j, "Ignore flash", t.ignoreFlash);
 	read(j, "Ignore smoke", t.ignoreSmoke);
-	read(j, "Hitgroup", t.hitgroup);
+	read(j, "Hitgroup", t.hitGroup);
 	read(j, "Hitchance", t.hitchance);
 	read(j, "Distance", t.distance);
 	read(j, "Shot delay", t.shotDelay);
@@ -947,17 +950,20 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Smooth start", smooth);
 	WRITE("Linear speed", linearSpeed);
 	WRITE("Interpolation", interpolation);
-	WRITE("Hitgroup", hitgroup);
+	WRITE("Hitgroup", hitGroup);
 	WRITE("Targeting", targeting);
 	WRITE("Max aim inaccuracy", maxAimInaccuracy);
 	WRITE("Hitchance", shotHitchance);
 	WRITE("Min damage", minDamage);
 	WRITE("Min damage auto-wall", minDamageAutoWall);
+	WRITE("Override damage", damageOverride);
+	WRITE("Min damage override", minDamageOverride);
+	WRITE("Min damage auto-wall override", minDamageAutoWallOverride);
 	WRITE("Killshot", killshot);
 	WRITE("Killshot auto-wall", killshotAutoWall);
 	WRITE("Between shots", betweenShots);
 	WRITE("Safe only", safeOnly);
-	WRITE("Safe mode", safeHitgroup);
+	WRITE("Safe mode", safeHitGroup);
 }
 
 static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerbot &dummy = {})
@@ -968,7 +974,7 @@ static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerb
 	WRITE("Scoped only", scopedOnly);
 	WRITE("Ignore flash", ignoreFlash);
 	WRITE("Ignore smoke", ignoreSmoke);
-	WRITE("Hitgroup", hitgroup);
+	WRITE("Hitgroup", hitGroup);
 	WRITE("Hitchance", hitchance);
 	WRITE("Distance", distance);
 	WRITE("Shot delay", shotDelay);

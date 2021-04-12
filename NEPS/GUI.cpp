@@ -27,6 +27,7 @@
 #include "Hacks/Aimbot.h"
 
 #ifdef _DEBUG_NEPS
+#include "Hacks/Animations.h"
 #include "SDK/Client.h"
 #include "SDK/ClientMode.h"
 #include "SDK/Effects.h"
@@ -324,7 +325,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 	ImGui::SetNextItemWidth(85.0f);
 	ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
 	ImGui::SetNextItemWidth(85.0f);
-	ImGuiCustom::multiCombo("Hitgroup", config->aimbot[currentWeapon].hitgroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+	ImGuiCustom::multiCombo("Hit group", config->aimbot[currentWeapon].hitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
 
 	ImGui::NextColumn();
 	ImGui::Checkbox("Multipoint", &config->aimbot[currentWeapon].multipoint);
@@ -344,20 +345,35 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 	ImGui::InputInt("Min damage", &config->aimbot[currentWeapon].minDamage);
 	config->aimbot[currentWeapon].minDamage = std::max(config->aimbot[currentWeapon].minDamage, 0);
 	ImGui::SameLine();
-	if (ImGui::ArrowButton("damage_ab", ImGuiDir_Right))
-		ImGui::OpenPopup("##damage_ab");
+	if (ImGui::ArrowButton("damage_popup", ImGuiDir_Right))
+		ImGui::OpenPopup("##damage_popup");
 
-	if (ImGui::BeginPopup("##damage_ab"))
+	if (ImGui::BeginPopup("##damage_popup"))
 	{
-		ImGui::SetNextItemWidth(95.0f);
+		ImGui::PushItemWidth(95.0f);
 		ImGui::InputInt("Min damage auto-wall", &config->aimbot[currentWeapon].minDamageAutoWall);
 		config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
-		ImGui::SetNextItemWidth(95.0f);
 		ImGui::InputInt("Damage threshold", &config->aimbot[currentWeapon].killshot);
 		config->aimbot[currentWeapon].killshot = std::max(config->aimbot[currentWeapon].killshot, 0);
-		ImGui::SetNextItemWidth(95.0f);
 		ImGui::InputInt("Damage threshold auto-wall", &config->aimbot[currentWeapon].killshotAutoWall);
 		config->aimbot[currentWeapon].killshotAutoWall = std::max(config->aimbot[currentWeapon].killshotAutoWall, 0);
+		ImGui::PopItemWidth();
+		ImGui::EndPopup();
+	}
+
+	ImGuiCustom::keyBind("Override", config->aimbot[currentWeapon].damageOverride);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("override_popup", ImGuiDir_Right))
+		ImGui::OpenPopup("##override_popup");
+
+	if (ImGui::BeginPopup("##override_popup"))
+	{
+		ImGui::PushItemWidth(95.0f);
+		ImGui::InputInt("Min damage override", &config->aimbot[currentWeapon].minDamageOverride);
+		config->aimbot[currentWeapon].minDamageOverride = std::max(config->aimbot[currentWeapon].minDamageOverride, 0);
+		ImGui::InputInt("Damage auto-wall override", &config->aimbot[currentWeapon].minDamageAutoWallOverride);
+		config->aimbot[currentWeapon].minDamageAutoWallOverride = std::max(config->aimbot[currentWeapon].minDamageAutoWallOverride, 0);
+		ImGui::PopItemWidth();
 		ImGui::EndPopup();
 	}
 
@@ -378,11 +394,13 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
 		break;
 	}
+
 	ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
 
-	ImGuiCustom::keyBind("Safe mode", config->aimbot[currentWeapon].safeOnly);
+	ImGui::Checkbox("Safe mode", &config->aimbot[currentWeapon].safeOnly);
+	ImGui::SameLine();
 	ImGui::SetNextItemWidth(85.0f);
-	ImGuiCustom::multiCombo("Safe hitgroup", config->aimbot[currentWeapon].safeHitgroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+	ImGuiCustom::multiCombo("##safe_hit_group", config->aimbot[currentWeapon].safeHitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
 
 	if (!contentOnly)
 		ImGui::End();
@@ -561,7 +579,7 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Ignore flash", &config->triggerbot[currentWeapon].ignoreFlash);
 	ImGui::Checkbox("Ignore smoke", &config->triggerbot[currentWeapon].ignoreSmoke);
 	ImGui::SetNextItemWidth(85.0f);
-	ImGuiCustom::multiCombo("Hitgroup", config->triggerbot[currentWeapon].hitgroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+	ImGuiCustom::multiCombo("Hit group", config->triggerbot[currentWeapon].hitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
 
 	ImGui::PushItemWidth(200.0f);
 	ImGui::SliderInt("##delay", &config->triggerbot[currentWeapon].shotDelay, 0, 300, "Shot delay %dms", ImGuiSliderFlags_Logarithmic);
@@ -574,10 +592,10 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 	ImGui::InputInt("Min damage", &config->triggerbot[currentWeapon].minDamage);
 	config->triggerbot[currentWeapon].minDamage = std::max(config->triggerbot[currentWeapon].minDamage, 0);
 	ImGui::SameLine();
-	if (ImGui::ArrowButton("damage_tb", ImGuiDir_Right))
-		ImGui::OpenPopup("##damage_tb");
+	if (ImGui::ArrowButton("damage_popup", ImGuiDir_Right))
+		ImGui::OpenPopup("##damage_popup");
 
-	if (ImGui::BeginPopup("##damage_tb"))
+	if (ImGui::BeginPopup("##damage_popup"))
 	{
 		ImGui::SetNextItemWidth(95.0f);
 		ImGui::InputInt("Min damage auto-wall", &config->triggerbot[currentWeapon].minDamageAutoWall);
@@ -2176,8 +2194,6 @@ void GUI::renderDebugWindow() noexcept
 	if (ImGui::Button("Test chat hook"))
 	{
 		memory->clientMode->getHudChat()->printf(0, "\x1N \x2N \x3N \x4N \x5N \x6N \x7N \x8N \x9N \xAN \xBN \xCN \xDN \xEN \xFN \x10N \x1");
-		memory->clientMode->getHudChat()->printf(0, "\x1[NEPS]\x8 %s voted %c%s\x1", "River", '\x4', "YES");
-		memory->clientMode->getHudChat()->printf(0, "\x1[NEPS]\x8 %s voted %c%s\x1", "Hyperbola", '\x2', "NO");
 	}
 
 	if (ImGui::Button("List client classes"))
@@ -2249,7 +2265,7 @@ void GUI::renderDebugWindow() noexcept
 	ImGui::SliderFloat("##life", &life, 0.0f, 100.0f, "Light lifetime %.3f");
 
 	static DynamicLight *dlight = nullptr;
-	if (ImGui::Button("Allocade d-light for selected entity") && entity && entClassId != ClassId::World)
+	if (entity && entClassId != ClassId::World && ImGui::Button("Allocade d-light for selected entity"))
 	{
 		dlight = interfaces->effects->allocDlight(idx);
 		if (dlight)
@@ -2266,6 +2282,9 @@ void GUI::renderDebugWindow() noexcept
 			dlight->color.exponent = exponent;
 		}
 	}
+	
+	if (entity && entity->isPlayer() && ImGui::Button("Resolve selected"))
+		Animations::resolve(entity);
 
 	if (ImGui::Button("Precache info"))
 		interfaces->engine->clientCmdUnrestricted("sv_precacheinfo");

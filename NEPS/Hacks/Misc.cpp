@@ -1027,20 +1027,6 @@ void Misc::revealRanks(UserCmd *cmd) noexcept
 		interfaces->client->dispatchUserMessage(50, 0, 0, nullptr);
 }
 
-static float perfectDelta(float speed) noexcept
-{
-	static auto speedVar = interfaces->cvar->findVar("sv_maxspeed");
-	static auto airVar = interfaces->cvar->findVar("sv_airaccelerate");
-	static auto wishVar = interfaces->cvar->findVar("sv_air_max_wishspeed");
-
-	const auto term = wishVar->getFloat() / airVar->getFloat() / speedVar->getFloat() * 100.0f / speed;
-
-	if (term < 1.0f && term > -1.0f)
-		return std::acosf(term);
-
-	return 0.0f;
-}
-
 void Misc::autoStrafe(UserCmd *cmd) noexcept
 {
 	if (!config->movement.autoStrafe)
@@ -1056,6 +1042,20 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 	const float speed = localPlayer->velocity().length2D();
 	if (speed < 5.0f)
 		return;
+
+	constexpr auto perfectDelta = [](float speed) noexcept
+	{
+		static auto speedVar = interfaces->cvar->findVar("sv_maxspeed");
+		static auto airVar = interfaces->cvar->findVar("sv_airaccelerate");
+		static auto wishVar = interfaces->cvar->findVar("sv_air_max_wishspeed");
+
+		const auto term = wishVar->getFloat() / airVar->getFloat() / speedVar->getFloat() * 100.0f / speed;
+
+		if (term < 1.0f && term > -1.0f)
+			return std::acosf(term);
+
+		return 0.0f;
+	};
 
 	const float pDelta = perfectDelta(speed);
 	if (pDelta == 0.0f)

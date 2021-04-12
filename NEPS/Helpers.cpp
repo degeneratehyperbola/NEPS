@@ -11,6 +11,7 @@
 #include "ConfigStructs.h"
 #include "GameData.h"
 #include "Memory.h"
+#include "Hacks/Backtrack.h"
 #include "SDK/GlobalVars.h"
 #include "SDK/AnimState.h"
 #include "SDK/Entity.h"
@@ -147,7 +148,10 @@ Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &desti
 	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
-int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire, int hitgroupFlags, bool *goesThroughWall) noexcept
+#define AUTOWALL_CALC_DEPTH 4
+#define AUTOWALL_MIN_PENETRATION 0.1f
+
+int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire, int hitgroupFlags, bool *goesThroughWall, const Backtrack::Record *ghost, int ghostHitbox) noexcept
 {
 	if (!localPlayer)
 		return -1;
@@ -155,7 +159,7 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 	if (!weaponData)
 		return -1;
 
-	float damage{static_cast<float>(weaponData->damage)};
+	float damage = static_cast<float>(weaponData->damage);
 
 	Vector start = localPlayer->getEyePosition();
 	Vector direction = destination - start;
@@ -164,14 +168,68 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 
 	auto calcDepth = AUTOWALL_CALC_DEPTH;
 
+	constexpr auto hitboxToHitGroup = [](int hitbox) constexpr noexcept -> int
+	{
+		switch (hitbox)
+		{
+		case Hitbox::Head:
+			return HitGroup::Head;
+		case Hitbox::Neck:
+		case Hitbox::UpperChest:
+		case Hitbox::LowerChest:
+		case Hitbox::Thorax:
+			return HitGroup::Chest;
+		case Hitbox::Belly:
+		case Hitbox::Pelvis:
+			return HitGroup::Stomach;
+		case Hitbox::LeftThigh:
+		case Hitbox::LeftCalf:
+		case Hitbox::LeftFoot:
+			return HitGroup::LeftLeg;
+		case Hitbox::RightThigh:
+		case Hitbox::RightCalf:
+		case Hitbox::RightFoot:
+			return HitGroup::RightLeg;
+		case Hitbox::LeftUpperArm:
+		case Hitbox::LeftForearm:
+		case Hitbox::LeftHand:
+			return HitGroup::LeftArm;
+		case Hitbox::RightUpperArm:
+		case Hitbox::RightForearm:
+		case Hitbox::RightHand:
+			return HitGroup::RightArm;
+		}
+
+		return -1;
+	};
+
+	constexpr auto calcDamage = [](const WeaponInfo *weaponData, bool hasHelmet, int armor, int hitGroup, float traveled, float &damage) noexcept
+	{
+		const auto m = std::strstr(weaponData->name, "Taser") ? 1.0f : HitGroup::getDamageMultiplier(hitGroup);
+		damage = m * damage * std::powf(weaponData->rangeModifier, traveled / 500.0f);
+
+		if (float armorRatio = weaponData->armorRatio / 2; HitGroup::isArmored(hitGroup, hasHelmet))
+			damage -= (armor < damage * armorRatio / 2 ? armor * 4.0f : damage) * (1.0f - armorRatio);
+	};
+
 	while (damage >= 1.0f && calcDepth)
 	{
 		interfaces->engineTrace->traceRay({start, destination}, 0x4600400B, localPlayer.get(), trace);
 
 		if (trace.fraction == 1.0f)
-			break;
+		{
+			if (!ghost)
+				break;
 
-		if (trace.hitgroup > HitGroup::Generic && trace.hitgroup <= HitGroup::RightLeg)
+			const auto hitGroup = hitboxToHitGroup(ghostHitbox);
+			if (~hitgroupFlags & (1 << (hitGroup - 1)))
+				break;
+
+			calcDamage(weaponData, ghost->hasHelmet, ghost->armor, hitGroup, traveled, damage);
+			return static_cast<int>(damage);
+		}
+
+		if (!ghost && trace.hitGroup > HitGroup::Generic && trace.hitGroup <= HitGroup::RightLeg)
 		{
 			if (!trace.entity || !trace.entity->isPlayer())
 				break;
@@ -182,15 +240,10 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 			if (trace.entity->gunGameImmunity())
 				break;
 
-			if (~hitgroupFlags & (1 << (trace.hitgroup - 1)))
+			if (~hitgroupFlags & (1 << (trace.hitGroup - 1)))
 				break;
 
-			const auto m = std::strstr(weaponData->name, "Taser") ? 1.0f : HitGroup::getDamageMultiplier(trace.hitgroup);
-			damage = m * damage * std::powf(weaponData->rangeModifier, trace.fraction * traveled / 500.0f);
-
-			if (float armorRatio{weaponData->armorRatio / 2.0f}; HitGroup::isArmored(trace.hitgroup, trace.entity->hasHelmet()))
-				damage -= (trace.entity->armor() < damage * armorRatio / 2.0f ? trace.entity->armor() * 4.0f : damage) * (1.0f - armorRatio);
-
+			calcDamage(weaponData, trace.entity->hasHelmet(), trace.entity->armor(), trace.hitGroup, traveled * trace.fraction, damage);
 			return static_cast<int>(damage);
 		}
 
@@ -227,7 +280,7 @@ bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendly
 		if (trace.fraction == 1.0f)
 			break;
 
-		if (trace.hitgroup > HitGroup::Generic && trace.hitgroup <= HitGroup::RightLeg)
+		if (trace.hitGroup > HitGroup::Generic && trace.hitGroup <= HitGroup::RightLeg)
 		{
 			if (!trace.entity || !trace.entity->isPlayer())
 				break;

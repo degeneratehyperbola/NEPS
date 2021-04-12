@@ -145,7 +145,7 @@ struct Trace
 		short surfaceProps;
 		unsigned short flags;
 	} surface;
-	int hitgroup;
+	int hitGroup;
 	PAD(4)
 	Entity *entity;
 	int hitbox;

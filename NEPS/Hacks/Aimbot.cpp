@@ -17,8 +17,9 @@
 #include "../SDK/WeaponData.h"
 #include "../Helpers.h"
 
+static Vector targetPoint;
 static Entity *target = nullptr;
-static Vector targetPoint = Vector{};
+static const Backtrack::Record *targetRecord = nullptr;
 static int weaponIndex = 0;
 
 void Aimbot::run(UserCmd *cmd) noexcept
@@ -58,7 +59,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 	if (static Helpers::KeyBindState flag; !flag[config->aimbot[weaponIndex].bind]) return;
 
-	if (!config->aimbot[weaponIndex].hitgroup)
+	if (!config->aimbot[weaponIndex].hitGroup)
 		return;
 
     if (!config->aimbot[weaponIndex].betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
@@ -126,8 +127,9 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 void Aimbot::choseTarget(UserCmd *cmd) noexcept
 {
-	target = nullptr;
 	targetPoint = Vector{};
+	target = nullptr;
+	targetRecord = nullptr;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
 	if (!activeWeapon || !activeWeapon->clip())
@@ -139,10 +141,17 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 
 	const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{};
 	const auto localPlayerEyePosition = localPlayer->getEyePosition();
+	bool doOverride = false;
+	{
+		static Helpers::KeyBindState flag;
+		doOverride = flag[config->aimbot[weaponIndex].damageOverride];
+	}
+	const auto minDamage = doOverride ? config->aimbot[weaponIndex].minDamageOverride : config->aimbot[weaponIndex].minDamage;
+	const auto minDamageAutoWall = doOverride ? config->aimbot[weaponIndex].minDamageAutoWallOverride : config->aimbot[weaponIndex].minDamageAutoWall;
 
 	auto bestFov = config->aimbot[weaponIndex].fov;
 	auto bestDistance = config->aimbot[weaponIndex].distance ? config->aimbot[weaponIndex].distance : INFINITY;
-	auto bestDamage = std::min(config->aimbot[weaponIndex].minDamage, config->aimbot[weaponIndex].minDamageAutoWall);
+	auto bestDamage = 0;
 	auto bestHitchance = config->aimbot[weaponIndex].shotHitchance;
 
 	std::array<Matrix3x4, MAXSTUDIOBONES> bufferBones;
@@ -154,7 +163,11 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 	{
 		auto entity = interfaces->entityList->getEntity(i);
 
-		if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || entity->gunGameImmunity() || !config->aimbot[weaponIndex].friendlyFire && !entity->isOtherEnemy(localPlayer.get()))
+		if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || entity->gunGameImmunity())
+			continue;
+
+		const auto enemy = localPlayer->isOtherEnemy(entity);
+		if (!config->aimbot[weaponIndex].friendlyFire && !enemy)
 			continue;
 
 		const auto hitboxSet = entity->getHitboxSet();
@@ -162,39 +175,67 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 		if (!hitboxSet)
 			continue;
 
-		// Fake up resolver, yes
-		if (entity->thirdPersonAngles().x < -180.0f)
-			entity->thirdPersonAngles().x = 89.0f;
-
 		if (!entity->setupBones(bufferBones.data(), MAXSTUDIOBONES, BONE_USED_BY_HITBOX, 0.0f))
 			continue;
 
-		if (config->aimbot[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
+		const Backtrack::Record *choosenRecord = nullptr;
+		if (const auto doScope = config->aimbot[weaponIndex].autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle(); doScope || config->backtrack.enabled && enemy)
 		{
 			bool goesThroughWall = false;
 			Trace trace;
 			auto origin = bufferBones[8].origin();
 			bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
 
-			if (trace.entity == entity && canHit && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
-				cmd->buttons |= UserCmd::IN_ATTACK2;
+			if (canHit && trace.entity == entity && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall) && doScope)
+			{
+				if (config->aimbot[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
+					cmd->buttons |= UserCmd::IN_ATTACK2;
+			}
+
+			if (config->backtrack.enabled && enemy)
+			{
+				auto bestDistance = origin.distTo(localPlayerEyePosition);
+
+				const auto records = Backtrack::getRecords(entity->index());
+				for (const auto &record : records)
+				{
+					if (Backtrack::valid(record.simulationTime))
+					{
+						if (record.shot)
+						{
+							choosenRecord = &record;
+							break;
+						}
+
+						const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
+						if (goesThroughWall && distance < bestDistance)
+						{
+							bestDistance = distance;
+							choosenRecord = &record;
+						}
+					}
+				}
+			}
+
+			if (choosenRecord)
+				std::copy(std::begin(choosenRecord->matrix), std::end(choosenRecord->matrix), bufferBones.data());
 		}
 
-		auto allowedHitgroup = config->aimbot[weaponIndex].hitgroup;
+		auto allowedHitgroup = config->aimbot[weaponIndex].hitGroup;
 
-		if (static Helpers::KeyBindState flag; flag[config->aimbot[weaponIndex].safeOnly] && !entity->isBot())
+		if (config->aimbot[weaponIndex].safeOnly && !entity->isBot())
 		{
 			const float simulationTime = entity->simulationTime();
 			const float oldSimulationTime = entity->oldSimulationTime();
-			const auto remoteActiveWep = entity->getActiveWeapon();
-			if (remoteActiveWep && Helpers::timeToTicks(remoteActiveWep->lastShotTime()) == Helpers::timeToTicks(simulationTime));
-			else if (const auto delta = simulationTime - oldSimulationTime; !Helpers::timeToTicks(delta));
+			const auto remoteActiveWeapon = entity->getActiveWeapon();
+			if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime));
+			else if (!Helpers::timeToTicks(simulationTime - oldSimulationTime));
 			else if (entity->getMaxDesyncAngle() < 55.0f);
 			else if (entity->moveType() == MoveType::LADDER);
 			else if (entity->moveType() == MoveType::NOCLIP);
 			else
 			{
-				allowedHitgroup = config->aimbot[weaponIndex].safeHitgroup;
+				allowedHitgroup = config->aimbot[weaponIndex].safeHitGroup;
 			}
 		}
 
@@ -345,21 +386,21 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 
 				bool goesThroughWall = false;
 				Trace trace;
-				const auto damage = Helpers::findDamage(point, weaponData, trace, config->aimbot[weaponIndex].friendlyFire, allowedHitgroup, &goesThroughWall);
+				const auto damage = Helpers::findDamage(point, weaponData, trace, config->aimbot[weaponIndex].friendlyFire, allowedHitgroup, &goesThroughWall, choosenRecord, hitboxIdx);
 
 				if (config->aimbot[weaponIndex].visibleOnly && goesThroughWall) continue;
 
-				if (trace.entity != entity) continue;
+				if (!choosenRecord && trace.entity != entity) continue;
 
 				if (!goesThroughWall)
 				{
-					if (damage <= std::min(config->aimbot[weaponIndex].minDamage, entity->health() + config->aimbot[weaponIndex].killshot))
+					if (damage <= std::min(minDamage, entity->health() + config->aimbot[weaponIndex].killshot))
 						continue;
 					if (damage <= std::min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshot))
 						continue;
 				} else
 				{
-					if (damage <= std::min(config->aimbot[weaponIndex].minDamageAutoWall, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
+					if (damage <= std::min(minDamageAutoWall, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
 						continue;
 					if (damage <= std::min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
 						continue;
@@ -376,6 +417,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 						bestFov = fov;
 						targetPoint = point;
 						target = entity;
+						targetRecord = choosenRecord;
 					}
 					break;
 				case 1:
@@ -384,6 +426,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 						bestDamage = damage;
 						targetPoint = point;
 						target = entity;
+						targetRecord = choosenRecord;
 					}
 					break;
 				case 2:
@@ -392,6 +435,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 						bestHitchance = hitchance;
 						targetPoint = point;
 						target = entity;
+						targetRecord = choosenRecord;
 					}
 					break;
 				case 3:
@@ -400,6 +444,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 						bestDistance = distance;
 						targetPoint = point;
 						target = entity;
+						targetRecord = choosenRecord;
 					}
 					break;
 				}
@@ -416,12 +461,17 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 	#endif // _DEBUG_NEPS
 }
 
+Vector Aimbot::getTargetPoint() noexcept
+{
+	return targetPoint;
+}
+
 Entity *Aimbot::getTarget() noexcept
 {
 	return target;
 }
 
-Vector Aimbot::getTargetPoint() noexcept
+const Backtrack::Record *Aimbot::getTargetRecord() noexcept
 {
-	return targetPoint;
+	return targetRecord;
 }

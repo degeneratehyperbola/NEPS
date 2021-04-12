@@ -43,7 +43,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 	if (activeWeapon->getInaccuracy() > cfg.maxShotInaccuracy)
         return;
 
-	if (!cfg.hitgroup)
+	if (!cfg.hitGroup)
 		return;
 
     static auto lastTime = 0.0f;
@@ -78,7 +78,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 
 	bool goesThroughWall = false;
 	Trace trace;
-	const int damage = Helpers::findDamage(endPos, weaponData, trace, cfg.friendlyFire, cfg.hitgroup, &goesThroughWall);
+	const int damage = Helpers::findDamage(endPos, weaponData, trace, cfg.friendlyFire, cfg.hitGroup, &goesThroughWall);
 
 	lastTime = now;
 

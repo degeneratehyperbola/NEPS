@@ -21,7 +21,6 @@ Global
 		{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}.Release|x86.ActiveCfg = Release|Win32
 		{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}.Release|x86.Build.0 = Release|Win32
 		{F0A6BE3C-9C9F-45DE-B1C2-BB0BE77EED04}.DebugMin|x86.ActiveCfg = Release|Win32
-		{F0A6BE3C-9C9F-45DE-B1C2-BB0BE77EED04}.DebugMin|x86.Build.0 = Release|Win32
 		{F0A6BE3C-9C9F-45DE-B1C2-BB0BE77EED04}.Release|x86.ActiveCfg = Release|Win32
 		{F0A6BE3C-9C9F-45DE-B1C2-BB0BE77EED04}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection

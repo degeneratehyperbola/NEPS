@@ -107,12 +107,12 @@ public:
 		FL_ONGROUND = 1 << 0, // At rest / on the ground
 		FL_DUCKING = 1 << 1, // Player flag -- Player is fully crouched
 		FL_WATERJUMP = 1 << 2, // player jumping out of water
-		FL_ONTRAIN = 1 << 3, // Player is _controlling_ a train, so movement commands should be ignored on client during prediction.
+		FL_ONTRAIN = 1 << 3, // Player is _controlling_ a train, so movement commands should be ignored on client during prediction
 		FL_INRAIN = 1 << 4, // Indicates the entity is standing in rain
 		FL_FROZEN = 1 << 5, // Player is frozen for 3rd person camera
 		FL_ATCONTROLS = 1 << 6, // Player can't move, but keeps key inputs for controlling another entity
 		FL_CLIENT = 1 << 7, // Is a player
-		FL_FAKECLIENT = 1 << 8, // Fake client, simulated server side; don't send network messages to them. NON-PLAYER SPECIFIC (i.e., not used by GameMovement or the client.dll ) -- Can still be applied to players, though
+		FL_FAKECLIENT = 1 << 8, // Fake client, simulated server side; don't send network messages to them. NON-PLAYER SPECIFIC (i.e. not used by GameMovement or the client.dll ) - Can still be applied to players, though
 		FL_INWATER = 1 << 9, // In water
 		FL_FLY = 1 << 10, // Changes the SV_Movestep() behavior to not need to be on ground
 		FL_SWIM = 1 << 11, // Changes the SV_Movestep() behavior to not need to be on ground (but stay in water)
@@ -122,18 +122,18 @@ public:
 		FL_NOTARGET = 1 << 15,
 		FL_AIMTARGET = 1 << 16, // set if the crosshair needs to aim onto the entity
 		FL_PARTIALGROUND = 1 << 17, // not all corners are valid
-		FL_STATICPROP = 1 << 18, // Eetsa static prop!  
+		FL_STATICPROP = 1 << 18, // Eetsa static prop!
 		FL_GRAPHED = 1 << 19, // worldgraph has this ent listed as something that blocks a connection
 		FL_GRENADE = 1 << 20,
 		FL_STEPMOVEMENT = 1 << 21, // Changes the SV_Movestep() behavior to not do any processing
 		FL_DONTTOUCH = 1 << 22, // Doesn't generate touch functions, generates Untouch() for anything it was touching when this flag was set
 		FL_BASEVELOCITY = 1 << 23, // Base velocity has been applied this frame (used to convert base velocity into momentum)
 		FL_WORLDBRUSH = 1 << 24, // Not moveable/removeable brush entity (really part of the world, but represented as an entity for transparency or something)
-		FL_OBJECT = 1 << 25, // Terrible name. This is an object that NPCs should see. Missiles, for example.
+		FL_OBJECT = 1 << 25, // Terrible name. This is an object that NPCs should see. Missiles, for example
 		FL_KILLME = 1 << 26, // This entity is marked for death -- will be freed by game DLL
 		FL_ONFIRE = 1 << 27, // You know...
 		FL_DISSOLVING = 1 << 28, // We're dissolving!
-		FL_TRANSRAGDOLL = 1 << 29, // In the process of turning into a client side ragdoll.
+		FL_TRANSRAGDOLL = 1 << 29, // In the process of turning into a client side ragdoll
 		FL_UNBLOCKABLE_BY_PLAYER = 1 << 30 // pusher that can't be blocked by the player
 	};
 

@@ -48,6 +48,9 @@ public:
 		float distance = 0.0f;
 		int minDamage = 0;
 		int minDamageAutoWall = 0;
+		KeyBind damageOverride;
+		int minDamageOverride = 0;
+		int minDamageAutoWallOverride = 0;
 		int killshot = 10;
 		int killshotAutoWall = 10;
 		float shotHitchance = 0.0f;
@@ -55,10 +58,10 @@ public:
 		int interpolation = 0;
 		float smooth = 0.0f;
 		float linearSpeed = 255.0f;
-		int hitgroup = 127;
+		int hitGroup = 127;
 		bool betweenShots = true;
-		KeyBind safeOnly;
-		int safeHitgroup = 6;
+		bool safeOnly;
+		int safeHitGroup = 6;
 	};
 	std::array<Aimbot, 40> aimbot;
 
@@ -70,7 +73,7 @@ public:
 		bool scopedOnly = true;
 		bool ignoreFlash = false;
 		bool ignoreSmoke = false;
-		int hitgroup = 127;
+		int hitGroup = 127;
 		int shotDelay = 0;
 		float maxShotInaccuracy = 1.0f;
 		float hitchance = 0.0f;

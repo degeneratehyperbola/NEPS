@@ -16,6 +16,7 @@ struct WeaponInfo;
 struct Color4;
 struct AnimState;
 struct StudioBbox;
+namespace Backtrack { struct Record; }
 
 #define PI std::numbers::pi_v<float>
 
@@ -38,9 +39,7 @@ namespace Helpers
 
 	float handleBulletPenetration(SurfaceData *enterSurfaceData, const Trace &enterTrace, const Vector &direction, Vector &result, float penetration, float damage) noexcept;
 
-	#define AUTOWALL_CALC_DEPTH 4
-	#define AUTOWALL_MIN_PENETRATION 0.1f
-	int findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire = false, int hitgroupFlags = 1 << 7, bool *goesThroughWall = nullptr) noexcept;
+	int findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire = false, int hitgroupFlags = 1 << 7, bool *goesThroughWall = nullptr, const Backtrack::Record *ghost = nullptr, int ghostHitBox = 0) noexcept;
     bool canHit(const Vector &destination, Trace &trace, bool allowFriendlyFire, bool *goesThroughWall = nullptr) noexcept;
 
 	float findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept;
@@ -52,7 +51,7 @@ namespace Helpers
 	unsigned int calculateColor(int r, int g, int b, int a) noexcept;
     unsigned int calculateColor(float r, float g, float b, float a) noexcept;
 
-	constexpr auto units2meters(float units) noexcept
+	constexpr auto unitsToMeters(float units) noexcept
 	{
 		return units * 0.0254f;
 	}
@@ -120,22 +119,6 @@ namespace Helpers
 
 	bool worldToScreen(const Vector &in, ImVec2 &out, bool floor = true) noexcept;
 
-	// Oh my god this is so mind blowing,
-	// if the next weapon attack == time
-	// it would return false, but aimbot
-	// does fire while it equals,
-	// nibba,
-	// the shit here is, in fact, tested
-	// but epsilon of a floating point
-	// number is just insane for a
-	// genuine difference O_O
-	//
-	// Future me here, NO this is actually
-	// wrong and aimbot was right!
-	//
-	// Future me again, nigga, please
-	//
-	// For local player
     bool attacking(bool cmdAttack, bool cmdAttack2) noexcept;
 
 	int replace(std::string &, const std::string &, const std::string &) noexcept;
