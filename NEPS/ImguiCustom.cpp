@@ -232,7 +232,6 @@ void ImGuiCustom::keyBind(const char *name, int *key, int *keyMode) noexcept
 
 			if (ImGui::BeginPopup("##mode", ImGuiWindowFlags_AlwaysUseWindowPadding))
 			{
-				//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, ImGui::GetStyle().WindowPadding.y));
 				bool selected = *keyMode == 0;
 				ImGui::Selectable("Off", &selected);
 				if (selected) *keyMode = 0;
@@ -245,9 +244,8 @@ void ImGuiCustom::keyBind(const char *name, int *key, int *keyMode) noexcept
 				selected = *keyMode == 3;
 				ImGui::Selectable("Toggle", &selected);
 				if (selected) *keyMode = 3;
-				if (ImGui::Selectable("Reset"))
+				if (ImGui::Selectable("Unset"))
 					*key = 0;
-				//ImGui::PopStyleVar();
 				ImGui::EndPopup();
 			}
 		} else
