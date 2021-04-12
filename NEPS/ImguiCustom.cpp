@@ -180,11 +180,6 @@ void ImGuiCustom::keyBind(const char *name, int *key, int *keyMode) noexcept
 	if (!key) return;
 
 	ImGui::PushID(name);
-	ImGui::AlignTextToFramePadding();
-	if (std::strncmp(name, "##", 2))
-		ImGui::TextUnformatted(name);
-	ImGui::SameLine();
-
 	if (ImGui::GetActiveID() == ImGui::GetID(name))
 	{
 		ImGui::Button("...");
@@ -271,6 +266,11 @@ void ImGuiCustom::keyBind(const char *name, int *key, int *keyMode) noexcept
 				*key = 0;
 		}
 	}
+	ImGui::SameLine();
+
+	ImGui::AlignTextToFramePadding();
+	if (std::strncmp(name, "##", 2))
+		ImGui::TextUnformatted(name, std::strstr(name, "##"));
 	ImGui::PopID();
 }
 

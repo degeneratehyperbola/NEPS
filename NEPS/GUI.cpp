@@ -1908,7 +1908,9 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 
 	ImGui::NextColumn();
 
-	ImGuiCustom::keyBind("Resolver (brute-force)", config->misc.resolver);
+	ImGuiCustom::keyBind("Resolver", config->misc.resolver);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("Experimental");
 	ImGui::Checkbox("Fix tablet signal", &config->misc.fixTabletSignal);
 	ImGui::Checkbox("Radar hack", &config->misc.radarHack);
 	ImGui::Checkbox("Reveal ranks", &config->misc.revealRanks);
@@ -2286,6 +2288,13 @@ void GUI::renderDebugWindow() noexcept
 	
 	if (entity && entity->isPlayer() && ImGui::Button("Resolve selected"))
 		Animations::resolve(entity);
+
+	static bool data = false;
+	if (entity && entity->isPlayer() && ImGui::Button("Data authenticity for selected"))
+		data = Helpers::animDataAuthenticity(entity);
+
+	if (data)
+		ImGui::TextUnformatted("Last authentic");
 
 	if (ImGui::Button("Precache info"))
 		interfaces->engine->clientCmdUnrestricted("sv_precacheinfo");
