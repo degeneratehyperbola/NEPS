@@ -247,6 +247,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	previousViewAngles = cmd->viewangles;
 
+	GameData::Lock lock;
 	auto &global = GameData::global();
 
 	global.lastSendPacket = sendPacket;
