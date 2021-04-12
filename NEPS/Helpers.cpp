@@ -592,3 +592,21 @@ float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept
 
 	return hitbox.capsuleRadius;
 }
+
+bool Helpers::animDataAuthenticity(Entity *animatable) noexcept
+{
+	if (!animatable || !animatable->isPlayer())
+		return false;
+
+	if (animatable->moveType() == MoveType::LADDER) return true;
+	if (animatable->moveType() == MoveType::NOCLIP) return true;
+	if (animatable->isBot()) return true;
+	const float simulationTime = animatable->simulationTime();
+	const auto remoteActiveWeapon = animatable->getActiveWeapon();
+	if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime)) return true;
+	const float oldSimulationTime = animatable->oldSimulationTime();
+	if (!Helpers::timeToTicks(simulationTime - oldSimulationTime)) return true;
+	if (animatable->getMaxDesyncAngle() < 55.0f) return true;
+
+	return false;
+}

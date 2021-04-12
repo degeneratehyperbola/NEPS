@@ -27,6 +27,8 @@ namespace Helpers
 	constexpr auto degreesToRadians = [](float degrees) constexpr noexcept { return degrees * PI / 180.0f; };
 	constexpr auto radiansToDegrees = [](float radians) constexpr noexcept { return radians * 180.0f / PI; };
 
+	constexpr auto equals = [](float first, float second, float epsilon) noexcept { epsilon = std::fabsf(epsilon); return second - epsilon <= first && first < second + epsilon; };
+
 	constexpr auto timeToTicks = [](float time) noexcept { return static_cast<int>(0.5f + time / memory->globalVars->intervalPerTick); };
 
 	std::array<float, 3U> rgbToHsv(float r, float g, float b) noexcept;
@@ -124,6 +126,8 @@ namespace Helpers
 	int replace(std::string &, const std::string &, const std::string &) noexcept;
 
 	float approxRadius(const StudioBbox &hitbox, int i) noexcept;
+
+	bool animDataAuthenticity(Entity *animatable) noexcept;
 
 	template<typename T>
 	constexpr std::vector<T> join(const std::vector<T> &first, const std::vector<T> &second) noexcept
