@@ -1394,6 +1394,8 @@ void Misc::fixAnimation() noexcept
 	Animations::animSync(&global.lastCmd, global.lastSendPacket);
 }
 
+static int blockTargetHandle = 0;
+
 void Misc::blockBot(UserCmd *cmd) noexcept
 {
 	if (!config->griefing.blockbot.bind.keyMode) return;
@@ -1420,14 +1422,14 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 			if (fov < best)
 			{
 				best = fov;
-				global.blockTargetHandle = entity->handle();
+				blockTargetHandle = entity->handle();
 			}
 		}
 	}
 
 	if (static Helpers::KeyBindState flag; !flag[config->griefing.blockbot.bind]) return;
 
-	const auto target = interfaces->entityList->getEntityFromHandle(global.blockTargetHandle);
+	const auto target = interfaces->entityList->getEntityFromHandle(blockTargetHandle);
 	if (target && target->isPlayer() && target != localPlayer.get() && !target->isDormant() && target->isAlive())
 	{
 		const auto targetVec = (target->getAbsOrigin() + target->velocity() * memory->globalVars->intervalPerTick * config->griefing.blockbot.trajectoryFac - localPlayer->getAbsOrigin()) * config->griefing.blockbot.distanceFac;
@@ -1459,6 +1461,54 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 			cmd->forwardmove = move.x;
 			cmd->sidemove = move.y;
 		}
+	}
+}
+
+void Misc::visualiseBlockBot(ImDrawList *drawList) noexcept
+{
+	if (!config->griefing.blockbot.visualise.enabled)
+		return;
+
+	GameData::Lock lock;
+	const auto &local = GameData::local();
+
+	if (!local.exists || !local.alive)
+		return;
+
+	auto target = GameData::playerByHandle(blockTargetHandle);
+	if (!target || target->dormant || !target->alive)
+		return;
+
+	Vector curDir = target->velocity * 0.12f;
+	curDir.z = 0.0f;
+	Vector max = target->colMaxs + target->origin;
+	Vector min = target->colMins + target->origin;
+	const auto z = target->origin.z;
+
+	ImVec2 pos, dir;
+	ImVec2 points[4];
+
+	const auto color = Helpers::calculateColor(config->griefing.blockbot.visualise);
+
+	bool draw = Helpers::worldToScreen(target->origin, pos);
+	draw = draw && Helpers::worldToScreen(curDir + target->origin, dir);
+
+	if (draw)
+	{
+		drawList->AddLine(pos, dir, color);
+	}
+
+	draw = Helpers::worldToScreen(Vector{max.x, max.y, z}, points[0]);
+	draw = draw && Helpers::worldToScreen(Vector{max.x, min.y, z}, points[1]);
+	draw = draw && Helpers::worldToScreen(Vector{min.x, min.y, z}, points[2]);
+	draw = draw && Helpers::worldToScreen(Vector{min.x, max.y, z}, points[3]);
+
+	if (draw)
+	{
+		drawList->AddLine(points[0], points[1], color, config->griefing.blockbot.visualise.thickness);
+		drawList->AddLine(points[1], points[2], color, config->griefing.blockbot.visualise.thickness);
+		drawList->AddLine(points[2], points[3], color, config->griefing.blockbot.visualise.thickness);
+		drawList->AddLine(points[3], points[0], color, config->griefing.blockbot.visualise.thickness);
 	}
 }
 

@@ -91,9 +91,9 @@ void Backtrack::run(UserCmd *cmd) noexcept
 	auto bestFov = 255.0f;
 	Vector bestTargetHeadOrigin = Vector{};
 
-	if (Aimbot::getTarget())
+	bestTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle());
+	if (bestTarget)
 	{
-		bestTarget = Aimbot::getTarget();
 		bestTargetIndex = bestTarget->index();
 		bestRecord = Aimbot::getTargetRecord();
 	} else

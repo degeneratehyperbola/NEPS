@@ -362,6 +362,7 @@ public:
 		bool fixMovement = true;
 		bool fixAnimation = true;
 		bool disableModelOcclusion = true;
+		KeyBind resolver;
 		bool disablePanoramablur = false;
 		struct PreserveKillfeed
 		{

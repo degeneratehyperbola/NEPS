@@ -1908,6 +1908,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 
 	ImGui::NextColumn();
 
+	ImGuiCustom::keyBind("Resolver (brute-force)", config->misc.resolver);
 	ImGui::Checkbox("Fix tablet signal", &config->misc.fixTabletSignal);
 	ImGui::Checkbox("Radar hack", &config->misc.radarHack);
 	ImGui::Checkbox("Reveal ranks", &config->misc.revealRanks);
@@ -2214,7 +2215,7 @@ void GUI::renderDebugWindow() noexcept
 
 	static const char *entName;
 	static ClassId entClassId;
-	static int idx;
+	static int idx = -1;
 	if (ImGui::Button("Select...") && localPlayer)
 	{
 		Vector start = localPlayer->getEyePosition();

@@ -49,6 +49,7 @@ namespace Misc
     void preserveKillfeed(bool roundStart = false) noexcept;
     void fixAnimation() noexcept;
     void blockBot(UserCmd *cmd) noexcept;
+    void visualiseBlockBot(ImDrawList *drawList) noexcept;
     void useSpam(UserCmd *cmd);
     void indicators(ImDrawList *drawList) noexcept;
 	void voteRevealer(GameEvent &event) noexcept;

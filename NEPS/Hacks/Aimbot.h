@@ -10,6 +10,6 @@ namespace Aimbot
 	void run(UserCmd *cmd) noexcept;
 	void choseTarget(UserCmd *cmd) noexcept;
 	Vector getTargetPoint() noexcept;
-	Entity *getTarget() noexcept;
+	int getTargetHandle() noexcept;
 	const Backtrack::Record *getTargetRecord() noexcept;
 }

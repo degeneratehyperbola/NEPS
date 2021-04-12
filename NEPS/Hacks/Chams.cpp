@@ -145,12 +145,12 @@ void Chams::renderPlayer(Entity* player) noexcept
 		const auto &global = GameData::global();
 
 		if (config->antiAim.desync || config->antiAim.fakeUp) {
-			Matrix3x4 fakeBones[MAXSTUDIOBONES];
+			Matrix3x4 fakeBones[MAX_STUDIO_BONES];
 			std::copy(std::begin(global.lerpedBones), std::end(global.lerpedBones), fakeBones);
 
 			const auto &origin = localPlayer->getRenderOrigin();
 
-			for (int i = 0; i < MAXSTUDIOBONES; i++)
+			for (int i = 0; i < MAX_STUDIO_BONES; i++)
 				fakeBones[i].setOrigin(fakeBones[i].origin() + origin);
 
 			if (!appliedChams) hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);

@@ -1,4 +1,6 @@
 #include <array>
+#undef NDEBUG
+#include <cassert>
 
 #include "Animations.h"
 
@@ -55,8 +57,8 @@ bool Animations::clientLerped(Matrix3x4 *out, const UserCmd *cmd, bool sendPacke
 	{
 		std::copy(localPlayer->animOverlays(), localPlayer->animOverlays() + localPlayer->getAnimationLayerCount(), lerpedLayers.begin());
 
-		const auto bPoseParam = localPlayer->poseParam();
-		const auto bAbsYaw = localPlayer->getAbsAngle().y;
+		const auto backupPoseParam = localPlayer->poseParam();
+		const auto backupAbsYaw = localPlayer->getAbsAngle().y;
 
 		*(int *)(localPlayer.get() + 0xA68) = 0;
 
@@ -67,17 +69,17 @@ bool Animations::clientLerped(Matrix3x4 *out, const UserCmd *cmd, bool sendPacke
 		std::copy(lerpedLayers.begin(), lerpedLayers.end(), localPlayer->animOverlays());
 		localPlayer->getAnimationLayer(12)->weight = FLT_EPSILON;
 
-		matrixUpdated = localPlayer->setupBones(out, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, 0.0f);
+		matrixUpdated = localPlayer->setupBones(out, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, 0.0f);
 
 		const auto &origin = localPlayer->getRenderOrigin();
 		if (matrixUpdated)
-			for (int i = 0; i < MAXSTUDIOBONES; i++)
+			for (int i = 0; i < MAX_STUDIO_BONES; i++)
 			{
 				out[i].setOrigin(out[i].origin() - origin);
 			}
 
-		localPlayer->poseParam() = bPoseParam;
-		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, bAbsYaw, 0.0f});
+		localPlayer->poseParam() = backupPoseParam;
+		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, backupAbsYaw, 0.0f});
 	}
 
 	return matrixUpdated;
@@ -92,34 +94,74 @@ bool Animations::animSync(const UserCmd *cmd, bool sendPacket) noexcept
 	if (!memory->input->isCameraInThirdPerson || !config->misc.fixAnimation)
 		return matrixUpdated;
 
-	static auto bPoseParam = localPlayer->poseParam();
-	static auto bAbsYaw = localPlayer->getAnimState()->feetYaw;
+	auto state = localPlayer->getAnimState();
 
-	if (localPlayer->getAnimState()->lastClientSideAnimationUpdateFramecount == memory->globalVars->framecount)
-		localPlayer->getAnimState()->lastClientSideAnimationUpdateFramecount -= 1;
+	static auto backupPoseParam = localPlayer->poseParam();
+	static auto backupAbsYaw = state->feetYaw;
+
+	if (state->lastClientSideAnimationUpdateFramecount == memory->globalVars->framecount)
+		state->lastClientSideAnimationUpdateFramecount -= 1;
 
 	static std::array<AnimLayer, MAX_ANIM_OVERLAYS> networkedLayers;
 
 	std::copy(localPlayer->animOverlays(), localPlayer->animOverlays() + localPlayer->getAnimationLayerCount(), networkedLayers.begin());
 
 	localPlayer->clientAnimations() = true;
-	memory->updateState(localPlayer->getAnimState(), NULL, NULL, cmd->viewangles.y, cmd->viewangles.x, NULL);
+	memory->updateState(state, NULL, NULL, cmd->viewangles.y, cmd->viewangles.x, NULL);
 	localPlayer->clientAnimations() = false;
 
-	matrixUpdated = localPlayer->setupBones(nullptr, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, 0.0f);
+	matrixUpdated = localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, 0.0f);
 
 	if (sendPacket)
 	{
-		bPoseParam = localPlayer->poseParam();
-		bAbsYaw = localPlayer->getAnimState()->feetYaw;
+		backupPoseParam = localPlayer->poseParam();
+		backupAbsYaw = state->feetYaw;
 	}
 
-	localPlayer->getAnimState()->duckAmount = std::clamp(localPlayer->getAnimState()->duckAmount, 0.0f, 1.0f);
-	localPlayer->getAnimState()->feetYawRate = 0.0f;
-	memory->setAbsAngle(localPlayer.get(), Vector{0.0f, bAbsYaw, 0.0f});
+	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
+	state->feetYawRate = 0.0f;
+	memory->setAbsAngle(localPlayer.get(), Vector{0.0f, backupAbsYaw, 0.0f});
 	std::copy(networkedLayers.begin(), networkedLayers.end(), localPlayer->animOverlays());
-	localPlayer->poseParam() = bPoseParam;
+	localPlayer->poseParam() = backupPoseParam;
 	localPlayer->clientAnimations() = true;
 
 	return matrixUpdated;
+}
+
+void Animations::resolve(Entity *animatable) noexcept
+{
+	if (!animatable || !animatable->isPlayer())
+		return;
+
+	if (Helpers::animDataAuthenticity(animatable))
+		return;
+
+	auto state = animatable->getAnimState();
+	if (!state)
+		return;
+
+	const auto backupEffects = animatable->effectFlags();
+	animatable->effectFlags() |= 8;
+
+	// Update state just in case
+	memory->updateState(state, nullptr, animatable->thirdPersonAngles().x, animatable->thirdPersonAngles().y, 0.0f, nullptr);
+
+	std::srand(memory->globalVars->tickCount);
+	// Return random desync position out of 2 possible
+	// This hereby gives us a 50% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)
+	const auto delta = Helpers::angleDiffDeg(state->feetYaw, state->eyeYaw);
+	constexpr std::array<float, 3> positions = {-60.0f, 0.0f, 60.0f};
+	size_t current = 0;
+	for (size_t i = 1; i < positions.size(); ++i)
+	{
+		if (Helpers::equals(delta, positions[i], 30.0f))
+			current = i;
+	}
+
+	state->feetYaw = state->eyeYaw + positions[(current + 1 + std::rand() % (positions.size() - 1)) % positions.size()];
+	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
+	state->feetYawRate = 0.0f;
+
+	memory->invalidateBoneCache(animatable);
+	animatable->effectFlags() = backupEffects;
 }

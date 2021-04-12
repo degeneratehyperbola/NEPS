@@ -122,7 +122,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Visuals::drawMolotovHull(ImGui::GetBackgroundDrawList());
 	Visuals::playerBounds(ImGui::GetBackgroundDrawList());
 	Visuals::playerVelocity(ImGui::GetBackgroundDrawList());
-	Visuals::visualiseBlockBot(ImGui::GetBackgroundDrawList());
+	Misc::visualiseBlockBot(ImGui::GetBackgroundDrawList());
 
 	StreamProofESP::render();
 
@@ -207,9 +207,16 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	EnginePrediction::run(cmd);
 
+	if (static Helpers::KeyBindState flag; flag[config->misc.resolver])
+	{
+		auto resolverTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle());
+		if (resolverTarget)
+			Animations::resolve(resolverTarget);
+	}
+
 	Aimbot::run(cmd);
-	Triggerbot::run(cmd);
 	Backtrack::run(cmd);
+	Triggerbot::run(cmd);
 	Misc::edgejump(cmd);
 	Misc::blockBot(cmd);
 	Misc::fastPlant(cmd);

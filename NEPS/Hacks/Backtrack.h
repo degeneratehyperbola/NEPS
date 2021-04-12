@@ -22,7 +22,7 @@ namespace Backtrack
 		bool shot = false;
 		bool hasHelmet = false;
 		int armor = 0;
-		Matrix3x4 matrix[MAXSTUDIOBONES];
+		Matrix3x4 matrix[MAX_STUDIO_BONES];
 	};
 
 	const std::deque<Record> &getRecords(std::size_t index) noexcept;

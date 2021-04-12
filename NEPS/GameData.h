@@ -70,9 +70,7 @@ struct GlobalData
 {
 	UserCmd lastCmd;
 	bool lastSendPacket = true;
-	Matrix3x4 lerpedBones[MAXSTUDIOBONES];
-	
-	int blockTargetHandle = 0;
+	Matrix3x4 lerpedBones[MAX_STUDIO_BONES];
 
 	#ifdef _DEBUG_NEPS
 	int scheduledEffectFlags;

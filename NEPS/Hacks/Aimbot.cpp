@@ -18,7 +18,7 @@
 #include "../Helpers.h"
 
 static Vector targetPoint;
-static Entity *target = nullptr;
+static int targetHandle = 0;
 static const Backtrack::Record *targetRecord = nullptr;
 static int weaponIndex = 0;
 
@@ -75,6 +75,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 		choseTarget(cmd);
 
+		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
 		if (target && targetPoint.notNull())
 		{
 			static Vector lastAngles = cmd->viewangles;
@@ -128,7 +129,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 void Aimbot::choseTarget(UserCmd *cmd) noexcept
 {
 	targetPoint = Vector{};
-	target = nullptr;
+	targetHandle = 0;
 	targetRecord = nullptr;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
@@ -154,7 +155,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 	auto bestDamage = 0;
 	auto bestHitchance = config->aimbot[weaponIndex].shotHitchance;
 
-	std::array<Matrix3x4, MAXSTUDIOBONES> bufferBones;
+	std::array<Matrix3x4, MAX_STUDIO_BONES> bufferBones;
 	#ifdef _DEBUG_NEPS
 	std::vector<Vector> multipoints;
 	#endif // _DEBUG_NEPS
@@ -175,7 +176,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 		if (!hitboxSet)
 			continue;
 
-		if (!entity->setupBones(bufferBones.data(), MAXSTUDIOBONES, BONE_USED_BY_HITBOX, 0.0f))
+		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, 0.0f))
 			continue;
 
 		const Backtrack::Record *choosenRecord = nullptr;
@@ -223,20 +224,9 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 
 		auto allowedHitgroup = config->aimbot[weaponIndex].hitGroup;
 
-		if (config->aimbot[weaponIndex].safeOnly && !entity->isBot())
+		if (config->aimbot[weaponIndex].safeOnly && !Helpers::animDataAuthenticity(entity))
 		{
-			const float simulationTime = entity->simulationTime();
-			const float oldSimulationTime = entity->oldSimulationTime();
-			const auto remoteActiveWeapon = entity->getActiveWeapon();
-			if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime));
-			else if (!Helpers::timeToTicks(simulationTime - oldSimulationTime));
-			else if (entity->getMaxDesyncAngle() < 55.0f);
-			else if (entity->moveType() == MoveType::LADDER);
-			else if (entity->moveType() == MoveType::NOCLIP);
-			else
-			{
-				allowedHitgroup = config->aimbot[weaponIndex].safeHitGroup;
-			}
+			allowedHitgroup = config->aimbot[weaponIndex].safeHitGroup;
 		}
 
 		if (!allowedHitgroup)
@@ -416,7 +406,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 					{
 						bestFov = fov;
 						targetPoint = point;
-						target = entity;
+						targetHandle = entity->handle();
 						targetRecord = choosenRecord;
 					}
 					break;
@@ -425,7 +415,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 					{
 						bestDamage = damage;
 						targetPoint = point;
-						target = entity;
+						targetHandle = entity->handle();
 						targetRecord = choosenRecord;
 					}
 					break;
@@ -434,7 +424,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 					{
 						bestHitchance = hitchance;
 						targetPoint = point;
-						target = entity;
+						targetHandle = entity->handle();
 						targetRecord = choosenRecord;
 					}
 					break;
@@ -443,7 +433,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 					{
 						bestDistance = distance;
 						targetPoint = point;
-						target = entity;
+						targetHandle = entity->handle();
 						targetRecord = choosenRecord;
 					}
 					break;
@@ -466,9 +456,9 @@ Vector Aimbot::getTargetPoint() noexcept
 	return targetPoint;
 }
 
-Entity *Aimbot::getTarget() noexcept
+int Aimbot::getTargetHandle() noexcept
 {
-	return target;
+	return targetHandle;
 }
 
 const Backtrack::Record *Aimbot::getTargetRecord() noexcept
