@@ -225,21 +225,20 @@ public:
 		if (config->misc.fixBoneMatrix && this == localPlayer.get() && memory->input->isCameraInThirdPerson)
 		{
 			int *render = reinterpret_cast<int *>(this + 0x274);
-			int *effects = reinterpret_cast<int *>(this + 0xF0);
 			int *shouldSkipFrame = reinterpret_cast<int *>(this + 0xA68);
 			int backupRender = *render;
-			int backupEffects = *effects;
+			int backupEffects = effectFlags();
 			int backupShouldSkipFrame = *shouldSkipFrame;
 			Vector absOrigin = getAbsOrigin();
 			*render = 0;
 			*shouldSkipFrame = 0;
-			*effects |= 8;
+			effectFlags() |= 8;
 			memory->setAbsOrigin(this, origin());
 			auto result = VirtualMethod::call<bool, 13>(this + 4, out, maxBones, boneMask, currentTime);
 			memory->setAbsOrigin(this, absOrigin);
 			*render = backupRender;
-			*effects = backupEffects;
 			*shouldSkipFrame = backupShouldSkipFrame;
+			effectFlags() = backupEffects;
 			return result;
 		}
 		if (config->misc.fixBoneMatrix)
@@ -259,7 +258,7 @@ public:
 	}
 	Vector getBonePosition(int bone) noexcept
 	{
-		if (Matrix3x4 boneMatrices[MAXSTUDIOBONES]; setupBones(boneMatrices, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, 0.0f))
+		if (Matrix3x4 boneMatrices[MAX_STUDIO_BONES]; setupBones(boneMatrices, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, 0.0f))
 			return boneMatrices[bone].origin();
 		else
 			return Vector{};
