@@ -122,7 +122,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Visuals::drawMolotovHull(ImGui::GetBackgroundDrawList());
 	Visuals::playerBounds(ImGui::GetBackgroundDrawList());
 	Visuals::playerVelocity(ImGui::GetBackgroundDrawList());
-	Misc::visualiseBlockBot(ImGui::GetBackgroundDrawList());
+	Misc::visualizeBlockBot(ImGui::GetBackgroundDrawList());
 
 	StreamProofESP::render();
 

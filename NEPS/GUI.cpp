@@ -1084,10 +1084,10 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGui::Combo("Type", &sharedConfig.box.type, "2D\0" "2D corners\0" "3D\0" "3D corners\0");
 			ImGui::SetNextItemWidth(275.0f);
 			ImGui::SliderFloat3("Scale", sharedConfig.box.scale.data(), 0.0f, 0.50f, "%.2f");
-			ImGuiCustom::colorPicker("##fill", sharedConfig.box.fill.color.data(), &sharedConfig.box.fill.color[3], &sharedConfig.box.fill.rainbow, &sharedConfig.box.fill.rainbowSpeed);
+			ImGuiCustom::colorPicker("##secondary", sharedConfig.box.secondaryColor);
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(85.0f);
-			ImGuiCustom::boolCombo("##fill_outline", sharedConfig.box.fill.enabled, "Outline\0Fill\0");
+			ImGui::Combo("##secondary_type", &sharedConfig.box.secondary, "None\0Outline\0Fill\0");
 			ImGui::EndPopup();
 		}
 
@@ -1118,10 +1118,10 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 				ImGui::Combo("Type", &playerConfig.headBox.type, "2D\0" "Corner 2D\0" "3D\0" "Corner 3D\0");
 				ImGui::SetNextItemWidth(275.0f);
 				ImGui::SliderFloat3("Scale", playerConfig.headBox.scale.data(), 0.0f, 0.50f, "%.2f");
-				ImGuiCustom::colorPicker("##fill", playerConfig.headBox.fill.color.data(), &playerConfig.headBox.fill.color[3], &playerConfig.headBox.fill.rainbow, &playerConfig.headBox.fill.rainbowSpeed);
+				ImGuiCustom::colorPicker("##secondary", playerConfig.headBox.secondaryColor);
 				ImGui::SameLine();
 				ImGui::SetNextItemWidth(85.0f);
-				ImGuiCustom::boolCombo("##fill_outline", playerConfig.headBox.fill.enabled, "Outline\0Fill\0");
+				ImGui::Combo("##secondary_type", &playerConfig.headBox.secondary, "None\0Outline\0Fill\0");
 				ImGui::EndPopup();
 			}
 
@@ -1833,7 +1833,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	ImGui::SliderFloat("##dfactor", &config->griefing.blockbot.distanceFac, 0.0f, 4.0f, "Distance factor %.3fu");
 	ImGui::PopItemWidth();
 	ImGuiCustom::keyBind("Blockbot target", config->griefing.blockbot.target);
-	ImGuiCustom::colorPicker("Visualise blockbot", config->griefing.blockbot.visualise);
+	ImGuiCustom::colorPicker("Visualize blockbot", config->griefing.blockbot.visualize);
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
 	if (!contentOnly)

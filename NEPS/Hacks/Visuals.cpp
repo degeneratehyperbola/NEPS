@@ -537,22 +537,13 @@ void Visuals::bulletBeams(GameEvent *event)
 
 	Config::Visuals::Beams *cfg = nullptr;
 	if (localPlayer->isOtherEnemy(player))
-	{
-		if (!config->visuals.enemyBeams.enabled) return;
 		cfg = &config->visuals.enemyBeams;
-	}
 	else if (player != localPlayer.get())
-	{
-		if (!config->visuals.allyBeams.enabled) return;
 		cfg = &config->visuals.allyBeams;
-	}
 	else
-	{
-		if (!config->visuals.selfBeams.enabled) return;
 		cfg = &config->visuals.selfBeams;
-	}
 
-	if (!cfg || static_cast<std::size_t>(cfg->sprite) >= beamSprites.size() || cfg->life <= 0.0f || cfg->width == 0.0f || cfg->color[3] == 0.0f || cfg->color[0] == 0.0f && cfg->color[1] == 0.0f && cfg->color[2] == 0.0f)
+	if (!cfg || !cfg->enabled || static_cast<std::size_t>(cfg->sprite) >= beamSprites.size())
 		return;
 
 	if (const auto modelprecache = interfaces->networkStringTableContainer->findTable("modelprecache"))
@@ -594,7 +585,7 @@ void Visuals::bulletBeams(GameEvent *event)
 		info.amplitude = cfg->amplitude * 0.02f;
 		break;
 	}
-	if (cfg->noiseOnce || cfg->amplitude == 0.0f)
+	if (cfg->noiseOnce)
 		info.flags |= FBEAM_ONLYNOISEONCE;
 
 	if (const auto beam = memory->viewRenderBeams->createBeamPoints(info))

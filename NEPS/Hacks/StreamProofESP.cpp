@@ -70,7 +70,7 @@ public:
 
 static ImDrawList* drawList;
 
-// convex hull using Graham's scan
+// Convex hull using Graham's scan
 static std::vector<ImVec2> convexHull(std::vector<ImVec2> points) noexcept
 {
 	if (points.size() < 3)
@@ -102,39 +102,31 @@ static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
 	if (!config.enabled)
 		return;
 
-	const bool shouldDrawFill = config.fill.color[3] != 0.0f;
-	const bool shouldDrawLine = config.color[3] != 0.0f;
-
-    if (!shouldDrawFill && !shouldDrawLine)
-        return;
-
     const ImU32 color = Helpers::calculateColor(config);
-    const ImU32 fillColor = Helpers::calculateColor(config.fill);
+    const ImU32 fillColor = Helpers::calculateColor(config.secondaryColor);
 
 	switch (config.type)
 	{
 	case Box::_2d:
-		if (config.fill.enabled && shouldDrawFill)
+		switch (config.secondary)
 		{
+		case Box::Fill:
 			drawList->AddRectFilled(bbox.min + ImVec2{1.0f, 1.0f}, bbox.max - ImVec2{1.0f, 1.0f}, fillColor, config.rounding, ImDrawCornerFlags_All);
-		}
-		else if (shouldDrawFill)
-		{
+			break;
+		case Box::Outline:
 			drawList->AddRect(bbox.min, bbox.max, fillColor, config.rounding, ImDrawCornerFlags_All, 3.0f);
+			break;
 		}
 
-		if (shouldDrawLine)
-		{
-			drawList->AddRect(bbox.min, bbox.max, color, config.rounding, ImDrawCornerFlags_All);
-		}
+		drawList->AddRect(bbox.min, bbox.max, color, config.rounding, ImDrawCornerFlags_All);
 		break;
 	case Box::_2dCorners:
-		if (config.fill.enabled && shouldDrawFill)
+		switch (config.secondary)
 		{
+		case Box::Fill:
 			drawList->AddRectFilled(bbox.min + ImVec2{1.0f, 1.0f}, bbox.max - ImVec2{1.0f, 1.0f}, fillColor, config.rounding, ImDrawCornerFlags_All);
-		}
-		else if (shouldDrawFill)
-		{
+			break;
+		case Box::Outline:
 			drawList->AddLine(bbox.min, {bbox.min.x, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f)}, fillColor, 3.0f);
 			drawList->AddLine(bbox.min, {IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.min.y}, fillColor, 3.0f);
 
@@ -146,9 +138,9 @@ static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
 
 			drawList->AddLine(bbox.max - ImVec2{0.5f, 1.0f}, {IM_FLOOR(bbox.max.x * 0.75f + bbox.min.x * 0.25f), bbox.max.y - 1.0f}, fillColor, 3.0f);
 			drawList->AddLine(bbox.max - ImVec2{1.0f, 0.0f}, {bbox.max.x - 1.0f, IM_FLOOR(bbox.max.y * 0.75f + bbox.min.y * 0.25f)}, fillColor, 3.0f);
+			break;
 		}
 
-		if (shouldDrawLine)
 		{
 			drawList->AddLine(bbox.min, {bbox.min.x, IM_FLOOR(bbox.min.y * 0.75f + bbox.max.y * 0.25f)}, color);
 			drawList->AddLine(bbox.min, {IM_FLOOR(bbox.min.x * 0.75f + bbox.max.x * 0.25f), bbox.min.y}, color);
@@ -164,13 +156,15 @@ static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
 		}
 		break;
 	case Box::_3d:
-		if (config.fill.enabled && shouldDrawFill)
+		switch (config.secondary)
+		{
+		case Box::Fill:
 		{
 			const auto hull = convexHull({std::begin(bbox.vertices), std::end(bbox.vertices)});
 			drawList->AddConvexPolyFilled(hull.data(), hull.size(), fillColor);
+			break;
 		}
-		else if (shouldDrawFill)
-		{
+		case Box::Outline:
 			for (int i = 0; i < 8; ++i)
 			{
 				for (int j = 1; j <= 4; j <<= 1)
@@ -179,28 +173,28 @@ static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
 						drawList->AddLine(bbox.vertices[i], bbox.vertices[i + j], fillColor, 3.0f);
 				}
 			}
+			break;
 		}
 
-		if (shouldDrawLine)
+		for (int i = 0; i < 8; ++i)
 		{
-			for (int i = 0; i < 8; ++i)
+			for (int j = 1; j <= 4; j <<= 1)
 			{
-				for (int j = 1; j <= 4; j <<= 1)
-				{
-					if (!(i & j))
-						drawList->AddLine(bbox.vertices[i], bbox.vertices[i + j], color);
-				}
+				if (!(i & j))
+					drawList->AddLine(bbox.vertices[i], bbox.vertices[i + j], color);
 			}
 		}
 		break;
 	case Box::_3dCorners:
-		if (config.fill.enabled && shouldDrawFill)
+		switch (config.secondary)
+		{
+		case Box::Fill:
 		{
 			const auto hull = convexHull({std::begin(bbox.vertices), std::end(bbox.vertices)});
 			drawList->AddConvexPolyFilled(hull.data(), hull.size(), fillColor);
+			break;
 		}
-		else if (shouldDrawFill)
-		{
+		case Box::Outline:
 			for (int i = 0; i < 8; ++i)
 			{
 				for (int j = 1; j <= 4; j <<= 1)
@@ -212,19 +206,17 @@ static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
 					}
 				}
 			}
+			break;
 		}
 
-		if (shouldDrawLine)
+		for (int i = 0; i < 8; ++i)
 		{
-			for (int i = 0; i < 8; ++i)
+			for (int j = 1; j <= 4; j <<= 1)
 			{
-				for (int j = 1; j <= 4; j <<= 1)
+				if (!(i & j))
 				{
-					if (!(i & j))
-					{
-						drawList->AddLine(bbox.vertices[i], {bbox.vertices[i].x * 0.75f + bbox.vertices[i + j].x * 0.25f, bbox.vertices[i].y * 0.75f + bbox.vertices[i + j].y * 0.25f}, color);
-						drawList->AddLine({bbox.vertices[i].x * 0.25f + bbox.vertices[i + j].x * 0.75f, bbox.vertices[i].y * 0.25f + bbox.vertices[i + j].y * 0.75f}, bbox.vertices[i + j], color);
-					}
+					drawList->AddLine(bbox.vertices[i], {bbox.vertices[i].x * 0.75f + bbox.vertices[i + j].x * 0.25f, bbox.vertices[i].y * 0.75f + bbox.vertices[i + j].y * 0.25f}, color);
+					drawList->AddLine({bbox.vertices[i].x * 0.25f + bbox.vertices[i + j].x * 0.75f, bbox.vertices[i].y * 0.25f + bbox.vertices[i + j].y * 0.75f}, bbox.vertices[i + j], color);
 				}
 			}
 		}

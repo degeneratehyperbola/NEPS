@@ -1464,9 +1464,9 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 	}
 }
 
-void Misc::visualiseBlockBot(ImDrawList *drawList) noexcept
+void Misc::visualizeBlockBot(ImDrawList *drawList) noexcept
 {
-	if (!config->griefing.blockbot.visualise.enabled)
+	if (!config->griefing.blockbot.visualize.enabled)
 		return;
 
 	GameData::Lock lock;
@@ -1488,7 +1488,7 @@ void Misc::visualiseBlockBot(ImDrawList *drawList) noexcept
 	ImVec2 pos, dir;
 	ImVec2 points[4];
 
-	const auto color = Helpers::calculateColor(config->griefing.blockbot.visualise);
+	const auto color = Helpers::calculateColor(config->griefing.blockbot.visualize);
 
 	bool draw = Helpers::worldToScreen(target->origin, pos);
 	draw = draw && Helpers::worldToScreen(curDir + target->origin, dir);
@@ -1505,10 +1505,10 @@ void Misc::visualiseBlockBot(ImDrawList *drawList) noexcept
 
 	if (draw)
 	{
-		drawList->AddLine(points[0], points[1], color, config->griefing.blockbot.visualise.thickness);
-		drawList->AddLine(points[1], points[2], color, config->griefing.blockbot.visualise.thickness);
-		drawList->AddLine(points[2], points[3], color, config->griefing.blockbot.visualise.thickness);
-		drawList->AddLine(points[3], points[0], color, config->griefing.blockbot.visualise.thickness);
+		drawList->AddLine(points[0], points[1], color, config->griefing.blockbot.visualize.thickness);
+		drawList->AddLine(points[1], points[2], color, config->griefing.blockbot.visualize.thickness);
+		drawList->AddLine(points[2], points[3], color, config->griefing.blockbot.visualize.thickness);
+		drawList->AddLine(points[3], points[0], color, config->griefing.blockbot.visualize.thickness);
 	}
 }
 

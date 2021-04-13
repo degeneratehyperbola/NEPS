@@ -6,21 +6,21 @@
 #pragma pack(push, 1)
 struct Color3
 {
-	std::array<float, 3> color{1.0f, 1.0f, 1.0f};
-	bool rainbow{false};
-	float rainbowSpeed{0.6f};
+	std::array<float, 3> color = {1.0f, 1.0f, 1.0f};
+	bool rainbow = false;
+	float rainbowSpeed = 0.6f;
 };
 #pragma pack(pop)
 
 struct Color3Toggle : public Color3
 {
-	bool enabled{false};
+	bool enabled = false;
 };
 
 #pragma pack(push, 1)
 struct Color4
 {
-	std::array<float, 4> color{1.0f, 1.0f, 1.0f, 1.0f};
+	std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f};
 	float rainbowSpeed = 0.6f;
 	bool rainbow = false;
 };
@@ -63,7 +63,7 @@ struct Color4ToggleThicknessRounding : Color4ToggleRounding
 
 struct Font
 {
-	int index = 0; // do not save
+	int index = 0; // Do not save
 	std::string name;
 };
 
@@ -71,7 +71,7 @@ struct Snapline : Color4ToggleThickness
 {
 	enum
 	{
-		Bottom = 0,
+		Bottom,
 		Top,
 		Crosshair
 	};
@@ -83,15 +83,23 @@ struct Box : Color4ToggleRounding
 {
 	enum Type
 	{
-		_2d = 0,
+		_2d,
 		_2dCorners,
 		_3d,
 		_3dCorners
 	};
 
+	enum SecondaryType
+	{
+		None,
+		Outline,
+		Fill
+	};
+
 	int type = _2d;
-	std::array<float, 3> scale{0.25f, 0.25f, 0.25f};
-	Color4Toggle fill{1.0f, 0.0f, 0.0f, 1.0f};
+	std::array<float, 3> scale = {0.25f, 0.25f, 0.25f};
+	int secondary = Outline;
+	Color4 secondaryColor = {1.0f, 0.0f, 0.0f, 1.0f};
 };
 
 struct Shared

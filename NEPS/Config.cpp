@@ -262,7 +262,8 @@ static void from_json(const json &j, Box &b)
 
 	read(j, "Type", b.type);
 	read(j, "Scale", b.scale);
-	read<value_t::object>(j, "Fill", b.fill);
+	read<value_t::object>(j, "Secondary", b.secondary);
+	read<value_t::object>(j, "Secondary color", b.secondaryColor);
 }
 
 static void from_json(const json &j, Shared &s)
@@ -726,7 +727,7 @@ static void from_json(const json &j, Config::Griefing::Blockbot &b)
 	read<value_t::object>(j, "Target", b.target);
 	read(j, "Trajectory factor", b.trajectoryFac);
 	read(j, "Distance factor", b.distanceFac);
-	read<value_t::object>(j, "Visualise", b.visualise);
+	read<value_t::object>(j, "Visualise", b.visualize);
 }
 
 static void from_json(const json &j, Config::Movement &m)
@@ -872,7 +873,8 @@ static void to_json(json &j, const Box &o, const Box &dummy = {})
 	to_json(j, static_cast<const Color4ToggleRounding &>(o), dummy);
 	WRITE("Type", type);
 	WRITE("Scale", scale);
-	WRITE("Fill", fill);
+	WRITE("Secondary", secondary);
+	WRITE("Secondary color", secondaryColor);
 }
 
 static void to_json(json &j, const Shared &o, const Shared &dummy = {})
@@ -1160,7 +1162,7 @@ static void to_json(json &j, const Config::Griefing::Blockbot &o, const Config::
 	WRITE("Target", target);
 	WRITE("Trajectory factor", trajectoryFac);
 	WRITE("Distance factor", distanceFac);
-	WRITE("Visualise", visualise);
+	WRITE("Visualise", visualize);
 }
 
 static void to_json(json &j, const Config::Griefing &o)
