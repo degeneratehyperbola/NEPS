@@ -1228,80 +1228,55 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGuiCustom::colorPicker("Player bounds", config->visuals.playerBounds);
 	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVel);
 
+	constexpr auto beamPopup = [](const char *id, Config::Visuals::Beams &config)
+	{
+		if (ImGui::BeginPopup(id))
+		{
+			ImGui::SetNextItemWidth(100.0f);
+			ImGui::Combo("Sprite", &config.sprite, "Phys beam\0Solid\0Laser\0Laser beam\0");
+			ImGui::PushItemWidth(255.0f);
+			ImGui::SliderFloat("##width", &config.width, 0.0f, 5.0f, "Thickness %.3f");
+			ImGui::SliderFloat("##life", &config.life, 0.0f, 10.0f, "Duration %.3fs");
+			ImGui::PopItemWidth();
+			ImGui::SetNextItemWidth(85.0f);
+			ImGui::Combo("Type", &config.type, "Line\0Noise\0Spiral");
+			ImGui::SetNextItemWidth(255.0f);
+			switch (config.type)
+			{
+			case 1:
+				ImGui::SliderFloat("##amplitude", &config.amplitude, 0.0f, 10.0f, "Noise %.3f");
+				ImGui::Checkbox("Do noise once", &config.noiseOnce);
+				break;
+			case 2:
+				ImGui::SliderFloat("##amplitude", &config.amplitude, 0.0f, 10.0f, "Radius %.3f");
+				break;
+			default:
+				break;
+			}
+			ImGui::EndPopup();
+		}
+	};
+
 	ImGuiCustom::colorPicker("Own beams", config->visuals.selfBeams.color.data(), &config->visuals.selfBeams.color[3], nullptr, nullptr, &config->visuals.selfBeams.enabled);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("bself", ImGuiDir_Right))
 		ImGui::OpenPopup("##bself");
 
-	if (ImGui::BeginPopup("##bself"))
-	{
-		ImGui::SetNextItemWidth(100.0f);
-		ImGui::Combo("Sprite", &config->visuals.selfBeams.sprite, "Phys beam\0Solid\0Laser\0Laser beam\0");
-		ImGui::PushItemWidth(255.0f);
-		ImGui::SliderFloat("##bwidth", &config->visuals.selfBeams.width, 0.0f, 5.0f, "Thickness %.3f");
-		ImGui::SliderFloat("##blife", &config->visuals.selfBeams.life, 0.0f, 10.0f, "Duration %.3fs");
-		ImGui::PopItemWidth();
-		ImGui::SetNextItemWidth(85.0f);
-		ImGuiCustom::boolCombo("Type", config->visuals.selfBeams.railgun, "Noise\0Railgun");
-		ImGui::SetNextItemWidth(255.0f);
-		if (config->visuals.selfBeams.railgun)
-			ImGui::SliderFloat("##bnoise", &config->visuals.selfBeams.noise, 0.0f, 10.0f, "Radius %.3f");
-		else
-			ImGui::SliderFloat("##bnoise", &config->visuals.selfBeams.noise, 0.0f, 10.0f, "Noise %.3f");
-		if (!config->visuals.selfBeams.railgun)
-			ImGui::Checkbox("Static noise", &config->visuals.selfBeams.noiseOnce);
-		ImGui::EndPopup();
-	}
+	beamPopup("##bself", config->visuals.selfBeams);
 
 	ImGuiCustom::colorPicker("Ally beams", config->visuals.allyBeams.color.data(), &config->visuals.allyBeams.color[3], nullptr, nullptr, &config->visuals.allyBeams.enabled);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("bally", ImGuiDir_Right))
 		ImGui::OpenPopup("##bally");
 
-	if (ImGui::BeginPopup("##bally"))
-	{
-		ImGui::SetNextItemWidth(100.0f);
-		ImGui::Combo("Sprite", &config->visuals.allyBeams.sprite, "Phys beam\0Solid\0Laser\0Laser beam\0");
-		ImGui::PushItemWidth(255.0f);
-		ImGui::SliderFloat("##bwidth", &config->visuals.allyBeams.width, 0.0f, 5.0f, "Thickness %.3f");
-		ImGui::SliderFloat("##blife", &config->visuals.allyBeams.life, 0.0f, 10.0f, "Duration %.3fs");
-		ImGui::PopItemWidth();
-		ImGui::SetNextItemWidth(85.0f);
-		ImGuiCustom::boolCombo("Type", config->visuals.allyBeams.railgun, "Noise\0Railgun");
-		ImGui::SetNextItemWidth(255.0f);
-		if (config->visuals.allyBeams.railgun)
-			ImGui::SliderFloat("##bnoise", &config->visuals.allyBeams.noise, 0.0f, 10.0f, "Radius %.3f");
-		else
-			ImGui::SliderFloat("##bnoise", &config->visuals.allyBeams.noise, 0.0f, 10.0f, "Noise %.3f");
-		if (!config->visuals.allyBeams.railgun)
-			ImGui::Checkbox("Static noise", &config->visuals.allyBeams.noiseOnce);
-		ImGui::EndPopup();
-	}
+	beamPopup("##bally", config->visuals.allyBeams);
 
 	ImGuiCustom::colorPicker("Enemy beams", config->visuals.enemyBeams.color.data(), &config->visuals.enemyBeams.color[3], nullptr, nullptr, &config->visuals.enemyBeams.enabled);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("benemy", ImGuiDir_Right))
 		ImGui::OpenPopup("##benemy");
 
-	if (ImGui::BeginPopup("##benemy"))
-	{
-		ImGui::SetNextItemWidth(100.0f);
-		ImGui::Combo("Sprite", &config->visuals.enemyBeams.sprite, "Phys beam\0Solid\0Laser\0Laser beam\0");
-		ImGui::PushItemWidth(255.0f);
-		ImGui::SliderFloat("##bwidth", &config->visuals.enemyBeams.width, 0.0f, 5.0f, "Thickness %.3f");
-		ImGui::SliderFloat("##blife", &config->visuals.enemyBeams.life, 0.0f, 10.0f, "Duration %.3fs");
-		ImGui::PopItemWidth();
-		ImGui::SetNextItemWidth(85.0f);
-		ImGuiCustom::boolCombo("Type", config->visuals.enemyBeams.railgun, "Noise\0Railgun");
-		ImGui::SetNextItemWidth(255.0f);
-		if (config->visuals.enemyBeams.railgun)
-			ImGui::SliderFloat("##bnoise", &config->visuals.enemyBeams.noise, 0.0f, 10.0f, "Radius %.3f");
-		else
-			ImGui::SliderFloat("##bnoise", &config->visuals.enemyBeams.noise, 0.0f, 10.0f, "Noise %.3f");
-		if (!config->visuals.enemyBeams.railgun)
-			ImGui::Checkbox("Static noise", &config->visuals.enemyBeams.noiseOnce);
-		ImGui::EndPopup();
-	}
+	beamPopup("##benemy", config->visuals.enemyBeams);
 
 	ImGui::PushItemWidth(100.0f);
 	ImGui::Combo("Bullet impacts", &config->visuals.bulletImpacts, "None\0All\0Client\0Server\0");

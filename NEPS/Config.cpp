@@ -477,9 +477,9 @@ static void from_json(const json &j, Config::Visuals::Beams &b)
 	read(j, "Color", b.color);
 	read(j, "Width", b.width);
 	read(j, "Life", b.life);
-	read(j, "Noise", b.noise);
+	read(j, "Type", b.type);
+	read(j, "Noise", b.amplitude);
 	read(j, "Noise once", b.noiseOnce);
-	read(j, "Railgun", b.railgun);
 }
 
 static void from_json(const json &j, Config::Visuals::Dlights &b)
@@ -1225,9 +1225,9 @@ static void to_json(json &j, const Config::Visuals::Beams &o, const Config::Visu
 	WRITE("Color", color);
 	WRITE("Width", width);
 	WRITE("Life", life);
-	WRITE("Noise", noise);
+	WRITE("Type", type);
+	WRITE("Noise", amplitude);
 	WRITE("Noise once", noiseOnce);
-	WRITE("Railgun", railgun);
 }
 
 static void to_json(json &j, const Config::Visuals::Dlights &o, const Config::Visuals::Dlights &dummy)

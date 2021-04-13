@@ -526,10 +526,7 @@ void Visuals::bulletBeams(GameEvent *event)
 
 	if (!player) return;
 
-	Vector pos;
-	pos.x = event->getFloat("x");
-	pos.y = event->getFloat("y");
-	pos.z = event->getFloat("z");
+	Vector pos = {event->getFloat("x"), event->getFloat("y"), event->getFloat("z")};
 
 	constexpr std::array beamSprites = {
 		"sprites/physbeam.vmt",
@@ -571,7 +568,6 @@ void Visuals::bulletBeams(GameEvent *event)
 	info.width = cfg->width;
 	info.endWidth = cfg->width;
 	info.fadeLength = 100.0f;
-	info.amplitude = cfg->railgun ? cfg->noise * 0.02f : cfg->noise * 200.0f / distance;
 	info.speed = 0.2f;
 	info.startFrame = 0;
 	info.frameRate = 60.0f;
@@ -579,15 +575,27 @@ void Visuals::bulletBeams(GameEvent *event)
 	info.green = cfg->color[1] * 255.0f;
 	info.blue = cfg->color[2] * 255.0f;
 	info.brightness = cfg->color[3] * 255.0f;
-	info.segments = cfg->noise > 0.0f ? static_cast<int>(distance) / 15 : -1;
+	info.segments = -1;
 	info.renderable = true;
 	info.end = pos;
 	info.start = player->getEyePosition();
 	info.flags = FBEAM_SHADEIN;
-	if (cfg->railgun || cfg->noiseOnce || cfg->noise == 0.0f)
+	info.amplitude = 0.0f;
+	switch (cfg->type)
+	{
+	case cfg->Type::Line:
 		info.flags |= FBEAM_ONLYNOISEONCE;
-	if (cfg->railgun)
+		break;
+	case cfg->Type::Noise:
+		info.amplitude = cfg->amplitude * 200.0f / distance;
+		break;
+	case cfg->Type::Spiral:
 		info.flags |= FBEAM_SINENOISE;
+		info.amplitude = cfg->amplitude * 0.02f;
+		break;
+	}
+	if (cfg->noiseOnce || cfg->amplitude == 0.0f)
+		info.flags |= FBEAM_ONLYNOISEONCE;
 
 	if (const auto beam = memory->viewRenderBeams->createBeamPoints(info))
 	{

@@ -67,87 +67,98 @@ struct Font
 	std::string name;
 };
 
-struct Snapline : Color4ToggleThickness {
-    enum {
-        Bottom = 0,
-        Top,
-        Crosshair
-    };
+struct Snapline : Color4ToggleThickness
+{
+	enum
+	{
+		Bottom = 0,
+		Top,
+		Crosshair
+	};
 
-    int type = Bottom;
+	int type = Bottom;
 };
 
-struct Box : Color4ToggleRounding {
-    enum Type {
-        _2d = 0,
-        _2dCorners,
-        _3d,
-        _3dCorners
-    };
+struct Box : Color4ToggleRounding
+{
+	enum Type
+	{
+		_2d = 0,
+		_2dCorners,
+		_3d,
+		_3dCorners
+	};
 
-    int type = _2d;
-    std::array<float, 3> scale{ 0.25f, 0.25f, 0.25f };
-    Color4Toggle fill{ 1.0f, 0.0f, 0.0f, 0.5f };
+	int type = _2d;
+	std::array<float, 3> scale{0.25f, 0.25f, 0.25f};
+	Color4Toggle fill{1.0f, 0.0f, 0.0f, 1.0f};
 };
 
-struct Shared {
-    bool enabled = false;
-    Font font;
-    Snapline snapline;
-    Box box;
+struct Shared
+{
+	bool enabled = false;
+	Font font;
+	Snapline snapline;
+	Box box;
 	Color4BorderToggle name;
-    float textCullDistance = 0.0f;
+	float textCullDistance = 0.0f;
 };
 
-struct Bar : Color4ToggleRounding {
+struct Bar : Color4BorderToggle
+{
 	// What
 };
 
-struct Player : Shared {
+struct Player : Shared
+{
 	Color4BorderToggle weapon;
 	Color4BorderToggle flashDuration;
-    bool audibleOnly = false;
-    bool spottedOnly = false;
+	bool audibleOnly = false;
+	bool spottedOnly = false;
 	Color4BorderToggle healthBar;
 	Color4BorderToggle health;
 	Color4BorderToggleThickness skeleton;
-    Box headBox;
+	Box headBox;
 	Color4BorderToggle flags;
 	Color4Toggle offscreen = {1.0f, 1.0f, 1.0f, 0.3f};
 
-    using Shared::operator=;
+	using Shared::operator=;
 };
 
-struct Weapon : Shared {
+struct Weapon : Shared
+{
 	Color4BorderToggle ammo;
 
-    using Shared::operator=;
+	using Shared::operator=;
 };
 
 struct Trail : Color4BorderToggleThickness
 {
-    enum Type {
-        Line = 0,
-        Circles,
-        FilledCircles
-    };
+	enum Type
+	{
+		Line = 0,
+		Circles,
+		FilledCircles
+	};
 
-    int type = Line;
-    float time = 2.0f;
+	int type = Line;
+	float time = 2.0f;
 };
 
-struct Trails {
-    bool enabled = false;
+struct Trails
+{
+	bool enabled = false;
 
-    Trail localPlayer;
-    Trail allies;
-    Trail enemies;
+	Trail localPlayer;
+	Trail allies;
+	Trail enemies;
 };
 
-struct Projectile : Shared {
-    Trails trails;
+struct Projectile : Shared
+{
+	Trails trails;
 
-    using Shared::operator=;
+	using Shared::operator=;
 };
 
 struct KeyBind

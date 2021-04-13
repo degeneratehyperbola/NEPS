@@ -213,14 +213,21 @@ public:
 
 		struct Beams
 		{
+			enum Type
+			{
+				Line,
+				Noise,
+				Spiral
+			};
+
 			bool enabled;
 			int sprite = 0;
 			std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f};
 			float width = 1.0f;
 			float life = 3.0f;
-			float noise = 5.0f;
+			int type = 0;
+			float amplitude = 5.0f;
 			bool noiseOnce = true;
-			bool railgun = true;
 		};
 
 		Beams selfBeams;
