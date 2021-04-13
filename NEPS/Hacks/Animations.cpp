@@ -147,8 +147,8 @@ void Animations::resolve(Entity *animatable) noexcept
 	memory->updateState(state, nullptr, animatable->thirdPersonAngles().x, animatable->thirdPersonAngles().y, 0.0f, nullptr);
 
 	std::srand(memory->globalVars->tickCount);
-	// Return random desync position out of 2 possible
-	// This hereby gives us a 50% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)
+	// Return random desync position out of 3 possible
+	// This hereby gives us a 33% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)
 	const auto delta = Helpers::angleDiffDeg(state->feetYaw, state->eyeYaw);
 	constexpr std::array<float, 3> positions = {-60.0f, 0.0f, 60.0f};
 	size_t current = 0;
