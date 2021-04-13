@@ -3,9 +3,9 @@
 <div align="center">
 
 # NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
-![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)
-![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)
-![LISENCE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)
+[![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)](https://github.com/degeneratehyperbola/NEPS/issues)
+[![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
+[![LICENSE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 
 </div>
 
@@ -49,6 +49,13 @@ this includes addition of new exciting features, testing and bug fixing. It'd be
 
 [![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
 
-# NEPS downloads:
+# Acknowledgments
+- [Daniel Krupiński](https://github.com/danielkrupinski) for [Osiris](https://github.com/danielkrupinski/Osiris) - an amazing fundament for a CS:GO cheat
+- [omar (ocornut)](https://github.com/ocornut) and [contributors](https://github.com/ocornut/imgui/graphs/contributors) for THE solution when it comes to in-game overlays - [ImGui](https://github.com/ocornut/imgui)
+
+# License
+### See [![LICENSE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
+
+# NEPS downloads
 ![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
 ![LATEST DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/latest/total?color=orange&label=Latest%20release&style=plastic)
