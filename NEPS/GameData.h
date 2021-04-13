@@ -86,7 +86,7 @@ struct LocalPlayerData
 	bool alive = false;
 	bool reloading = false;
 	bool shooting = false;
-	bool scopeOverlay = false;
+	bool crosshairVisible = false;
 	float nextAttack = 0.0f;
 	int fov = 90;
 	int handle = 0;

@@ -274,7 +274,7 @@ void LocalPlayerData::update() noexcept
 	{
 		reloading = activeWeapon->isInReload();
 		shooting = localPlayer->shotsFired() > 1;
-		scopeOverlay = localPlayer->isScoped() && (!config->visuals.noWeapons || activeWeapon->isSniperRifle());
+		crosshairVisible = config->visuals.noWeapons ? (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && !localPlayer->isScoped() || activeWeapon->isSniperRifle() && localPlayer->isScoped() : (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 2) || localPlayer->isScoped();
 		nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), localPlayer->nextAttack());
 	}
 	fov = localPlayer->fov() ? localPlayer->fov() : localPlayer->defaultFov();
