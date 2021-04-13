@@ -5,6 +5,7 @@
 # NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
 ![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)
 ![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)
+![LISENCE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)
 
 </div>
 
