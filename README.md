@@ -24,7 +24,7 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 ### Step-by-step:
 - Download a release NEPS loader (NLoader.exe under assets)
 
-[![DOWNLOAD BUTTON](https://img.shields.io/badge/%20-Download-orange&style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
+[![DOWNLOAD BUTTON](https://img.shields.io/badge/%20-Download-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 
 - Place it somewhere memorable ;)
 - Open CS:GO
@@ -39,7 +39,7 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 **NEPS has official Discord as well!**
 
 [![DISCORD ONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic&logo=discord&logoColor=orange)](https://discord.gg/pwB3XBppVr)
-[![DISCORD JOIN](https://img.shields.io/badge/%20-Join-orange&style=plastic)](https://discord.gg/pwB3XBppVr)
+[![DISCORD JOIN](https://img.shields.io/badge/%20-Join-orange?style=plastic)](https://discord.gg/pwB3XBppVr)
 
 # We demand support for NEPS!
 If you fell like supporting me, or, perhaps, want me to further maintain and update this project,
@@ -47,7 +47,7 @@ this includes addition of new exciting features, testing and bug fixing. It'd be
 
 *pwease*
 
-[![PATREON](https://img.shields.io/badge/%20-Patreon-orange&style=plastic&logo=discord&logoColor=black)](https://www.patreon.com/hyperbola)
+[![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=discord&logoColor=black)](https://www.patreon.com/hyperbola)
 
 # NEPS downloads:
 ![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
