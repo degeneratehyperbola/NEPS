@@ -92,6 +92,8 @@ public:
 		bool ignoreSmoke = false;
 		bool recoilBasedFov = true;
 		int timeLimit = 200;
+		bool onShot = false;
+		bool aimAtRecords = false;
 	} backtrack;
 
 	struct AntiAim

@@ -180,20 +180,22 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 			continue;
 
 		const Backtrack::Record *choosenRecord = nullptr;
-		if (const auto doScope = config->aimbot[weaponIndex].autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle(); doScope || config->backtrack.enabled && enemy)
+		const auto doScope = config->aimbot[weaponIndex].autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
+		const auto doBacktrack = config->backtrack.aimAtRecords && config->backtrack.enabled && enemy;
+		if (doScope || doBacktrack)
 		{
 			bool goesThroughWall = false;
 			Trace trace;
 			auto origin = bufferBones[8].origin();
 			bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
 
-			if (canHit && trace.entity == entity && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall) && doScope)
+			if (doScope && canHit && trace.entity == entity && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
 			{
 				if (config->aimbot[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
 					cmd->buttons |= UserCmd::IN_ATTACK2;
 			}
 
-			if (config->backtrack.enabled && enemy)
+			if (doBacktrack)
 			{
 				auto bestDistance = origin.distTo(localPlayerEyePosition);
 
@@ -202,7 +204,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 				{
 					if (Backtrack::valid(record.simulationTime))
 					{
-						if (record.shot)
+						if (record.shot && config->backtrack.onShot)
 						{
 							choosenRecord = &record;
 							break;
