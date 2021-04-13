@@ -47,7 +47,7 @@ this includes addition of new exciting features, testing and bug fixing. It'd be
 
 *pwease*
 
-[![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=discord&logoColor=black)](https://www.patreon.com/hyperbola)
+[![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
 
 # NEPS downloads:
 ![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
