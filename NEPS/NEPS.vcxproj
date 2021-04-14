@@ -164,6 +164,10 @@
     <ClInclude Include="SDK\WeaponId.h" />
     <ClInclude Include="SDK\WeaponData.h" />
     <ClInclude Include="SDK\WeaponSystem.h" />
+    <ClInclude Include="stb_image.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugMin|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources\Resource.rc" />

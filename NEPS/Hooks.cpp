@@ -145,6 +145,31 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	ImGui::EndFrame();
 	ImGui::Render();
 
+	// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+	//{
+	//	std::size_t width = 128, height = 128;
+
+	//	PDIRECT3DTEXTURE9 texture;
+	//	constexpr auto textureFlags = D3DUSAGE_AUTOGENMIPMAP;
+	//	if (device->CreateTexture(width, height, 0, textureFlags, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &texture, NULL) == D3D_OK)
+	//	{
+	//		// Here we temporary hold the texture
+	//		std::vector<unsigned char> data;
+	//		data.reserve(width * height * 4);
+
+	//		// We lock a rectangle of texture to "paint on"
+	//		D3DLOCKED_RECT lockedRect;
+	//		texture->LockRect(0, &lockedRect, NULL, D3DLOCK_DISCARD);
+	//		
+	//		// We paint with bytes
+	//		lockedRect.pBits;
+
+	//		// We are done
+	//		texture->UnlockRect(0);
+	//	}
+	//}
+	// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
 	if (device->BeginScene() == D3D_OK)
 	{
 		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());

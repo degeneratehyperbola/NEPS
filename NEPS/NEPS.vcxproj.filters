@@ -472,6 +472,9 @@
     <ClInclude Include="SDK\SteamId.h">
       <Filter>SDK</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources\Resource.rc">
