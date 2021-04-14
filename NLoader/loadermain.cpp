@@ -260,6 +260,7 @@ BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLin
 
 	// Free the allocated loader code
 	VirtualFreeEx(hProcess, LoaderMemory, 0, MEM_RELEASE);
+	FreeResource(Buffer);
 
 	return TRUE;
 }
