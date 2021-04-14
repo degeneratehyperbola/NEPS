@@ -54,6 +54,11 @@
 #include "SDK/ConVar.h"
 #include "SDK/ViewSetup.h"
 
+#ifdef _DEBUG_NEPS
+#include "stb/image.h"
+#include "resource.h"
+#endif // _DEBUG_NEPS
+
 static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	[[maybe_unused]] static const auto initGlobal = [](HWND window) noexcept
@@ -145,30 +150,39 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	ImGui::EndFrame();
 	ImGui::Render();
 
-	// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-	//{
-	//	std::size_t width = 128, height = 128;
+	#ifdef _DEBUG_NEPS
+	{
+		std::size_t width = 128, height = 128;
 
-	//	PDIRECT3DTEXTURE9 texture;
-	//	constexpr auto textureFlags = D3DUSAGE_AUTOGENMIPMAP;
-	//	if (device->CreateTexture(width, height, 0, textureFlags, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &texture, NULL) == D3D_OK)
-	//	{
-	//		// Here we temporary hold the texture
-	//		std::vector<unsigned char> data;
-	//		data.reserve(width * height * 4);
+		PDIRECT3DTEXTURE9 texture;
+		constexpr auto textureFlags = D3DUSAGE_AUTOGENMIPMAP;
+		if (device->CreateTexture(width, height, 0, textureFlags, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &texture, NULL) == D3D_OK)
+		{
+			// Here we temporary hold the texture
+			//unsigned char *data = new unsigned char[width * height * 4];
+			std::vector<unsigned char> data;
+			data.reserve(width * height * 4);
 
-	//		// We lock a rectangle of texture to "paint on"
-	//		D3DLOCKED_RECT lockedRect;
-	//		texture->LockRect(0, &lockedRect, NULL, D3DLOCK_DISCARD);
-	//		
-	//		// We paint with bytes
-	//		lockedRect.pBits;
+			HMODULE hModule = hooks->getDllHandle();
+			HRSRC hResource = FindResourceA(hModule, MAKEINTRESOURCEA(IDR_BIN1), "BIN");
+			PVOID Buffer = LoadResource(hModule, hResource);
 
-	//		// We are done
-	//		texture->UnlockRect(0);
-	//	}
-	//}
-	// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			stbi_load_from_memory();
+
+			// We lock a rectangle of texture to "paint on"
+			D3DLOCKED_RECT lockedRect;
+			texture->LockRect(0, &lockedRect, NULL, D3DLOCK_DISCARD);
+			
+			// We paint with bytes
+			lockedRect.pBits = data.data();
+
+			// We are done
+			texture->UnlockRect(0);
+
+			//delete[] data;
+		}
+	}
+	#endif // _DEBUG_NEPS
 
 	if (device->BeginScene() == D3D_OK)
 	{
