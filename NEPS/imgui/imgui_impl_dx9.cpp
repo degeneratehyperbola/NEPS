@@ -24,8 +24,6 @@
 //  2018-02-16: Misc: Obsoleted the io.RenderDrawListsFn callback and exposed ImGui_ImplDX9_RenderDrawData() in the .h file so you can call it yourself.
 //  2018-02-06: Misc: Removed call to ImGui::Shutdown() which is not available from 1.60 WIP, user needs to call CreateContext/DestroyContext themselves.
 
-#include <memory>
-
 #include "imgui.h"
 #include "imgui_impl_dx9.h"
 
@@ -319,36 +317,53 @@ void ImGui_ImplDX9_NewFrame()
 
 void* ImGui_ImplDX9_CreateTextureRGBA8(int width, int height, const unsigned char* data)
 {
-	IDirect3DTexture9* tempTexture;
-	if (g_pd3dDevice->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, &tempTexture, nullptr) != D3D_OK)
-		return nullptr;
+	if (!data || !g_pd3dDevice)
+		return NULL;
 
-	D3DLOCKED_RECT lockedRect;
-	if (tempTexture->LockRect(0, &lockedRect, nullptr, D3DLOCK_DISCARD) != D3D_OK)
+	// Convert RGBA32 to BGRA32 (because RGBA32 is not well supported by DX9 devices)
+#ifndef IMGUI_USE_BGRA_PACKED_COLOR
+	unsigned char* pixels;
+
+	ImU32* dst_start = (ImU32*)ImGui::MemAlloc(width * height * 4);
+	for (ImU32* src = (ImU32*)data, *dst = dst_start, *dst_end = dst_start + width * height; dst < dst_end; src++, dst++)
+		*dst = IMGUI_COL_TO_DX9_ARGB(*src);
+	pixels = (unsigned char*)dst_start;
+#else
+	const unsigned char* pixels = data;
+#endif
+
+	// Upload temporary texture to graphics system
+	LPDIRECT3DTEXTURE9 temp_texture;
+	if (g_pd3dDevice->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, &temp_texture, NULL) < 0)
+		return NULL;
+	D3DLOCKED_RECT tex_locked_rect;
+	if (temp_texture->LockRect(0, &tex_locked_rect, NULL, D3DLOCK_DISCARD) != D3D_OK)
 	{
-		tempTexture->Release();
-		return nullptr;
+		temp_texture->Release();
+		return NULL;
 	}
-
 	for (int y = 0; y < height; ++y)
-		std::memcpy((std::uint8_t*)lockedRect.pBits + lockedRect.Pitch * y, (const std::uint32_t*)data + width * y, width * 4);
+		memcpy((unsigned char *)tex_locked_rect.pBits + tex_locked_rect.Pitch * y, pixels + (width * 4) * y, (width * 4));
+	temp_texture->UnlockRect(0);
 
-	tempTexture->UnlockRect(0);
-
-	IDirect3DTexture9* texture;
-	if (g_pd3dDevice->CreateTexture(width, height, 1, D3DUSAGE_AUTOGENMIPMAP, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture, nullptr) != D3D_OK)
+	// Copy temporary texture to a different pool
+	LPDIRECT3DTEXTURE9 texture;
+	if (g_pd3dDevice->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture, NULL) != D3D_OK)
 	{
-		tempTexture->Release();
-		return nullptr;
+		temp_texture->Release();
+		return NULL;
 	}
+	g_pd3dDevice->UpdateTexture(temp_texture, texture);
+	temp_texture->Release();
 
-	g_pd3dDevice->UpdateTexture(tempTexture, texture);
-	tempTexture->Release();
+#ifndef IMGUI_USE_BGRA_PACKED_COLOR
+	ImGui::MemFree(pixels);
+#endif
 
 	return texture;
 }
 
 void ImGui_ImplDX9_DestroyTexture(void* texture)
 {
-    reinterpret_cast<IDirect3DTexture9*>(texture)->Release();
+	if (texture) { reinterpret_cast<IDirect3DTexture9 *>(texture)->Release(); }
 }
