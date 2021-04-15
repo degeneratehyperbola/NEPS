@@ -196,7 +196,8 @@ BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLin
 
 	HMODULE hModule = GetModuleHandleA(NULL);
 	HRSRC hResource = FindResourceA(hModule, MAKEINTRESOURCEA(IDR_BIN1), "BIN");
-	PVOID Buffer = LoadResource(hModule, hResource);
+	HGLOBAL hResData = LoadResource(hModule, hResource);
+	PVOID Buffer = LockResource(hResData);
 
 	// Target DLL's DOS Header
 	PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)Buffer;
@@ -260,7 +261,7 @@ BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLin
 
 	// Free the allocated loader code
 	VirtualFreeEx(hProcess, LoaderMemory, 0, MEM_RELEASE);
-	FreeResource(Buffer);
+	FreeResource(hResData);
 
 	return TRUE;
 }
