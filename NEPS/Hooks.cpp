@@ -55,8 +55,7 @@
 #include "SDK/ViewSetup.h"
 
 #ifdef _DEBUG_NEPS
-#include "stb/image.h"
-#include "resource.h"
+#include "Texture/TextureDX9.h"
 #endif // _DEBUG_NEPS
 
 static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -147,42 +146,15 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	if (gui->open)
 		gui->render();
 
+	#ifdef _DEBUG_NEPS
+	static Texture texture = "C:\\Users\\RiverHyperbola\\Desktop\\tbbn2c16.jpg";
+
+	if (texture.get())
+		ImGui::GetForegroundDrawList()->AddImage(texture.get(), {0.0f, 0.0f}, {512.0f, 512.0f});
+	#endif // _DEBUG_NEPS
+
 	ImGui::EndFrame();
 	ImGui::Render();
-
-	#ifdef _DEBUG_NEPS
-	{
-		std::size_t width = 128, height = 128;
-
-		PDIRECT3DTEXTURE9 texture;
-		constexpr auto textureFlags = D3DUSAGE_AUTOGENMIPMAP;
-		if (device->CreateTexture(width, height, 0, textureFlags, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &texture, NULL) == D3D_OK)
-		{
-			// Here we temporary hold the texture
-			//unsigned char *data = new unsigned char[width * height * 4];
-			std::vector<unsigned char> data;
-			data.reserve(width * height * 4);
-
-			HMODULE hModule = hooks->getDllHandle();
-			HRSRC hResource = FindResourceA(hModule, MAKEINTRESOURCEA(IDR_BIN1), "BIN");
-			PVOID Buffer = LoadResource(hModule, hResource);
-
-			stbi_load_from_memory();
-
-			// We lock a rectangle of texture to "paint on"
-			D3DLOCKED_RECT lockedRect;
-			texture->LockRect(0, &lockedRect, NULL, D3DLOCK_DISCARD);
-			
-			// We paint with bytes
-			lockedRect.pBits = data.data();
-
-			// We are done
-			texture->UnlockRect(0);
-
-			//delete[] data;
-		}
-	}
-	#endif // _DEBUG_NEPS
 
 	if (device->BeginScene() == D3D_OK)
 	{
@@ -377,7 +349,7 @@ static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool 
 
 static void __stdcall frameStageNotify(FrameStage stage) noexcept
 {
-	[[maybe_unused]] static auto backtrackInit = (Backtrack::init(), false);
+	[[maybe_unused]] static bool backtrackInit = (Backtrack::init(), false);
 
 	if (interfaces->engine->isConnected() && !interfaces->engine->isInGame())
 		Misc::changeName(true, nullptr, 0.0f);

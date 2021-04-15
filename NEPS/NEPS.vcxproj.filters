@@ -33,6 +33,9 @@
     <Filter Include="stb">
       <UniqueIdentifier>{861097b1-f463-4730-ac73-4ddf9d964e33}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Texture">
+      <UniqueIdentifier>{4c1f8dbc-bc16-4049-8cf5-957cc4adf870}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
@@ -160,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="stb\stb.cpp">
       <Filter>stb</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\TextureDX9.cpp">
+      <Filter>Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -480,6 +486,9 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\TextureDX9.h">
+      <Filter>Texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
