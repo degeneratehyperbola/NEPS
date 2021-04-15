@@ -24,6 +24,8 @@
 //  2018-02-16: Misc: Obsoleted the io.RenderDrawListsFn callback and exposed ImGui_ImplDX9_RenderDrawData() in the .h file so you can call it yourself.
 //  2018-02-06: Misc: Removed call to ImGui::Shutdown() which is not available from 1.60 WIP, user needs to call CreateContext/DestroyContext themselves.
 
+#include <memory>
+
 #include "imgui.h"
 #include "imgui_impl_dx9.h"
 
@@ -311,6 +313,42 @@ void ImGui_ImplDX9_InvalidateDeviceObjects()
 
 void ImGui_ImplDX9_NewFrame()
 {
-    if (!g_FontTexture)
-        ImGui_ImplDX9_CreateDeviceObjects();
+	if (!g_FontTexture)
+		ImGui_ImplDX9_CreateDeviceObjects();
+}
+
+void* ImGui_ImplDX9_CreateTextureRGBA8(int width, int height, const unsigned char* data)
+{
+	IDirect3DTexture9* tempTexture;
+	if (g_pd3dDevice->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, &tempTexture, nullptr) != D3D_OK)
+		return nullptr;
+
+	D3DLOCKED_RECT lockedRect;
+	if (tempTexture->LockRect(0, &lockedRect, nullptr, D3DLOCK_DISCARD) != D3D_OK)
+	{
+		tempTexture->Release();
+		return nullptr;
+	}
+
+	for (int y = 0; y < height; ++y)
+		std::memcpy((std::uint8_t*)lockedRect.pBits + lockedRect.Pitch * y, (const std::uint32_t*)data + width * y, width * 4);
+
+	tempTexture->UnlockRect(0);
+
+	IDirect3DTexture9* texture;
+	if (g_pd3dDevice->CreateTexture(width, height, 1, D3DUSAGE_AUTOGENMIPMAP, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture, nullptr) != D3D_OK)
+	{
+		tempTexture->Release();
+		return nullptr;
+	}
+
+	g_pd3dDevice->UpdateTexture(tempTexture, texture);
+	tempTexture->Release();
+
+	return texture;
+}
+
+void ImGui_ImplDX9_DestroyTexture(void* texture)
+{
+    reinterpret_cast<IDirect3DTexture9*>(texture)->Release();
 }
