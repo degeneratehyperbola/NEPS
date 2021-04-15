@@ -30,6 +30,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="stb">
+      <UniqueIdentifier>{861097b1-f463-4730-ac73-4ddf9d964e33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
@@ -154,6 +157,9 @@
     </ClCompile>
     <ClCompile Include="imgui\imgui_tables.cpp">
       <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="stb\stb.cpp">
+      <Filter>stb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -454,9 +460,6 @@
     <ClInclude Include="SDK\SteamMatchMaking.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\Resource.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\ClientMode.h">
       <Filter>SDK</Filter>
     </ClInclude>
@@ -472,18 +475,21 @@
     <ClInclude Include="SDK\SteamId.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image.h">
+    <ClInclude Include="stb\image.h">
+      <Filter>stb</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
       <Filter>Headers</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resources\Resource.rc">
-      <Filter>Resources</Filter>
-    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\LogoA.png">
       <Filter>Resources</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NEPS.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
