@@ -8,8 +8,7 @@
 
 Texture::Texture(const char *path) noexcept
 {
-	if (!path)
-		return;
+	if (!path) return;
 
 	int width, height;
 	auto data = stbi_load(path, &width, &height, nullptr, 4);
@@ -19,32 +18,31 @@ Texture::Texture(const char *path) noexcept
 
 Texture::Texture(int resource, const char *type) noexcept
 {
-	if (!resource || !type)
-		return;
+	if (!resource || !type) return;
 
-	int width, height;
 	auto dllHandle = hooks->getDllHandle();
 	auto resourceHandle = FindResourceA(dllHandle, MAKEINTRESOURCEA(resource), type);
 	if (resourceHandle)
 	{
-		int resourceSz = SizeofResource(dllHandle, resourceHandle);
-		void *buffer = LoadResource(dllHandle, resourceHandle);
-		auto data = stbi_load_from_memory(reinterpret_cast<unsigned char *>(buffer), resourceSz, &width, &height, nullptr, 4);
+		int width, height;
+		int resourceSize = SizeofResource(dllHandle, resourceHandle);
+		auto resourceData = LoadResource(dllHandle, resourceHandle);
+		void *buffer = LockResource(resourceData);
+		auto data = stbi_load_from_memory(reinterpret_cast<unsigned char *>(buffer), resourceSize, &width, &height, nullptr, 4);
 		texture = reinterpret_cast<IDirect3DTexture9 *>(ImGui_ImplDX9_CreateTextureRGBA8(width, height, data));
 		stbi_image_free(data);
-		FreeResource(buffer);
+		FreeResource(resourceData);
 	}
 }
 
 Texture::Texture(int width, int height, const unsigned char *data) noexcept
 {
-	if (!data)
-		return;
+	if (!data) return;
 
 	texture = reinterpret_cast<IDirect3DTexture9 *>(ImGui_ImplDX9_CreateTextureRGBA8(width, height, data));
 }
 
 Texture::~Texture() noexcept
 {
-	texture->Release();
+	if (texture) texture->Release();
 }
