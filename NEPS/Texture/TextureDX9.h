@@ -19,5 +19,5 @@ struct Texture
 	void *get() noexcept { return texture; };
 	IDirect3DTexture9 *getDX9() noexcept { return texture; };
 private:
-	IDirect3DTexture9 *texture;
+	IDirect3DTexture9 *texture = nullptr;
 };
