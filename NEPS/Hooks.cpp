@@ -56,6 +56,7 @@
 
 #ifdef _DEBUG_NEPS
 #include "Texture/TextureDX9.h"
+#include "resource.h"
 #endif // _DEBUG_NEPS
 
 static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -147,10 +148,13 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 		gui->render();
 
 	#ifdef _DEBUG_NEPS
-	static Texture texture = "C:\\Users\\RiverHyperbola\\Desktop\\tbbn2c16.jpg";
+	static Texture texture = {IDB_PNG1, "PNG"};
 
 	if (texture.get())
-		ImGui::GetForegroundDrawList()->AddImage(texture.get(), {0.0f, 0.0f}, {512.0f, 512.0f});
+	{
+		auto drawList = ImGui::GetForegroundDrawList();
+		drawList->AddImage(texture.get(), {0.0f, 0.0f}, {512.0f, 512.0f});
+	}
 	#endif // _DEBUG_NEPS
 
 	ImGui::EndFrame();
