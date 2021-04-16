@@ -116,6 +116,11 @@ public:
 		setOrAddAttributeValueByNameFunction(attributeList, attribute);
 	}
 
+	void setOrAddAttributeValueByName(std::uintptr_t attributeList, const char *attribute, int value) const noexcept
+	{
+		setOrAddAttributeValueByName(attributeList, attribute, *reinterpret_cast<float *>(&value));
+	}
+
 	MemAlloc *memalloc;
 	ViewRenderBeams *viewRenderBeams;
 
