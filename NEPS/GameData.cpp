@@ -36,8 +36,6 @@ static std::vector<InfernoData> infernoData;
 static std::vector<SmokeData> smokeData;
 static MatchData matchData;
 
-GlobalData globalData;
-
 static auto playerByHandleWritable(int handle) noexcept
 {
 	const auto it = std::find_if(playerData.begin(), playerData.end(), [handle](const auto &playerData) { return playerData.handle == handle; });
@@ -197,11 +195,6 @@ void GameData::clearProjectileList() noexcept
 const Matrix4x4 &GameData::toScreenMatrix() noexcept
 {
 	return viewMatrix;
-}
-
-GlobalData &GameData::global() noexcept
-{
-	return globalData;
 }
 
 const LocalPlayerData &GameData::local() noexcept

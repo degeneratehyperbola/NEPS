@@ -65,23 +65,23 @@ Chams::Chams() noexcept
     }
 
     {
-        const auto kv = KeyValues::fromString("VertexLitGeneric", "$baseTexture detail/dt_metal1 $additive 1 $envmap editor/cube_vertigo");
+        const auto kv = KeyValues::fromString("VertexLitGeneric", "$basetexture detail/dt_metal1 $additive 1 $envmap editor/cube_vertigo");
         kv->setString("$color", "[.05 .05 .05]");
         glass = interfaces->materialSystem->createMaterial("glass", kv);
     }
 
     {
-        const auto kv = KeyValues::fromString("VertexLitGeneric", "$baseTexture black $bumpmap effects/flat_normal $translucent 1 $envmap models/effects/crystal_cube_vertigo_hdr $envmapfresnel 0");
+        const auto kv = KeyValues::fromString("VertexLitGeneric", "$basetexture black $bumpmap effects/flat_normal $translucent 1 $envmap models/effects/crystal_cube_vertigo_hdr $envmapfresnel 0");
         crystal = interfaces->materialSystem->createMaterial("crystal", kv);
     }
 
 	{
-		const auto kv = KeyValues::fromString("VertexLitGeneric", "$baseTexture black $bumpmap models/inventory_items/trophy_majors/matte_metal_normal $additive 1 $normalmapalphaenvmapmask 1 $phong 1 $phongboost 20 $phongdisablehalflambert 1");
+		const auto kv = KeyValues::fromString("VertexLitGeneric", "$basetexture black $bumpmap models/inventory_items/trophy_majors/matte_metal_normal $additive 1 $normalmapalphaenvmapmask 1 $phong 1 $phongboost 20 $phongdisablehalflambert 1");
 		phong = interfaces->materialSystem->createMaterial("phong", kv);
 	}
 
 	{
-		const auto kv = KeyValues::fromString("VertexLitGeneric", "$baseTexture black $additive 1 $envmap env_cubemap $envmapfresnel 1");
+		const auto kv = KeyValues::fromString("VertexLitGeneric", "$basetexture black $additive 1 $envmap env_cubemap $envmapfresnel 1");
 		fresnel = interfaces->materialSystem->createMaterial("fresnel", kv);
 	}
 }
@@ -141,13 +141,9 @@ void Chams::renderPlayer(Entity* player) noexcept
 	{
 		applyChams(config->chams["Local player"].materials, health);
 
-		GameData::Lock lock;
-		const auto &global = GameData::global();
-
 		if (config->antiAim.desync || config->antiAim.fakeUp) {
 			Matrix3x4 fakeBones[MAX_STUDIO_BONES];
-			std::copy(std::begin(global.lerpedBones), std::end(global.lerpedBones), fakeBones);
-
+			Animations::copyLerpedBones(fakeBones);
 			const auto &origin = localPlayer->getRenderOrigin();
 
 			for (int i = 0; i < MAX_STUDIO_BONES; i++)

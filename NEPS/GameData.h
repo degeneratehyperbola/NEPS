@@ -27,10 +27,6 @@ struct InfernoData;
 struct SmokeData;
 struct MatchData;
 
-struct Indicators;
-
-struct GlobalData;
-
 struct StudioHitboxSet;
 struct Matrix4x4;
 
@@ -63,20 +59,7 @@ namespace GameData
 	const std::vector<InfernoData> &infernos() noexcept;
 	const std::vector<SmokeData> &smokes() noexcept;
 	const MatchData &match() noexcept;
-	GlobalData &global() noexcept;
 }
-
-struct GlobalData
-{
-	UserCmd lastCmd;
-	bool lastSendPacket = true;
-	Matrix3x4 lerpedBones[MAX_STUDIO_BONES];
-
-	#ifdef _DEBUG_NEPS
-	int scheduledEffectFlags;
-	std::vector<Vector> multipoints;
-	#endif // _DEBUG_NEPS
-};
 
 struct LocalPlayerData
 {

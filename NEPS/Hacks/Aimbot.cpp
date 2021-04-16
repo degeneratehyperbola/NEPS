@@ -156,9 +156,6 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 	auto bestHitchance = config->aimbot[weaponIndex].shotHitchance;
 
 	std::array<Matrix3x4, MAX_STUDIO_BONES> bufferBones;
-	#ifdef _DEBUG_NEPS
-	std::vector<Vector> multipoints;
-	#endif // _DEBUG_NEPS
 
 	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 	{
@@ -354,10 +351,6 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 				}
 			}
 
-			#ifdef _DEBUG_NEPS
-			multipoints.insert(multipoints.end(), points.begin(), points.end());
-			#endif // _DEBUG_NEPS
-
 			const float radius = Helpers::approxRadius(hitbox, hitboxIdx);
 
 			for (auto &point : points)
@@ -443,14 +436,6 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 			}
 		}
 	}
-
-	#ifdef _DEBUG_NEPS
-	{
-		GameData::Lock lock;
-		GameData::global().multipoints.clear();
-		GameData::global().multipoints = multipoints;
-	}
-	#endif // _DEBUG_NEPS
 }
 
 Vector Aimbot::getTargetPoint() noexcept

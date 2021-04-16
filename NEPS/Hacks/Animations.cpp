@@ -1,6 +1,4 @@
 #include <array>
-#undef NDEBUG
-#include <cassert>
 
 #include "Animations.h"
 
@@ -22,7 +20,9 @@
 #include "../Interfaces.h"
 #include "../Memory.h"
 
-bool Animations::clientLerped(Matrix3x4 *out, const UserCmd *cmd, bool sendPacket) noexcept
+static std::array<Matrix3x4, MAX_STUDIO_BONES> lerpedBones;
+
+bool Animations::clientLerped(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	bool matrixUpdated = false;
 
@@ -62,20 +62,19 @@ bool Animations::clientLerped(Matrix3x4 *out, const UserCmd *cmd, bool sendPacke
 
 		*(int *)(localPlayer.get() + 0xA68) = 0;
 
-		memory->updateState(lerpedState, NULL, NULL, cmd->viewangles.y, cmd->viewangles.x, NULL);
+		memory->updateState(lerpedState, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
 		memory->invalidateBoneCache(localPlayer.get());
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, lerpedState->feetYaw, 0.0f});
 
 		std::copy(lerpedLayers.begin(), lerpedLayers.end(), localPlayer->animOverlays());
 		localPlayer->getAnimationLayer(12)->weight = FLT_EPSILON;
 
-		matrixUpdated = localPlayer->setupBones(out, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, 0.0f);
+		matrixUpdated = localPlayer->setupBones(lerpedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, 0.0f);
 
-		const auto &origin = localPlayer->getRenderOrigin();
-		if (matrixUpdated)
+		if (const auto &origin = localPlayer->getRenderOrigin(); matrixUpdated)
 			for (int i = 0; i < MAX_STUDIO_BONES; i++)
 			{
-				out[i].setOrigin(out[i].origin() - origin);
+				lerpedBones[i].setOrigin(lerpedBones[i].origin() - origin);
 			}
 
 		localPlayer->poseParam() = backupPoseParam;
@@ -85,7 +84,7 @@ bool Animations::clientLerped(Matrix3x4 *out, const UserCmd *cmd, bool sendPacke
 	return matrixUpdated;
 }
 
-bool Animations::animSync(const UserCmd *cmd, bool sendPacket) noexcept
+bool Animations::animSync(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	bool matrixUpdated = false;
 
@@ -107,7 +106,7 @@ bool Animations::animSync(const UserCmd *cmd, bool sendPacket) noexcept
 	std::copy(localPlayer->animOverlays(), localPlayer->animOverlays() + localPlayer->getAnimationLayerCount(), networkedLayers.begin());
 
 	localPlayer->clientAnimations() = true;
-	memory->updateState(state, NULL, NULL, cmd->viewangles.y, cmd->viewangles.x, NULL);
+	memory->updateState(state, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
 	localPlayer->clientAnimations() = false;
 
 	matrixUpdated = localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, 0.0f);
@@ -164,4 +163,9 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	memory->invalidateBoneCache(animatable);
 	animatable->effectFlags() = backupEffects;
+}
+
+void Animations::copyLerpedBones(Matrix3x4 *out) noexcept
+{
+	if (out) std::copy(lerpedBones.begin(), lerpedBones.end(), out);
 }

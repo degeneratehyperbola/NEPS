@@ -184,6 +184,8 @@ static bool __fastcall sendNetMsg(NetworkChannel *networkchannel, void *edx, Net
 }
 
 static bool netChInitialized = false;
+static bool sentPacket = true;
+static UserCmd lastCmd;
 
 static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 {
@@ -262,17 +264,14 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	previousViewAngles = cmd->viewangles;
 
-	GameData::Lock lock;
-	auto &global = GameData::global();
-
-	global.lastSendPacket = sendPacket;
-	global.lastCmd = *cmd;
+	sentPacket = sendPacket;
+	lastCmd = *cmd;
 
 	if (config->antiAim.desync || config->antiAim.fakeUp)
 	{
 		if (fakePitchPerformed)
 			cmd->viewangles.x = -89.0f; // Fake pitch visualisation
-		Animations::clientLerped(global.lerpedBones, cmd, sendPacket);
+		Animations::clientLerped(*cmd, sendPacket);
 		cmd->viewangles.x = previousViewAngles.x; // Restore view angles after visualising fake pitch
 	}
 
@@ -370,7 +369,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::fakePrime();
-		Misc::fixAnimation();
+		Misc::fixAnimation(lastCmd, sentPacket);
 	}
 
 	if (interfaces->engine->isInGame())

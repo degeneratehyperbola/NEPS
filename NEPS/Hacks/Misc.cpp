@@ -1386,12 +1386,9 @@ void Misc::preserveKillfeed(bool roundStart) noexcept
 	}
 }
 
-void Misc::fixAnimation() noexcept
+void Misc::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 {
-	GameData::Lock lock;
-	auto &global = GameData::global();
-
-	Animations::animSync(&global.lastCmd, global.lastSendPacket);
+	Animations::animSync(cmd, sendPacket);
 }
 
 static int blockTargetHandle = 0;
@@ -1402,9 +1399,6 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
-
-	GameData::Lock lock;
-	auto &global = GameData::global();
 
 	float best = 255.0f;
 	if (static Helpers::KeyBindState flag; flag[config->griefing.blockbot.target])
@@ -1543,20 +1537,9 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 {
 	GameData::Lock lock;
 	const auto &local = GameData::local();
-	const auto &global = GameData::global();
 
 	if (!local.exists || !local.alive)
 		return;
-
-	#ifdef _DEBUG_NEPS
-	for (auto &p : global.multipoints)
-	{
-		ImVec2 pos;
-		Helpers::worldToScreen(p, pos);
-
-		drawList->AddCircle(pos, 2.0f, 0xFFFFFFFF);
-	}
-	#endif // _DEBUG_NEPS
 
 	if (!config->misc.indicators) return;
 
