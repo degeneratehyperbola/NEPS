@@ -495,18 +495,13 @@
     <Image Include="Resources\LogoA.png">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="C:\Users\RiverHyperbola\Desktop\tbbn2c16.png" />
-    <Image Include="C:\Users\RiverHyperbola\Desktop\tbbn2c16.jpg" />
-    <Image Include="c:\users\riverhyperbola\desktop\bitmap2.bmp" />
-    <Image Include="C:\Users\RiverHyperbola\Desktop\aa.png" />
+    <Image Include="Resources\debug.png">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NEPS.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bin1.bin" />
-    <None Include="C:\Users\RiverHyperbola\Desktop\ij.bin" />
   </ItemGroup>
 </Project>

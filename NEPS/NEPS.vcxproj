@@ -170,18 +170,11 @@
     <ClInclude Include="Texture\TextureDX9.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\RiverHyperbola\Desktop\aa.png" />
-    <Image Include="c:\users\riverhyperbola\desktop\bitmap2.bmp" />
-    <Image Include="C:\Users\RiverHyperbola\Desktop\tbbn2c16.jpg" />
-    <Image Include="C:\Users\RiverHyperbola\Desktop\tbbn2c16.png" />
+    <Image Include="Resources\debug.png" />
     <Image Include="Resources\LogoA.png" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NEPS.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bin1.bin" />
-    <None Include="C:\Users\RiverHyperbola\Desktop\ij.bin" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

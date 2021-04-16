@@ -53,6 +53,8 @@ END
 
 IDB_PNG1                PNG                     "Resources\\LogoA.png"
 
+IDB_PNG2                PNG                     "Resources\\debug.png"
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

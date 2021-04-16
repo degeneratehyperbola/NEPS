@@ -148,12 +148,12 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 		gui->render();
 
 	#ifdef _DEBUG_NEPS
-	static Texture texture = {IDB_PNG1, "PNG"};
+	static Texture texture = {IDB_PNG2, "PNG"};
 
 	if (texture.get())
 	{
 		auto drawList = ImGui::GetForegroundDrawList();
-		drawList->AddImage(texture.get(), {0.0f, 0.0f}, {512.0f, 512.0f});
+		drawList->AddImage(texture.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
 	}
 	#endif // _DEBUG_NEPS
 
