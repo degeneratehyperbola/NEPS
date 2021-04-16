@@ -147,14 +147,14 @@ void apply_sticker_changer(Entity *item) noexcept
 	if (auto config = get_by_definition_index(item->itemDefinitionIndex2()))
 	{
 		constexpr auto m_Item = fnv::hash("CBaseAttributableItem->m_Item");
-		const auto attributeList = std::uintptr_t(item) + netvars->operator[](m_Item) + 0x244;
+		const auto attributeList = std::uintptr_t(item) + netvars->operator[](m_Item) + /* m_AttributeList = */ 0x244;
 
 		for (std::size_t i = 0; i < config->stickers.size(); ++i)
 		{
 			const auto &sticker = config->stickers[i];
 			const auto attributeString = "sticker slot " + std::to_string(i) + ' ';
 
-			memory->setOrAddAttributeValueByName(attributeList, (attributeString + "id").c_str(), static_cast<float>(sticker.kit));
+			memory->setOrAddAttributeValueByName(attributeList, (attributeString + "id").c_str(), sticker.kit);
 			memory->setOrAddAttributeValueByName(attributeList, (attributeString + "wear").c_str(), sticker.wear);
 			memory->setOrAddAttributeValueByName(attributeList, (attributeString + "scale").c_str(), sticker.scale);
 			memory->setOrAddAttributeValueByName(attributeList, (attributeString + "rotation").c_str(), sticker.rotation);
@@ -162,8 +162,7 @@ void apply_sticker_changer(Entity *item) noexcept
 	}
 }
 
-static void apply_config_on_attributable_item(Entity *item, const item_setting &config,
-	const unsigned xuid_low) noexcept
+static void apply_config_on_attributable_item(Entity *item, const item_setting &config, const unsigned xuid_low) noexcept
 {
 	// Force fallback values to be used.
 	item->itemIDHigh() = -1;

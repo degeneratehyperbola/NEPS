@@ -1541,7 +1541,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 				}, nullptr, SkinChanger::getKnifeTypes().size(), 15);
 			} else if (itemIndex == 1)
 			{
-				ImGui::Combo("Glove", &selected_entry.definition_override_vector_index, [](void *data, int idx, const char **out_text)
+				ImGui::Combo("Gloves", &selected_entry.definition_override_vector_index, [](void *data, int idx, const char **out_text)
 				{
 					*out_text = SkinChanger::getGloveTypes()[idx].name.c_str();
 					return true;
@@ -1573,6 +1573,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 
 			static const auto &kits = SkinChanger::getStickerKits();
 			static std::size_t selectedStickerSlot = 0;
+			static std::size_t lastSelectedStickerSlot = selectedStickerSlot;
 
 			if (ImGui::BeginListBox("##stickers", {0.0f, ImGui::GetTextLineHeightWithSpacing() * 5.0f + ImGui::GetStyle().FramePadding.y - 1.0f}))
 			{
@@ -1607,7 +1608,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 						ImGui::PushStyleColor(ImGuiCol_Text, rarityColor(kits[i].rarity));
 						if (ImGui::Selectable(kits[i].name.c_str(), selected))
 							selected_sticker.kit_vector_index = i;
-						if (selected && lastItemIndex != itemIndex)
+						if (selected && (lastItemIndex != itemIndex || lastSelectedStickerSlot != selectedStickerSlot))
 							ImGui::SetScrollHereY();
 						#ifdef _DEBUG_NEPS
 						if (ImGui::IsItemHovered())
@@ -1625,6 +1626,8 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 			ImGui::SliderFloat("##rotation", &selected_sticker.rotation, 0.0f, 360.0f, "Rotation %.3fdeg");
 
 			ImGui::PopID();
+
+			lastSelectedStickerSlot = selectedStickerSlot;
 		}
 		ImGui::PopItemWidth();
 		selected_entry.update();
@@ -1636,7 +1639,6 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		if (ImGui::Button("Update", {130.0f, 30.0f}))
 			SkinChanger::scheduleHudUpdate();
 	}
-
 	ImGui::EndChild();
 
 	lastItemIndex = itemIndex;
