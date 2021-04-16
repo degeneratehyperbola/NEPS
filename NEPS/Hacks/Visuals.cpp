@@ -428,15 +428,11 @@ void Visuals::hitMarker(GameEvent *event, ImDrawList *drawList) noexcept
 		return;
 
 	static float lastHitTime = 0.0f;
-	static int dmg = 0;
 
 	if (event)
 	{
 		if (localPlayer && event->getInt("attacker") == localPlayer->getUserId())
-		{
 			lastHitTime = memory->globalVars->realtime;
-			dmg = event->getInt("dmg_health");
-		}
 		return;
 	}
 
