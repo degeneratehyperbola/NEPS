@@ -184,7 +184,7 @@ public:
 		int flashlightFov = 53;
 		int fov = 90;
 		bool forceFov = false;
-		int farZ = 500;
+		int farZ = 1200;
 		int flashReduction = 0;
 		float brightness = 0.0f;
 		int skybox = 0;

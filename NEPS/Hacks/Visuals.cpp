@@ -502,8 +502,8 @@ void Visuals::skybox(FrameStage stage) noexcept
     if (const auto& skyboxes = Helpers::skyboxList; stage == FrameStage::RENDER_START && config->visuals.skybox > 0 && static_cast<std::size_t>(config->visuals.skybox) < skyboxes.size()) {
         memory->loadSky(skyboxes[config->visuals.skybox]);
     } else {
-        static const auto sv_skyname = interfaces->cvar->findVar("sv_skyname");
-        memory->loadSky(sv_skyname->string);
+        static const auto skyNameVar = interfaces->cvar->findVar("sv_skyname");
+        memory->loadSky(skyNameVar->string);
     }
 }
 
@@ -710,21 +710,6 @@ void Visuals::flashlight(FrameStage stage) noexcept
 		localPlayer->effectFlags() |= 4;
 	else
 		localPlayer->effectFlags() &= ~4;
-
-	#ifdef _DEBUG_NEPS
-	GameData::Lock lock;
-	const auto &global = GameData::global();
-
-	static auto flag = 1 << global.scheduledEffectFlags;
-
-	if (stage == FrameStage::RENDER_START)
-		localPlayer->effectFlags() |= flag;
-	else
-	{
-		localPlayer->effectFlags() &= ~flag;
-		flag = 1 << global.scheduledEffectFlags;
-	}
-	#endif // _DEBUG_NEPS
 }
 
 void Visuals::playerBounds(ImDrawList *drawList) noexcept
