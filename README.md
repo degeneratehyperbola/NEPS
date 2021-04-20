@@ -2,10 +2,14 @@
 
 <div align="center">
 
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
+
 # NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
 [![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)](https://github.com/degeneratehyperbola/NEPS/issues)
 [![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 [![LICENSE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
+
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
 
 </div>
 
@@ -50,6 +54,8 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 - Perhaps a rankchanger will be nice addition ;)
 
 # How to use NEPS?
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
+
 If you are not a nerd, than good for you as it is pretty simple to get started!
 
 ### Step-by-step:
@@ -66,6 +72,8 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 ## <sup>*</sup>Concerned?
 ### Feel free to compile your own version of NEPS loader! Source code of it is available right in this repository.
 
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
+
 # NEPcord
 **NEPS has official Discord as well!**
 
@@ -79,6 +87,8 @@ this includes addition of new exciting features, testing and bug fixing. It'd be
 *pwease*
 
 [![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
+
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
 
 # Acknowledgments
 - [Daniel Krupiński](https://github.com/danielkrupinski) for [Osiris](https://github.com/danielkrupinski/Osiris) - an amazing fundament for a CS:GO cheat
