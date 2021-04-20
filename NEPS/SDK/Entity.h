@@ -278,16 +278,6 @@ public:
 		if (!set) return nullptr;
 		return set->getHitbox(i);
 	}
-
-	bool isVisible(const Vector& position = {}) noexcept
-	{
-		if (!localPlayer)
-			return false;
-
-		Trace trace;
-		interfaces->engineTrace->traceRay({localPlayer->getEyePosition(), position.notNull() ? position : getBonePosition(8)}, 0x46004009, localPlayer.get(), trace);
-		return trace.entity == this || trace.fraction == 1.0f;
-	}
     
 	bool isOtherEnemy(Entity* other) noexcept;
 
