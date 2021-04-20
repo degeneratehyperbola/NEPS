@@ -2,14 +2,10 @@
 
 <div align="center">
 
-![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
-
 # NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
 [![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)](https://github.com/degeneratehyperbola/NEPS/issues)
 [![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 [![LICENSE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
-
-![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
 
 </div>
 
@@ -53,6 +49,8 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 - Translate minimum damage override for aimbot from C++ to a Python script (and be sure that the API is working correctly)
 - Perhaps a rankchanger will be nice addition ;)
 
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
+
 # How to use NEPS?
 ![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
 
@@ -81,6 +79,8 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 [![DISCORD JOIN](https://img.shields.io/badge/%20-Join-orange?style=plastic)](https://discord.gg/pwB3XBppVr)
 
 # We demand support for NEPS!
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
+
 If you fell like supporting me, or, perhaps, want me to further maintain and update this project,
 this includes addition of new exciting features, testing and bug fixing. It'd be very generous of you to support this project at creator's Patreon.
 
@@ -101,3 +101,5 @@ this includes addition of new exciting features, testing and bug fixing. It'd be
 # NEPS downloads
 ![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
 ![LATEST DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/latest/total?color=orange&label=Latest%20release&style=plastic)
+
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
