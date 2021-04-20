@@ -32,7 +32,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 	const auto time = memory->globalVars->serverTime();
 
-	if (localPlayer->nextAttack() > time || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
+	if (localPlayer->nextAttack() > time || !localPlayer->isAlive() || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
 		return;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
@@ -199,20 +199,20 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 				const auto records = Backtrack::getRecords(entity->index());
 				for (const auto &record : records)
 				{
-					if (Backtrack::valid(record.simulationTime))
-					{
-						if (record.shot && config->backtrack.onShot)
-						{
-							choosenRecord = &record;
-							break;
-						}
+					if (!Backtrack::valid(record.simulationTime))
+						continue;
 
-						const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
-						if (goesThroughWall && distance < bestDistance)
-						{
-							bestDistance = distance;
-							choosenRecord = &record;
-						}
+					if (record.shot && config->backtrack.onShot)
+					{
+						choosenRecord = &record;
+						break;
+					}
+
+					const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
+					if (goesThroughWall && distance < bestDistance)
+					{
+						bestDistance = distance;
+						choosenRecord = &record;
 					}
 				}
 			}

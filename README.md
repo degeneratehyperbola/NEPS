@@ -50,7 +50,6 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 - Perhaps a rankchanger will be nice addition ;)
 
 # How to use NEPS?
-
 If you are not a nerd, than good for you as it is pretty simple to get started!
 
 ### Step-by-step:
