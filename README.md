@@ -33,6 +33,10 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 - Exploits: abuse miscellaneous bugs of the game
 - Movement: movement enhancement
 - Misc: miscellaneous features that didn't get categorized, try them out among others!
+- Style: customize the look of NEPS main menu
+- Config: save and load configurations for every feature
+
+<sup>psst... right click to bring up the context menu</sup>
 
 ### Extreme Onion Team is planning to:
 - Add localization!!!
