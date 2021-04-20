@@ -9,6 +9,8 @@
 
 </div>
 
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
+
 An open source bloat-free CS:GO cheat for Windows, based on Osiris. You should probably give it a go, as it was in development for about a year. With many, MANY features added, many, MANY fixes pushed (even the ones CS:GO itself needed), many, MANY optimizations and more!
 
 ### Some NEPS screenshots:
@@ -19,8 +21,6 @@ This cheat is optimized as far as I was able to keep it clean.
 As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at making anyone's CS:GO experience with NEPS, at least, not as stuttery and laggy.
 
 # NEPS features
-![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
-
 - Aimbot: aim assistance
 - Triggerbot: automatically shoot a player if in front of crosshair
 - Backtrack: abuse lag compensation to interact with opponent's previous records
@@ -49,10 +49,7 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 - Translate minimum damage override for aimbot from C++ to a Python script (and be sure that the API is working correctly)
 - Perhaps a rankchanger will be nice addition ;)
 
-![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
-
 # How to use NEPS?
-![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
 
 If you are not a nerd, than good for you as it is pretty simple to get started!
 
@@ -70,8 +67,6 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 ## <sup>*</sup>Concerned?
 ### Feel free to compile your own version of NEPS loader! Source code of it is available right in this repository.
 
-![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
-
 # NEPcord
 **NEPS has official Discord as well!**
 
@@ -79,8 +74,6 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 [![DISCORD JOIN](https://img.shields.io/badge/%20-Join-orange?style=plastic)](https://discord.gg/pwB3XBppVr)
 
 # We demand support for NEPS!
-![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
-
 If you fell like supporting me, or, perhaps, want me to further maintain and update this project,
 this includes addition of new exciting features, testing and bug fixing. It'd be very generous of you to support this project at creator's Patreon.
 
