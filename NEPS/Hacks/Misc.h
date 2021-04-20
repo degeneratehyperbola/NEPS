@@ -51,4 +51,5 @@ namespace Misc
 	void useSpam(UserCmd *cmd);
 	void indicators(ImDrawList *drawList) noexcept;
 	void voteRevealer(GameEvent &event) noexcept;
+	void missCounter(GameEvent *event) noexcept;
 }
