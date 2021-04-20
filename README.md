@@ -19,6 +19,8 @@ This cheat is optimized as far as I was able to keep it clean.
 As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at making anyone's CS:GO experience with NEPS, at least, not as stuttery and laggy.
 
 # NEPS features
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
+
 - Aimbot: aim assistance
 - Triggerbot: automatically shoot a player if in front of crosshair
 - Backtrack: abuse lag compensation to interact with opponent's previous records
@@ -37,6 +39,8 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 - Config: save and load configurations for every feature
 
 <sup>psst... right click to bring up the context menu</sup>
+
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
 
 ### Extreme Onion Team is planning to:
 - Add localization!!!
