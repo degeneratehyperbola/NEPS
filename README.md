@@ -15,7 +15,7 @@ An open source bloat-free CS:GO cheat for Windows, based on Osiris. You should p
 ![SCREENSHOT](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/menu_neps.png)
 
 # NEPS O_O
-This software is optimized as far as I was able to keep it clean.
+This cheat is optimized as far as I was able to keep it clean.
 As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at making anyone's CS:GO experience with NEPS, at least, not as stuttery and laggy.
 
 # How to use NEPS?
@@ -54,7 +54,8 @@ this includes addition of new exciting features, testing and bug fixing. It'd be
 - [omar (ocornut)](https://github.com/ocornut) and [contributors](https://github.com/ocornut/imgui/graphs/contributors) for THE solution when it comes to in-game overlays - [ImGui](https://github.com/ocornut/imgui)
 
 # License
-### See [![LICENSE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
+### See:
+[![LICENSE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 
 # NEPS downloads
 ![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
