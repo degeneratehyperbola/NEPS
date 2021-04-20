@@ -11,12 +11,35 @@
 
 An open source bloat-free CS:GO cheat for Windows, based on Osiris. You should probably give it a go, as it was in development for about a year. With many, MANY features added, many, MANY fixes pushed (even the ones CS:GO itself needed), many, MANY optimizations and more!
 
-### Some NEPS features:
+### Some NEPS screenshots:
 ![SCREENSHOT](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/menu_neps.png)
 
 # NEPS O_O
 This cheat is optimized as far as I was able to keep it clean.
 As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at making anyone's CS:GO experience with NEPS, at least, not as stuttery and laggy.
+
+# NEPS features
+- Aimbot: aim assistance
+- Triggerbot: automatically shoot a player if in front of crosshair
+- Backtrack: abuse lag compensation to interact with opponent's previous records
+- Anti-aim: a tool to make you harder to hit, sometimes exploiting server-client desynchronization bug
+- Chams or Chameleons: color and shade any model in a world to your liking (also can indicate backtrack and anti-aim)
+- Glow: similarlly to chams creates a glowing halo around models
+- ESP or Extra Sensory Perception: reveal critical info about players
+- Visuals: modify visual aspects of the game to your liking
+- Skin Changer: equip any in-game weapon/player skin
+- Sound: modulate any sound individually
+- Griefing: toolset for trolling/griefing players
+- Exploits: abuse miscellaneous bugs of the game
+- Movement: movement enhancement
+- Misc: miscellaneous features that didn't get categorized, try them out among others!
+
+### Extreme Onion Team is planning to:
+- Add localization!!!
+- Add Python scripting API
+	- So far texture API is ready. And you can use it internally in C++ now!
+- Translate minimum damage override for aimbot from C++ to a Python script (and be sure that the API is working correctly)
+- Perhaps a rankchanger will be nice addition ;)
 
 # How to use NEPS?
 If you are not a nerd, than good for you as it is pretty simple to get started!
