@@ -99,9 +99,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 	{
 		gui->open = !gui->open;
 		if (!gui->open)
-		{
 			interfaces->inputSystem->resetInputState();
-		}
 	}
 
 	LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -152,8 +150,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 
 	if (texture.get())
 	{
-		auto drawList = ImGui::GetForegroundDrawList();
-		drawList->AddImage(texture.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
+		ImGui::GetForegroundDrawList()->AddImage(texture.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
 	}
 	#endif // _DEBUG_NEPS
 

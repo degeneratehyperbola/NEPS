@@ -18,11 +18,12 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 {
 	if (!localPlayer) return;
 
-    if (!localPlayer->isAlive() || localPlayer->nextAttack() > memory->globalVars->serverTime() || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
+	const auto time = memory->globalVars->serverTime();
+    if (!localPlayer->isAlive() || localPlayer->nextAttack() > time || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
         return;
 
     const auto activeWeapon = localPlayer->getActiveWeapon();
-    if (!activeWeapon || !activeWeapon->clip() || activeWeapon->nextPrimaryAttack() > memory->globalVars->serverTime())
+    if (!activeWeapon || !activeWeapon->clip() || activeWeapon->nextPrimaryAttack() > time)
         return;
 
     if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())

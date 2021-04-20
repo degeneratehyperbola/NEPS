@@ -31,7 +31,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		return;
 
 	const auto time = memory->globalVars->serverTime();
-
 	if (localPlayer->nextAttack() > time || !localPlayer->isAlive() || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
 		return;
 
