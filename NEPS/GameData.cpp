@@ -93,7 +93,9 @@ void GameData::update() noexcept
 				player->update(entity);
 			} else
 			{
-				playerData.emplace_back(entity);
+				PlayerData dummy;
+				dummy.update(entity);
+				playerData.emplace_back(dummy);
 			}
 
 			if (!entity->isDormant() && !entity->isAlive())
@@ -263,13 +265,6 @@ void LocalPlayerData::update() noexcept
 	exists = true;
 	alive = localPlayer->isAlive();
 
-	if (const auto activeWeapon = localPlayer->getActiveWeapon())
-	{
-		reloading = activeWeapon->isInReload();
-		shooting = localPlayer->shotsFired() > 1;
-		crosshairVisible = config->visuals.noWeapons ? (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && !localPlayer->isScoped() || activeWeapon->isSniperRifle() && localPlayer->isScoped() : (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 2) || localPlayer->isScoped();
-		nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), localPlayer->nextAttack());
-	}
 	fov = localPlayer->fov() ? localPlayer->fov() : localPlayer->defaultFov();
 	handle = localPlayer->handle();
 	flashDuration = localPlayer->flashDuration();
@@ -285,6 +280,14 @@ void LocalPlayerData::update() noexcept
 		origin = obs->getAbsOrigin();
 		velocity = obs->velocity();
 
+		if (const auto activeWeapon = obs->getActiveWeapon())
+		{
+			reloading = obs->isInReload();
+			shooting = obs->shotsFired() > 1;
+			crosshairVisible = config->visuals.noWeapons ? (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && !obs->isScoped() || activeWeapon->isSniperRifle() && obs->isScoped() : (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 2) || obs->isScoped();
+			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), obs->nextAttack());
+		}
+
 		const auto collidable = obs->getCollideable();
 		if (!collidable)
 			return;
@@ -297,6 +300,14 @@ void LocalPlayerData::update() noexcept
 
 		origin = localPlayer->getAbsOrigin();
 		velocity = localPlayer->velocity();
+
+		if (const auto activeWeapon = localPlayer->getActiveWeapon())
+		{
+			reloading = localPlayer->isInReload();
+			shooting = localPlayer->shotsFired() > 1;
+			crosshairVisible = config->visuals.noWeapons ? (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && !localPlayer->isScoped() || activeWeapon->isSniperRifle() && localPlayer->isScoped() : (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 2) || localPlayer->isScoped();
+			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), localPlayer->nextAttack());
+		}
 
 		const auto collidable = localPlayer->getCollideable();
 		if (!collidable)
@@ -387,23 +398,21 @@ void ProjectileData::update(Entity *projectile) noexcept
 		trajectory.emplace_back(memory->globalVars->realtime, pos);
 }
 
-PlayerData::PlayerData(Entity *entity) noexcept : BaseData{entity}
-{
-	handle = entity->handle();
-	update(entity);
-}
-
 void PlayerData::update(Entity *entity) noexcept
 {
+	handle = entity->handle();
 	entity->getPlayerName(name);
 
-	const auto isDormant = entity->isDormant();
-	if (isDormant && !dormant)
-		becameDormant = memory->globalVars->realtime;
+	if (entity->isDormant())
+	{
+		if (!dormant)
+			becameDormant = memory->globalVars->realtime;
 
-	dormant = isDormant;
-	if (dormant)
+		dormant = true;
 		return;
+	}
+
+	dormant = false;
 
 	static_cast<BaseData &>(*this) = {entity};
 	origin = entity->getAbsOrigin();
@@ -424,7 +433,7 @@ void PlayerData::update(Entity *entity) noexcept
 				return true;
 		return false;
 	};
-
+	
 	audible = isEntityAudible(entity->index());
 	spotted = entity->spotted();
 	health = entity->health();
@@ -684,8 +693,11 @@ SmokeData::SmokeData(Entity *smoke) noexcept
 
 void MatchData::update() noexcept
 {
-	if (!interfaces->engine->isInGame() || !localPlayer)
+	if (!interfaces->engine->isInGame())
+	{
+		levelName = "";
 		return;
+	}
 
 	levelName = interfaces->engine->getLevelName();
 }

@@ -11,6 +11,7 @@ struct Texture
 	Texture(int resource, const char *type) noexcept;
 	Texture(int width, int height, const unsigned char *data) noexcept;
 
+	Texture() noexcept = default;
 	Texture(const Texture &) noexcept = default;
 	Texture(Texture &&) noexcept = default;
 
