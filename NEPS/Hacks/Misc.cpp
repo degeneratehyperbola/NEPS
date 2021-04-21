@@ -465,7 +465,7 @@ void Misc::overlayCrosshair(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 	const auto &local = GameData::local();
 
-	if (!local.exists || !local.alive || local.crosshairVisible)
+	if (!local.exists || !local.alive || local.drawingCrosshair || local.drawingScope)
 		return;
 
 	drawCrosshair(drawList, ImGui::GetIO().DisplaySize / 2, Helpers::calculateColor(config->visuals.overlayCrosshair), config->visuals.overlayCrosshairType);
@@ -866,8 +866,13 @@ void Misc::changeConVarsFrame(FrameStage stage)
 		ffovVar->setValue(config->visuals.flashlightFov);
 		static auto hairVar = interfaces->cvar->findVar("crosshair");
 		hairVar->setValue(config->visuals.forceCrosshair != 2);
-		static auto shairVar = interfaces->cvar->findVar("weapon_debug_spread_show");
-		shairVar->setValue(config->visuals.forceCrosshair == 1 ? 3 : 0);
+		{
+			GameData::Lock lock;
+			const auto &local = GameData::local();
+
+			static auto shairVar = interfaces->cvar->findVar("weapon_debug_spread_show");
+			shairVar->setValue(config->visuals.forceCrosshair == 1 && !local.drawingScope ? 3 : 0);
+		}
 		break;
 	case FrameStage::RENDER_END:
 		static auto skyVar = interfaces->cvar->findVar("r_3dsky");

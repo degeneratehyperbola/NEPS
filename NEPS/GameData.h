@@ -69,7 +69,8 @@ struct LocalPlayerData
 	bool alive;
 	bool reloading;
 	bool shooting;
-	bool crosshairVisible;
+	bool drawingScope;
+	bool drawingCrosshair;
 	float nextAttack;
 	int fov;
 	int handle;

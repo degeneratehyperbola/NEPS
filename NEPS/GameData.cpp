@@ -284,8 +284,9 @@ void LocalPlayerData::update() noexcept
 		{
 			reloading = obs->isInReload();
 			shooting = obs->shotsFired() > 1;
-			crosshairVisible = config->visuals.noWeapons ? (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && !obs->isScoped() || activeWeapon->isSniperRifle() && obs->isScoped() : (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 2) || obs->isScoped();
 			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), obs->nextAttack());
+			drawingScope = (activeWeapon->isSniperRifle() || !config->visuals.noWeapons) && obs->isScoped();
+			drawingCrosshair = (!activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && config->visuals.forceCrosshair != 2;
 		}
 
 		const auto collidable = obs->getCollideable();
@@ -305,8 +306,9 @@ void LocalPlayerData::update() noexcept
 		{
 			reloading = localPlayer->isInReload();
 			shooting = localPlayer->shotsFired() > 1;
-			crosshairVisible = config->visuals.noWeapons ? (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && !localPlayer->isScoped() || activeWeapon->isSniperRifle() && localPlayer->isScoped() : (config->visuals.forceCrosshair == 0 && !activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 2) || localPlayer->isScoped();
 			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), localPlayer->nextAttack());
+			drawingScope = (activeWeapon->isSniperRifle() || !config->visuals.noWeapons) && localPlayer->isScoped();
+			drawingCrosshair =  (!activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && config->visuals.forceCrosshair != 2;
 		}
 
 		const auto collidable = localPlayer->getCollideable();
