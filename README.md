@@ -26,7 +26,7 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 - Backtrack: abuse lag compensation to interact with opponent's previous records
 - Anti-aim: a tool to make you harder to hit, sometimes exploiting server-client desynchronization bug
 - Chams or Chameleons: color and shade any model in a world to your liking (also can indicate backtrack and anti-aim)
-- Glow: similarlly to chams creates a glowing halo around models
+- Glow: similarly to chams creates a glowing halo around models
 - ESP or Extra Sensory Perception: reveal critical info about players
 - Visuals: modify visual aspects of the game to your liking
 - Skin Changer: equip any in-game weapon/player skin
