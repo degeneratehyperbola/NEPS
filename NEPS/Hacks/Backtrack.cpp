@@ -13,13 +13,13 @@
 static std::array<std::deque<Backtrack::Record>, 65> records;
 
 struct Cvars {
-    ConVar* updateRate;
-    ConVar* maxUpdateRate;
-    ConVar* interp;
-    ConVar* interpRatio;
-    ConVar* minInterpRatio;
-    ConVar* maxInterpRatio;
-    ConVar* maxUnlag;
+    ConVar* updateRateVar;
+    ConVar* maxUpdateRateVar;
+    ConVar* interpVar;
+    ConVar* interpRatioVar;
+    ConVar* minInterpRatioVar;
+    ConVar* maxInterpRatioVar;
+    ConVar* maxUnlagVar;
 };
 
 static Cvars cvars;
@@ -155,8 +155,8 @@ const std::deque<Backtrack::Record> &Backtrack::getRecords(std::size_t index) no
 
 float Backtrack::getLerp() noexcept
 {
-	auto ratio = std::clamp(cvars.interpRatio->getFloat(), cvars.minInterpRatio->getFloat(), cvars.maxInterpRatio->getFloat());
-	return (std::max)(cvars.interp->getFloat(), (ratio / ((cvars.maxUpdateRate) ? cvars.maxUpdateRate->getFloat() : cvars.updateRate->getFloat())));
+	auto ratio = std::clamp(cvars.interpRatioVar->getFloat(), cvars.minInterpRatioVar->getFloat(), cvars.maxInterpRatioVar->getFloat());
+	return (std::max)(cvars.interpVar->getFloat(), (ratio / ((cvars.maxUpdateRateVar) ? cvars.maxUpdateRateVar->getFloat() : cvars.updateRateVar->getFloat())));
 }
 
 bool Backtrack::valid(float simTime) noexcept
@@ -165,17 +165,17 @@ bool Backtrack::valid(float simTime) noexcept
 	if (!network)
 		return false;
 
-	auto delta = std::clamp(network->getLatency(0) + network->getLatency(1) + getLerp(), 0.0f, cvars.maxUnlag->getFloat()) - (memory->globalVars->serverTime() - simTime);
+	auto delta = std::clamp(network->getLatency(0) + network->getLatency(1) + getLerp(), 0.0f, cvars.maxUnlagVar->getFloat()) - (memory->globalVars->serverTime() - simTime);
 	return std::abs(delta) <= 0.2f;
 }
 
 void Backtrack::init() noexcept
 {
-	cvars.updateRate = interfaces->cvar->findVar("cl_updaterate");
-	cvars.maxUpdateRate = interfaces->cvar->findVar("sv_maxupdaterate");
-	cvars.interp = interfaces->cvar->findVar("cl_interp");
-	cvars.interpRatio = interfaces->cvar->findVar("cl_interp_ratio");
-	cvars.minInterpRatio = interfaces->cvar->findVar("sv_client_min_interp_ratio");
-	cvars.maxInterpRatio = interfaces->cvar->findVar("sv_client_max_interp_ratio");
-	cvars.maxUnlag = interfaces->cvar->findVar("sv_maxunlag");
+	cvars.updateRateVar = interfaces->cvar->findVar("cl_updaterate");
+	cvars.maxUpdateRateVar = interfaces->cvar->findVar("sv_maxupdaterate");
+	cvars.interpVar = interfaces->cvar->findVar("cl_interp");
+	cvars.interpRatioVar = interfaces->cvar->findVar("cl_interp_ratio");
+	cvars.minInterpRatioVar = interfaces->cvar->findVar("sv_client_min_interp_ratio");
+	cvars.maxInterpRatioVar = interfaces->cvar->findVar("sv_client_max_interp_ratio");
+	cvars.maxUnlagVar = interfaces->cvar->findVar("sv_maxunlag");
 }

@@ -778,6 +778,22 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		}
 	};
 
+	constexpr auto boxPopup = [](const char *id, Box &config) noexcept
+	{
+		if (ImGui::BeginPopup(id))
+		{
+			ImGui::SetNextItemWidth(95.0f);
+			ImGui::Combo("Type", &config.type, "2D\0Corner 2D\0" "3D\0Corner 3D\0");
+			ImGui::SetNextItemWidth(275.0f);
+			ImGui::SliderFloat3("Scale", config.scale.data(), 0.0f, 0.50f, "%.2f");
+			ImGuiCustom::colorPicker("##secondary", config.secondaryColor);
+			ImGui::SameLine();
+			ImGui::SetNextItemWidth(85.0f);
+			ImGui::Combo("##secondary_type", &config.secondary, "None\0Outline\0Fill\0");
+			ImGui::EndPopup();
+		}
+	};
+
 	if (ImGui::BeginListBox("##list", {180.0f, 250.0f}))
 	{
 		constexpr std::array categories{"Enemies", "Allies", "Weapons", "Projectiles", "Loot Crates", "Other Entities"};
@@ -1078,18 +1094,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		if (ImGui::ArrowButton("espbox", ImGuiDir_Right))
 			ImGui::OpenPopup("##box");
 
-		if (ImGui::BeginPopup("##box"))
-		{
-			ImGui::SetNextItemWidth(95.0f);
-			ImGui::Combo("Type", &sharedConfig.box.type, "2D\0" "2D corners\0" "3D\0" "3D corners\0");
-			ImGui::SetNextItemWidth(275.0f);
-			ImGui::SliderFloat3("Scale", sharedConfig.box.scale.data(), 0.0f, 0.50f, "%.2f");
-			ImGuiCustom::colorPicker("##secondary", sharedConfig.box.secondaryColor);
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(85.0f);
-			ImGui::Combo("##secondary_type", &sharedConfig.box.secondary, "None\0Outline\0Fill\0");
-			ImGui::EndPopup();
-		}
+		boxPopup("##box", sharedConfig.box);
 
 		ImGuiCustom::colorPicker("Name", sharedConfig.name);
 		ImGui::SameLine(spacing);
@@ -1112,18 +1117,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			if (ImGui::ArrowButton("headbox", ImGuiDir_Right))
 				ImGui::OpenPopup("##head_box");
 
-			if (ImGui::BeginPopup("##head_box"))
-			{
-				ImGui::SetNextItemWidth(95.0f);
-				ImGui::Combo("Type", &playerConfig.headBox.type, "2D\0" "Corner 2D\0" "3D\0" "Corner 3D\0");
-				ImGui::SetNextItemWidth(275.0f);
-				ImGui::SliderFloat3("Scale", playerConfig.headBox.scale.data(), 0.0f, 0.50f, "%.2f");
-				ImGuiCustom::colorPicker("##secondary", playerConfig.headBox.secondaryColor);
-				ImGui::SameLine();
-				ImGui::SetNextItemWidth(85.0f);
-				ImGui::Combo("##secondary_type", &playerConfig.headBox.secondary, "None\0Outline\0Fill\0");
-				ImGui::EndPopup();
-			}
+			boxPopup("##head_box", playerConfig.headBox);
 
 			ImGui::SameLine(spacing);
 			ImGuiCustom::colorPicker("Health", playerConfig.health);
@@ -1228,7 +1222,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGuiCustom::colorPicker("Player bounds", config->visuals.playerBounds);
 	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVel);
 
-	constexpr auto beamPopup = [](const char *id, Config::Visuals::Beams &config)
+	constexpr auto beamPopup = [](const char *id, Config::Visuals::Beams &config) noexcept
 	{
 		if (ImGui::BeginPopup(id))
 		{
@@ -1490,7 +1484,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 			ImGui::SetNextItemWidth(100.0f);
 			ImGui::InputInt("StatTrak\u2122", &selected_entry.stat_trak);
 			selected_entry.stat_trak = (std::max)(selected_entry.stat_trak, -1);
-			ImGui::SliderFloat("##wear", &selected_entry.wear, FLT_MIN, 1.f, "Wear %.10f", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##wear", &selected_entry.wear, FLT_MIN, 1.f, "Wear %.10f");
 
 			static const auto &skins = SkinChanger::getSkinKits();
 			static const auto &gloves = SkinChanger::getGloveKits();
@@ -1621,7 +1615,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 				ImGui::EndListBox();
 			}
 
-			ImGui::SliderFloat("##wear", &selected_sticker.wear, FLT_MIN, 1.0f, "Wear %.10f", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##wear", &selected_sticker.wear, FLT_MIN, 1.0f, "Wear %.10f");
 			ImGui::SliderFloat("##scale", &selected_sticker.scale, 0.1f, 5.0f, "Scale %.3f");
 			ImGui::SliderFloat("##rotation", &selected_sticker.rotation, 0.0f, 360.0f, "Rotation %.3fdeg");
 
@@ -1806,7 +1800,6 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Reportbot", &config->griefing.reportbot.enabled);
 	ImGui::SameLine();
-
 	if (ImGui::ArrowButton("reportbot", ImGuiDir_Right))
 		ImGui::OpenPopup("##reportbot");
 
@@ -1830,12 +1823,20 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	}
 
 	ImGuiCustom::keyBind("Blockbot", config->griefing.blockbot.bind);
-	ImGui::PushItemWidth(192.0f);
-	ImGui::SliderFloat("##tfactor", &config->griefing.blockbot.trajectoryFac, 0.0f, 4.0f, "Trajectory factor %.3fu");
-	ImGui::SliderFloat("##dfactor", &config->griefing.blockbot.distanceFac, 0.0f, 4.0f, "Distance factor %.3fu");
-	ImGui::PopItemWidth();
-	ImGuiCustom::keyBind("Blockbot target", config->griefing.blockbot.target);
-	ImGuiCustom::colorPicker("Visualize blockbot", config->griefing.blockbot.visualize);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("blockbot", ImGuiDir_Right))
+		ImGui::OpenPopup("##blockbot");
+
+	if (ImGui::BeginPopup("##blockbot"))
+	{
+		ImGuiCustom::keyBind("Target", config->griefing.blockbot.target);
+		ImGui::PushItemWidth(192.0f);
+		ImGui::SliderFloat("##tfactor", &config->griefing.blockbot.trajectoryFac, 0.0f, 4.0f, "Trajectory factor %.3fu");
+		ImGui::SliderFloat("##dfactor", &config->griefing.blockbot.distanceFac, 0.0f, 4.0f, "Distance factor %.3fu");
+		ImGui::PopItemWidth();
+		ImGuiCustom::colorPicker("Visualize", config->griefing.blockbot.visualize);
+		ImGui::EndPopup();
+	}
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
 	if (!contentOnly)
@@ -2300,6 +2301,7 @@ void GUI::renderDebugWindow() noexcept
 		ImGui::SetClipboardText(ss.str().c_str());
 
 	ImGui::NextColumn();
+
 	{
 		GameData::Lock lock;
 
@@ -2360,22 +2362,24 @@ void GUI::renderDebugWindow() noexcept
 				ImGui::InputInt("Level", &playerResource->level()[localPlayer->index()]);
 				ImGui::InputInt("Ranking", &playerResource->competitiveRanking()[localPlayer->index()]);
 			}
-
-			ImGui::TextColored({1.0f, 0.8f, 0.0f, 1.0f}, "Local player");
-			ImGui::SameLine();
-			ImGui::TextUnformatted("at");
-			ImGui::SameLine();
-			ImGui::TextColored({0.0f, 0.2f, 1.0f, 1.0f}, "0x%p", localPlayer.get());
-			ImGui::SameLine();
-
-			char buffer[9];
-			sprintf(buffer, "%p", localPlayer.get());
-			if (ImGui::Button("Copy"))
-				ImGui::SetClipboardText(buffer);
-
-			auto &global = GameData::global();
-			ImGui::SliderInt("##effects", &global.scheduledEffectFlags, 0, 255, "Effect flag #%d");
 		}
 	}
+
+	ImGui::TextColored({1.0f, 0.8f, 0.0f, 1.0f}, "Local player");
+	ImGui::SameLine();
+	ImGui::TextUnformatted("at");
+	ImGui::SameLine();
+	ImGui::TextColored({0.0f, 0.2f, 1.0f, 1.0f}, "0x%p", localPlayer.get());
+	ImGui::SameLine();
+
+	char buffer[9];
+	sprintf(buffer, "%p", localPlayer.get());
+	if (ImGui::Button("Copy"))
+		ImGui::SetClipboardText(buffer);
+
+	if (ImGui::Button("Miss counter"))
+		ImGui::OpenPopup("negus");
+
+	Misc::missCounter(nullptr);
 }
 #endif // _DEBUG_NEPS
