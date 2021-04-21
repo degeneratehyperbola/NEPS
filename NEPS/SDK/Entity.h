@@ -258,7 +258,7 @@ public:
 	}
 	Vector getBonePosition(int bone) noexcept
 	{
-		if (Matrix3x4 boneMatrices[MAX_STUDIO_BONES]; setupBones(boneMatrices, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, 0.0f))
+		if (Matrix3x4 boneMatrices[MAX_STUDIO_BONES]; setupBones(boneMatrices, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime))
 			return boneMatrices[bone].origin();
 		else
 			return Vector{};

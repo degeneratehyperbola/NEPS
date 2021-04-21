@@ -44,7 +44,7 @@ void Backtrack::update(FrameStage stage) noexcept
 				continue;
 			}
 
-			if (!records[i].empty() && (records[i].front().simulationTime == entity->simulationTime()))
+			if (!records[i].empty() && records[i].front().simulationTime == entity->simulationTime())
 				continue;
 
 			Record record;
@@ -62,7 +62,7 @@ void Backtrack::update(FrameStage stage) noexcept
 
 			records[i].push_front(record);
 
-			while (records[i].size() > 3 && records[i].size() > static_cast<size_t>(Helpers::timeToTicks(static_cast<float>(config->backtrack.timeLimit) / 1000.f)))
+			while (records[i].size() > 3 && records[i].size() > static_cast<size_t>(Helpers::timeToTicks(static_cast<float>(config->backtrack.timeLimit) / 1000.0f)))
 				records[i].pop_back();
 
 			if (auto invalid = std::find_if(std::cbegin(records[i]), std::cend(records[i]), [](const Record &rec) { return !valid(rec.simulationTime); }); invalid != std::cend(records[i]))
@@ -125,9 +125,8 @@ void Backtrack::run(UserCmd *cmd) noexcept
 
 			bestFov = 255.0f;
 
-			for (size_t i = 0; i < records[bestTargetIndex].size(); i++)
+			for (const auto &record : records[bestTargetIndex])
 			{
-				const auto &record = records[bestTargetIndex][i];
 				if (!valid(record.simulationTime))
 					continue;
 
@@ -157,7 +156,7 @@ const std::deque<Backtrack::Record> &Backtrack::getRecords(std::size_t index) no
 float Backtrack::getLerp() noexcept
 {
 	auto ratio = std::clamp(cvars.interpRatio->getFloat(), cvars.minInterpRatio->getFloat(), cvars.maxInterpRatio->getFloat());
-	return std::max(cvars.interp->getFloat(), (ratio / ((cvars.maxUpdateRate) ? cvars.maxUpdateRate->getFloat() : cvars.updateRate->getFloat())));
+	return (std::max)(cvars.interp->getFloat(), (ratio / ((cvars.maxUpdateRate) ? cvars.maxUpdateRate->getFloat() : cvars.updateRate->getFloat())));
 }
 
 bool Backtrack::valid(float simTime) noexcept
@@ -166,7 +165,7 @@ bool Backtrack::valid(float simTime) noexcept
 	if (!network)
 		return false;
 
-	auto delta = std::clamp(network->getLatency(0) + network->getLatency(1) + getLerp(), 0.f, cvars.maxUnlag->getFloat()) - (memory->globalVars->serverTime() - simTime);
+	auto delta = std::clamp(network->getLatency(0) + network->getLatency(1) + getLerp(), 0.0f, cvars.maxUnlag->getFloat()) - (memory->globalVars->serverTime() - simTime);
 	return std::abs(delta) <= 0.2f;
 }
 

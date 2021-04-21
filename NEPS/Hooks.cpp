@@ -223,8 +223,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	if (static Helpers::KeyBindState flag; flag[config->misc.resolver])
 	{
-		auto resolverTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle());
-		if (resolverTarget)
+		if (auto resolverTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle()))
 			Animations::resolve(resolverTarget);
 	}
 

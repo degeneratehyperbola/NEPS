@@ -69,7 +69,7 @@ bool Animations::clientLerped(const UserCmd &cmd, bool sendPacket) noexcept
 		std::copy(lerpedLayers.begin(), lerpedLayers.end(), localPlayer->animOverlays());
 		localPlayer->getAnimationLayer(12)->weight = FLT_EPSILON;
 
-		matrixUpdated = localPlayer->setupBones(lerpedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, 0.0f);
+		matrixUpdated = localPlayer->setupBones(lerpedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 		if (const auto &origin = localPlayer->getRenderOrigin(); matrixUpdated)
 			for (int i = 0; i < MAX_STUDIO_BONES; i++)
@@ -109,7 +109,7 @@ bool Animations::animSync(const UserCmd &cmd, bool sendPacket) noexcept
 	memory->updateState(state, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
 	localPlayer->clientAnimations() = false;
 
-	matrixUpdated = localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, 0.0f);
+	matrixUpdated = localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 	if (sendPacket)
 	{

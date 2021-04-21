@@ -172,7 +172,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 		if (!hitboxSet)
 			continue;
 
-		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, 0.0f))
+		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 			continue;
 
 		const Backtrack::Record *choosenRecord = nullptr;
@@ -208,7 +208,9 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 					}
 
 					const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
-					if (goesThroughWall && distance < bestDistance)
+					//if (goesThroughWall && distance < bestDistance)
+					// History was here...
+					if (distance > bestDistance)
 					{
 						bestDistance = distance;
 						choosenRecord = &record;
