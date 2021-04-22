@@ -356,7 +356,7 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 
 	if (config.name.enabled)
 	{
-		const auto nameSize = renderText(playerData.distanceToLocal, config.textCullDistance, config.name, playerData.name, {(bbox.min.x + bbox.max.x) * 0.5f, bbox.min.y});
+		const auto nameSize = renderText(playerData.distanceToLocal, config.textCullDistance, config.name, playerData.name.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.min.y});
 		offsetMins.y -= nameSize.y;
 	}
 
@@ -374,6 +374,8 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 			flags << "KIT\n";
 		if (playerData.ducking)
 			flags << "DUCK\n";
+		if (playerData.reloading)
+			flags << "RLD\n";
 		if (playerData.armor)
 			flags << playerData.armor << "ap\n";
 

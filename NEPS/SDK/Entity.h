@@ -286,7 +286,6 @@ public:
 		return reinterpret_cast<VarMap*>(this + 0x24);
 	}
 
-	// For players
 	float getMaxDesyncAngle() noexcept
 	{
 		const auto animState = getAnimState();
@@ -302,7 +301,6 @@ public:
 		return animState->velocitySubtract.y * yawModifier;
 	}
 
-	// For players
 	bool isInReload() noexcept
 	{
 		return *reinterpret_cast<bool*>(uintptr_t(&clip()) + 0x41);
@@ -369,6 +367,7 @@ public:
 	NETVAR(team, "CBaseEntity", "m_iTeamNum", Team)
 	NETVAR(spotted, "CBaseEntity", "m_bSpotted", bool)
 
+	NETVAR(activeWeapon, "CBaseCombatCharacter", "m_hActiveWeapon", int)
 	NETVAR(weapons, "CBaseCombatCharacter", "m_hMyWeapons", int [64])
 	PNETVAR(wearables, "CBaseCombatCharacter", "m_hMyWearables", int)
 	NETVAR(nextAttack, "CBaseCombatCharacter", "m_flNextAttack", float)

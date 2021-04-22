@@ -2343,7 +2343,7 @@ void GUI::renderDebugWindow() noexcept
 						if (!entity) continue;
 
 						if (ImGui::TableNextColumn())
-							ImGui::TextUnformatted(player.name);
+							ImGui::TextUnformatted(player.name.c_str());
 
 						if (ImGui::TableNextColumn())
 							ImGui::Text("%i", playerResource->competitiveWins()[entity->index()]);

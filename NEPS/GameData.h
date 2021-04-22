@@ -149,11 +149,11 @@ struct PlayerData : BaseData
 	float flashDuration;
 	int health;
 	int armor;
-	char name[128];
 	Vector headMins, headMaxs;
 	Vector colMins, colMaxs;
 	Vector origin;
 	Vector velocity;
+	std::string name;
 	std::string activeWeapon;
 	std::vector<std::pair<Vector, Vector>> bones;
 };
