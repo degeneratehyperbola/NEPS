@@ -23,7 +23,6 @@ class WeaponSystem;
 class ClientState;
 template <typename T>
 class UtlVector;
-class MemAlloc;
 
 struct AnimState;
 struct ActiveChannels;
@@ -99,6 +98,7 @@ public:
 	Channel *channels;
 	PlayerResource **playerResource;
 	Entity **gameRules;
+	ViewRenderBeams *viewRenderBeams;
 	uintptr_t scopeDust;
 	uintptr_t scopeArc;
 	uintptr_t demoOrHLTV;
@@ -120,9 +120,6 @@ public:
 	{
 		setOrAddAttributeValueByName(attributeList, attribute, *reinterpret_cast<float *>(&value));
 	}
-
-	MemAlloc *memalloc;
-	ViewRenderBeams *viewRenderBeams;
 
 	[[nodiscard]] static auto generateBadCharTable(std::string_view pattern) noexcept
 	{

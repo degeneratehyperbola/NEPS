@@ -13,7 +13,6 @@
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/UserCmd.h"
 #include "../SDK/Vector.h"
-#include "../SDK/MemAlloc.h"
 
 #include "../Config.h"
 #include "../GameData.h"

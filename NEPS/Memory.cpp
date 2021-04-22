@@ -44,7 +44,6 @@ Memory::Memory() noexcept
 	const auto tier0 = GetModuleHandleW(L"tier0");
 	debugMsg = reinterpret_cast<decltype(debugMsg)>(GetProcAddress(tier0, "Msg"));
 	conColorMsg = reinterpret_cast<decltype(conColorMsg)>(GetProcAddress(tier0, "?ConColorMsg@@YAXABVColor@@PBDZZ"));
-	memalloc = *reinterpret_cast<MemAlloc **>(GetProcAddress(tier0, "g_pMemAlloc"));
 
 	vignette = *reinterpret_cast<float **>(findPattern("client", "\x0F\x11\x05????\xF3\x0F\x7E\x87") + 3) + 1;
 	equipWearable = reinterpret_cast<decltype(equipWearable)>(findPattern("client", "\x55\x8B\xEC\x83\xEC\x10\x53\x8B\x5D\x08\x57\x8B\xF9"));
