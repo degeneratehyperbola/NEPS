@@ -208,9 +208,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 					}
 
 					const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
-					//if (goesThroughWall && distance < bestDistance)
-					// History was here...
-					if (distance > bestDistance)
+					if (goesThroughWall && distance < bestDistance)
 					{
 						bestDistance = distance;
 						choosenRecord = &record;
