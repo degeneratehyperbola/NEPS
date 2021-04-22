@@ -180,8 +180,8 @@ static bool __fastcall sendNetMsg(NetworkChannel *networkchannel, void *edx, Net
 	return hooks->engine.callOriginal<bool, 40>(networkchannel, edx, msg, forceReliable, voice);
 }
 
-static bool netChInitialized = false;
-static bool sentPacket = true;
+static bool hookedNetChannel;
+static bool sentPacket;
 static UserCmd lastCmd;
 
 static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
@@ -194,6 +194,22 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	uintptr_t *framePointer;
 	__asm mov framePointer, ebp;
 	bool &sendPacket = *reinterpret_cast<bool *>(*framePointer - 0x1C);
+
+	{
+		static NetworkChannel *old = nullptr;
+		NetworkChannel *current = interfaces->engine->getNetworkChannel();
+
+		if (!current)
+			hookedNetChannel = false;
+		else if (current && old != current)
+		{
+			hookedNetChannel = false;
+			hooks->networkChannel.init(current);
+			hooks->networkChannel.hookAt(42, sendNetMsg);
+			hookedNetChannel = true;
+			old = current;
+		}
+	}
 
 	static auto previousViewAngles = cmd->viewangles;
 	const auto currentViewAngles = cmd->viewangles;
@@ -266,23 +282,9 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	if (config->antiAim.desync || config->antiAim.fakeUp)
 	{
 		if (fakePitchPerformed)
-			cmd->viewangles.x = -89.0f; // Fake pitch visualisation
+			cmd->viewangles.x = -89.0f; // Fake pitch visualization
 		Animations::clientLerped(*cmd, sendPacket);
-		cmd->viewangles.x = previousViewAngles.x; // Restore view angles after visualising fake pitch
-	}
-
-	if (interfaces->engine->isInGame())
-	{
-		static NetworkChannel *old = nullptr;
-		NetworkChannel *current = interfaces->engine->getNetworkChannel();
-		if (current && old != current)
-		{
-			netChInitialized = false;
-			old = current;
-			hooks->networkChannel.init(current);
-			hooks->networkChannel.hookAt(42, sendNetMsg);
-			netChInitialized = true;
-		}
+		cmd->viewangles.x = previousViewAngles.x; // Restore view angles after visualizing fake pitch
 	}
 
 	return false;
@@ -802,7 +804,7 @@ void Hooks::uninstall() noexcept
 	surface.restore();
 	svCheats.restore();
 	viewRender.restore();
-	if (netChInitialized) networkChannel.restore();
+	if (hookedNetChannel) networkChannel.restore();
 
 	netvars->restore();
 
