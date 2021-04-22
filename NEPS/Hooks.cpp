@@ -357,17 +357,29 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 
 	Misc::changeConVarsFrame(stage);
 
-	if (stage == FrameStage::START)
+	switch (stage)
 	{
+	case FrameStage::UNDEFINED:
+		break;
+	case FrameStage::START:
 		GameData::update();
-	}
-
-	if (stage == FrameStage::RENDER_START)
-	{
+		break;
+	case FrameStage::NET_UPDATE_START:
+		break;
+	case FrameStage::NET_UPDATE_POSTDATAUPDATE_START:
+		break;
+	case FrameStage::NET_UPDATE_POSTDATAUPDATE_END:
+		break;
+	case FrameStage::NET_UPDATE_END:
+		break;
+	case FrameStage::RENDER_START:
+		Misc::fixAnimation(lastCmd, sentPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::fakePrime();
-		Misc::fixAnimation(lastCmd, sentPacket);
+		break;
+	case FrameStage::RENDER_END:
+		break;
 	}
 
 	if (interfaces->engine->isInGame())
@@ -774,6 +786,7 @@ static DWORD WINAPI unload(HMODULE moduleHandle) noexcept
 {
 	Sleep(100);
 
+	Animations::releaseState();
 	interfaces->inputSystem->enableInput(true);
 	eventListener->remove();
 

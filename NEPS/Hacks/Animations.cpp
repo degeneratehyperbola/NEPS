@@ -20,7 +20,14 @@
 #include "../Interfaces.h"
 #include "../Memory.h"
 
+static AnimState *lerpedState = new AnimState;
 static std::array<Matrix3x4, MAX_STUDIO_BONES> lerpedBones;
+
+void Animations::releaseState() noexcept
+{
+	if (lerpedState)
+		delete lerpedState;
+}
 
 bool Animations::clientLerped(const UserCmd &cmd, bool sendPacket) noexcept
 {
@@ -30,25 +37,12 @@ bool Animations::clientLerped(const UserCmd &cmd, bool sendPacket) noexcept
 
 	if (!memory->input->isCameraInThirdPerson) return matrixUpdated;
 
-	static AnimState *lerpedState;
+	assert(lerpedState);
 
-	static bool init = false;
-	if (!init)
+	if (static auto spawnTime = localPlayer->spawnTime(); !interfaces->engine->isInGame() || spawnTime != localPlayer->spawnTime())
 	{
-		lerpedState = static_cast<AnimState *>(memory->memalloc->alloc(sizeof(AnimState)));
-		if (lerpedState)
-		{
-			memory->createState(lerpedState, localPlayer.get());
-			init = true;
-		}
-	}
-
-	static auto spawnTime = localPlayer->spawnTime();
-	if (!lerpedState || !interfaces->engine->isInGame() || spawnTime != localPlayer->spawnTime())
-	{
+		memory->createState(lerpedState, localPlayer.get());
 		spawnTime = localPlayer->spawnTime();
-		init = false;
-		return matrixUpdated;
 	}
 
 	static std::array<AnimLayer, MAX_ANIM_OVERLAYS> lerpedLayers;
