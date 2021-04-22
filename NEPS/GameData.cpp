@@ -256,6 +256,8 @@ const SessionData &GameData::session() noexcept
 
 void LocalPlayerData::update() noexcept
 {
+	observerTargetHandle = -1;
+
 	if (!localPlayer)
 	{
 		exists = false;
@@ -272,6 +274,11 @@ void LocalPlayerData::update() noexcept
 	aimPunch = localPlayer->getEyePosition() + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000.0f;
 	aimPunchAngle = localPlayer->getAimPunch();
 
+	reloading = false;
+	shooting = false;
+	drawingScope = true;
+	drawingCrosshair = true;
+
 	const auto obsMode = localPlayer->getObserverMode();
 	if (const auto obs = localPlayer->getObserverTarget(); obs && obsMode != ObsMode::Roaming && obsMode != ObsMode::Deathcam)
 	{
@@ -282,41 +289,39 @@ void LocalPlayerData::update() noexcept
 
 		if (const auto activeWeapon = obs->getActiveWeapon())
 		{
-			reloading = obs->isInReload();
 			shooting = obs->shotsFired() > 1;
+			reloading = activeWeapon->isInReload();
 			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), obs->nextAttack());
 			drawingScope = (activeWeapon->isSniperRifle() || !config->visuals.noWeapons) && obs->isScoped();
 			drawingCrosshair = (!activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && config->visuals.forceCrosshair != 2;
 		}
 
 		const auto collidable = obs->getCollideable();
-		if (!collidable)
-			return;
-
-		colMaxs = collidable->obbMaxs();
-		colMins = collidable->obbMins();
+		if (collidable)
+		{
+			colMaxs = collidable->obbMaxs();
+			colMins = collidable->obbMins();
+		}
 	} else
 	{
-		observerTargetHandle = -1;
-
 		origin = localPlayer->getAbsOrigin();
 		velocity = localPlayer->velocity();
 
 		if (const auto activeWeapon = localPlayer->getActiveWeapon())
 		{
-			reloading = localPlayer->isInReload();
 			shooting = localPlayer->shotsFired() > 1;
+			reloading = activeWeapon->isInReload();
 			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), localPlayer->nextAttack());
 			drawingScope = (activeWeapon->isSniperRifle() || !config->visuals.noWeapons) && localPlayer->isScoped();
-			drawingCrosshair =  (!activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && config->visuals.forceCrosshair != 2;
+			drawingCrosshair = (!activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && config->visuals.forceCrosshair != 2;
 		}
 
 		const auto collidable = localPlayer->getCollideable();
-		if (!collidable)
-			return;
-
-		colMaxs = collidable->obbMaxs();
-		colMins = collidable->obbMins();
+		if (collidable)
+		{
+			colMaxs = collidable->obbMaxs();
+			colMins = collidable->obbMins();
+		}
 	}
 }
 
@@ -403,7 +408,7 @@ void ProjectileData::update(Entity *projectile) noexcept
 void PlayerData::update(Entity *entity) noexcept
 {
 	handle = entity->handle();
-	entity->getPlayerName(name);
+	name = entity->getPlayerName();
 
 	if (entity->isDormant())
 	{
@@ -446,10 +451,14 @@ void PlayerData::update(Entity *entity) noexcept
 	isVip = entity->isVip();
 	hasDefuser = entity->hasDefuser();
 	ducking = entity->flags() & Entity::FL_DUCKING;
+
+	scoped = false;
+	reloading = false;
+
 	if (const auto activeWeapon = entity->getActiveWeapon())
 	{
 		scoped = entity->isScoped();
-		reloading = entity->isInReload();
+		reloading = activeWeapon->isInReload();
 	}
 
 	flashDuration = entity->flashDuration();

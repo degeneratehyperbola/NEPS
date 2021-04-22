@@ -70,7 +70,7 @@ class Entity
 {
 public:
 	VIRTUAL_METHOD(void, release, 1, (), (this + 8))
-	VIRTUAL_METHOD(ClientClass*, getClientClass, 2, (), (this + 8))
+	VIRTUAL_METHOD(ClientClass *, getClientClass, 2, (), (this + 8))
 	VIRTUAL_METHOD(void, preDataUpdate, 6, (int updateType), (this + 8, updateType))
 	VIRTUAL_METHOD(void, postDataUpdate, 7, (int updateType), (this + 8, updateType))
 	VIRTUAL_METHOD(bool, isDormant, 9, (), (this + 8))
@@ -78,30 +78,34 @@ public:
 	VIRTUAL_METHOD(void, setDestroyedOnRecreateEntities, 13, (), (this + 8))
 
 	VIRTUAL_METHOD(Vector &, getRenderOrigin, 1, (), (this + 4))
-	VIRTUAL_METHOD(const Model*, getModel, 8, (), (this + 4))
-	VIRTUAL_METHOD(const Matrix3x4&, toWorldTransform, 32, (), (this + 4))
+	VIRTUAL_METHOD(const Model *, getModel, 8, (), (this + 4))
+	VIRTUAL_METHOD(const Matrix3x4 &, toWorldTransform, 32, (), (this + 4))
 
 	VIRTUAL_METHOD(int&, handle, 2, (), (this))
-	VIRTUAL_METHOD(Collideable*, getCollideable, 3, (), (this))
-	VIRTUAL_METHOD(const Vector&, getAbsOrigin, 10, (), (this))
-	VIRTUAL_METHOD(const Vector&, getAbsAngle, 11, (), (this))
+	VIRTUAL_METHOD(Collideable *, getCollideable, 3, (), (this))
+	VIRTUAL_METHOD(const Vector &, getAbsOrigin, 10, (), (this))
+	VIRTUAL_METHOD(const Vector &, getAbsAngle, 11, (), (this))
 	VIRTUAL_METHOD(void, setModelIndex, 75, (int index), (this, index))
 	VIRTUAL_METHOD(int, health, 121, (), (this))
 	VIRTUAL_METHOD(bool, isAlive, 155, (), (this))
 	VIRTUAL_METHOD(bool, isPlayer, 157, (), (this))
 	VIRTUAL_METHOD(bool, isWeapon, 165, (), (this))
-	VIRTUAL_METHOD(Entity*, getActiveWeapon, 267, (), (this))
 	VIRTUAL_METHOD(int, getWeaponSubType, 281, (), (this))
 	VIRTUAL_METHOD(Vector, getEyePosition, 284, (), (this))
 	VIRTUAL_METHOD(ObsMode, getObserverMode, 293, (), (this))
-	VIRTUAL_METHOD(Entity*, getObserverTarget, 294, (), (this))
+	VIRTUAL_METHOD(Entity *, getObserverTarget, 294, (), (this))
 	VIRTUAL_METHOD(Vector, getAimPunch, 345, (), (this))
 	VIRTUAL_METHOD(float, getSpread, 452, (), (this))
 	VIRTUAL_METHOD(WeaponType, getWeaponType, 454, (), (this))
-	VIRTUAL_METHOD(WeaponInfo*, getWeaponData, 460, (), (this))
+	VIRTUAL_METHOD(WeaponInfo *, getWeaponData, 460, (), (this))
 	VIRTUAL_METHOD(float, getInaccuracy, 482, (), (this))
 	VIRTUAL_METHOD(void, updateClientSideAnimation, 223, (), (this))
 
+	Entity *getActiveWeapon() noexcept
+	{
+		return interfaces->entityList->getEntityFromHandle(activeWeapon());
+	}
+	
 	enum PlayerFlags
 	{
 		FL_ONGROUND = 1 << 0, // At rest / on the ground
