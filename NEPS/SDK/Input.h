@@ -2,16 +2,17 @@
 
 #include "Vector.h"
 #include "VirtualMethod.h"
+#include "Pad.h"
 
 class Input {
 public:
 	VIRTUAL_METHOD(UserCmd*, getUserCmd, 8, (int slot, int sequenceNumber), (this, slot, sequenceNumber))
-    std::byte pad[12];
+    PAD(12)
     bool isTrackIRAvailable;
     bool isMouseInitialized;
     bool isMouseActive;
-    std::byte pad1[158];
+    PAD(158)
     bool isCameraInThirdPerson;
-    std::byte pad2;
+    PAD(1)
     Vector cameraOffset;
 };

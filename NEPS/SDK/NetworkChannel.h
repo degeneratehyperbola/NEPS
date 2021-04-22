@@ -1,18 +1,21 @@
 #pragma once
 
 #include "VirtualMethod.h"
+#include "Pad.h"
 
 class NetworkChannel
 {
 public:
+	VIRTUAL_METHOD(const char *, getName, 0, (), (this))
+	VIRTUAL_METHOD(const char *, getAddress, 1, (), (this))
 	VIRTUAL_METHOD(float, getLatency, 9, (int flow), (this, flow))
 
-	std::byte pad[24];
+	PAD(24)
 	int outSequenceNr;
 	int inSequenceNr;
 	int outSequenceNrAck;
 	int outReliableState;
-	int InReliableState;
+	int inReliableState;
 	int chokedPackets;
 };
 

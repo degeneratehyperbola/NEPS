@@ -9,18 +9,18 @@
 
 static int random(int min, int max) noexcept
 {
-    return rand() % (max - min + 1) + min;
+	return rand() % (max - min + 1) + min;
 }
 
-static std::unordered_map<uint32_t, std::pair<RecvProxy, RecvProxy*>> proxies;
+static std::unordered_map<uint32_t, std::pair<RecvProxy, RecvProxy *>> proxies;
 
-static void __cdecl spottedHook(RecvProxyData& data, void* arg2, void* arg3) noexcept
+static void __cdecl spottedHook(RecvProxyData &data, void *arg2, void *arg3) noexcept
 {
-    if (config->misc.radarHack)
-        data.value._int = 1;
+	if (config->misc.radarHack)
+		data.value._int = 1;
 
-    constexpr auto hash{ fnv::hash("CBaseEntity->m_bSpotted") };
-    proxies[hash].first(data, arg2, arg3);
+	constexpr auto hash{fnv::hash("CBaseEntity->m_bSpotted")};
+	proxies[hash].first(data, arg2, arg3);
 }
 
 static void __cdecl viewModelSequence(RecvProxyData &data, void *outStruct, void *arg3) noexcept
@@ -43,61 +43,66 @@ static void __cdecl viewModelSequence(RecvProxyData &data, void *outStruct, void
 
 Netvars::Netvars() noexcept
 {
-    for (auto clientClass = interfaces->client->getAllClasses(); clientClass; clientClass = clientClass->next)
-        walkTable(clientClass->networkName, clientClass->recvTable);
+	for (auto clientClass = interfaces->client->getAllClasses(); clientClass; clientClass = clientClass->next)
+		walkTable(clientClass->networkName, clientClass->recvTable);
 
-    std::sort(offsets.begin(), offsets.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
+	std::sort(offsets.begin(), offsets.end(), [](const auto &a, const auto &b) { return a.first < b.first; });
 }
 
 void Netvars::restore() noexcept
 {
-    for (const auto& [hash, proxyPair] : proxies)
-        *proxyPair.second = proxyPair.first;
+	for (const auto &[hash, proxyPair] : proxies)
+		*proxyPair.second = proxyPair.first;
 
-    proxies.clear();
-    offsets.clear();
+	proxies.clear();
+	offsets.clear();
 }
 
-void Netvars::walkTable(const char* networkName, RecvTable* recvTable, const std::size_t offset) noexcept
+void Netvars::walkTable(const char *networkName, RecvTable *recvTable, const std::size_t offset) noexcept
 {
-    for (int i = 0; i < recvTable->propCount; ++i) {
-        auto& prop = recvTable->props[i];
+	for (int i = 0; i < recvTable->propCount; ++i)
+	{
+		auto &prop = recvTable->props[i];
 
-        if (isdigit(prop.name[0]))
-            continue;
+		if (isdigit(prop.name[0]))
+			continue;
 
-        if (fnv::hashRuntime(prop.name) == fnv::hash("baseclass"))
-            continue;
+		if (fnv::hashRuntime(prop.name) == fnv::hash("baseclass"))
+			continue;
 
-        if (prop.type == 6
-            && prop.dataTable
-            && prop.dataTable->netTableName[0] == 'D')
-            walkTable(networkName, prop.dataTable, prop.offset + offset);
+		if (prop.type == 6
+			&& prop.dataTable
+			&& prop.dataTable->netTableName[0] == 'D')
+			walkTable(networkName, prop.dataTable, prop.offset + offset);
 
-        const auto hash{ fnv::hashRuntime((networkName + std::string{ "->" } + prop.name).c_str()) };
+		const auto hash = fnv::hashRuntime((networkName + std::string{"->"} + prop.name).c_str());
 
-        constexpr auto getHook{ [](uint32_t hash) noexcept -> RecvProxy {
-             switch (hash) {
-             case fnv::hash("CBaseEntity->m_bSpotted"):
-                 return spottedHook;
-             case fnv::hash("CBaseViewModel->m_nSequence"):
-                 return viewModelSequence;
-             default:
-                 return nullptr;
-             }
-        } };
+		constexpr auto getHook = [](uint32_t hash) noexcept -> RecvProxy
+		{
+			switch (hash)
+			{
+			case fnv::hash("CBaseEntity->m_bSpotted"):
+				return spottedHook;
+			case fnv::hash("CBaseViewModel->m_nSequence"):
+				return viewModelSequence;
+			default:
+				return nullptr;
+			}
+		};
 
-        offsets.emplace_back(hash, uint16_t(offset + prop.offset));
+		offsets.emplace_back(hash, uint16_t(offset + prop.offset));
 
-        constexpr auto hookProperty{ [](uint32_t hash, RecvProxy& originalProxy, RecvProxy proxy) noexcept {
-            if (originalProxy != proxy) {
-                proxies[hash].first = originalProxy;
-                proxies[hash].second = &originalProxy;
-                originalProxy = proxy;
-            }
-        } };
+		constexpr auto hookProperty = [](uint32_t hash, RecvProxy &originalProxy, RecvProxy proxy) noexcept
+		{
+			if (originalProxy != proxy)
+			{
+				proxies[hash].first = originalProxy;
+				proxies[hash].second = &originalProxy;
+				originalProxy = proxy;
+			}
+		};
 
-        if (auto hook{ getHook(hash) })
-            hookProperty(hash, prop.proxy, hook);
-    }
+		if (auto hook{getHook(hash)})
+			hookProperty(hash, prop.proxy, hook);
+	}
 }
