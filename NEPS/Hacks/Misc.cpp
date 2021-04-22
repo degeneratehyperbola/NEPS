@@ -386,35 +386,40 @@ void Misc::watermark() noexcept
 		std::ostringstream watermark;
 		watermark << "NEPS > ";
 		watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % otherOnes.size()];
+		ImGui::TextUnformatted(watermark.str().c_str());
+
 		static float frameRate = 1.0f;
 		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
+		ImGui::Text("%.0ffps", 1.0f / frameRate);
 
-		ImGui::TextUnformatted(watermark.str().c_str());
-		ImGui::TextUnformatted((std::to_string(static_cast<int>(1.0f / frameRate)) + "fps").c_str());
 		if (interfaces->engine->isInGame())
 		{
-			float latency = 0.0f;
-			float tickrate = 1.0f;
-			const auto networkChannel = interfaces->engine->getNetworkChannel();
-			if (networkChannel)
-			{
-				latency = networkChannel->getLatency(0) * 1000;
-				tickrate = 1 / memory->globalVars->intervalPerTick;
-			}
-
+			GameData::Lock lock;
+			const auto session = GameData::session();
+			
 			ImGui::SameLine(55.0f);
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
-			ImGui::TextUnformatted((std::to_string(static_cast<int>(latency)) + "ms").c_str());
+
+			ImGui::Text("%dms", session.latency);
+
 			ImGui::SameLine(105.0f);
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
-			ImGui::TextUnformatted((std::to_string(static_cast<int>(tickrate)) + "tps").c_str());
+
+			ImGui::Text("%dtps", session.tickrate);
+
 			ImGui::SameLine();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
-			GameData::Lock lock;
-			ImGui::TextUnformatted(GameData::match().levelName.c_str());
+
+			ImGui::TextUnformatted(session.levelName.c_str());
+
+			ImGui::SameLine();
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+			ImGui::SameLine();
+
+			ImGui::TextUnformatted(session.address.c_str());
 		}
 		ImGui::End();
 	}

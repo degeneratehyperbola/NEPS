@@ -25,7 +25,7 @@ struct ProjectileData;
 struct BombData;
 struct InfernoData;
 struct SmokeData;
-struct MatchData;
+struct SessionData;
 
 struct StudioHitboxSet;
 struct Matrix4x4;
@@ -58,7 +58,7 @@ namespace GameData
 	const BombData &plantedC4() noexcept;
 	const std::vector<InfernoData> &infernos() noexcept;
 	const std::vector<SmokeData> &smokes() noexcept;
-	const MatchData &match() noexcept;
+	const SessionData &session() noexcept;
 }
 
 struct LocalPlayerData
@@ -212,9 +212,12 @@ struct SmokeData
 	Vector origin;
 };
 
-struct MatchData
+struct SessionData
 {
 	void update() noexcept;
 
 	std::string levelName;
+	std::string address;
+	int latency;
+	int tickrate;
 };

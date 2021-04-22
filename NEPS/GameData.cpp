@@ -34,7 +34,7 @@ static std::list<ProjectileData> projectileData;
 static BombData bombData;
 static std::vector<InfernoData> infernoData;
 static std::vector<SmokeData> smokeData;
-static MatchData matchData;
+static SessionData sessionData;
 
 static auto playerByHandleWritable(int handle) noexcept
 {
@@ -61,7 +61,7 @@ void GameData::update() noexcept
 
 	localPlayerData.update();
 	bombData.update();
-	matchData.update();
+	sessionData.update();
 
 	if (!localPlayer)
 	{
@@ -249,9 +249,9 @@ const std::vector<SmokeData> &GameData::smokes() noexcept
 	return smokeData;
 }
 
-const MatchData &GameData::match() noexcept
+const SessionData &GameData::session() noexcept
 {
-	return matchData;
+	return sessionData;
 }
 
 void LocalPlayerData::update() noexcept
@@ -693,13 +693,15 @@ SmokeData::SmokeData(Entity *smoke) noexcept
 	origin = smoke->getAbsOrigin();
 }
 
-void MatchData::update() noexcept
+void SessionData::update() noexcept
 {
-	if (!interfaces->engine->isInGame())
+	const auto networkChannel = interfaces->engine->getNetworkChannel();
+	if (networkChannel)
 	{
-		levelName = "";
-		return;
+		address = networkChannel->getAddress();
+		latency = static_cast<int>(networkChannel->getLatency(0) * 1000);
 	}
 
+	tickrate = static_cast<int>(1 / memory->globalVars->intervalPerTick);
 	levelName = interfaces->engine->getLevelName();
 }
