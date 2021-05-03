@@ -590,7 +590,7 @@ void Misc::drawBombTimer() noexcept
 		ImGui::SetNextWindowSize({windowWidth, 0});
 
 	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
-	if (ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs)))
+	if (ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs)))
 	{
 		std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
 
