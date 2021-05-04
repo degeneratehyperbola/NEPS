@@ -49,7 +49,7 @@ static constexpr auto is_knife(WeaponId id)
 	return (id >= WeaponId::Bayonet && id < WeaponId::GloveStuddedBloodhound) || id == WeaponId::KnifeT || id == WeaponId::Knife;
 }
 
-item_setting *get_by_definition_index(WeaponId weaponId)
+static item_setting *get_by_definition_index(WeaponId weaponId)
 {
 	const auto it = std::find_if(config->skinChanger.begin(), config->skinChanger.end(), [weaponId](const item_setting &e) { return e.enabled && e.itemId == weaponId; });
 	return it == config->skinChanger.end() ? nullptr : &*it;
