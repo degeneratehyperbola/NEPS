@@ -53,5 +53,5 @@ namespace Misc
 	void voteRevealer(GameEvent &event) noexcept;
 	void missCounter(GameEvent *event) noexcept;
 	int getShots() noexcept;
-    int getHits() noexcept;
+	int getHits() noexcept;
 }

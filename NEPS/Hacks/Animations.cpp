@@ -135,6 +135,8 @@ void Animations::resolve(Entity *animatable) noexcept
 	const auto backupEffects = animatable->effectFlags();
 	animatable->effectFlags() |= 8;
 
+	memory->invalidateBoneCache(animatable);
+
 	// Update state just in case
 	memory->updateState(state, nullptr, animatable->thirdPersonAngles().x, animatable->thirdPersonAngles().y, 0.0f, nullptr);
 
@@ -154,7 +156,7 @@ void Animations::resolve(Entity *animatable) noexcept
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->feetYawRate = 0.0f;
 
-	memory->invalidateBoneCache(animatable);
+	animatable->updateClientSideAnimation();
 	animatable->effectFlags() = backupEffects;
 }
 
