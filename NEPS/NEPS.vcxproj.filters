@@ -36,6 +36,9 @@
     <Filter Include="Texture">
       <UniqueIdentifier>{4c1f8dbc-bc16-4049-8cf5-957cc4adf870}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{364c409a-7697-448d-a854-bc6e05cef65c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
