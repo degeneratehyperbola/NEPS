@@ -239,8 +239,16 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	if (static Helpers::KeyBindState flag; flag[config->misc.resolver])
 	{
-		if (auto resolverTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle()))
+		const auto misses = Misc::getShots() - Misc::getHits();
+		static auto lastMisses = misses;
+
+		std::srand(misses);
+		bool resolve = std::rand() & 1;
+
+		if (auto resolverTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle()); resolverTarget && resolve && misses != lastMisses)
 			Animations::resolve(resolverTarget);
+
+		lastMisses = misses;
 	}
 
 	Aimbot::run(cmd);

@@ -1613,10 +1613,14 @@ void Misc::missCounter(GameEvent *event) noexcept
 		}
 		return;
 	}
+}
 
-	if (ImGui::BeginPopup("negus"))
-	{
-		ImGui::Text("Shots: %d\nHits: %d\nMisses: %d", shots, hits, shots - hits);
-		ImGui::EndPopup();
-	}
+int Misc::getShots() noexcept
+{
+	return shots;
+}
+
+int Misc::getHits() noexcept
+{
+	return hits;
 }
