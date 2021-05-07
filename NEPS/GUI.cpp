@@ -2376,10 +2376,5 @@ void GUI::renderDebugWindow() noexcept
 	sprintf(buffer, "%p", localPlayer.get());
 	if (ImGui::Button("Copy"))
 		ImGui::SetClipboardText(buffer);
-
-	if (ImGui::Button("Miss counter"))
-		ImGui::OpenPopup("negus");
-
-	Misc::missCounter(nullptr);
 }
 #endif // _DEBUG_NEPS
