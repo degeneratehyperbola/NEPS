@@ -1,4 +1,5 @@
 #include <array>
+#include <random>
 
 #include "Animations.h"
 
@@ -19,7 +20,7 @@
 #include "../Interfaces.h"
 #include "../Memory.h"
 
-static AnimState *lerpedState = new AnimState;
+static AnimState *lerpedState = new AnimState{};
 static std::array<Matrix3x4, MAX_STUDIO_BONES> lerpedBones;
 
 void Animations::releaseState() noexcept
