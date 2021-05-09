@@ -601,7 +601,7 @@ bool Helpers::animDataAuthenticity(Entity *animatable) noexcept
 	if (~animatable->flags() & Entity::FL_ONGROUND) return true;
 	if (animatable->moveType() == MoveType::LADDER) return true;
 	if (animatable->moveType() == MoveType::NOCLIP) return true;
-	//if (animatable->isBot()) return true;
+	if (animatable->isBot()) return true;
 	const float simulationTime = animatable->simulationTime();
 	const auto remoteActiveWeapon = animatable->getActiveWeapon();
 	if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime)) return true;

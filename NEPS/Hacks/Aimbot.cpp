@@ -1,4 +1,5 @@
 #include "Aimbot.h"
+#include "Misc.h"
 #include "Backtrack.h"
 #include "../Config.h"
 #include "../Interfaces.h"
@@ -72,6 +73,11 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		if (config->aimbot[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !config->aimbot[weaponIndex].autoScope)
 			return;
 
+		static auto prevTargetHandle = targetHandle;
+
+		if (prevTargetHandle != targetHandle)
+			Misc::resetMissCounter();
+
 		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
 		if (target && targetPoint.notNull())
 		{
@@ -120,6 +126,8 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 			lastCommand = cmd->commandNumber;
 		}
+
+		prevTargetHandle = targetHandle;
 	}
 }
 

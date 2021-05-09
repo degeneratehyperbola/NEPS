@@ -1627,8 +1627,6 @@ void Misc::resolver() noexcept
 	if (static Helpers::KeyBindState flag; !flag[config->misc.resolver])
 		return;
 
-	std::srand(shots - hits);
-	
 	if (auto resolverTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle()))
-		Animations::resolve(resolverTarget);
+		Animations::resolve(resolverTarget, shots - hits);
 }

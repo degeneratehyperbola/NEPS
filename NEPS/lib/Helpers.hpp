@@ -31,7 +31,11 @@ namespace Helpers
 	constexpr auto degreesToRadians = [](float degrees) constexpr noexcept { return degrees * PI / 180.0f; };
 	constexpr auto radiansToDegrees = [](float radians) constexpr noexcept { return radians * 180.0f / PI; };
 
-	constexpr auto equals = [](float first, float second, float epsilon) noexcept { epsilon = std::fabsf(epsilon); return second - epsilon <= first && first < second + epsilon; };
+	constexpr auto equals = [](float first, float second, float epsilon) noexcept
+	{
+		epsilon = std::fabsf(epsilon);
+		return second - epsilon <= first && first < second + epsilon;
+	};
 
 	constexpr auto timeToTicks = [](float time) noexcept { return static_cast<int>(0.5f + time / memory->globalVars->intervalPerTick); };
 

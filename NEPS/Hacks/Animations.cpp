@@ -121,9 +121,9 @@ bool Animations::animSync(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
-void Animations::resolve(Entity *animatable) noexcept
+void Animations::resolve(Entity *animatable, int seed) noexcept
 {
-	if (!animatable || !animatable->isPlayer())
+	if (!seed || !animatable || !animatable->isPlayer())
 		return;
 
 	if (Helpers::animDataAuthenticity(animatable))
@@ -132,6 +132,8 @@ void Animations::resolve(Entity *animatable) noexcept
 	auto state = animatable->getAnimState();
 	if (!state)
 		return;
+
+	std::srand(seed);
 
 	const auto backupEffects = animatable->effectFlags();
 	animatable->effectFlags() |= 8;
@@ -143,14 +145,15 @@ void Animations::resolve(Entity *animatable) noexcept
 	// This hereby gives us a 33% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)
 	const auto delta = Helpers::angleDiffDeg(state->feetYaw, state->eyeYaw);
 	constexpr std::array<float, 3> positions = {-60.0f, 0.0f, 60.0f};
-	size_t current = 0;
-	for (size_t i = 1; i < positions.size(); ++i)
-	{
-		if (Helpers::equals(delta, positions[i], 30.0f))
-			current = i;
-	}
 
-	state->feetYaw = state->eyeYaw + positions[(current + 1 + std::rand() % (positions.size() - 1)) % positions.size()];
+	//size_t current = 0;
+	//for (size_t i = 1; i < positions.size(); ++i)
+	//{
+	//	if (Helpers::equals(delta, positions[i], 30.0f))
+	//		current = i;
+	//}
+
+	state->feetYaw = state->eyeYaw + positions[rand() % positions.size()];
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->feetYawRate = 0.0f;
 
