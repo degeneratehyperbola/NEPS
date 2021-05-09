@@ -62,6 +62,11 @@ namespace Helpers
 		return units * 0.0254f;
 	}
 
+	constexpr auto metersToUnits(float meters) noexcept
+	{
+		return meters / 0.0254f;
+	}
+
 	ImWchar *getFontGlyphRanges() noexcept;
 
 	constexpr int utf8SeqLen(char firstByte) noexcept
