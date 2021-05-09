@@ -6,6 +6,7 @@
 #include "EnginePrediction.h"
 #include "Misc.h"
 #include "Animations.h"
+#include "Aimbot.h"
 
 #include "../SDK/AnimState.h"
 #include "../SDK/Client.h"
@@ -1615,12 +1616,19 @@ void Misc::missCounter(GameEvent *event) noexcept
 	}
 }
 
-int Misc::getShots() noexcept
+void Misc::resetMissCounter() noexcept
 {
-	return shots;
+	shots = 0;
+	hits = 0;
 }
 
-int Misc::getHits() noexcept
+void Misc::resolver() noexcept
 {
-	return hits;
+	if (static Helpers::KeyBindState flag; !flag[config->misc.resolver])
+		return;
+
+	std::srand(shots - hits);
+	
+	if (auto resolverTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle()))
+		Animations::resolve(resolverTarget);
 }

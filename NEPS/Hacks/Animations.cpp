@@ -30,13 +30,13 @@ void Animations::releaseState() noexcept
 
 bool Animations::clientLerped(const UserCmd &cmd, bool sendPacket) noexcept
 {
+	assert(lerpedState);
+
 	bool matrixUpdated = false;
 
 	if (!localPlayer) return matrixUpdated;
 
 	if (!memory->input->isCameraInThirdPerson) return matrixUpdated;
-
-	assert(lerpedState);
 
 	if (static auto spawnTime = localPlayer->spawnTime(); !interfaces->engine->isInGame() || spawnTime != localPlayer->spawnTime())
 	{
@@ -136,11 +136,8 @@ void Animations::resolve(Entity *animatable) noexcept
 	animatable->effectFlags() |= 8;
 
 	memory->invalidateBoneCache(animatable);
-
-	// Update state just in case
 	memory->updateState(state, nullptr, animatable->thirdPersonAngles().x, animatable->thirdPersonAngles().y, 0.0f, nullptr);
-
-	std::srand(memory->globalVars->tickCount);
+	
 	// Return random desync position out of 3 possible
 	// This hereby gives us a 33% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)
 	const auto delta = Helpers::angleDiffDeg(state->feetYaw, state->eyeYaw);
@@ -156,7 +153,6 @@ void Animations::resolve(Entity *animatable) noexcept
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->feetYawRate = 0.0f;
 
-	animatable->updateClientSideAnimation();
 	animatable->effectFlags() = backupEffects;
 }
 

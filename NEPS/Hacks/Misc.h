@@ -52,6 +52,6 @@ namespace Misc
 	void indicators(ImDrawList *drawList) noexcept;
 	void voteRevealer(GameEvent &event) noexcept;
 	void missCounter(GameEvent *event) noexcept;
-	int getShots() noexcept;
-	int getHits() noexcept;
+	void resetMissCounter() noexcept;
+	void resolver() noexcept;
 }
