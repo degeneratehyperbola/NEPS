@@ -17,7 +17,7 @@
 #include "../SDK/ModelInfo.h"
 #include "../SDK/WeaponId.h"
 
-#include "../Helpers.h"
+#include "../lib/Helpers.hpp"
 
 /* This file is part of nSkinz by namazso, licensed under the MIT license:
 *

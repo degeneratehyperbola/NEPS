@@ -6,10 +6,10 @@
 #include <ShlObj.h>
 #endif
 
-#include "nlohmann/json.hpp"
+#include "lib/nlohmann/json.hpp"
 
 #include "Config.h"
-#include "Helpers.h"
+#include "lib/Helpers.hpp"
 #include "Gui.h"
 
 #ifdef _WIN32

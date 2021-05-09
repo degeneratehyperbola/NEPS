@@ -1,5 +1,5 @@
-#include "../fnv.h"
-#include "../Helpers.h"
+#include "../lib/fnv.hpp"
+#include "../lib/Helpers.hpp"
 #include "../GameData.h"
 #include "Visuals.h"
 
@@ -19,9 +19,9 @@
 #include "../SDK/ModelInfo.h"
 #include "../SDK/ViewSetup.h"
 
-#include "../imgui/imgui.h"
+#include "../lib/imgui/imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "../imgui/imgui_internal.h"
+#include "../lib/imgui/imgui_internal.h"
 
 #include <array>
 

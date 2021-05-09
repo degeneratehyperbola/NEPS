@@ -8,16 +8,16 @@
 #include <shellapi.h>
 #include <ShlObj.h>
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_win32.h"
-#include "imgui/imgui_stdlib.h"
+#include "lib/imgui/imgui.h"
+#include "lib/imgui/imgui_impl_win32.h"
+#include "lib/imgui/imgui_stdlib.h"
 
-#include "ImguiCustom.h"
+#include "lib/ImguiCustom.hpp"
 
 #include "GUI.h"
 #include "GameData.h"
 #include "Config.h"
-#include "Helpers.h"
+#include "lib/Helpers.hpp"
 #include "Hooks.h"
 #include "Interfaces.h"
 #include "Memory.h"

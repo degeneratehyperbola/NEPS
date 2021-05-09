@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "../Helpers.h"
+#include "../lib/Helpers.hpp"
 
 class Matrix3x4;
 

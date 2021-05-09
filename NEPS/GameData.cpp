@@ -2,7 +2,7 @@
 #include <mutex>
 
 #include "Config.h"
-#include "fnv.h"
+#include "lib/fnv.hpp"
 #include "GameData.h"
 #include "Interfaces.h"
 #include "Memory.h"

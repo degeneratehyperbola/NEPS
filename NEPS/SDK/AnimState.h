@@ -6,20 +6,20 @@
 
 struct AnimLayer
 {
-	bool clientblend;
-	float blendin;
+	bool clientBlend;
+	float blendIn;
 	void *studioHdr;
-	int dispatchedsrc;
-	int dispatcheddst;
+	int dispatchedSrc;
+	int dispatchedDst;
 	unsigned int order;
 	unsigned int sequence;
-	float prevcycle;
+	float prevCycle;
 	float weight;
 	float weightdeltarate;
 	float playbackRate;
 	float cycle;
 	void *owner;
-	int invalidatephysicsbits;
+	int invalidatePhysicsBits;
 };
 
 struct AnimState

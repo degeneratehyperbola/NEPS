@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "fnv.h"
+#include "lib/fnv.hpp"
 
 struct RecvProp;
 struct RecvTable;

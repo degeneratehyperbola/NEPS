@@ -6,7 +6,7 @@
 #include "../SDK/ClientClass.h"
 #include "../SDK/GlowObjectManager.h"
 #include "../SDK/GlobalVars.h"
-#include "../Helpers.h"
+#include "../lib/Helpers.hpp"
 
 static std::vector<std::pair<int, int>> customGlowEntities;
 

@@ -1,13 +1,13 @@
 #include "StreamProofESP.h"
 
-#include "../imgui/imgui.h"
+#include "../lib/imgui/imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "../imgui/imgui_internal.h"
+#include "../lib/imgui/imgui_internal.h"
 
 #include "../Config.h"
-#include "../fnv.h"
+#include "../lib/fnv.hpp"
 #include "../GameData.h"
-#include "../Helpers.h"
+#include "../lib/Helpers.hpp"
 #include "../Memory.h"
 #include "../Interfaces.h"
 #include "../SDK/Engine.h"

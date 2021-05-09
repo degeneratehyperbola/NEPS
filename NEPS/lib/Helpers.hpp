@@ -1,11 +1,15 @@
 #pragma once
 
 #include <array>
+#include <vector>
 #include <numbers>
+#include <cmath>
 
-#include "Config.h"
-#include "Memory.h"
-#include "SDK/GlobalVars.h"
+#include "../Memory.h"
+#include "../SDK/GlobalVars.h"
+#include "../ConfigStructs.h"
+
+#include "imgui/imgui.h"
 
 class Entity;
 struct SurfaceData;

@@ -1,7 +1,7 @@
 #include "Backtrack.h"
 #include "Aimbot.h"
 #include "../Config.h"
-#include "../Helpers.h"
+#include "../lib/Helpers.hpp"
 #include "../SDK/ConVar.h"
 #include "../SDK/Entity.h"
 #include "../SDK/FrameStage.h"

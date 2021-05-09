@@ -1,7 +1,7 @@
 #include <cassert>
 
 #include "EventListener.h"
-#include "fnv.h"
+#include "lib/fnv.hpp"
 #include "GameData.h"
 #include "Hacks/Misc.h"
 #include "Hacks/SkinChanger.h"

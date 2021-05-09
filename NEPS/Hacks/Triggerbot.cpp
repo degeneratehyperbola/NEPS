@@ -2,7 +2,7 @@
 #include "../Interfaces.h"
 #include "../Memory.h"
 #include "../GameData.h"
-#include "../Helpers.h"
+#include "../lib/Helpers.hpp"
 #include "../SDK/Entity.h"
 #include "../SDK/PhysicsSurfaceProps.h"
 #include "../SDK/GlobalVars.h"

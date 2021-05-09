@@ -5,11 +5,11 @@
 #include <Windows.h>
 #include <Psapi.h>
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_dx9.h"
-#include "imgui/imgui_impl_win32.h"
+#include "lib/imgui/imgui.h"
+#include "lib/imgui/imgui_impl_dx9.h"
+#include "lib/imgui/imgui_impl_win32.h"
 
-#include "MinHook/MinHook.h"
+#include "lib/minhook/minhook.h"
 
 #include "Config.h"
 #include "EventListener.h"
@@ -55,7 +55,7 @@
 #include "SDK/ViewSetup.h"
 
 #ifdef _DEBUG_NEPS
-#include "Texture/TextureDX9.h"
+#include "lib/Texture/TextureDX9.h"
 #include "resource.h"
 #endif // _DEBUG_NEPS
 

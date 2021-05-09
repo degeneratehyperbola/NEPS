@@ -2,9 +2,9 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui/imgui_internal.h"
 
-#include "ImguiCustom.h"
-#include "Interfaces.h"
-#include "SDK/InputSystem.h"
+#include "ImguiCustom.hpp"
+#include "../Interfaces.h"
+#include "../SDK/InputSystem.h"
 
 void ImGuiCustom::colorPicker(const char *name, float color[3], float *alpha, bool *rainbow, float *rainbowSpeed, bool *enable, float *thickness, float *rounding, bool *border) noexcept
 {

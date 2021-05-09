@@ -6,17 +6,17 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui/imgui_internal.h"
 
-#include "Helpers.h"
-#include "Config.h"
-#include "ConfigStructs.h"
-#include "GameData.h"
-#include "Memory.h"
-#include "Hacks/Backtrack.h"
-#include "SDK/GlobalVars.h"
-#include "SDK/AnimState.h"
-#include "SDK/Entity.h"
-#include "SDK/PhysicsSurfaceProps.h"
-#include "SDK/StudioRender.h"
+#include "Helpers.hpp"
+#include "../Config.h"
+#include "../ConfigStructs.h"
+#include "../GameData.h"
+#include "../Memory.h"
+#include "../Hacks/Backtrack.h"
+#include "../SDK/GlobalVars.h"
+#include "../SDK/AnimState.h"
+#include "../SDK/Entity.h"
+#include "../SDK/PhysicsSurfaceProps.h"
+#include "../SDK/StudioRender.h"
 
 std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 {
@@ -601,7 +601,7 @@ bool Helpers::animDataAuthenticity(Entity *animatable) noexcept
 	if (~animatable->flags() & Entity::FL_ONGROUND) return true;
 	if (animatable->moveType() == MoveType::LADDER) return true;
 	if (animatable->moveType() == MoveType::NOCLIP) return true;
-	if (animatable->isBot()) return true;
+	//if (animatable->isBot()) return true;
 	const float simulationTime = animatable->simulationTime();
 	const auto remoteActiveWeapon = animatable->getActiveWeapon();
 	if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime)) return true;

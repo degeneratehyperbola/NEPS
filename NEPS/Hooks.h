@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <Windows.h>
 
-#include "Hooks/MinHook.h"
+#include "Hooks/minhook.h"
 #include "Hooks/VmtHook.h"
 #include "Hooks/VmtSwap.h"
 

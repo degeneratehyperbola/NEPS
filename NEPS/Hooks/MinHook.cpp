@@ -1,5 +1,5 @@
-#include "MinHook.h"
-#include "../MinHook/MinHook.h"
+#include "minhook.h"
+#include "../lib/minhook/minhook.h"
 
 static auto calculateVmtLength(uintptr_t *vmt) noexcept
 {

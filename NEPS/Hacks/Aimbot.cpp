@@ -15,7 +15,7 @@
 #include "../SDK/ModelInfo.h"
 #include "../SDK/PhysicsSurfaceProps.h"
 #include "../SDK/WeaponData.h"
-#include "../Helpers.h"
+#include "../lib/Helpers.hpp"
 
 static Vector targetPoint;
 static int targetHandle = 0;

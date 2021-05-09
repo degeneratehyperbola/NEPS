@@ -30,13 +30,13 @@
 #include "../SDK/WeaponSystem.h"
 
 #include "../GUI.h"
-#include "../Helpers.h"
+#include "../lib/Helpers.hpp"
 #include "../GameData.h"
 
-#include "../imgui/imgui.h"
+#include "../lib/imgui/imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "../imgui/imgui_internal.h"
-#include "../ImguiCustom.h"
+#include "../lib/imgui/imgui_internal.h"
+#include "../lib/ImguiCustom.hpp"
 
 #include <mutex>
 #include <numeric>

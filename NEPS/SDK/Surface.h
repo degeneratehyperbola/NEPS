@@ -3,7 +3,7 @@
 #include <functional>
 #include <tuple>
 
-#include "../Helpers.h"
+#include "../lib/Helpers.hpp"
 #include "VirtualMethod.h"
 
 class Surface
