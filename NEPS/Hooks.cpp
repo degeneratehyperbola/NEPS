@@ -237,8 +237,8 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	EnginePrediction::run(cmd);
 
+	Aimbot::choseTarget(cmd);
 	Misc::resolver();
-
 	Aimbot::run(cmd);
 	Backtrack::run(cmd);
 	Triggerbot::run(cmd);

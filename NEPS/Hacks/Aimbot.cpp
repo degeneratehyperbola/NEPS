@@ -72,8 +72,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		if (config->aimbot[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !config->aimbot[weaponIndex].autoScope)
 			return;
 
-		choseTarget(cmd);
-
 		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
 		if (target && targetPoint.notNull())
 		{
