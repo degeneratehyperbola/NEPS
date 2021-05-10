@@ -18,10 +18,11 @@
 #include "../SDK/WeaponData.h"
 #include "../lib/Helpers.hpp"
 
+static bool doAutoScope;
 static Vector targetPoint;
-static int targetHandle = 0;
-static const Backtrack::Record *targetRecord = nullptr;
-static int weaponIndex = 0;
+static int targetHandle;
+static const Backtrack::Record *targetRecord;
+static int weaponIndex;
 
 void Aimbot::run(UserCmd *cmd) noexcept
 {
@@ -67,6 +68,9 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
     if (!config->aimbot[weaponIndex].ignoreFlash && localPlayer->isFlashed())
         return;
+
+	if (doAutoScope)
+		cmd->buttons |= UserCmd::IN_ATTACK2;
 
     if ((cmd->buttons & UserCmd::IN_ATTACK || config->aimbot[weaponIndex].autoShot || config->aimbot[weaponIndex].aimlock) && activeWeapon->getInaccuracy() <= config->aimbot[weaponIndex].maxAimInaccuracy) {
 
@@ -192,10 +196,9 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 			bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
 
 			if (doScope && canHit && trace.entity == entity && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
-			{
-				if (config->aimbot[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
-					cmd->buttons |= UserCmd::IN_ATTACK2;
-			}
+				doAutoScope = true;
+			else
+				doAutoScope = false;
 
 			if (doBacktrack)
 			{
