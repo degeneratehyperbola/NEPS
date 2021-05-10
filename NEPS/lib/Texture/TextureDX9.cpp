@@ -1,7 +1,7 @@
 #include "TextureDX9.h"
 #include "../imgui/imgui_impl_dx9.h"
 #include "../stb/image.h"
-#include "../Hooks.h"
+#include "../../Hooks.h"
 
 #include <memory>
 #include <d3d9.h>
