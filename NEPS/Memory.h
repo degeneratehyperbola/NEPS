@@ -76,6 +76,7 @@ public:
 	void(__thiscall *setAbsAngle)(Entity *, const Vector &);
 	uintptr_t listLeaves;
 	int *dispatchSound;
+	int *checkFileCRC;
 	std::add_pointer_t<bool __cdecl(float, float, float, float, float, float, Trace &)> traceToExit;
 	ViewRender *viewRender;
 	uintptr_t drawScreenEffectMaterial;

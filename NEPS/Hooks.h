@@ -15,12 +15,13 @@ struct Vector;
 // Easily switch hooking method for all hooks, choose between MinHook/VmtHook/VmtSwap
 using HookType = MinHook;
 
-class Hooks {
+class Hooks
+{
 public:
-    Hooks(HMODULE moduleHandle) noexcept;
+	Hooks(HMODULE moduleHandle) noexcept;
 
-    void install() noexcept;
-    void uninstall() noexcept;
+	void install() noexcept;
+	void uninstall() noexcept;
 
 	HMODULE getDllHandle() noexcept { return moduleHandle; }
 
@@ -28,25 +29,26 @@ public:
 
 	HMODULE getProcessHandle() noexcept { return GetModuleHandleA(0); }
 
-    WNDPROC originalWndProc;
-    std::add_pointer_t<HRESULT __stdcall(IDirect3DDevice9*, const RECT*, const RECT*, HWND, const RGNDATA*)> originalPresent;
-    std::add_pointer_t<HRESULT __stdcall(IDirect3DDevice9*, D3DPRESENT_PARAMETERS*)> originalReset;
-    std::add_pointer_t<int __fastcall(SoundInfo&)> originalDispatchSound;
+	WNDPROC originalWndProc;
+	std::add_pointer_t<HRESULT __stdcall(IDirect3DDevice9 *, const RECT *, const RECT *, HWND, const RGNDATA *)> originalPresent;
+	std::add_pointer_t<HRESULT __stdcall(IDirect3DDevice9 *, D3DPRESENT_PARAMETERS *)> originalReset;
+	std::add_pointer_t<int __fastcall(SoundInfo &)> originalDispatchSound;
+	std::add_pointer_t<void __fastcall()> originalCheckFileCRC;
 
-    HookType bspQuery;
-    HookType client;
-    HookType clientMode;
-    HookType engine;
-    HookType modelRender;
-    HookType panel;
-    HookType sound;
-    HookType surface;
-    HookType viewRender;
-    HookType svCheats;
+	HookType bspQuery;
+	HookType client;
+	HookType clientMode;
+	HookType engine;
+	HookType modelRender;
+	HookType panel;
+	HookType sound;
+	HookType surface;
+	HookType viewRender;
+	HookType svCheats;
 	HookType networkChannel;
 private:
-    HMODULE moduleHandle;
-    HWND window;
+	HMODULE moduleHandle;
+	HWND window;
 };
 
 inline std::unique_ptr<Hooks> hooks;

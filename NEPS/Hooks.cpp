@@ -180,6 +180,14 @@ static bool __fastcall sendNetMsg(NetworkChannel *networkchannel, void *edx, Net
 	return hooks->engine.callOriginal<bool, 40>(networkchannel, edx, msg, forceReliable, voice);
 }
 
+static void __fastcall checkFileCRC() noexcept
+{
+	if (config->exploits.bypassPure)
+		return;
+
+	hooks->originalCheckFileCRC();
+}
+
 static bool hookedNetChannel;
 static bool sentPacket;
 static UserCmd lastCmd;
@@ -772,6 +780,13 @@ void Hooks::install() noexcept
 		VirtualProtect(memory->dispatchSound, 4, oldProtection, nullptr);
 	}
 
+	if (DWORD oldProtection; VirtualProtect(memory->checkFileCRC, 4, PAGE_EXECUTE_READWRITE, &oldProtection))
+	{
+		originalCheckFileCRC = decltype(originalCheckFileCRC)(uintptr_t(memory->checkFileCRC + 1) + *memory->checkFileCRC);
+		*memory->checkFileCRC = uintptr_t(checkFileCRC) - uintptr_t(memory->checkFileCRC + 1);
+		VirtualProtect(memory->checkFileCRC, 4, oldProtection, nullptr);
+	}
+
 	if constexpr (std::is_same_v<HookType, MinHook>)
 		MH_EnableHook(MH_ALL_HOOKS);
 }
@@ -827,6 +842,12 @@ void Hooks::uninstall() noexcept
 	{
 		*memory->dispatchSound = uintptr_t(originalDispatchSound) - uintptr_t(memory->dispatchSound + 1);
 		VirtualProtect(memory->dispatchSound, 4, oldProtection, nullptr);
+	}
+
+	if (DWORD oldProtection; VirtualProtect(memory->checkFileCRC, 4, PAGE_EXECUTE_READWRITE, &oldProtection))
+	{
+		*memory->checkFileCRC = uintptr_t(originalCheckFileCRC) - uintptr_t(memory->checkFileCRC + 1);
+		VirtualProtect(memory->checkFileCRC, 4, oldProtection, nullptr);
 	}
 
 	if (HANDLE thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(unload), moduleHandle, 0, nullptr))
