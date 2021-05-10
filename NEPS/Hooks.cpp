@@ -172,14 +172,6 @@ static HRESULT __stdcall reset(IDirect3DDevice9 *device, D3DPRESENT_PARAMETERS *
 	return hooks->originalReset(device, params);
 }
 
-static bool __fastcall sendNetMsg(NetworkChannel *networkchannel, void *edx, NetworkMessage &msg, bool forceReliable, bool voice) noexcept
-{
-	if (msg.getType() == 14 && config->exploits.bypassPure) // Return and don't send messsage if its FileCRCCheck
-		return false;
-
-	return hooks->engine.callOriginal<bool, 40>(networkchannel, edx, msg, forceReliable, voice);
-}
-
 static void __fastcall checkFileCRC() noexcept
 {
 	if (config->exploits.bypassPure)
@@ -188,7 +180,6 @@ static void __fastcall checkFileCRC() noexcept
 	hooks->originalCheckFileCRC();
 }
 
-static bool hookedNetChannel;
 static bool sentPacket;
 static UserCmd lastCmd;
 
@@ -202,22 +193,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	uintptr_t *framePointer;
 	__asm mov framePointer, ebp;
 	bool &sendPacket = *reinterpret_cast<bool *>(*framePointer - 0x1C);
-
-	{
-		static NetworkChannel *old = nullptr;
-		NetworkChannel *current = interfaces->engine->getNetworkChannel();
-
-		if (!current)
-			hookedNetChannel = false;
-		else if (current && old != current)
-		{
-			hookedNetChannel = false;
-			hooks->networkChannel.init(current);
-			hooks->networkChannel.hookAt(42, sendNetMsg);
-			hookedNetChannel = true;
-			old = current;
-		}
-	}
 
 	static auto previousViewAngles = cmd->viewangles;
 	const auto currentViewAngles = cmd->viewangles;
@@ -826,7 +801,6 @@ void Hooks::uninstall() noexcept
 	surface.restore();
 	svCheats.restore();
 	viewRender.restore();
-	if (hookedNetChannel) networkChannel.restore();
 
 	netvars->restore();
 

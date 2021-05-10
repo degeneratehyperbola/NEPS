@@ -249,7 +249,6 @@ public:
 		Color4ToggleThickness smokeHull = {0.5f, 0.5f, 0.5f, 0.3f};
 		Color4ToggleThickness playerBounds = {1.0f, 1.0f, 1.0f, 1.0f};
 		Color4ToggleThickness playerVel = {1.0f, 1.0f, 1.0f, 1.0f};
-
 		struct ColorCorrection
 		{
 			bool enabled = false;
@@ -261,7 +260,6 @@ public:
 			float green = 0.0f;
 			float yellow = 0.0f;
 		} colorCorrection;
-
 		struct Viewmodel
 		{
 			int fov = 0;

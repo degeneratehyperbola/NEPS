@@ -45,7 +45,6 @@ public:
 	HookType surface;
 	HookType viewRender;
 	HookType svCheats;
-	HookType networkChannel;
 private:
 	HMODULE moduleHandle;
 	HWND window;
