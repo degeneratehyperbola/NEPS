@@ -53,5 +53,5 @@ namespace Misc
 	void voteRevealer(GameEvent &event) noexcept;
 	void missCounter(GameEvent *event) noexcept;
 	void resetMissCounter() noexcept;
-	void resolver() noexcept;
+	void resolver(Entity *animatable) noexcept;
 }

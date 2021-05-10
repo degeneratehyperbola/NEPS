@@ -1622,11 +1622,11 @@ void Misc::resetMissCounter() noexcept
 	hits = 0;
 }
 
-void Misc::resolver() noexcept
+void Misc::resolver(Entity *animatable) noexcept
 {
 	if (static Helpers::KeyBindState flag; !flag[config->misc.resolver])
 		return;
 
-	if (auto resolverTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle()))
-		Animations::resolve(resolverTarget, shots - hits);
+	if (animatable)
+		Animations::resolve(animatable, shots - hits);
 }

@@ -8,7 +8,6 @@ namespace Backtrack { struct Record; }
 namespace Aimbot
 {
 	void run(UserCmd *cmd) noexcept;
-	void choseTarget(UserCmd *cmd) noexcept;
 	Vector getTargetPoint() noexcept;
 	int getTargetHandle() noexcept;
 	const Backtrack::Record *getTargetRecord() noexcept;

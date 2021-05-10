@@ -1,6 +1,6 @@
 #include "Aimbot.h"
-#include "Misc.h"
 #include "Backtrack.h"
+#include "Misc.h"
 #include "../Config.h"
 #include "../Interfaces.h"
 #ifdef _DEBUG_NEPS
@@ -18,124 +18,12 @@
 #include "../SDK/WeaponData.h"
 #include "../lib/Helpers.hpp"
 
-static bool doAutoScope;
 static Vector targetPoint;
 static int targetHandle;
 static const Backtrack::Record *targetRecord;
 static int weaponIndex;
 
-void Aimbot::run(UserCmd *cmd) noexcept
-{
-	if (!localPlayer)
-		return;
-
-	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
-		return;
-
-	const auto time = memory->globalVars->serverTime();
-	if (localPlayer->nextAttack() > time || !localPlayer->isAlive() || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
-		return;
-
-	const auto activeWeapon = localPlayer->getActiveWeapon();
-	if (!activeWeapon || !activeWeapon->clip())
-		return;
-
-	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
-		return;
-
-	weaponIndex = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
-	if (!weaponIndex)
-		return;
-
-	auto weaponClass = getWeaponClass(activeWeapon->itemDefinitionIndex2());
-	if (!config->aimbot[weaponIndex].bind.keyMode)
-		weaponIndex = weaponClass;
-
-	if (!config->aimbot[weaponIndex].bind.keyMode)
-		weaponIndex = 0;
-
-	const auto weaponData = activeWeapon->getWeaponData();
-	if (!weaponData)
-		return;
-
-	if (static Helpers::KeyBindState flag; !flag[config->aimbot[weaponIndex].bind]) return;
-
-	if (!config->aimbot[weaponIndex].hitGroup)
-		return;
-
-    if (!config->aimbot[weaponIndex].betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
-        return;
-
-    if (!config->aimbot[weaponIndex].ignoreFlash && localPlayer->isFlashed())
-        return;
-
-	if (doAutoScope)
-		cmd->buttons |= UserCmd::IN_ATTACK2;
-
-    if ((cmd->buttons & UserCmd::IN_ATTACK || config->aimbot[weaponIndex].autoShot || config->aimbot[weaponIndex].aimlock) && activeWeapon->getInaccuracy() <= config->aimbot[weaponIndex].maxAimInaccuracy) {
-
-		if (config->aimbot[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !config->aimbot[weaponIndex].autoScope)
-			return;
-
-		static auto prevTargetHandle = targetHandle;
-
-		if (prevTargetHandle != targetHandle)
-			Misc::resetMissCounter();
-
-		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
-		if (target && targetPoint.notNull())
-		{
-			static Vector lastAngles = cmd->viewangles;
-			static int lastCommand = 0;
-
-			const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{};
-			const auto localPlayerEyePosition = localPlayer->getEyePosition();
-
-			if (lastCommand == cmd->commandNumber - 1 && lastAngles.notNull() && config->aimbot[weaponIndex].silent)
-				cmd->viewangles = lastAngles;
-
-			auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, targetPoint, cmd->viewangles + aimPunch);
-			bool clamped = false;
-
-			if (std::abs(angle.x) > config->misc.maxAngleDelta || std::abs(angle.y) > config->misc.maxAngleDelta)
-			{
-				angle.x = std::clamp(angle.x, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
-				angle.y = std::clamp(angle.y, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
-				clamped = true;
-			}
-
-			if (config->aimbot[weaponIndex].interpolation == 2 || config->aimbot[weaponIndex].interpolation == 3)
-				angle = angle * (1.0f - config->aimbot[weaponIndex].smooth);
-
-			const auto l = angle.length();
-			if ((config->aimbot[weaponIndex].interpolation == 1 || config->aimbot[weaponIndex].interpolation == 3) && l > config->aimbot[weaponIndex].linearSpeed)
-				angle *= config->aimbot[weaponIndex].linearSpeed / l;
-
-			if (angle.notNull())
-			{
-				cmd->viewangles += angle;
-
-				if (!config->aimbot[weaponIndex].silent)
-					interfaces->engine->setViewAngles(cmd->viewangles);
-			}
-
-			if (config->aimbot[weaponIndex].autoShot && activeWeapon->nextPrimaryAttack() <= time)
-				cmd->buttons |= UserCmd::IN_ATTACK;
-
-			if (clamped)
-			{
-				cmd->buttons &= ~UserCmd::IN_ATTACK;
-				lastAngles = cmd->viewangles;
-			} else lastAngles = Vector{};
-
-			lastCommand = cmd->commandNumber;
-		}
-
-		prevTargetHandle = targetHandle;
-	}
-}
-
-void Aimbot::choseTarget(UserCmd *cmd) noexcept
+static void choseTarget(UserCmd *cmd, bool &doAutoScope) noexcept
 {
 	targetPoint = Vector{};
 	targetHandle = 0;
@@ -178,14 +66,15 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 			continue;
 
 		const auto hitboxSet = entity->getHitboxSet();
-
 		if (!hitboxSet)
 			continue;
+
+		Misc::resolver(entity);
 
 		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 			continue;
 
-		const Backtrack::Record *choosenRecord = nullptr;
+		const Backtrack::Record *backtrackRecord = nullptr;
 		const auto doScope = config->aimbot[weaponIndex].autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
 		const auto doBacktrack = config->backtrack.aimAtRecords && config->backtrack.enabled && enemy;
 		if (doScope || doBacktrack)
@@ -212,7 +101,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 
 					if (record.shot && config->backtrack.onShot)
 					{
-						choosenRecord = &record;
+						backtrackRecord = &record;
 						break;
 					}
 
@@ -220,13 +109,13 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 					if (goesThroughWall && distance < bestDistance)
 					{
 						bestDistance = distance;
-						choosenRecord = &record;
+						backtrackRecord = &record;
 					}
 				}
 			}
 
-			if (choosenRecord)
-				std::copy(std::begin(choosenRecord->matrix), std::end(choosenRecord->matrix), bufferBones.data());
+			if (backtrackRecord)
+				std::copy(std::begin(backtrackRecord->matrix), std::end(backtrackRecord->matrix), bufferBones.data());
 		}
 
 		auto allowedHitgroup = config->aimbot[weaponIndex].hitGroup;
@@ -379,11 +268,11 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 
 				bool goesThroughWall = false;
 				Trace trace;
-				const auto damage = Helpers::findDamage(point, weaponData, trace, config->aimbot[weaponIndex].friendlyFire, allowedHitgroup, &goesThroughWall, choosenRecord, hitboxIdx);
+				const auto damage = Helpers::findDamage(point, weaponData, trace, config->aimbot[weaponIndex].friendlyFire, allowedHitgroup, &goesThroughWall, backtrackRecord, hitboxIdx);
 
 				if (config->aimbot[weaponIndex].visibleOnly && goesThroughWall) continue;
 
-				if (!choosenRecord && trace.entity != entity) continue;
+				if (!backtrackRecord && trace.entity != entity) continue;
 
 				if (!goesThroughWall)
 				{
@@ -410,7 +299,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 						bestFov = fov;
 						targetPoint = point;
 						targetHandle = entity->handle();
-						targetRecord = choosenRecord;
+						targetRecord = backtrackRecord;
 					}
 					break;
 				case 1:
@@ -419,7 +308,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 						bestDamage = damage;
 						targetPoint = point;
 						targetHandle = entity->handle();
-						targetRecord = choosenRecord;
+						targetRecord = backtrackRecord;
 					}
 					break;
 				case 2:
@@ -428,7 +317,7 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 						bestHitchance = hitchance;
 						targetPoint = point;
 						targetHandle = entity->handle();
-						targetRecord = choosenRecord;
+						targetRecord = backtrackRecord;
 					}
 					break;
 				case 3:
@@ -437,12 +326,126 @@ void Aimbot::choseTarget(UserCmd *cmd) noexcept
 						bestDistance = distance;
 						targetPoint = point;
 						targetHandle = entity->handle();
-						targetRecord = choosenRecord;
+						targetRecord = backtrackRecord;
 					}
 					break;
 				}
 			}
 		}
+	}
+}
+
+void Aimbot::run(UserCmd *cmd) noexcept
+{
+	if (!localPlayer)
+		return;
+
+	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
+		return;
+
+	const auto time = memory->globalVars->serverTime();
+	if (localPlayer->nextAttack() > time || !localPlayer->isAlive() || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
+		return;
+
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+	if (!activeWeapon || !activeWeapon->clip())
+		return;
+
+	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
+		return;
+
+	weaponIndex = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
+	if (!weaponIndex)
+		return;
+
+	auto weaponClass = getWeaponClass(activeWeapon->itemDefinitionIndex2());
+	if (!config->aimbot[weaponIndex].bind.keyMode)
+		weaponIndex = weaponClass;
+
+	if (!config->aimbot[weaponIndex].bind.keyMode)
+		weaponIndex = 0;
+
+	const auto weaponData = activeWeapon->getWeaponData();
+	if (!weaponData)
+		return;
+
+	if (static Helpers::KeyBindState flag; !flag[config->aimbot[weaponIndex].bind]) return;
+
+	if (!config->aimbot[weaponIndex].hitGroup)
+		return;
+
+    if (!config->aimbot[weaponIndex].betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
+        return;
+
+    if (!config->aimbot[weaponIndex].ignoreFlash && localPlayer->isFlashed())
+        return;
+
+    if ((cmd->buttons & UserCmd::IN_ATTACK || config->aimbot[weaponIndex].autoShot || config->aimbot[weaponIndex].aimlock) && activeWeapon->getInaccuracy() <= config->aimbot[weaponIndex].maxAimInaccuracy) {
+
+		if (config->aimbot[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !config->aimbot[weaponIndex].autoScope)
+			return;
+
+		static auto prevTargetHandle = targetHandle;
+
+		if (prevTargetHandle != targetHandle)
+			Misc::resetMissCounter();
+
+		bool doAutoScope = false;
+		choseTarget(cmd, doAutoScope);
+
+		if (doAutoScope)
+			cmd->buttons |= UserCmd::IN_ATTACK2;
+
+		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
+		if (target && targetPoint.notNull())
+		{
+			static Vector lastAngles = cmd->viewangles;
+			static int lastCommand = 0;
+
+			const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{};
+			const auto localPlayerEyePosition = localPlayer->getEyePosition();
+
+			if (lastCommand == cmd->commandNumber - 1 && lastAngles.notNull() && config->aimbot[weaponIndex].silent)
+				cmd->viewangles = lastAngles;
+
+			auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, targetPoint, cmd->viewangles + aimPunch);
+			bool clamped = false;
+
+			if (std::abs(angle.x) > config->misc.maxAngleDelta || std::abs(angle.y) > config->misc.maxAngleDelta)
+			{
+				angle.x = std::clamp(angle.x, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
+				angle.y = std::clamp(angle.y, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
+				clamped = true;
+			}
+
+			if (config->aimbot[weaponIndex].interpolation == 2 || config->aimbot[weaponIndex].interpolation == 3)
+				angle = angle * (1.0f - config->aimbot[weaponIndex].smooth);
+
+			const auto l = angle.length();
+			if ((config->aimbot[weaponIndex].interpolation == 1 || config->aimbot[weaponIndex].interpolation == 3) && l > config->aimbot[weaponIndex].linearSpeed)
+				angle *= config->aimbot[weaponIndex].linearSpeed / l;
+
+			if (angle.notNull())
+			{
+				cmd->viewangles += angle;
+
+				if (!config->aimbot[weaponIndex].silent)
+					interfaces->engine->setViewAngles(cmd->viewangles);
+			}
+
+			if (config->aimbot[weaponIndex].autoShot && activeWeapon->nextPrimaryAttack() <= time)
+				cmd->buttons |= UserCmd::IN_ATTACK;
+
+			if (clamped)
+			{
+				cmd->buttons &= ~UserCmd::IN_ATTACK;
+				lastAngles = cmd->viewangles;
+			} else lastAngles = Vector{};
+
+			lastCommand = cmd->commandNumber;
+		}
+
+		prevTargetHandle = targetHandle;
 	}
 }
 
