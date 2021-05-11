@@ -54,11 +54,6 @@
 #include "SDK/ConVar.h"
 #include "SDK/ViewSetup.h"
 
-#ifdef _DEBUG_NEPS
-#include "lib/Texture/TextureDX9.h"
-#include "resource.h"
-#endif // _DEBUG_NEPS
-
 static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	[[maybe_unused]] static const auto initGlobal = [](HWND window) noexcept
@@ -144,15 +139,6 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 
 	if (gui->open)
 		gui->render();
-
-	#ifdef _DEBUG_NEPS
-	static Texture texture = {IDB_PNG2, "PNG"};
-
-	if (texture.get())
-	{
-		ImGui::GetForegroundDrawList()->AddImage(texture.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
-	}
-	#endif // _DEBUG_NEPS
 
 	ImGui::EndFrame();
 	ImGui::Render();

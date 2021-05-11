@@ -13,6 +13,7 @@
 #include "lib/imgui/imgui_stdlib.h"
 
 #include "lib/ImguiCustom.hpp"
+#include "lib/Texture/TextureDX9.h"
 
 #include "GUI.h"
 #include "GameData.h"
@@ -25,6 +26,8 @@
 #include "Hacks/Visuals.h"
 #include "Hacks/SkinChanger.h"
 #include "Hacks/Aimbot.h"
+
+#include "resource.h"
 
 #ifdef _DEBUG_NEPS
 #include "Hacks/Animations.h"
@@ -107,6 +110,14 @@ void GUI::render() noexcept
 	}
 
 	#ifdef _DEBUG_NEPS
+	static Texture debugNotice = {IDB_PNG2, "PNG"};
+
+	if (debugNotice.get())
+	{
+		ImGui::GetForegroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
+		//ImGui::GetBackgroundDrawList()->AddImage(vignette.get(), {0.0f, 0.0f}, ImGui::GetIO().DisplaySize);
+	}
+
 	renderDebugWindow();
 	ImGui::ShowDemoWindow();
 	#endif // _DEBUG_NEPS
