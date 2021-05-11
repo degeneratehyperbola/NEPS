@@ -580,6 +580,9 @@ float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept
 {
 	switch (i)
 	{
+	case Hitbox::LeftFoot:
+	case Hitbox::RightFoot:
+		return 4.30f;
 	case Hitbox::Thorax:
 		return 7.89f;
 	case Hitbox::UpperChest:

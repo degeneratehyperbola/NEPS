@@ -130,9 +130,7 @@ static void choseTarget(UserCmd *cmd, bool &doAutoScope) noexcept
 
 		for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
 		{
-			if (hitboxIdx == Hitbox::LeftFoot ||
-				hitboxIdx == Hitbox::RightFoot ||
-				hitboxIdx == Hitbox::LeftHand ||
+			if (hitboxIdx == Hitbox::LeftHand ||
 				hitboxIdx == Hitbox::RightHand ||
 				hitboxIdx == Hitbox::Neck ||
 				hitboxIdx == Hitbox::LowerChest ||
@@ -228,6 +226,10 @@ static void choseTarget(UserCmd *cmd, bool &doAutoScope) noexcept
 					points.emplace_back(min - axis);
 					break;
 				}
+				case Hitbox::LeftFoot:
+				case Hitbox::RightFoot:
+					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
+					break;
 				default:
 					points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
 					break;
@@ -236,6 +238,8 @@ static void choseTarget(UserCmd *cmd, bool &doAutoScope) noexcept
 			{
 				switch (hitboxIdx)
 				{
+				case Hitbox::LeftFoot:
+				case Hitbox::RightFoot:
 				case Hitbox::Head:
 				case Hitbox::UpperChest:
 				case Hitbox::Thorax:
