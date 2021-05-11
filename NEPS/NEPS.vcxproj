@@ -170,7 +170,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\debug.png" />
-    <Image Include="Resources\LogoA.png" />
+    <Image Include="Resources\logo.png" />
+    <Image Include="Resources\vignette.png" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NEPS.rc" />

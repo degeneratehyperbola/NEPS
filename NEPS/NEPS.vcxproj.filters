@@ -495,10 +495,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\LogoA.png">
+    <Image Include="Resources\logo.png">
       <Filter>Resources</Filter>
     </Image>
     <Image Include="Resources\debug.png">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="Resources\vignette.png">
       <Filter>Resources</Filter>
     </Image>
   </ItemGroup>

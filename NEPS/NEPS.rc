@@ -51,9 +51,11 @@ END
 // PNG
 //
 
-IDB_PNG1                PNG                     "Resources\\LogoA.png"
+IDB_PNG1                PNG                     "Resources\\logo.png"
 
 IDB_PNG2                PNG                     "Resources\\debug.png"
+
+IDB_PNG3                PNG                     "Resources\\vignette.png"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
