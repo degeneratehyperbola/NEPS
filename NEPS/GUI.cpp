@@ -76,6 +76,19 @@ GUI::GUI() noexcept
 
 void GUI::render() noexcept
 {
+	#ifdef _DEBUG_NEPS
+	static Texture debugNotice = {IDB_PNG2, "PNG"};
+
+	if (debugNotice.get())
+	{
+		ImGui::GetForegroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
+		//ImGui::GetBackgroundDrawList()->AddImage(vignette.get(), {0.0f, 0.0f}, ImGui::GetIO().DisplaySize);
+	}
+	#endif // _DEBUG_NEPS
+
+	if (!open)
+		return;
+
 	if (!config->style.menuStyle)
 	{
 		renderMenuBar();
@@ -110,14 +123,6 @@ void GUI::render() noexcept
 	}
 
 	#ifdef _DEBUG_NEPS
-	static Texture debugNotice = {IDB_PNG2, "PNG"};
-
-	if (debugNotice.get())
-	{
-		ImGui::GetForegroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
-		//ImGui::GetBackgroundDrawList()->AddImage(vignette.get(), {0.0f, 0.0f}, ImGui::GetIO().DisplaySize);
-	}
-
 	renderDebugWindow();
 	ImGui::ShowDemoWindow();
 	#endif // _DEBUG_NEPS
