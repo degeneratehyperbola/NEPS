@@ -1869,7 +1869,9 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 		ImGui::SetNextWindowSize({420.0f, 0.0f});
 		ImGui::Begin("Misc", &window.misc, windowFlags);
 	}
+
 	ImGui::Columns(2, nullptr, false);
+
 	ImGuiCustom::keyBind("Menu key", &config->misc.menuKey);
 	if (config->misc.menuKey == 1) config->misc.menuKey = 0;
 	ImGui::Checkbox("Full-auto", &config->misc.autoPistol);
@@ -1894,6 +1896,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 		ImGui::SetTooltip("Experimental");
 	ImGui::Checkbox("Fix tablet signal", &config->misc.fixTabletSignal);
 	ImGui::Checkbox("Radar hack", &config->misc.radarHack);
+	ImGui::Checkbox("Unlock invertory", &config->misc.unlockInvertory);
 	ImGui::Checkbox("Reveal ranks", &config->misc.revealRanks);
 	ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);

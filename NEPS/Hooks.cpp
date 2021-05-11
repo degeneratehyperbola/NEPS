@@ -623,8 +623,8 @@ static const DemoPlaybackParameters *__stdcall getDemoPlaybackParameters() noexc
 	}
 	#endif // _DEBUG_NEPS
 
-	if (params && config->misc.revealSuspect && *static_cast<std::uint64_t *>(_ReturnAddress()) != 0x79801F74C985C88B)
-	{ // client.dll : 8B C8 85 C9 74 1F 80 79 10 00 , there game decides whether to show overwatch panel
+	if (params && config->misc.revealSuspect && *static_cast<std::uint64_t *>(_ReturnAddress()) != 0x79801F74C985C88B) // client.dll : 8B C8 85 C9 74 1F 80 79 10 00 , there game decides whether to show overwatch panel
+	{
 		static DemoPlaybackParameters customParams;
 		customParams = *params;
 		customParams.anonymousPlayerIdentity = false;
@@ -648,8 +648,8 @@ static bool __stdcall isPlayingDemo() noexcept
 
 	if (config->misc.revealMoney
 		&& *static_cast<uintptr_t *>(_ReturnAddress()) == 0x0975C084 // client.dll : 84 C0 75 09 38 05
-		&& **reinterpret_cast<uintptr_t **>(uintptr_t(_AddressOfReturnAddress()) + 4) == 0x0C75C084)
-	{ // client.dll : 84 C0 75 0C 5B
+		&& **reinterpret_cast<uintptr_t **>(uintptr_t(_AddressOfReturnAddress()) + 4) == 0x0C75C084) // client.dll : 84 C0 75 0C 5B
+	{
 		return true;
 	}
 	return hooks->engine.callOriginal<bool, 82>();
@@ -687,6 +687,14 @@ static void __stdcall renderSmokeOverlay(bool update) noexcept
 		*reinterpret_cast<float *>(std::uintptr_t(memory->viewRender) + 0x588) = 0.0f;
 	else
 		hooks->viewRender.callOriginal<void, 41>(update);
+}
+
+static bool __stdcall isConnected() noexcept
+{
+	if (config->misc.unlockInvertory && std::uintptr_t(_ReturnAddress()) == memory->invertoryBlock)
+		return false;
+
+	return hooks->engine.callOriginal<bool, 27>();
 }
 
 Hooks::Hooks(HMODULE moduleHandle) noexcept
@@ -734,6 +742,7 @@ void Hooks::install() noexcept
 	clientMode.hookAt(35, getViewModelFov);
 	clientMode.hookAt(44, doPostScreenEffects);
 	clientMode.hookAt(58, updateColorCorrectionWeights);
+	engine.hookAt(27, isConnected);
 	engine.hookAt(82, isPlayingDemo);
 	engine.hookAt(101, getScreenAspectRatio);
 	engine.hookAt(218, getDemoPlaybackParameters);

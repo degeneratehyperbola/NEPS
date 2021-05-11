@@ -660,6 +660,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fix movement", m.fixMovement);
 	read(j, "Fix animations", m.fixAnimation);
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
+	read(j, "Unlock invertory", m.unlockInvertory);
 	read<value_t::object>(j, "Resolver", m.resolver);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
 	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
@@ -1114,6 +1115,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix movement", fixMovement);
 	WRITE("Fix animations", fixAnimation);
 	WRITE("Disable model occlusion", disableModelOcclusion);
+	WRITE("Unlock invertory", unlockInvertory);
 	WRITE("Resolver", resolver);
 	WRITE("Disable HUD blur", disablePanoramablur);
 	WRITE("Prepare revolver", prepareRevolver);
