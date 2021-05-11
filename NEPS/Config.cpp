@@ -262,7 +262,7 @@ static void from_json(const json &j, Box &b)
 
 	read(j, "Type", b.type);
 	read(j, "Scale", b.scale);
-	read<value_t::object>(j, "Secondary", b.secondary);
+	read(j, "Secondary", b.secondary);
 	read<value_t::object>(j, "Secondary color", b.secondaryColor);
 }
 
