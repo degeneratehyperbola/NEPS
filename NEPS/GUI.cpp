@@ -1855,6 +1855,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
+	ImGui::Checkbox("Clear chat", &config->griefing.clearChat);
 
 	if (!contentOnly)
 		ImGui::End();
@@ -2286,7 +2287,7 @@ void GUI::renderDebugWindow() noexcept
 			dlight->color.exponent = exponent;
 		}
 	}
-	
+
 	if (entity && entity->isPlayer() && ImGui::Button("Resolve selected"))
 		Animations::resolve(entity, 10);
 
