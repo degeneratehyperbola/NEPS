@@ -707,6 +707,7 @@ static void from_json(const json &j, Config::Griefing &g)
 	read(j, "Fake prime", g.fakePrime);
 	read(j, "Vote reveal", g.revealVotes);
 	read(j, "Spam use", g.spamUse);
+	read(j, "Clear chat", g.clearChat);
 }
 
 static void from_json(const json &j, Config::Griefing::Reportbot &r)
@@ -1188,6 +1189,7 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Fake prime", fakePrime);
 	WRITE("Vote reveal", revealVotes);
 	WRITE("Spam use", spamUse);
+	WRITE("Clear chat", clearChat);
 }
 
 static void to_json(json &j, const Config::Movement &o)

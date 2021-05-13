@@ -397,7 +397,7 @@ void Misc::watermark() noexcept
 		{
 			GameData::Lock lock;
 			const auto session = GameData::session();
-			
+
 			ImGui::SameLine(55.0f);
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
@@ -1542,6 +1542,12 @@ void Misc::useSpam(UserCmd *cmd)
 			cmd->buttons &= ~UserCmd::IN_USE;
 		flag = !flag;
 	}
+}
+
+void Misc::clearChat() noexcept
+{
+	if (config->griefing.clearChat)
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\A9");
 }
 
 void Misc::indicators(ImDrawList *drawList) noexcept
