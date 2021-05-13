@@ -77,7 +77,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 		welcomeMsg << "To open GUI press \"";
 		welcomeMsg << interfaces->inputSystem->virtualKeyToString(config->misc.menuKey);
 		welcomeMsg << "\" on your keyboard.\n\n";
-		welcomeMsg << "Configs are stored in Documents\\\\NEPS\\\\ directory.\n";
+		welcomeMsg << "Configs are stored in Documents/NEPS/ directory.\n";
 		welcomeMsg << "NEPS tries to load a config named \"default\" on start-up,\nand it appears that it was ";
 		welcomeMsg << (loaded ? "loaded successfuly." : "not found.");
 
