@@ -1517,7 +1517,7 @@ void Misc::visualizeBlockBot(ImDrawList *drawList) noexcept
 	}
 }
 
-void Misc::useSpam(UserCmd *cmd)
+void Misc::useSpam(UserCmd *cmd) noexcept
 {
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
@@ -1547,7 +1547,7 @@ void Misc::useSpam(UserCmd *cmd)
 void Misc::clearChat() noexcept
 {
 	if (config->griefing.clearChat)
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\A9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
 }
 
 void Misc::indicators(ImDrawList *drawList) noexcept
