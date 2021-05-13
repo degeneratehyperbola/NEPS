@@ -1517,7 +1517,7 @@ void Misc::visualizeBlockBot(ImDrawList *drawList) noexcept
 	}
 }
 
-void Misc::useSpam(UserCmd *cmd)
+void Misc::useSpam(UserCmd *cmd) noexcept
 {
 	if (!localPlayer || !localPlayer->isAlive())
 		return;

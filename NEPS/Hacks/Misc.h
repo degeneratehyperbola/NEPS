@@ -48,7 +48,7 @@ namespace Misc
 	void fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept;
 	void blockBot(UserCmd *cmd) noexcept;
 	void visualizeBlockBot(ImDrawList *drawList) noexcept;
-	void useSpam(UserCmd *cmd);
+	void useSpam(UserCmd *cmd) noexcept;
 	void indicators(ImDrawList *drawList) noexcept;
 	void voteRevealer(GameEvent &event) noexcept;
 	void missCounter(GameEvent *event) noexcept;
