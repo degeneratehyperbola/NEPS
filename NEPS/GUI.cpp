@@ -85,9 +85,10 @@ void GUI::render() noexcept
 	if (!open)
 		return;
 
-	static Texture vignette = {IDB_PNG3, "PNG"};
-	if (vignette.get())
-		ImGui::GetBackgroundDrawList()->AddImage(vignette.get(), {0.0f, 0.0f}, ImGui::GetIO().DisplaySize);
+	// ?Que? I don't know why, but apparently 2048x2048 texture is too much for DX9 ¯\_(ツ)_/¯
+	//static Texture vignette = {IDB_PNG3, "PNG"};
+	//if (vignette.get())
+	//	ImGui::GetBackgroundDrawList()->AddImage(vignette.get(), {0.0f, 0.0f}, ImGui::GetIO().DisplaySize);
 
 	if (!config->style.menuStyle)
 	{
