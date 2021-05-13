@@ -151,6 +151,96 @@ static void menuBarItem(const char *name, bool &enabled) noexcept
 	}
 }
 
+void GUI::renderGuiStyle2() noexcept
+{
+	ImGui::Begin("NEPS.PP", nullptr, windowFlags | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
+	if (ImGui::BeginTabBar("TabBar", ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_NoTooltip))
+	{
+		if (ImGui::BeginTabItem("Aimbot"))
+		{
+			renderAimbotWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Anti aim"))
+		{
+			renderAntiAimWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Triggerbot"))
+		{
+			renderTriggerbotWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Backtrack"))
+		{
+			renderBacktrackWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Glow"))
+		{
+			renderGlowWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Chams"))
+		{
+			renderChamsWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Extrasensory perception"))
+		{
+			renderESPWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Visuals"))
+		{
+			renderVisualsWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Skin changer"))
+		{
+			renderSkinChangerWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Sound"))
+		{
+			renderSoundWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Style"))
+		{
+			renderStyleWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Exploits"))
+		{
+			renderExploitsWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Social engineering"))
+		{
+			renderGriefingWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Movement"))
+		{
+			renderMovementWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Miscellaneous"))
+		{
+			renderMiscWindow(true);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Configuration"))
+		{
+			renderConfigWindow(true);
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
+	}
+	ImGui::End();
+}
+
 void GUI::renderContextMenu() noexcept
 {
 	if (ImGui::MenuItem("Close all"))
@@ -2098,96 +2188,6 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 	}
 	if (!contentOnly)
 		ImGui::End();
-}
-
-void GUI::renderGuiStyle2() noexcept
-{
-	ImGui::Begin("NEPS.PP", nullptr, windowFlags | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
-	if (ImGui::BeginTabBar("TabBar", ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_NoTooltip))
-	{
-		if (ImGui::BeginTabItem("Aimbot"))
-		{
-			renderAimbotWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Anti aim"))
-		{
-			renderAntiAimWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Triggerbot"))
-		{
-			renderTriggerbotWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Backtrack"))
-		{
-			renderBacktrackWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Glow"))
-		{
-			renderGlowWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Chams"))
-		{
-			renderChamsWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Extrasensory perception"))
-		{
-			renderESPWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Visuals"))
-		{
-			renderVisualsWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Skin changer"))
-		{
-			renderSkinChangerWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Sound"))
-		{
-			renderSoundWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Style"))
-		{
-			renderStyleWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Exploits"))
-		{
-			renderExploitsWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Social engineering"))
-		{
-			renderGriefingWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Movement"))
-		{
-			renderMovementWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Miscellaneous"))
-		{
-			renderMiscWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Configuration"))
-		{
-			renderConfigWindow(true);
-			ImGui::EndTabItem();
-		}
-		ImGui::EndTabBar();
-	}
-	ImGui::End();
 }
 
 #ifdef _DEBUG_NEPS

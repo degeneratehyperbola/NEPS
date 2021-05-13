@@ -17,6 +17,7 @@ public:
 	const auto &getFont() noexcept { return font; };
 	void updateColors() const noexcept;
 private:
+	void renderGuiStyle2() noexcept;
 	void renderContextMenu() noexcept;
 	void renderMenuBar() noexcept;
 	void renderDebugWindow() noexcept;
@@ -36,7 +37,6 @@ private:
 	void renderMovementWindow(bool contentOnly = false) noexcept;
 	void renderMiscWindow(bool contentOnly = false) noexcept;
 	void renderConfigWindow(bool contentOnly = false) noexcept;
-	void renderGuiStyle2() noexcept;
 
 	struct
 	{
