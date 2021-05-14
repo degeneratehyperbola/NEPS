@@ -2320,7 +2320,7 @@ void GUI::renderDebugWindow() noexcept
 	}
 
 	if (entity && entity->isPlayer() && ImGui::Button("Resolve selected"))
-		Animations::resolve(entity, 10);
+		Animations::resolveLBY(entity, 10);
 
 	static bool data = false;
 	if (entity && entity->isPlayer() && ImGui::Button("Data authenticity for selected"))
