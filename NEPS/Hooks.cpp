@@ -202,6 +202,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::quickHealthshot(cmd);
 	Misc::fixTabletSignal();
 	Misc::slowwalk(cmd);
+	Misc::dmGod();
 
 	EnginePrediction::run(cmd);
 
@@ -339,6 +340,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::fakePrime();
+		Misc::forceRelayCluster();
 		break;
 	case FrameStage::RENDER_END:
 		break;

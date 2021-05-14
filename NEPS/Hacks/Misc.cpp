@@ -1633,3 +1633,30 @@ void Misc::desyncResolver(Entity *animatable) noexcept
 	if (animatable)
 		Animations::resolveLBY(animatable, shots - hits);
 }
+
+void Misc::forceRelayCluster() noexcept
+{
+	std::string dataCentersList[] = { "", "syd", "vie", "gru", "scl", "dxb", "par", "fra", "hkg",
+	"maa", "bom", "tyo", "lux", "ams", "limc", "man", "waw", "sgp", "jnb",
+	"mad", "sto", "lhr", "atl", "eat", "ord", "lax", "mwh", "okc", "sea", "iad" };
+
+	*memory->forceRelayCluster = dataCentersList[config->misc.forceRelayCluster];
+}
+
+void Misc::dmGod() noexcept
+{
+	if (!config->misc.dmGod || !localPlayer->isAlive())
+		return;
+
+	static auto gameType{ interfaces->cvar->findVar("game_type") };
+	static auto gameMode{ interfaces->cvar->findVar("game_mode") };
+	if (gameType->getInt() != 1 || gameMode->getInt() != 2)
+		return;
+
+	constexpr auto delay = 0.5f;
+	static auto nextChangeTime = 0.0f;
+	if (nextChangeTime <= memory->globalVars->realtime) {
+		interfaces->engine->clientCmdUnrestricted("open_buymenu");
+		nextChangeTime = memory->globalVars->realtime + delay;
+	}
+}

@@ -678,6 +678,8 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Bomb timer", m.bombTimer);
 	read(j, "Grenade predict", m.nadePredict);
 	read(j, "Indicators", m.indicators);
+	read(j, "Force relay cluster", m.forceRelayCluster);
+	read(j, "Deathmatch godmode", m.dmGod);
 }
 
 static void from_json(const json &j, Config::Exploits &e)
@@ -1131,6 +1133,8 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix tablet signal", fixTabletSignal);
 	WRITE("Aimstep", maxAngleDelta);
 	WRITE("Indicators", indicators);
+	WRITE("Force relay cluster", forceRelayCluster);
+	WRITE("Deathmatch godmode", dmGod);
 }
 
 static void to_json(json &j, const Config::Exploits &o)
