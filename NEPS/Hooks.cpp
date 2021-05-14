@@ -185,14 +185,11 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	memory->globalVars->serverTime(cmd);
 	Misc::changeConVarsTick();
 
-	Misc::antiAfkKick(cmd);
-	Misc::fastStop(cmd);
 	Misc::runReportbot();
-	Misc::autoStrafe(cmd);
-	Misc::bunnyHop(cmd);
-	Misc::removeCrouchCooldown(cmd);
-	Misc::autoPistol(cmd);
+	Misc::antiAfkKick(cmd);
+	Misc::dmGodMode();
 	Misc::useSpam(cmd);
+	Misc::autoPistol(cmd);
 	Misc::autoReload(cmd);
 	Misc::updateClanTag();
 	Misc::fakeBan();
@@ -201,8 +198,11 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::quickReload(cmd);
 	Misc::quickHealthshot(cmd);
 	Misc::fixTabletSignal();
+	Misc::removeCrouchCooldown(cmd);
+	Misc::fastStop(cmd);
+	Misc::autoStrafe(cmd);
+	Misc::bunnyHop(cmd);
 	Misc::slowwalk(cmd);
-	Misc::dmGod();
 
 	EnginePrediction::run(cmd);
 
