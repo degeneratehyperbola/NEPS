@@ -1950,14 +1950,9 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 
 	if (ImGui::Button("Clear chat"))
 	{
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		for(int i = 0; i <= 8; i++) {
+			memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		}
 	}
 
 	if (!contentOnly)
