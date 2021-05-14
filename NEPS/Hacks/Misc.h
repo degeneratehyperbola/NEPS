@@ -53,7 +53,7 @@ namespace Misc
 	void voteRevealer(GameEvent &event) noexcept;
 	void missCounter(GameEvent *event) noexcept;
 	void resetMissCounter() noexcept;
-	void resolver(Entity *animatable) noexcept;
+	void desyncResolver(Entity *animatable) noexcept;
 	void forceRelayCluster() noexcept;
-	void dmGod() noexcept;
+	void dmGodMode() noexcept;
 }

@@ -679,7 +679,6 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Grenade predict", m.nadePredict);
 	read(j, "Indicators", m.indicators);
 	read(j, "Force relay cluster", m.forceRelayCluster);
-	read(j, "Deathmatch godmode", m.dmGod);
 }
 
 static void from_json(const json &j, Config::Exploits &e)
@@ -690,6 +689,7 @@ static void from_json(const json &j, Config::Exploits &e)
 	read<value_t::object>(j, "Slowwalk", e.slowwalk);
 	read<value_t::object>(j, "Doubletap", e.doubletap);
 	read(j, "Bypass sv_pure", e.bypassPure);
+	read(j, "Deathmatch godmode", e.dmGodMode);
 }
 
 static void from_json(const json &j, Config::Griefing &g)
@@ -1134,7 +1134,6 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Aimstep", maxAngleDelta);
 	WRITE("Indicators", indicators);
 	WRITE("Force relay cluster", forceRelayCluster);
-	WRITE("Deathmatch godmode", dmGod);
 }
 
 static void to_json(json &j, const Config::Exploits &o)
@@ -1147,6 +1146,7 @@ static void to_json(json &j, const Config::Exploits &o)
 	WRITE("Slowwalk", slowwalk);
 	WRITE("Doubletap", doubletap);
 	WRITE("Bypass sv_pure", bypassPure);
+	WRITE("Deathmatch godmode", dmGodMode);
 }
 
 static void to_json(json &j, const Config::Griefing::Reportbot &o, const Config::Griefing::Reportbot &dummy = {})

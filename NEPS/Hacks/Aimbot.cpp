@@ -69,7 +69,7 @@ static void choseTarget(UserCmd *cmd, bool &doAutoScope) noexcept
 		if (!hitboxSet)
 			continue;
 
-		Misc::resolver(entity);
+		Misc::desyncResolver(entity);
 
 		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 			continue;
