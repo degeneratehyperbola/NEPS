@@ -2027,7 +2027,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 
 	ImGui::NextColumn();
 
-	ImGui::Checkbox("Resolver", &config->misc.desyncResolver);
+	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Experimental");
 	ImGui::Checkbox("Fix tablet signal", &config->misc.fixTabletSignal);
