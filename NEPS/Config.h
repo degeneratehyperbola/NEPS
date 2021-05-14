@@ -407,6 +407,7 @@ public:
 		bool bombTimer = false;
 		bool nadePredict = false;
 		bool indicators = false;
+		bool dmGod = false;
 		int forceRelayCluster = 0;
 	} misc;
 
