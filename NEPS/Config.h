@@ -370,7 +370,7 @@ public:
 		bool fixAnimation = true;
 		bool disableModelOcclusion = true;
 		bool unlockInvertory = false;
-		KeyBind resolver;
+		bool desyncResolver;
 		bool disablePanoramablur = false;
 		struct PreserveKillfeed
 		{

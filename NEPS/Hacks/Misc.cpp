@@ -1625,11 +1625,11 @@ void Misc::resetMissCounter() noexcept
 	hits = 0;
 }
 
-void Misc::resolver(Entity *animatable) noexcept
+void Misc::desyncResolver(Entity *animatable) noexcept
 {
-	if (static Helpers::KeyBindState flag; !flag[config->misc.resolver])
+	if (!config->misc.desyncResolver)
 		return;
 
 	if (animatable)
-		Animations::resolve(animatable, shots - hits);
+		Animations::resolveLBY(animatable, shots - hits);
 }

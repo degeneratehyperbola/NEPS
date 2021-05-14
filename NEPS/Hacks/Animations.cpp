@@ -121,7 +121,7 @@ bool Animations::animSync(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
-void Animations::resolve(Entity *animatable, int seed) noexcept
+void Animations::resolveLBY(Entity *animatable, int seed) noexcept
 {
 	if (!seed || !animatable || !animatable->isPlayer())
 		return;
