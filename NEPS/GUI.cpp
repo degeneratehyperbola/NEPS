@@ -32,7 +32,6 @@
 #ifdef _DEBUG_NEPS
 #include "Hacks/Animations.h"
 #include "SDK/Client.h"
-#include "SDK/ClientMode.h"
 #include "SDK/Effects.h"
 #include "SDK/EngineTrace.h"
 #include "SDK/Entity.h"
@@ -42,6 +41,7 @@
 #include "SDK/NetworkStringTable.h"
 #endif // _DEBUG_NEPS
 #include "SDK/Engine.h"
+#include "SDK/ClientMode.h"
 #include "SDK/ConVar.h"
 #include "SDK/Cvar.h"
 #include "SDK/Input.h"
@@ -1946,6 +1946,18 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	}
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
+	if (ImGui::Button("Clear chat"))
+	{
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+	}
+
 	if (!contentOnly)
 		ImGui::End();
 }
@@ -2197,13 +2209,6 @@ void GUI::renderDebugWindow() noexcept
 
 	if (ImGui::Button("Test chat hook"))
 		memory->clientMode->getHudChat()->printf(0, "\x1N \x2N \x3N \x4N \x5N \x6N \x7N \x8N \x9N \xAN \xBN \xCN \xDN \xEN \xFN \x10N \x1");
-
-	if (ImGui::Button("Clear chat"))
-	{
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-	}
 
 	if (ImGui::Button("List client classes"))
 	{
