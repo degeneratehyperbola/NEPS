@@ -1599,6 +1599,9 @@ static int hits = 0;
 
 void Misc::missCounter(GameEvent *event) noexcept
 {
+	if (!localPlayer)
+		return;
+
 	if (event)
 	{
 		switch (fnv::hashRuntime(event->getName()))
