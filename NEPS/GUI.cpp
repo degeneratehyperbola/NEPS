@@ -32,16 +32,16 @@
 #ifdef _DEBUG_NEPS
 #include "Hacks/Animations.h"
 #include "SDK/Client.h"
+#include "SDK/ClientClass.h"
+#include "SDK/ClientMode.h"
 #include "SDK/Effects.h"
 #include "SDK/EngineTrace.h"
 #include "SDK/Entity.h"
 #include "SDK/EntityList.h"
-#include "SDK/ClientClass.h"
-#include "SDK/PlayerResource.h"
 #include "SDK/NetworkStringTable.h"
+#include "SDK/PlayerResource.h"
 #endif // _DEBUG_NEPS
 #include "SDK/Engine.h"
-#include "SDK/ClientMode.h"
 #include "SDK/ConVar.h"
 #include "SDK/Cvar.h"
 #include "SDK/Input.h"
@@ -1948,16 +1948,30 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	}
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
-	if (ImGui::Button("Clear chat"))
+	if (ImGui::Button("Nuke chat", {92.0f, 0.0f}))
 	{
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
-		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		std::ostringstream ss;
+
+		ss << "say ";
+
+		for (int i = 0; i <= 75; i++)
+			ss << "\xE2\x80\xA9";
+
+		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Basmala chat", {94.0f, 0.0f}))
+	{
+		std::ostringstream ss;
+
+		ss << "say ";
+
+		for (int i = 0; i <= 30; i++)
+			ss << "\uFDFD ";
+
+		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
 	}
 
 	if (!contentOnly)
