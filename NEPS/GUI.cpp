@@ -247,6 +247,8 @@ void GUI::renderContextMenu() noexcept
 		window = {};
 	if (ImGui::MenuItem("Open console"))
 		interfaces->engine->clientCmdUnrestricted("toggleconsole");
+	if (ImGui::MenuItem("Demo UI"))
+		interfaces->engine->clientCmdUnrestricted("demoui");
 
 	#ifdef _DEBUG_NEPS
 	if (ImGui::MenuItem("Fog UI"))
