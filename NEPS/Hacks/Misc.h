@@ -8,7 +8,7 @@ struct Vector;
 
 namespace Misc
 {
-	void edgejump(UserCmd *cmd) noexcept;
+	void edgeJump(UserCmd *cmd) noexcept;
 	void slowwalk(UserCmd *cmd) noexcept;
 	void updateClanTag() noexcept;
 	void spectatorList() noexcept;

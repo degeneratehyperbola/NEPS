@@ -2196,8 +2196,13 @@ void GUI::renderDebugWindow() noexcept
 	ImGui::Columns(2, nullptr, false);
 
 	if (ImGui::Button("Test chat hook"))
-	{
 		memory->clientMode->getHudChat()->printf(0, "\x1N \x2N \x3N \x4N \x5N \x6N \x7N \x8N \x9N \xAN \xBN \xCN \xDN \xEN \xFN \x10N \x1");
+
+	if (ImGui::Button("Clear chat"))
+	{
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
+		memory->clientMode->getHudChat()->printf(0, "\xE2\x80\xA9");
 	}
 
 	if (ImGui::Button("List client classes"))
@@ -2286,7 +2291,7 @@ void GUI::renderDebugWindow() noexcept
 			dlight->color.exponent = exponent;
 		}
 	}
-	
+
 	if (entity && entity->isPlayer() && ImGui::Button("Resolve selected"))
 		Animations::resolve(entity, 10);
 

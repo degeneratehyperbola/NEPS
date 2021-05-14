@@ -42,7 +42,7 @@
 #include <numeric>
 #include <sstream>
 
-void Misc::edgejump(UserCmd *cmd) noexcept
+void Misc::edgeJump(UserCmd *cmd) noexcept
 {
 	if (static Helpers::KeyBindState flag; !flag[config->movement.edgeJump])
 		return;
@@ -397,7 +397,7 @@ void Misc::watermark() noexcept
 		{
 			GameData::Lock lock;
 			const auto session = GameData::session();
-			
+
 			ImGui::SameLine(55.0f);
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
