@@ -43,7 +43,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
 		return;
 
-	if (cmd->buttons & UserCmd::IN_USE)
+	if (cmd->buttons & UserCmd::IN_USE || !localPlayer->isAlive())
 		return;
 
 	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
