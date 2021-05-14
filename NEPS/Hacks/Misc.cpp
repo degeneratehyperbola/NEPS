@@ -1633,3 +1633,12 @@ void Misc::resolver(Entity *animatable) noexcept
 	if (animatable)
 		Animations::resolve(animatable, shots - hits);
 }
+
+void Misc::forceRelayCluster() noexcept
+{
+	std::string dataCentersList[] = { "", "syd", "vie", "gru", "scl", "dxb", "par", "fra", "hkg",
+	"maa", "bom", "tyo", "lux", "ams", "limc", "man", "waw", "sgp", "jnb",
+	"mad", "sto", "lhr", "atl", "eat", "ord", "lax", "mwh", "okc", "sea", "iad" };
+
+	*memory->forceRelayCluster = dataCentersList[config->misc.forceRelayCluster];
+}

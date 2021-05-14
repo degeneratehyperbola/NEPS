@@ -407,6 +407,7 @@ public:
 		bool bombTimer = false;
 		bool nadePredict = false;
 		bool indicators = false;
+		int forceRelayCluster = 0;
 	} misc;
 
 	void scheduleFontLoad(const std::string &name) noexcept;
