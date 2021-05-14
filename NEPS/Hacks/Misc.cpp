@@ -256,15 +256,13 @@ void Misc::spectatorList() noexcept
 		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-		if (ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs)))
-		{
-			for (auto &observer : observers)
-			{
-				ImGui::TextUnformatted(observer);
-			}
-			ImGui::End();
-		}
+		ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
 		ImGui::PopStyleVar();
+		
+		for (auto &observer : observers)
+			ImGui::TextUnformatted(observer);
+
+		ImGui::End();
 	}
 }
 #endif // !LEGACY_WATERMARK
@@ -346,84 +344,84 @@ void Misc::watermark() noexcept
 
 	ImGui::SetNextWindowSizeConstraints({150.0f, 0.0f}, {FLT_MAX, FLT_MAX});
 	ImGui::SetNextWindowBgAlpha(0.4f);
-	if (ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove))
+	ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
+	
+	int &pos = config->misc.watermarkPos;
+
+	switch (pos)
 	{
-		int &pos = config->misc.watermarkPos;
-
-		switch (pos)
-		{
-		case 0:
-			ImGui::SetWindowPos(ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
-			break;
-		case 1:
-			ImGui::SetWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - ImGui::GetWindowSize().x - 10.0f, 10.0f}, ImGuiCond_Always);
-			break;
-		case 2:
-			ImGui::SetWindowPos(ImGui::GetIO().DisplaySize - ImGui::GetWindowSize() - ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
-			break;
-		case 3:
-			ImGui::SetWindowPos(ImVec2{10.0f, ImGui::GetIO().DisplaySize.y - ImGui::GetWindowSize().y - 10.0f}, ImGuiCond_Always);
-			break;
-		}
-
-		if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseClicked[1])
-			ImGui::OpenPopup("##pos_sel");
-
-		if (gui->open && ImGui::BeginPopup("##pos_sel", ImGuiWindowFlags_NoMove))
-		{
-			bool selected = pos == 0;
-			if (ImGui::MenuItem("Top left", nullptr, selected)) pos = 0;
-			selected = pos == 1;
-			if (ImGui::MenuItem("Top right", nullptr, selected)) pos = 1;
-			selected = pos == 2;
-			if (ImGui::MenuItem("Bottom right", nullptr, selected)) pos = 2;
-			selected = pos == 3;
-			if (ImGui::MenuItem("Bottom left", nullptr, selected)) pos = 3;
-			ImGui::EndPopup();
-		}
-
-		constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms"};
-
-		std::ostringstream watermark;
-		watermark << "NEPS > ";
-		watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % otherOnes.size()];
-		ImGui::TextUnformatted(watermark.str().c_str());
-
-		static float frameRate = 1.0f;
-		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
-		ImGui::Text("%.0ffps", 1.0f / frameRate);
-
-		if (interfaces->engine->isInGame())
-		{
-			GameData::Lock lock;
-			const auto session = GameData::session();
-
-			ImGui::SameLine(55.0f);
-			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-			ImGui::SameLine();
-
-			ImGui::Text("%dms", session.latency);
-
-			ImGui::SameLine(105.0f);
-			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-			ImGui::SameLine();
-
-			ImGui::Text("%dtps", session.tickrate);
-
-			ImGui::SameLine();
-			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-			ImGui::SameLine();
-
-			ImGui::TextUnformatted(session.levelName.c_str());
-
-			ImGui::SameLine();
-			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-			ImGui::SameLine();
-
-			ImGui::TextUnformatted(session.address.c_str());
-		}
-		ImGui::End();
+	case 0:
+		ImGui::SetWindowPos(ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
+		break;
+	case 1:
+		ImGui::SetWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - ImGui::GetWindowSize().x - 10.0f, 10.0f}, ImGuiCond_Always);
+		break;
+	case 2:
+		ImGui::SetWindowPos(ImGui::GetIO().DisplaySize - ImGui::GetWindowSize() - ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
+		break;
+	case 3:
+		ImGui::SetWindowPos(ImVec2{10.0f, ImGui::GetIO().DisplaySize.y - ImGui::GetWindowSize().y - 10.0f}, ImGuiCond_Always);
+		break;
 	}
+
+	if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseClicked[1])
+		ImGui::OpenPopup("##pos_sel");
+
+	if (gui->open && ImGui::BeginPopup("##pos_sel", ImGuiWindowFlags_NoMove))
+	{
+		bool selected = pos == 0;
+		if (ImGui::MenuItem("Top left", nullptr, selected)) pos = 0;
+		selected = pos == 1;
+		if (ImGui::MenuItem("Top right", nullptr, selected)) pos = 1;
+		selected = pos == 2;
+		if (ImGui::MenuItem("Bottom right", nullptr, selected)) pos = 2;
+		selected = pos == 3;
+		if (ImGui::MenuItem("Bottom left", nullptr, selected)) pos = 3;
+		ImGui::EndPopup();
+	}
+
+	constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms"};
+
+	std::ostringstream watermark;
+	watermark << "NEPS > ";
+	watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % otherOnes.size()];
+	ImGui::TextUnformatted(watermark.str().c_str());
+
+	static float frameRate = 1.0f;
+	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
+	ImGui::Text("%.0ffps", 1.0f / frameRate);
+
+	if (interfaces->engine->isInGame())
+	{
+		GameData::Lock lock;
+		const auto session = GameData::session();
+
+		ImGui::SameLine(55.0f);
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		ImGui::Text("%dms", session.latency);
+
+		ImGui::SameLine(105.0f);
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		ImGui::Text("%dtps", session.tickrate);
+
+		ImGui::SameLine();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		ImGui::TextUnformatted(session.levelName.c_str());
+
+		ImGui::SameLine();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		ImGui::TextUnformatted(session.address.c_str());
+	}
+	ImGui::End();
+	
 }
 #endif // !LEGACY_WATERMARK
 
@@ -591,48 +589,47 @@ void Misc::drawBombTimer() noexcept
 		ImGui::SetNextWindowSize({windowWidth, 0});
 
 	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
-	if (ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs)))
+	ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
+	
+	std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
+
+	ImGuiCustom::textUnformattedCentered(ss.str().c_str());
+
+	ImGuiCustom::progressBarFullWidth((plantedC4.blowTime - memory->globalVars->currenttime) / plantedC4.timerLength);
+
+	if (plantedC4.defuserHandle != -1)
 	{
-		std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
+		const bool canDefuse = plantedC4.blowTime >= plantedC4.defuseCountDown;
 
-		ImGuiCustom::textUnformattedCentered(ss.str().c_str());
-
-		ImGuiCustom::progressBarFullWidth((plantedC4.blowTime - memory->globalVars->currenttime) / plantedC4.timerLength);
-
-		if (plantedC4.defuserHandle != -1)
+		if (plantedC4.defuserHandle == GameData::local().handle)
 		{
-			const bool canDefuse = plantedC4.blowTime >= plantedC4.defuseCountDown;
+			std::ostringstream ss; ss << "Defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
 
-			if (plantedC4.defuserHandle == GameData::local().handle)
-			{
-				std::ostringstream ss; ss << "Defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
+			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
+		} else if (auto playerData = GameData::playerByHandle(plantedC4.defuserHandle))
+		{
+			std::ostringstream ss; ss << playerData->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
 
-				ImGuiCustom::textUnformattedCentered(ss.str().c_str());
-			} else if (auto playerData = GameData::playerByHandle(plantedC4.defuserHandle))
-			{
-				std::ostringstream ss; ss << playerData->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
-
-				ImGuiCustom::textUnformattedCentered(ss.str().c_str());
-			}
-
-			ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
-
-			if (canDefuse)
-			{
-				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-				ImGuiCustom::textUnformattedCentered("CAN DEFUSE");
-				ImGui::PopStyleColor();
-			} else
-			{
-				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-				ImGuiCustom::textUnformattedCentered("CANNOT DEFUSE");
-				ImGui::PopStyleColor();
-			}
+			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
 		}
 
-		windowWidth = ImGui::GetCurrentWindow()->SizeFull.x;
-		ImGui::End();
+		ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
+
+		if (canDefuse)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+			ImGuiCustom::textUnformattedCentered("CAN DEFUSE");
+			ImGui::PopStyleColor();
+		} else
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+			ImGuiCustom::textUnformattedCentered("CANNOT DEFUSE");
+			ImGui::PopStyleColor();
+		}
 	}
+
+	windowWidth = ImGui::GetCurrentWindow()->SizeFull.x;
+	ImGui::End();
 }
 
 void Misc::stealNames() noexcept
@@ -1248,48 +1245,47 @@ void Misc::purchaseList(GameEvent *event) noexcept
 
 		ImGui::SetNextWindowSize({200.0f, 200.0f}, ImGuiCond_FirstUseEver);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-		if (ImGui::Begin("Purchases", nullptr, windowFlags))
+		ImGui::Begin("Purchases", nullptr, windowFlags);
+		ImGui::PopStyleVar();
+
+		if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Details)
 		{
-			if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Details)
+			GameData::Lock lock;
+
+			for (const auto &[handle, purchases] : playerPurchases)
 			{
-				GameData::Lock lock;
-
-				for (const auto &[handle, purchases] : playerPurchases)
+				std::string s;
+				s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto &p) { return length + p.first.length() + 2; }));
+				for (const auto &purchasedItem : purchases.items)
 				{
-					std::string s;
-					s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto &p) { return length + p.first.length() + 2; }));
-					for (const auto &purchasedItem : purchases.items)
-					{
-						if (purchasedItem.second > 1)
-							s += std::to_string(purchasedItem.second) + "x ";
-						s += purchasedItem.first + ", ";
-					}
-
-					if (s.length() >= 2)
-						s.erase(s.length() - 2);
-
-					if (const auto it = std::find_if(GameData::players().cbegin(), GameData::players().cend(), [handle = handle](const auto &playerData) { return playerData.handle == handle; }); it != GameData::players().cend())
-					{
-						if (config->misc.purchaseList.showPrices)
-							ImGui::TextWrapped("%s $%d: %s", it->name, purchases.totalCost, s.c_str());
-						else
-							ImGui::TextWrapped("%s: %s", it->name, s.c_str());
-					}
+					if (purchasedItem.second > 1)
+						s += std::to_string(purchasedItem.second) + "x ";
+					s += purchasedItem.first + ", ";
 				}
-			} else if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Summary)
-			{
-				for (const auto &purchase : purchaseTotal)
-					ImGui::TextWrapped("%d x %s", purchase.second, purchase.first.c_str());
 
-				if (config->misc.purchaseList.showPrices && totalCost > 0)
+				if (s.length() >= 2)
+					s.erase(s.length() - 2);
+
+				if (const auto player = GameData::playerByHandle(handle))
 				{
-					ImGui::Separator();
-					ImGui::TextWrapped("Total: $%d", totalCost);
+					if (config->misc.purchaseList.showPrices)
+						ImGui::TextWrapped("%s $%d: %s", player->name.c_str(), purchases.totalCost, s.c_str());
+					else
+						ImGui::TextWrapped("%s: %s", player->name.c_str(), s.c_str());
 				}
 			}
-			ImGui::End();
+		} else if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Summary)
+		{
+			for (const auto &purchase : purchaseTotal)
+				ImGui::TextWrapped("%d x %s", purchase.second, purchase.first.c_str());
+
+			if (config->misc.purchaseList.showPrices && totalCost > 0)
+			{
+				ImGui::Separator();
+				ImGui::TextWrapped("Total: $%d", totalCost);
+			}
 		}
-		ImGui::PopStyleVar();
+		ImGui::End();
 	}
 }
 
@@ -1554,26 +1550,25 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 	if (!config->misc.indicators) return;
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 	ImGui::SetNextWindowPos(ImVec2{0.0f, 50.0f}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{200.0f, FLT_MAX});
-	if (ImGui::Begin("Indicators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs)))
-	{
-		const auto networkChannel = interfaces->engine->getNetworkChannel();
-		if (networkChannel)
-		{
-			ImGui::TextUnformatted("Choke");
-			ImGuiCustom::progressBarFullWidth(static_cast<float>(networkChannel->chokedPackets) / 16);
-		}
-
-		ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(local.velocity.length2D())) + "u").c_str());
-
-		if (memory->input->isCameraInThirdPerson)
-			ImGui::TextUnformatted("In thirdperson");
-
-		ImGui::End();
-	}
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
+	ImGui::Begin("Indicators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
 	ImGui::PopStyleVar();
+	
+	const auto networkChannel = interfaces->engine->getNetworkChannel();
+	if (networkChannel)
+	{
+		ImGui::TextUnformatted("Choke");
+		ImGuiCustom::progressBarFullWidth(static_cast<float>(networkChannel->chokedPackets) / 16);
+	}
+
+	ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(local.velocity.length2D())) + "u").c_str());
+
+	if (memory->input->isCameraInThirdPerson)
+		ImGui::TextUnformatted("In thirdperson");
+
+	ImGui::End();
 }
 
 void Misc::voteRevealer(GameEvent &event) noexcept
