@@ -55,7 +55,7 @@ static item_setting *get_by_definition_index(WeaponId weaponId)
 	return it == config->skinChanger.end() ? nullptr : &*it;
 }
 
-static std::vector<SkinChanger::PaintKit> skinKits = {{ 0, "-" }};
+static std::vector<SkinChanger::PaintKit> skinKits = {{ 0, "None" }};
 static std::vector<SkinChanger::PaintKit> gloveKits;
 
 static void initializeKits() noexcept
