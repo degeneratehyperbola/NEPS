@@ -146,7 +146,7 @@ static void menuBarItem(const char *name, bool &enabled) noexcept
 {
 	if (ImGui::MenuItem(name))
 	{
-		enabled = true;
+		enabled = !enabled;
 		ImGui::SetWindowFocus(name);
 	}
 }
