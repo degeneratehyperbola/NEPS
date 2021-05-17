@@ -481,9 +481,9 @@ static void __stdcall overrideView(ViewSetup *setup) noexcept
 			if (viewModel)
 			{
 				Vector forward = Vector::fromAngle(angles);
-				Vector up = Vector::fromAngle(angles - Vector{-90.0f, 0.0f, 0.0f});
+				Vector up = Vector::fromAngle(angles - Vector{90.0f, 0.0f, 0.0f});
 				Vector side = forward.crossProduct(up);
-				Vector offset = forward * config->visuals.viewmodel.x + side * config->visuals.viewmodel.y + up * config->visuals.viewmodel.z;
+				Vector offset = side * config->visuals.viewmodel.x + forward * config->visuals.viewmodel.y + up * config->visuals.viewmodel.z;
 				memory->setAbsOrigin(viewModel, viewModel->getRenderOrigin() + offset);
 				memory->setAbsAngle(viewModel, angles + Vector{0.0f, 0.0f, config->visuals.viewmodel.roll});
 			}
