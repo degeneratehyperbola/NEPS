@@ -42,13 +42,6 @@ As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at makin
 
 ![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
 
-### Extreme Onion Team is planning to:
-- Add localization!!!
-- Add Python scripting API
-	- So far texture API is ready. And you can use it internally in C++ now!
-- Translate minimum damage override for aimbot from C++ to a Python script (and be sure that the API is working correctly)
-- Perhaps a rankchanger will be nice addition ;)
-
 # How to use NEPS?
 If you are not a nerd, than good for you as it is pretty simple to get started!
 

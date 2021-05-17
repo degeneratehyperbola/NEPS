@@ -476,6 +476,19 @@ static void __stdcall overrideView(ViewSetup *setup) noexcept
 
 	if (localPlayer)
 	{
+		constexpr auto setViewmodel = [](Entity *viewModel, const Vector &angles) constexpr noexcept
+		{
+			if (viewModel)
+			{
+				Vector forward = Vector::fromAngle(angles);
+				Vector up = Vector::fromAngle(angles - Vector{-90.0f, 0.0f, 0.0f});
+				Vector side = forward.crossProduct(up);
+				Vector offset = forward * config->visuals.viewmodel.x + side * config->visuals.viewmodel.y + up * config->visuals.viewmodel.z;
+				memory->setAbsOrigin(viewModel, viewModel->getRenderOrigin() + offset);
+				memory->setAbsAngle(viewModel, angles + Vector{0.0f, 0.0f, config->visuals.viewmodel.roll});
+			}
+		};
+
 		if (localPlayer->isAlive())
 		{
 			if ((!localPlayer->isScoped() || config->visuals.forceFov))
@@ -485,36 +498,14 @@ static void __stdcall overrideView(ViewSetup *setup) noexcept
 				setup->origin.z = localPlayer->origin().z + PLAYER_EYE_HEIGHT;
 
 			if (config->visuals.viewmodel.enabled && !localPlayer->isScoped() && !memory->input->isCameraInThirdPerson)
-			{
-				const auto viewModel = interfaces->entityList->getEntityFromHandle(localPlayer->viewModel());
-				if (viewModel)
-				{
-					Vector forward = Vector::fromAngle(setup->angles);
-					Vector up = Vector::fromAngle(setup->angles - Vector{-90.0f, 0.0f, 0.0f});
-					Vector side = forward.crossProduct(up);
-					Vector offset = forward * config->visuals.viewmodel.x + side * config->visuals.viewmodel.y + up * config->visuals.viewmodel.z;
-					memory->setAbsOrigin(viewModel, viewModel->getRenderOrigin() + offset);
-					memory->setAbsAngle(viewModel, setup->angles + Vector{0.0f, 0.0f, config->visuals.viewmodel.roll});
-				}
-			}
+				setViewmodel(interfaces->entityList->getEntityFromHandle(localPlayer->viewModel()), setup->angles);
 		} else if (auto observed = localPlayer->getObserverTarget(); observed && localPlayer->getObserverMode() == ObsMode::InEye)
 		{
 			if ((!observed->isScoped() || config->visuals.forceFov))
 				setup->fov = curFov;
 
 			if (config->visuals.viewmodel.enabled && !observed->isScoped())
-			{
-				const auto viewModel = interfaces->entityList->getEntityFromHandle(observed->viewModel());
-				if (viewModel)
-				{
-					Vector forward = Vector::fromAngle(setup->angles);
-					Vector up = Vector::fromAngle(setup->angles - Vector{-90.0f, 0.0f, 0.0f});
-					Vector side = forward.crossProduct(up);
-					Vector offset = forward * config->visuals.viewmodel.x + side * config->visuals.viewmodel.y + up * config->visuals.viewmodel.z;
-					memory->setAbsOrigin(viewModel, viewModel->getRenderOrigin() + offset);
-					memory->setAbsAngle(viewModel, setup->angles + Vector{0.0f, 0.0f, config->visuals.viewmodel.roll});
-				}
-			}
+				setViewmodel(interfaces->entityList->getEntityFromHandle(observed->viewModel()), setup->angles);
 		} else
 		{
 			setup->fov = curFov;
