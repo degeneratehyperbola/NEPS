@@ -391,7 +391,7 @@ void Misc::watermark() noexcept
 	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 	ImGui::Text("%.0ffps", 1.0f / frameRate);
 
-	if (interfaces->engine->isInGame())
+	if (interfaces->engine->isConnected())
 	{
 		GameData::Lock lock;
 		const auto session = GameData::session();
@@ -574,6 +574,9 @@ void Misc::fastStop(UserCmd *cmd) noexcept
 void Misc::drawBombTimer() noexcept
 {
 	if (!config->misc.bombTimer)
+		return;
+
+	if (!interfaces->engine->isConnected())
 		return;
 
 	GameData::Lock lock;
@@ -1548,7 +1551,8 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	if (!local.exists || !local.alive)
 		return;
 
-	if (!config->misc.indicators) return;
+	if (!config->misc.indicators)
+		return;
 
 	ImGui::SetNextWindowPos(ImVec2{0.0f, 50.0f}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{200.0f, FLT_MAX});
