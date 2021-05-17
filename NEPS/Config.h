@@ -179,7 +179,7 @@ public:
 		int thirdpersonDistance = 150;
 		bool thirdpersonCollision = true;
 		KeyBind flashlight;
-		float flashlightBrightness = 1.0f;
+		float flashlightBrightness = 0.25f;
 		int flashlightDistance = 750;
 		int flashlightFov = 53;
 		int fov = 90;
