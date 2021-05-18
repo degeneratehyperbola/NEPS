@@ -68,6 +68,7 @@ GUI::GUI() noexcept
 		ImFontConfig cfg;
 		cfg.OversampleH = cfg.OversampleV = 8;
 		cfg.PixelSnapH = false;
+		cfg.RasterizerMultiply = 1.4f;
 		cfg.SizePixels = 14.0f;
 
 		font = io.Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
