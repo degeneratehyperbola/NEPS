@@ -1595,6 +1595,7 @@ void Misc::voteRevealer(GameEvent &event) noexcept
 
 static int shots = 0;
 static int hits = 0;
+static unsigned int salt = 1;
 
 void Misc::missCounter(GameEvent *event) noexcept
 {
@@ -1622,6 +1623,7 @@ void Misc::resetMissCounter() noexcept
 {
 	shots = 0;
 	hits = 0;
+	++salt;
 }
 
 void Misc::desyncResolver(Entity *animatable) noexcept
@@ -1630,7 +1632,7 @@ void Misc::desyncResolver(Entity *animatable) noexcept
 		return;
 
 	if (animatable)
-		Animations::resolveLBY(animatable, shots - hits);
+		Animations::resolveLBY(animatable, shots - hits + salt);
 }
 
 void Misc::forceRelayCluster() noexcept

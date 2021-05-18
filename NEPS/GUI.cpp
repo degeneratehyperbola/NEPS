@@ -147,7 +147,8 @@ static void menuBarItem(const char *name, bool &enabled) noexcept
 	if (ImGui::MenuItem(name))
 	{
 		enabled = !enabled;
-		ImGui::SetWindowFocus(name);
+		if (enabled)
+			ImGui::SetWindowFocus(name);
 	}
 }
 
@@ -1949,7 +1950,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	}
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
-	if (ImGui::Button("Nuke chat", {92.0f, 0.0f}))
+	if (ImGui::Button("Nuke chat", {85.0f, 0.0f}))
 	{
 		std::ostringstream ss;
 
@@ -1963,7 +1964,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Basmala chat", {94.0f, 0.0f}))
+	if (ImGui::Button("Basmala chat", {101.0f, 0.0f}))
 	{
 		std::ostringstream ss;
 
