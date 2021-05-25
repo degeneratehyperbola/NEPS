@@ -41,6 +41,7 @@ namespace Misc
 	void moonwalk(UserCmd *cmd, bool &sendPacket) noexcept;
 	void playHitSound(GameEvent &event) noexcept;
 	void playKillSound(GameEvent &event) noexcept;
+    void playDeathSound(GameEvent &event) noexcept;
 	void purchaseList(GameEvent *event = nullptr) noexcept;
 	void runReportbot() noexcept;
 	void resetReportbot() noexcept;

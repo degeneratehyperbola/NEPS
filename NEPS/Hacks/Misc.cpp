@@ -1178,6 +1178,39 @@ void Misc::playKillSound(GameEvent &event) noexcept
 	}
 }
 
+void Misc::playDeathSound(GameEvent &event) noexcept
+{
+	if (!config->sound.deathSound)
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	if (const auto localUserId = localPlayer->getUserId(); event.getInt("userid") != localUserId)
+		return;
+
+	constexpr std::array killSounds = {
+		"physics/metal/metal_solid_impact_bullet2.wav",
+		"buttons/arena_switch_press_02.wav",
+		"training/timer_bell.wav",
+		"physics/glass/glass_impact_bullet1.wav"
+	};
+
+	if (static_cast<std::size_t>(config->sound.deathSound - 1) < killSounds.size())
+	{
+		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+			soundprecache->addString(false, killSounds[config->sound.deathSound - 1]);
+
+		interfaces->surface->playSound(killSounds[config->sound.deathSound - 1]);
+	} else if (config->sound.deathSound == 5)
+	{
+		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+			soundprecache->addString(false, config->sound.customDeathSound.c_str());
+
+		interfaces->surface->playSound(config->sound.customDeathSound.c_str());
+	}
+}
+
 void Misc::purchaseList(GameEvent *event) noexcept
 {
 	static std::mutex mtx;

@@ -599,10 +599,13 @@ static void from_json(const json &j, Config::Sound &s)
 	read(j, "Players", s.players);
 	read(j, "Hit sound", s.hitSound);
 	read(j, "Kill sound", s.killSound);
+	read(j, "Death sound", s.deathSound);
 	read(j, "Hit sound volume", s.hitSoundVol);
 	read(j, "Kill sound volume", s.killSoundVol);
+	read(j, "Death sound volume", s.deathSoundVol);
 	read<value_t::string>(j, "Custom hit sound", s.customHitSound);
 	read<value_t::string>(j, "Custom kill sound", s.customKillSound);
+	read<value_t::string>(j, "Custom death sound", s.customDeathSound);
 }
 
 static void from_json(const json &j, Config::Style &s)
@@ -1078,10 +1081,13 @@ static void to_json(json &j, const Config::Sound &o)
 	j["Players"] = o.players;
 	WRITE("Hit sound", hitSound);
 	WRITE("Kill sound", killSound);
+	WRITE("Death sound", deathSound);
 	WRITE("Hit sound volume", hitSoundVol);
 	WRITE("Kill sound volume", killSoundVol);
+	WRITE("Death sound volume", deathSoundVol);
 	WRITE("Custom hit sound", customHitSound);
 	WRITE("Custom kill sound", customKillSound);
+	WRITE("Custom death sound", customDeathSound);
 }
 
 static void to_json(json &j, const Config::Misc::PurchaseList &o, const Config::Misc::PurchaseList &dummy = {})

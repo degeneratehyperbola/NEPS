@@ -1762,36 +1762,26 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 		ImGui::Begin("Sound", &window.sound, windowFlags);
 	}
 
-	ImGui::PushItemWidth(110.0f);
-	ImGui::Combo("Hit Sound", &config->sound.hitSound, "None\0Metal\0Switch press\0Bell\0Glass\0Custom\0");
-	//if (config->sound.hitSound)
-	//{
-	//	ImGui::SetNextItemWidth(200.0f);
-	//	ImGui::SliderFloat("##hitvol", &config->sound.hitSoundVol, 0.0f, 1.0f, "Volume %.3f");
-	//}
-	if (config->sound.hitSound == 5)
+	constexpr auto soundUi = [](const char *label, int &sound, std::string &path) noexcept
 	{
-		ImGui::PushID("hitfile");
-		ImGui::InputText("Filename", &config->sound.customHitSound);
+		ImGui::PushID(label);
+		ImGui::PushItemWidth(110.0f);
+
+		if (sound == 5)
+		{
+			ImGui::InputText("Filename", &path);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Audio file must be put in csgo/sound/ directory");
+		}
+		ImGui::Combo(label, &sound, "None\0Metal\0Switch press\0Bell\0Glass\0Custom\0");
+		
+		ImGui::PopItemWidth();
 		ImGui::PopID();
-		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Audio file must be put in csgo/sound/ directory");
-	}
-	ImGui::Combo("Kill sound", &config->sound.killSound, "None\0Metal\0Switch press\0Bell\0Glass\0Custom\0");
-	//if (config->sound.killSound)
-	//{
-	//	ImGui::SetNextItemWidth(200.0f);
-	//	ImGui::SliderFloat("##killvol", &config->sound.killSoundVol, 0.0f, 1.0f, "Volume %.3f");
-	//}
-	if (config->sound.killSound == 5)
-	{
-		ImGui::PushID("killfile");
-		ImGui::InputText("Filename", &config->sound.customKillSound);
-		ImGui::PopID();
-		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Audio file must be put in csgo/sound/ directory");
-	}
-	ImGui::PopItemWidth();
+	};
+
+	soundUi("Hit sound", config->sound.hitSound, config->sound.customHitSound);
+	soundUi("Kill sound", config->sound.killSound, config->sound.customKillSound);
+	soundUi("Death sound", config->sound.deathSound, config->sound.customDeathSound);
 
 	ImGui::PushItemWidth(200.0f);
 	ImGui::SliderInt("##chicken", &config->sound.chickenVolume, 0, 200, "Chicken volume %d%%");

@@ -54,6 +54,7 @@ void EventListener::fireGameEvent(GameEvent *event)
 		Visuals::killEffect(event);
 		Misc::killMessage(*event);
 		Misc::playKillSound(*event);
+		Misc::playDeathSound(*event);
 		break;
 	case fnv::hash("player_hurt"):
 		Misc::playHitSound(*event);

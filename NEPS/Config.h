@@ -289,10 +289,13 @@ public:
 
 		int hitSound = 0;
 		int killSound = 0;
+		int deathSound = 0;
 		float hitSoundVol = 1.0f;
 		float killSoundVol = 1.0f;
-		std::string customKillSound;
+		float deathSoundVol = 1.0f;
 		std::string customHitSound;
+		std::string customKillSound;
+		std::string customDeathSound;
 	} sound;
 
 	struct Style
