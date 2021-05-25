@@ -81,7 +81,8 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 		welcomeMsg << "NEPS tries to load a config named \"default\" on start-up,\nand it appears that it was ";
 		welcomeMsg << (loaded ? "loaded successfuly." : "not found.");
 
-		interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.str().c_str());
+		// nullptr here vvv but why?????????
+		//interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.str().c_str());
 
 		return true;
 	}(window);
