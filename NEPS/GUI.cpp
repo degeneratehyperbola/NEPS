@@ -1767,13 +1767,13 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 		ImGui::PushID(label);
 		ImGui::PushItemWidth(110.0f);
 
+		ImGui::Combo(label, &sound, "None\0Metal\0Switch press\0Bell\0Glass\0Custom\0");
 		if (sound == 5)
 		{
 			ImGui::InputText("Filename", &path);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Audio file must be put in csgo/sound/ directory");
 		}
-		ImGui::Combo(label, &sound, "None\0Metal\0Switch press\0Bell\0Glass\0Custom\0");
 		
 		ImGui::PopItemWidth();
 		ImGui::PopID();
