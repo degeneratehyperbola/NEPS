@@ -2002,10 +2002,13 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 
 	ImGuiCustom::keyBind("Menu key", &config->misc.menuKey);
 	if (config->misc.menuKey == 1) config->misc.menuKey = 0;
+
 	ImGui::Checkbox("Full-auto", &config->misc.autoPistol);
+	ImGui::SameLine(110.0f);
+	ImGui::Checkbox("Fast plant", &config->misc.fastPlant);
+
 	ImGui::Checkbox("Auto reload", &config->misc.autoReload);
 	ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
-	ImGui::Checkbox("Fast plant", &config->misc.fastPlant);
 	ImGui::Checkbox("Quick reload", &config->misc.quickReload);
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
 	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
@@ -2016,10 +2019,10 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
 	ImGui::Checkbox("Sync client animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
+	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
 
 	ImGui::NextColumn();
 
-	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Experimental");
 	ImGui::Checkbox("Fix tablet signal", &config->misc.fixTabletSignal);
