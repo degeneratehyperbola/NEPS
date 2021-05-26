@@ -67,11 +67,11 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 		gui = std::make_unique<GUI>();
 		hooks->install();
 
-		const auto loaded = config->load(u8"default", false);
+		const bool loaded = config->load(u8"default", false);
 
 		gui->updateColors();
 		SkinChanger::scheduleHudUpdate();
-
+		
 		std::ostringstream welcomeMsg;
 		welcomeMsg << "Let's get started!\n";
 		welcomeMsg << "To open GUI press \"";
@@ -81,8 +81,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 		welcomeMsg << "NEPS tries to load a config named \"default\" on start-up,\nand it appears that it was ";
 		welcomeMsg << (loaded ? "loaded successfuly." : "not found.");
 
-		// nullptr here vvv but why?????????
-		//interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.str().c_str());
+		interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.str().c_str());
 
 		return true;
 	}(window);
@@ -108,7 +107,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 
 static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, const RECT *dest, HWND windowOverride, const RGNDATA *dirtyRegion) noexcept
 {
-	[[maybe_unused]] static bool imguiInit = ImGui_ImplDX9_Init(device);
+	[[maybe_unused]] static const bool imguiInit = ImGui_ImplDX9_Init(device);
 
 	if (config->loadScheduledFonts())
 		ImGui_ImplDX9_DestroyFontsTexture();
