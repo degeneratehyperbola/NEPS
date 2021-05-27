@@ -156,7 +156,7 @@ void Visuals::colorWorld() noexcept
 			else
 				mat->colorModulate(config->visuals.world.color[0], config->visuals.world.color[1], config->visuals.world.color[2]);
 			mat->alphaModulate(config->visuals.world.color[3]);
-			mat->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, config->visuals.world.color[3] == 0.0f);
+			mat->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, !config->visuals.world.color[3]);
 		} else if (config->visuals.props.enabled && std::strstr(mat->getTextureGroupName(), "StaticProp"))
 		{
 			if (config->visuals.props.rainbow)
@@ -164,7 +164,7 @@ void Visuals::colorWorld() noexcept
 			else
 				mat->colorModulate(config->visuals.props.color[0], config->visuals.props.color[1], config->visuals.props.color[2]);
 			mat->alphaModulate(config->visuals.props.color[3]);
-			mat->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, config->visuals.props.color[3] == 0.0f);
+			mat->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, !config->visuals.props.color[3]);
 		} else if (config->visuals.sky.enabled && std::strstr(mat->getTextureGroupName(), "SkyBox"))
 		{
 			if (config->visuals.sky.rainbow)

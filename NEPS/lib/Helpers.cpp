@@ -29,7 +29,7 @@ std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 
 	float hue = 0.0f, sat = 0.0f;
 
-	if (delta != 0.0f)
+	if (delta)
 	{
 		if (max == r)
 			hue = std::fmodf((g - b) / delta, 6.0f) / 6.0f;
@@ -39,7 +39,7 @@ std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 			hue = ((r - g) / delta + 4.0f) / 6.0f;
 	}
 
-	if (max != 0.0f)
+	if (max)
 		sat = delta / max;
 
 	return {hue, sat, max};
