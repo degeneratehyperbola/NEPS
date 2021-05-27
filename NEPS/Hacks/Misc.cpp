@@ -239,31 +239,82 @@ void Misc::spectatorList() noexcept
 	if (!config->misc.spectatorList.enabled)
 		return;
 
-	if (!localPlayer)
-		return;
+	ImGui::SetNextWindowBgAlpha(0.5f);
+	ImGui::SetNextWindowSize({ 250.f, 0.f }, ImGuiCond_Once);
+	ImGui::SetNextWindowSizeConstraints({ 250.f, 0.f }, { 250.f, 1000.f });
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+	if (!gui->open)
+		windowFlags |= ImGuiWindowFlags_NoInputs;
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, { 0.5f, 0.5f });
+	ImGui::Begin("Spectator list", nullptr, windowFlags);
+	ImGui::PopStyleVar();
 
-	std::vector<const char *> observers;
-
-	GameData::Lock lock;
-	for (auto &observer : GameData::observers())
+	if (interfaces->engine->isInGame() && localPlayer)
 	{
-		if (observer.targetIsObservedByLocalPlayer || observer.targetIsLocalPlayer)
-			observers.emplace_back(observer.name);
-	}
+		if (localPlayer->isAlive())
+		{
+			for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i) {
+				const auto entity = interfaces->entityList->getEntity(i);
+				if (!entity || entity->isDormant() || entity->isAlive() || entity->getObserverTarget() != localPlayer.get())
+					continue;
 
-	if (!observers.empty() || gui->open)
-	{
-		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-		ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
-		ImGui::PopStyleVar();
-		
-		for (auto &observer : observers)
-			ImGui::TextUnformatted(observer);
+				PlayerInfo playerInfo;
 
-		ImGui::End();
+				if (!interfaces->engine->getPlayerInfo(i, playerInfo))
+					continue;
+
+				auto obsMode{ "" };
+
+				switch (entity->getObserverMode()) {
+				case ObsMode::InEye:
+					obsMode = "1st";
+					break;
+				case ObsMode::Chase:
+					obsMode = "3rd";
+					break;
+				case ObsMode::Roaming:
+					obsMode = "Freecam";
+					break;
+				default:
+					continue;
+				}
+
+				ImGui::TextWrapped("%s - %s", playerInfo.name, obsMode);
+			}
+		}
+		else if (auto observer = localPlayer->getObserverTarget(); !localPlayer->isAlive() && observer && observer->isAlive())
+		{
+			for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i) {
+				const auto entity = interfaces->entityList->getEntity(i);
+				if (!entity || entity->isDormant() || entity->isAlive() || entity == localPlayer.get() || entity->getObserverTarget() != observer)
+					continue;
+
+				PlayerInfo playerInfo;
+
+				if (!interfaces->engine->getPlayerInfo(i, playerInfo))
+					continue;
+
+				auto obsMode{ "" };
+
+				switch (entity->getObserverMode()) {
+				case ObsMode::InEye:
+					obsMode = "1st";
+					break;
+				case ObsMode::Chase:
+					obsMode = "3rd";
+					break;
+				case ObsMode::Roaming:
+					obsMode = "Freecam";
+					break;
+				default:
+					continue;
+				}
+
+				ImGui::TextWrapped("%s - %s", playerInfo.name, obsMode);
+			}
+		}
 	}
+	ImGui::End();
 }
 #endif // !LEGACY_WATERMARK
 
