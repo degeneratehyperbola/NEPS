@@ -56,7 +56,7 @@ void Backtrack::update(FrameStage stage) noexcept
 
 			const auto activeWeapon = entity->getActiveWeapon();
 			if (activeWeapon)
-				record.shot = Helpers::timeToTicks(activeWeapon->lastShotTime()) == Helpers::timeToTicks(entity->simulationTime());
+				record.important = Helpers::timeToTicks(activeWeapon->lastShotTime()) == Helpers::timeToTicks(entity->simulationTime());
 
 			entity->setupBones(record.matrix, 256, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 

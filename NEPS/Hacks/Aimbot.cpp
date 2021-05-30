@@ -99,7 +99,7 @@ static void choseTarget(UserCmd *cmd, bool &doAutoScope) noexcept
 					if (!Backtrack::valid(record.simulationTime))
 						continue;
 
-					if (record.shot && config->backtrack.onShot)
+					if (record.important)
 					{
 						backtrackRecord = &record;
 						break;
