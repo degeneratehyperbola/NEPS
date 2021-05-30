@@ -308,210 +308,382 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 	{
 		if (!window.aimbot)
 			return;
-		ImGui::SetNextWindowSize({380.0f, 0.0f});
+		ImGui::SetNextWindowSize({559.0f, 0.0f});
 		ImGui::Begin("Aimbot", &window.aimbot, windowFlags);
 	}
-	static int currentCategory{0};
+
 	ImGui::PushItemWidth(110.0f);
-	ImGui::Combo("##category", &currentCategory, "All\0Pistols\0Heavy\0SMGs\0Rifles\0Zeus x27\0");
-	ImGui::SameLine();
-	static int currentWeapon{0};
+	static int currentWeapon = 0;
 
-	switch (currentCategory)
+	if (ImGui::BeginListBox("##category", {170.0f, 350.0f}))
 	{
-	case 0:
-		currentWeapon = 0;
-		ImGui::NewLine();
-		break;
-	case 5:
-		currentWeapon = 39;
-		ImGui::NewLine();
-		break;
-	case 1:
-	{
-		static int currentPistol{0};
-		static constexpr const char *pistols[]{"All", "Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-SeveN", "CZ-75", "Desert Eagle", "R8 Revolver"};
+		constexpr std::array categories = {"All", "Pistols", "Heavy", "SMG", "Rifles", "Zeus x27"};
 
-		ImGui::Combo("##sub", &currentPistol, [](void *data, int idx, const char **out_text)
+		for (std::size_t i = 0; i < categories.size(); ++i)
 		{
-			if (config->aimbot[idx ? idx : 35].bind.keyMode)
+			switch (i)
 			{
-				static std::string name;
-				name = pistols[idx];
-				*out_text = name.append(" *").c_str();
-			} else
+			case 0:
+				if (ImGui::Selectable(config->aimbot[0].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 0))
+					currentWeapon = 0;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[0], sizeof(Config::Aimbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					{
+						const auto &data = *(Config::Aimbot *)payload->Data;
+						config->aimbot[0] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				ImGui::Indent();
+				break;
+			case 5:
+				if (ImGui::Selectable(config->aimbot[39].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 39))
+					currentWeapon = 39;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[39], sizeof(Config::Aimbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					{
+						const auto &data = *(Config::Aimbot *)payload->Data;
+						config->aimbot[39] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+				break;
+			case 1:
 			{
-				*out_text = pistols[idx];
+				if (ImGui::Selectable(config->aimbot[35].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 35))
+					currentWeapon = 35;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[35], sizeof(Config::Aimbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					{
+						const auto &data = *(Config::Aimbot *)payload->Data;
+						config->aimbot[35] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				constexpr std::array pistols = {"Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-SeveN", "CZ-75", "Desert Eagle", "R8 Revolver"};
+
+				ImGui::Indent();
+
+				for (std::size_t j = 0; j < pistols.size(); ++j)
+				{
+					if (ImGui::Selectable(config->aimbot[j + 1].bind.keyMode ? (std::string{pistols[j]} + " *").c_str() : pistols[j], currentWeapon == j + 1))
+						currentWeapon = j + 1;
+
+					if (ImGui::BeginDragDropSource())
+					{
+						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 1], sizeof(Config::Aimbot), ImGuiCond_Once);
+						ImGui::EndDragDropSource();
+					}
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+						{
+							const auto &data = *(Config::Aimbot *)payload->Data;
+							config->aimbot[j + 1] = data;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+
+				ImGui::Unindent();
+				break;
 			}
-			return true;
-		}, nullptr, IM_ARRAYSIZE(pistols), 15);
+			case 2:
+			{
+				if (ImGui::Selectable(config->aimbot[36].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 36))
+					currentWeapon = 36;
 
-		currentWeapon = currentPistol ? currentPistol : 35;
-		break;
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[36], sizeof(Config::Aimbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					{
+						const auto &data = *(Config::Aimbot *)payload->Data;
+						config->aimbot[36] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				constexpr std::array heavies = {"Nova", "XM1014", "Sawed-Off", "MAG-7", "M249", "Negev"};
+
+				ImGui::Indent();
+
+				for (std::size_t j = 0; j < heavies.size(); ++j)
+				{
+					if (ImGui::Selectable(config->aimbot[j + 11].bind.keyMode ? (std::string{heavies[j]} + " *").c_str() : heavies[j], currentWeapon == j + 11))
+						currentWeapon = j + 11;
+
+					if (ImGui::BeginDragDropSource())
+					{
+						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 17], sizeof(Config::Aimbot), ImGuiCond_Once);
+						ImGui::EndDragDropSource();
+					}
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+						{
+							const auto &data = *(Config::Aimbot *)payload->Data;
+							config->aimbot[j + 17] = data;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+
+				ImGui::Unindent();
+				break;
+			}
+			case 3:
+			{
+				if (ImGui::Selectable(config->aimbot[37].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 37))
+					currentWeapon = 37;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[37], sizeof(Config::Aimbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					{
+						const auto &data = *(Config::Aimbot *)payload->Data;
+						config->aimbot[37] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				constexpr std::array smgs = {"Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon"};
+
+				ImGui::Indent();
+
+				for (std::size_t j = 0; j < smgs.size(); ++j)
+				{
+					if (ImGui::Selectable(config->aimbot[j + 17].bind.keyMode ? (std::string{smgs[j]} + " *").c_str() : smgs[j], currentWeapon == j + 17))
+						currentWeapon = j + 17;
+
+					if (ImGui::BeginDragDropSource())
+					{
+						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 17], sizeof(Config::Aimbot), ImGuiCond_Once);
+						ImGui::EndDragDropSource();
+					}
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+						{
+							const auto &data = *(Config::Aimbot *)payload->Data;
+							config->aimbot[j + 17] = data;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+
+				ImGui::Unindent();
+				break;
+			}
+			case 4:
+			{
+				if (ImGui::Selectable(config->aimbot[38].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 38))
+					currentWeapon = 38;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[38], sizeof(Config::Aimbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					{
+						const auto &data = *(Config::Aimbot *)payload->Data;
+						config->aimbot[38] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				constexpr std::array rifles = {"Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20"};
+
+				ImGui::Indent();
+
+				for (std::size_t j = 0; j < rifles.size(); ++j)
+				{
+					if (ImGui::Selectable(config->aimbot[j + 24].bind.keyMode ? (std::string{rifles[j]} + " *").c_str() : rifles[j], currentWeapon == j + 24))
+						currentWeapon = j + 24;
+
+					if (ImGui::BeginDragDropSource())
+					{
+						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 24], sizeof(Config::Aimbot), ImGuiCond_Once);
+						ImGui::EndDragDropSource();
+					}
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+						{
+							const auto &data = *(Config::Aimbot *)payload->Data;
+							config->aimbot[j + 24] = data;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+
+				ImGui::Unindent();
+				break;
+			}
+			}
+
+		}
+		ImGui::EndListBox();
 	}
-	case 2:
-	{
-		static int currentHeavy{0};
-		static constexpr const char *heavies[]{"All", "Nova", "XM1014", "Sawed-Off", "MAG-7", "M249", "Negev"};
 
-		ImGui::Combo("##sub", &currentHeavy, [](void *data, int idx, const char **out_text)
+	ImGui::SameLine();
+
+	if (ImGui::BeginChild("##child", {380.0f, 0.0f}, false, ImGuiWindowFlags_NoScrollbar))
+	{
+		ImGuiCustom::keyBind("Enabled", config->aimbot[currentWeapon].bind);
+
+		ImGui::Separator();
+		ImGui::Columns(2, nullptr, false);
+		ImGui::SetColumnWidth(0, 165.0f);
+
+		ImGui::Checkbox("Aimlock", &config->aimbot[currentWeapon].aimlock);
+		ImGui::Checkbox("Silent", &config->aimbot[currentWeapon].silent);
+		ImGui::Checkbox("Friendly fire", &config->aimbot[currentWeapon].friendlyFire);
+		ImGui::Checkbox("Visible only", &config->aimbot[currentWeapon].visibleOnly);
+		ImGui::Checkbox("Scoped only", &config->aimbot[currentWeapon].scopedOnly);
+		ImGui::Checkbox("Ignore flash", &config->aimbot[currentWeapon].ignoreFlash);
+		ImGui::Checkbox("Ignore smoke", &config->aimbot[currentWeapon].ignoreSmoke);
+		ImGui::Checkbox("Auto shot", &config->aimbot[currentWeapon].autoShot);
+		ImGui::Checkbox("Auto scope", &config->aimbot[currentWeapon].autoScope);
+		ImGui::Checkbox("Auto stop", &config->aimbot[currentWeapon].autoStop);
+
+		ImGui::SetNextItemWidth(85.0f);
+		ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
+		ImGui::SetNextItemWidth(85.0f);
+		ImGuiCustom::multiCombo("Hit group", config->aimbot[currentWeapon].hitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+
+		ImGui::NextColumn();
+		ImGui::Checkbox("Multipoint", &config->aimbot[currentWeapon].multipoint);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("About 15%% performance loss");
+
+		ImGui::PushItemWidth(200.0f);
+		ImGui::SliderFloat("##scale", &config->aimbot[currentWeapon].multipointScale, 0.5f, 1.0f, "Multipoint scale %.5f");
+		ImGui::SliderFloat("##inaccuracy", &config->aimbot[currentWeapon].maxAimInaccuracy, 0.0f, 1.0f, "Max aim inaccuracy %.5f", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("##fov", &config->aimbot[currentWeapon].fov, 0.0f, 255.0f, "FOV %.2fdeg", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("##hitchance", &config->aimbot[currentWeapon].shotHitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
+		ImGui::SetNextItemWidth(95.0f);
+		ImGui::InputFloat("Distance", &config->aimbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
+		config->aimbot[currentWeapon].distance = std::max(config->aimbot[currentWeapon].distance, 0.0f);
+
+		ImGui::SetNextItemWidth(95.0f);
+		ImGui::InputInt("Min damage", &config->aimbot[currentWeapon].minDamage);
+		config->aimbot[currentWeapon].minDamage = std::max(config->aimbot[currentWeapon].minDamage, 0);
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("damage_popup", ImGuiDir_Right))
+			ImGui::OpenPopup("##damage_popup");
+
+		if (ImGui::BeginPopup("##damage_popup"))
 		{
-			if (config->aimbot[idx ? idx + 10 : 36].bind.keyMode)
-			{
-				static std::string name;
-				name = heavies[idx];
-				*out_text = name.append(" *").c_str();
-			} else
-			{
-				*out_text = heavies[idx];
-			}
-			return true;
-		}, nullptr, IM_ARRAYSIZE(heavies), 15);
+			ImGui::PushItemWidth(95.0f);
+			ImGui::InputInt("Min damage auto-wall", &config->aimbot[currentWeapon].minDamageAutoWall);
+			config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
+			ImGui::InputInt("Damage threshold", &config->aimbot[currentWeapon].killshot);
+			config->aimbot[currentWeapon].killshot = std::max(config->aimbot[currentWeapon].killshot, 0);
+			ImGui::InputInt("Damage threshold auto-wall", &config->aimbot[currentWeapon].killshotAutoWall);
+			config->aimbot[currentWeapon].killshotAutoWall = std::max(config->aimbot[currentWeapon].killshotAutoWall, 0);
+			ImGui::PopItemWidth();
+			ImGui::EndPopup();
+		}
 
-		currentWeapon = currentHeavy ? currentHeavy + 10 : 36;
-		break;
-	}
-	case 3:
-	{
-		static int currentSmg{0};
-		static constexpr const char *smgs[]{"All", "Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon"};
+		ImGuiCustom::keyBind("Override", config->aimbot[currentWeapon].damageOverride);
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("override_popup", ImGuiDir_Right))
+			ImGui::OpenPopup("##override_popup");
 
-		ImGui::Combo("##sub", &currentSmg, [](void *data, int idx, const char **out_text)
+		if (ImGui::BeginPopup("##override_popup"))
 		{
-			if (config->aimbot[idx ? idx + 16 : 37].bind.keyMode)
-			{
-				static std::string name;
-				name = smgs[idx];
-				*out_text = name.append(" *").c_str();
-			} else
-			{
-				*out_text = smgs[idx];
-			}
-			return true;
-		}, nullptr, IM_ARRAYSIZE(smgs), 15);
+			ImGui::PushItemWidth(95.0f);
+			ImGui::InputInt("Min damage override", &config->aimbot[currentWeapon].minDamageOverride);
+			config->aimbot[currentWeapon].minDamageOverride = std::max(config->aimbot[currentWeapon].minDamageOverride, 0);
+			ImGui::InputInt("Damage auto-wall override", &config->aimbot[currentWeapon].minDamageAutoWallOverride);
+			config->aimbot[currentWeapon].minDamageAutoWallOverride = std::max(config->aimbot[currentWeapon].minDamageAutoWallOverride, 0);
+			ImGui::PopItemWidth();
+			ImGui::EndPopup();
+		}
 
-		currentWeapon = currentSmg ? currentSmg + 16 : 37;
-		break;
-	}
-	case 4:
-	{
-		static int currentRifle{0};
-		static constexpr const char *rifles[]{"All", "Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20"};
-
-		ImGui::Combo("##sub", &currentRifle, [](void *data, int idx, const char **out_text)
+		ImGui::SetNextItemWidth(100.0f);
+		ImGui::Combo("Interpolation", &config->aimbot[currentWeapon].interpolation, "None\0Linear\0Quadratic\0Both\0");
+		switch (config->aimbot[currentWeapon].interpolation)
 		{
-			if (config->aimbot[idx ? idx + 23 : 38].bind.keyMode)
-			{
-				static std::string name;
-				name = rifles[idx];
-				*out_text = name.append(" *").c_str();
-			} else
-			{
-				*out_text = rifles[idx];
-			}
-			return true;
-		}, nullptr, IM_ARRAYSIZE(rifles), 15);
+		case 0:
+			break;
+		case 1:
+			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
+			break;
+		case 2:
+			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
+			break;
+		case 3:
+			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Linear speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
+			break;
+		}
 
-		currentWeapon = currentRifle ? currentRifle + 23 : 38;
-		break;
-	}
-	}
-	ImGui::SameLine();
-	ImGuiCustom::keyBind("Enabled", config->aimbot[currentWeapon].bind);
+		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
 
-	ImGui::Separator();
-	ImGui::Columns(2, nullptr, false);
-	ImGui::SetColumnWidth(0, 165.0f);
-
-	ImGui::Checkbox("Aimlock", &config->aimbot[currentWeapon].aimlock);
-	ImGui::Checkbox("Silent", &config->aimbot[currentWeapon].silent);
-	ImGui::Checkbox("Friendly fire", &config->aimbot[currentWeapon].friendlyFire);
-	ImGui::Checkbox("Visible only", &config->aimbot[currentWeapon].visibleOnly);
-	ImGui::Checkbox("Scoped only", &config->aimbot[currentWeapon].scopedOnly);
-	ImGui::Checkbox("Ignore flash", &config->aimbot[currentWeapon].ignoreFlash);
-	ImGui::Checkbox("Ignore smoke", &config->aimbot[currentWeapon].ignoreSmoke);
-	ImGui::Checkbox("Auto shot", &config->aimbot[currentWeapon].autoShot);
-	ImGui::Checkbox("Auto scope", &config->aimbot[currentWeapon].autoScope);
-
-	ImGui::SetNextItemWidth(85.0f);
-	ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
-	ImGui::SetNextItemWidth(85.0f);
-	ImGuiCustom::multiCombo("Hit group", config->aimbot[currentWeapon].hitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
-
-	ImGui::NextColumn();
-	ImGui::Checkbox("Multipoint", &config->aimbot[currentWeapon].multipoint);
-	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("About 15%% performance drop");
-
-	ImGui::PushItemWidth(200.0f);
-	ImGui::SliderFloat("##scale", &config->aimbot[currentWeapon].multipointScale, 0.5f, 1.0f, "Multipoint scale %.5f");
-	ImGui::SliderFloat("##inaccuracy", &config->aimbot[currentWeapon].maxAimInaccuracy, 0.0f, 1.0f, "Max aim inaccuracy %.5f", ImGuiSliderFlags_Logarithmic);
-	ImGui::SliderFloat("##fov", &config->aimbot[currentWeapon].fov, 0.0f, 255.0f, "FOV %.2fdeg", ImGuiSliderFlags_Logarithmic);
-	ImGui::SliderFloat("##hitchance", &config->aimbot[currentWeapon].shotHitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
-	ImGui::SetNextItemWidth(95.0f);
-	ImGui::InputFloat("Distance", &config->aimbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
-	config->aimbot[currentWeapon].distance = std::max(config->aimbot[currentWeapon].distance, 0.0f);
-
-	ImGui::SetNextItemWidth(95.0f);
-	ImGui::InputInt("Min damage", &config->aimbot[currentWeapon].minDamage);
-	config->aimbot[currentWeapon].minDamage = std::max(config->aimbot[currentWeapon].minDamage, 0);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("damage_popup", ImGuiDir_Right))
-		ImGui::OpenPopup("##damage_popup");
-
-	if (ImGui::BeginPopup("##damage_popup"))
-	{
-		ImGui::PushItemWidth(95.0f);
-		ImGui::InputInt("Min damage auto-wall", &config->aimbot[currentWeapon].minDamageAutoWall);
-		config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
-		ImGui::InputInt("Damage threshold", &config->aimbot[currentWeapon].killshot);
-		config->aimbot[currentWeapon].killshot = std::max(config->aimbot[currentWeapon].killshot, 0);
-		ImGui::InputInt("Damage threshold auto-wall", &config->aimbot[currentWeapon].killshotAutoWall);
-		config->aimbot[currentWeapon].killshotAutoWall = std::max(config->aimbot[currentWeapon].killshotAutoWall, 0);
-		ImGui::PopItemWidth();
-		ImGui::EndPopup();
+		ImGui::Checkbox("Safe mode", &config->aimbot[currentWeapon].safeOnly);
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(85.0f);
+		ImGuiCustom::multiCombo("##safe_hit_group", config->aimbot[currentWeapon].safeHitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
 	}
 
-	ImGuiCustom::keyBind("Override", config->aimbot[currentWeapon].damageOverride);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("override_popup", ImGuiDir_Right))
-		ImGui::OpenPopup("##override_popup");
-
-	if (ImGui::BeginPopup("##override_popup"))
-	{
-		ImGui::PushItemWidth(95.0f);
-		ImGui::InputInt("Min damage override", &config->aimbot[currentWeapon].minDamageOverride);
-		config->aimbot[currentWeapon].minDamageOverride = std::max(config->aimbot[currentWeapon].minDamageOverride, 0);
-		ImGui::InputInt("Damage auto-wall override", &config->aimbot[currentWeapon].minDamageAutoWallOverride);
-		config->aimbot[currentWeapon].minDamageAutoWallOverride = std::max(config->aimbot[currentWeapon].minDamageAutoWallOverride, 0);
-		ImGui::PopItemWidth();
-		ImGui::EndPopup();
-	}
-
-	ImGui::SetNextItemWidth(100.0f);
-	ImGui::Combo("Interpolation", &config->aimbot[currentWeapon].interpolation, "None\0Linear\0Quadratic\0Both\0");
-	switch (config->aimbot[currentWeapon].interpolation)
-	{
-	case 0:
-		break;
-	case 1:
-		ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
-		break;
-	case 2:
-		ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
-		break;
-	case 3:
-		ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Linear speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
-		ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
-		break;
-	}
-
-	ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
-
-	ImGui::Checkbox("Safe mode", &config->aimbot[currentWeapon].safeOnly);
-	ImGui::SameLine();
-	ImGui::SetNextItemWidth(85.0f);
-	ImGuiCustom::multiCombo("##safe_hit_group", config->aimbot[currentWeapon].safeHitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+	ImGui::EndChild();
 
 	if (!contentOnly)
 		ImGui::End();
@@ -740,7 +912,6 @@ void GUI::renderBacktrackWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Recoil based fov", &config->backtrack.recoilBasedFov);
 	ImGui::PushItemWidth(180.0f);
 	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 200, "Time limit %dms");
-	ImGui::Checkbox("On shot", &config->backtrack.onShot);
 	ImGui::Checkbox("Aim at records", &config->backtrack.aimAtRecords);
 
 	ImGui::PopItemWidth();
@@ -907,7 +1078,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 
 	if (ImGui::BeginListBox("##list", {180.0f, 250.0f}))
 	{
-		constexpr std::array categories{"Enemies", "Allies", "Weapons", "Projectiles", "Loot Crates", "Other Entities"};
+		constexpr std::array categories = {"Enemies", "Allies", "Weapons", "Projectiles", "Loot Crates", "Other Entities"};
 
 		for (std::size_t i = 0; i < categories.size(); ++i)
 		{
