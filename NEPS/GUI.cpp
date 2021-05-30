@@ -80,7 +80,7 @@ void GUI::render() noexcept
 	#ifdef _DEBUG_NEPS
 	static Texture debugNotice = {IDB_PNG2, "PNG"};
 	if (debugNotice.get())
-		ImGui::GetForegroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
+		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
 	#endif // _DEBUG_NEPS
 
 	if (!open)
