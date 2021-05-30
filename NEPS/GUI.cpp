@@ -2043,7 +2043,6 @@ void GUI::renderExploitsWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Slowwalk", config->exploits.slowwalk);
 
 	ImGui::Checkbox("Bypass sv_pure", &config->exploits.bypassPure);
-	ImGui::Checkbox("Deathmatch godmode", &config->exploits.dmGodMode);
 
 	//ImGuiCustom::keyBind("Doubletap", config->exploits.doubletap);
 

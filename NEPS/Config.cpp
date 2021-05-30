@@ -692,7 +692,6 @@ static void from_json(const json &j, Config::Exploits &e)
 	read<value_t::object>(j, "Slowwalk", e.slowwalk);
 	read<value_t::object>(j, "Doubletap", e.doubletap);
 	read(j, "Bypass sv_pure", e.bypassPure);
-	read(j, "Deathmatch godmode", e.dmGodMode);
 }
 
 static void from_json(const json &j, Config::Griefing &g)
@@ -1152,7 +1151,6 @@ static void to_json(json &j, const Config::Exploits &o)
 	WRITE("Slowwalk", slowwalk);
 	WRITE("Doubletap", doubletap);
 	WRITE("Bypass sv_pure", bypassPure);
-	WRITE("Deathmatch godmode", dmGodMode);
 }
 
 static void to_json(json &j, const Config::Griefing::Reportbot &o, const Config::Griefing::Reportbot &dummy = {})

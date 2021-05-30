@@ -1682,22 +1682,3 @@ void Misc::forceRelayCluster() noexcept
 
 	*memory->relayCluster = dataCentersList[config->misc.forceRelayCluster];
 }
-
-void Misc::dmGodMode() noexcept
-{
-	if (!config->exploits.dmGodMode || !localPlayer->isAlive())
-		return;
-
-	static auto gameType = interfaces->cvar->findVar("game_type");
-	static auto gameMode = interfaces->cvar->findVar("game_mode");
-	if (gameType->getInt() != 1 || gameMode->getInt() != 2)
-		return;
-
-	constexpr auto delay = 0.5f;
-	static auto nextChangeTime = 0.0f;
-	if (nextChangeTime <= memory->globalVars->realtime)
-	{
-		interfaces->engine->clientCmdUnrestricted("open_buymenu");
-		nextChangeTime = memory->globalVars->realtime + delay;
-	}
-}

@@ -56,5 +56,4 @@ namespace Misc
 	void resetMissCounter() noexcept;
 	void desyncResolver(Entity *animatable) noexcept;
 	void forceRelayCluster() noexcept;
-	void dmGodMode() noexcept;
 }

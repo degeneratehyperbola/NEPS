@@ -312,7 +312,6 @@ public:
 		bool fastDuck = false;
 		KeyBind doubletap;
 		bool bypassPure = true;
-		bool dmGodMode = false;
 	} exploits;
 
 	struct Griefing
