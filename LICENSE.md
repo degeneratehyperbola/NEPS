@@ -1,4 +1,4 @@
-BSDNEPS 3-Clause License - Modified BSD 2-Clause License
+BSD 3-Clause Modified License
 
 Copyright (c) 2021 River Hyperbola
 All rights reserved.
@@ -14,7 +14,7 @@ modification, are permitted provided that the following conditions are met:
    and/or other materials provided with the distribution.
 
 3. Redistributions in any form must retain every aspect of the brand present in
-   and/or associated with this project/repository (e.g. logo, name and
+   and/or associated with this project (e.g. logo, name and
    color scheme).
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"

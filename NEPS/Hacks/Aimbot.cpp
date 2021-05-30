@@ -23,7 +23,7 @@ static int targetHandle;
 static const Backtrack::Record *targetRecord;
 static int weaponIndex;
 
-static void choseTarget(UserCmd *cmd, bool &doAutoScope) noexcept
+static void choseTarget(UserCmd *cmd) noexcept
 {
 	targetPoint = Vector{};
 	targetHandle = 0;
@@ -84,10 +84,30 @@ static void choseTarget(UserCmd *cmd, bool &doAutoScope) noexcept
 			auto origin = bufferBones[8].origin();
 			bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
 
-			if (doScope && canHit && trace.entity == entity && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
-				doAutoScope = true;
-			else
-				doAutoScope = false;
+			if (canHit && trace.entity == entity && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
+			{
+				if (doScope)
+					cmd->buttons |= UserCmd::IN_ATTACK2;
+
+				if (config->aimbot[weaponIndex].autoStop && localPlayer->flags() & Entity::FL_ONGROUND)
+				{
+					const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 3;
+
+					if (cmd->forwardmove && cmd->sidemove)
+					{
+						const float maxSpeedRoot = maxSpeed * static_cast<float>(M_SQRT1_2);
+						cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
+						cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
+					} else if (cmd->forwardmove)
+					{
+						cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeed : maxSpeed;
+					} else if (cmd->sidemove)
+					{
+						cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeed : maxSpeed;
+					}
+				}
+			}
+
 
 			if (doBacktrack)
 			{
@@ -99,7 +119,7 @@ static void choseTarget(UserCmd *cmd, bool &doAutoScope) noexcept
 					if (!Backtrack::valid(record.simulationTime))
 						continue;
 
-					if (record.shot && config->backtrack.onShot)
+					if (record.important)
 					{
 						backtrackRecord = &record;
 						break;
@@ -394,11 +414,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		if (prevTargetHandle != targetHandle)
 			Misc::resetMissCounter();
 
-		bool doAutoScope = false;
-		choseTarget(cmd, doAutoScope);
-
-		if (doAutoScope)
-			cmd->buttons |= UserCmd::IN_ATTACK2;
+		choseTarget(cmd);
 
 		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
 		if (target && targetPoint.notNull())

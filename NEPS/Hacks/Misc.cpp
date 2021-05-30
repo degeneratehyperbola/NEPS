@@ -149,6 +149,9 @@ void Misc::updateClanTag() noexcept
 
 		lastTime = memory->globalVars->realtime;
 		memory->setClanTag(clanTagBuffer.c_str(), clanTagBuffer.c_str());
+	} else
+	{
+		memory->setClanTag("", "");
 	}
 }
 
@@ -632,7 +635,7 @@ void Misc::drawBombTimer() noexcept
 
 	GameData::Lock lock;
 	const auto &plantedC4 = GameData::plantedC4();
-	if (plantedC4.blowTime == 0.0f && !gui->open)
+	if (!plantedC4.blowTime && !gui->open)
 		return;
 
 	static float windowWidth = 500.0f;
@@ -1120,18 +1123,18 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 	};
 
 	const float pDelta = perfectDelta(speed);
-	if (pDelta == 0.0f)
-		return;
+	if (pDelta)
+	{
+		const float yaw = Helpers::degreesToRadians(cmd->viewangles.y);
+		const float velDir = std::atan2f(localPlayer->velocity().y, localPlayer->velocity().x) - yaw;
+		const float wishAng = std::atan2f(-cmd->sidemove, cmd->forwardmove);
+		const float delta = Helpers::angleDiffRad(velDir, wishAng);
 
-	const float yaw = Helpers::degreesToRadians(cmd->viewangles.y);
-	const float velDir = std::atan2f(localPlayer->velocity().y, localPlayer->velocity().x) - yaw;
-	const float wishAng = std::atan2f(-cmd->sidemove, cmd->forwardmove);
-	const float delta = Helpers::angleDiffRad(velDir, wishAng);
+		float moveDir = delta < 0.0f ? velDir + pDelta : velDir - pDelta;
 
-	float moveDir = delta < 0.0f ? velDir + pDelta : velDir - pDelta;
-
-	cmd->forwardmove = std::cosf(moveDir) * 450.0f;
-	cmd->sidemove = -std::sinf(moveDir) * 450.0f;
+		cmd->forwardmove = std::cosf(moveDir) * 450.0f;
+		cmd->sidemove = -std::sinf(moveDir) * 450.0f;
+	}
 
 	lastHeldJump = cmd->buttons & UserCmd::IN_JUMP;
 }
@@ -1321,7 +1324,7 @@ void Misc::purchaseList(GameEvent *event) noexcept
 
 		static const auto mp_buytime = interfaces->cvar->findVar("mp_buytime");
 
-		if ((!interfaces->engine->isInGame() || freezeEnd != 0.0f && memory->globalVars->realtime > freezeEnd + (!config->misc.purchaseList.onlyDuringFreezeTime ? mp_buytime->getFloat() : 0.0f) || playerPurchases.empty() || purchaseTotal.empty()) && !gui->open)
+		if ((!interfaces->engine->isInGame() || freezeEnd && memory->globalVars->realtime > freezeEnd + (!config->misc.purchaseList.onlyDuringFreezeTime ? mp_buytime->getFloat() : 0.0f) || playerPurchases.empty() || purchaseTotal.empty()) && !gui->open)
 			return;
 
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -1557,6 +1560,9 @@ void Misc::visualizeBlockBot(ImDrawList *drawList) noexcept
 	if (!config->griefing.blockbot.visualize.enabled)
 		return;
 
+	if (static Helpers::KeyBindState flag; !flag[config->griefing.blockbot.bind])
+		return;
+
 	GameData::Lock lock;
 	const auto &local = GameData::local();
 
@@ -1726,23 +1732,4 @@ void Misc::forceRelayCluster() noexcept
 	"mad", "sto", "lhr", "atl", "eat", "ord", "lax", "mwh", "okc", "sea", "iad"};
 
 	*memory->relayCluster = dataCentersList[config->misc.forceRelayCluster];
-}
-
-void Misc::dmGodMode() noexcept
-{
-	if (!config->exploits.dmGodMode || !localPlayer->isAlive())
-		return;
-
-	static auto gameType = interfaces->cvar->findVar("game_type");
-	static auto gameMode = interfaces->cvar->findVar("game_mode");
-	if (gameType->getInt() != 1 || gameMode->getInt() != 2)
-		return;
-
-	constexpr auto delay = 0.5f;
-	static auto nextChangeTime = 0.0f;
-	if (nextChangeTime <= memory->globalVars->realtime)
-	{
-		interfaces->engine->clientCmdUnrestricted("open_buymenu");
-		nextChangeTime = memory->globalVars->realtime + delay;
-	}
 }

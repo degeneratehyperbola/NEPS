@@ -19,7 +19,7 @@ namespace Backtrack
 	{
 		Vector origin;
 		float simulationTime;
-		bool shot ;
+		bool important;
 		bool hasHelmet;
 		int armor;
 		Matrix3x4 matrix[MAX_STUDIO_BONES];

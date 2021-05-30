@@ -226,7 +226,7 @@ static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
 
 static ImVec2 renderText(float distance, float cullDistance, const Color4Border &textCfg, const char *text, const ImVec2 &pos, bool centered = true, bool adjustHeight = true) noexcept
 {
-	if (textCfg.color[3] == 0.0f)
+	if (!textCfg.color[3])
 		return {};
 
 	if (cullDistance > 0 && distance > cullDistance)
@@ -538,7 +538,7 @@ static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerDa
 	const auto cos = std::cos(yaw);
 	ImVec2 pos = {cos * positionDiff.y - sin * positionDiff.x, cos * positionDiff.x + sin * positionDiff.y};
 	const auto l = std::sqrtf(ImLengthSqr(pos));
-	if (l == 0.0f) return;
+	if (!l) return;
 	pos /= l;
 	const auto center = ImGui::GetIO().DisplaySize / 2 + pos * 300;
 
@@ -566,7 +566,7 @@ static void renderPlayerEsp(const PlayerData &playerData, const Player &playerCo
 	{
 		const float factor = std::clamp(1.0f - (memory->globalVars->realtime - playerData.becameDormant) * 0.25f, 0.0f, 1.0f);
 
-		if (factor == 0.0f) return;
+		if (!factor) return;
 
 		Helpers::setAlphaFactor(factor);
 	}

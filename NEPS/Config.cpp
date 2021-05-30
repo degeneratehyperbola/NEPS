@@ -342,6 +342,7 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Ignore smoke", a.ignoreSmoke);
 	read(j, "Auto shot", a.autoShot);
 	read(j, "Auto scope", a.autoScope);
+	read(j, "Auto stop", a.autoStop);
 	read(j, "Distance", a.distance);
 	read(j, "Fov", a.fov);
 	read(j, "Smooth start", a.smooth);
@@ -389,7 +390,6 @@ static void from_json(const json &j, Config::Backtrack &b)
 	read(j, "Ignore smoke", b.ignoreSmoke);
 	read(j, "Recoil based fov", b.recoilBasedFov);
 	read(j, "Time limit", b.timeLimit);
-	read(j, "On shot", b.onShot);
 	read(j, "Aim at records", b.aimAtRecords);
 }
 
@@ -692,7 +692,6 @@ static void from_json(const json &j, Config::Exploits &e)
 	read<value_t::object>(j, "Slowwalk", e.slowwalk);
 	read<value_t::object>(j, "Doubletap", e.doubletap);
 	read(j, "Bypass sv_pure", e.bypassPure);
-	read(j, "Deathmatch godmode", e.dmGodMode);
 }
 
 static void from_json(const json &j, Config::Griefing &g)
@@ -956,6 +955,7 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Ignore smoke", ignoreSmoke);
 	WRITE("Auto shot", autoShot);
 	WRITE("Auto scope", autoScope);
+	WRITE("Auto stop", autoStop);
 	WRITE("Distance", distance);
 	WRITE("Fov", fov);
 	WRITE("Smooth start", smooth);
@@ -1003,7 +1003,6 @@ static void to_json(json &j, const Config::Backtrack &o, const Config::Backtrack
 	WRITE("Ignore smoke", ignoreSmoke);
 	WRITE("Recoil based fov", recoilBasedFov);
 	WRITE("Time limit", timeLimit);
-	WRITE("On shot", onShot);
 	WRITE("Aim at records", aimAtRecords);
 }
 
@@ -1152,7 +1151,6 @@ static void to_json(json &j, const Config::Exploits &o)
 	WRITE("Slowwalk", slowwalk);
 	WRITE("Doubletap", doubletap);
 	WRITE("Bypass sv_pure", bypassPure);
-	WRITE("Deathmatch godmode", dmGodMode);
 }
 
 static void to_json(json &j, const Config::Griefing::Reportbot &o, const Config::Griefing::Reportbot &dummy = {})
