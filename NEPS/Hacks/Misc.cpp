@@ -149,6 +149,9 @@ void Misc::updateClanTag() noexcept
 
 		lastTime = memory->globalVars->realtime;
 		memory->setClanTag(clanTagBuffer.c_str(), clanTagBuffer.c_str());
+	} else
+	{
+		memory->setClanTag("", "");
 	}
 }
 
