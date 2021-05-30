@@ -124,6 +124,31 @@ void GUI::render() noexcept
 		ImGui::EndPopup();
 	}
 
+	{
+		static float windowAlpha = 0.4f;
+		static std::array<Color4, 5U> palette;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, windowAlpha);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
+		ImGui::Begin("Color palette", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
+
+		if (const auto payload = ImGui::GetDragDropPayload(); ImGui::IsWindowHovered(ImGuiHoveredFlags_RectOnly) || payload && (payload->IsDataType(IMGUI_PAYLOAD_TYPE_COLOR_3F) || payload->IsDataType(IMGUI_PAYLOAD_TYPE_COLOR_4F)))
+			windowAlpha = windowAlpha * 0.9f + 0.1f;
+		else
+			windowAlpha = windowAlpha * 0.9f + 0.04f;
+
+		ImGui::SetWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - ImGui::GetWindowSize().x - 10.0f, ImGui::GetIO().DisplaySize.y / 2 - ImGui::GetWindowSize().y}, ImGuiCond_Always);
+
+		for (std::size_t i = 0; i < palette.size(); ++i)
+		{
+			ImGuiCustom::colorPicker(("##palette" + std::to_string(i)).c_str(), palette[i]);
+			ImGui::SameLine();
+		}
+
+		ImGui::End();
+		ImGui::PopStyleVar(2);
+	}
+
 	#ifdef _DEBUG_NEPS
 	renderDebugWindow();
 	ImGui::ShowDemoWindow();
@@ -576,7 +601,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 				break;
 			}
 			}
-
 		}
 		ImGui::EndListBox();
 	}
@@ -670,8 +694,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
 			break;
 		case 3:
-			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Linear speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
-			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
+			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Linear %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Quadratic %.4f");
 			break;
 		}
 
