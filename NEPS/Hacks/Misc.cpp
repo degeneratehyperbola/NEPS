@@ -1481,9 +1481,11 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 			Vector side = fwd.crossProduct(Vector::up());
 			Vector move = Vector{fwd.dotProduct2D(targetVec), side.dotProduct2D(targetVec), 0.0f};
 			move *= 45.0f;
+
 			const float l = move.length2D();
 			if (l > 450.0f)
 				move *= 450.0f / l;
+
 			cmd->forwardmove = move.x;
 			cmd->sidemove = move.y;
 		} else
@@ -1495,9 +1497,11 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 			tar *= tar.dotProduct2D(targetVec);
 			Vector move = Vector{fwd.dotProduct2D(tar), side.dotProduct2D(tar), 0.0f};
 			move *= 45.0f;
+
 			const float l = move.length2D();
 			if (l > 450.0f)
 				move *= 450.0f / l;
+
 			cmd->forwardmove = move.x;
 			cmd->sidemove = move.y;
 		}

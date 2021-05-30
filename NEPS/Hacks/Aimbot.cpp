@@ -76,8 +76,9 @@ static void choseTarget(UserCmd *cmd) noexcept
 
 		const Backtrack::Record *backtrackRecord = nullptr;
 		const auto doScope = config->aimbot[weaponIndex].autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
+		const auto doStop = config->aimbot[weaponIndex].autoStop && localPlayer->flags() & Entity::FL_ONGROUND && localPlayer->moveType() != MoveType::NOCLIP && localPlayer->moveType() != MoveType::LADDER;
 		const auto doBacktrack = config->backtrack.aimAtRecords && config->backtrack.enabled && enemy;
-		if (doScope || doBacktrack)
+		if (doScope || doBacktrack || doStop)
 		{
 			bool goesThroughWall = false;
 			Trace trace;
@@ -89,9 +90,9 @@ static void choseTarget(UserCmd *cmd) noexcept
 				if (doScope)
 					cmd->buttons |= UserCmd::IN_ATTACK2;
 
-				if (config->aimbot[weaponIndex].autoStop && localPlayer->flags() & Entity::FL_ONGROUND)
+				if (doStop)
 				{
-					const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 3;
+					const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 4;
 
 					if (cmd->forwardmove && cmd->sidemove)
 					{
@@ -107,8 +108,7 @@ static void choseTarget(UserCmd *cmd) noexcept
 					}
 				}
 			}
-
-
+			
 			if (doBacktrack)
 			{
 				auto bestDistance = origin.distTo(localPlayerEyePosition);
