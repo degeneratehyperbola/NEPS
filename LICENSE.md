@@ -1,4 +1,4 @@
-BSDNEPS 3-Clause License - Modified BSD 2-Clause License
+BSD 3-Clause Modified License
 
 Copyright (c) 2021 River Hyperbola
 All rights reserved.

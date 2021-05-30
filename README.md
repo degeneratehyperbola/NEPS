@@ -5,7 +5,7 @@
 # NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
 [![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)](https://github.com/degeneratehyperbola/NEPS/issues)
 [![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
-[![LICENSE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
+[![LICENSE](https://img.shields.io/badge/License-BSD%203--Clause%20Modified-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 
 </div>
 
@@ -81,7 +81,7 @@ this includes addition of new exciting features, testing and bug fixing. It'd be
 
 # License
 ### See:
-[![LICENSE](https://img.shields.io/github/license/degeneratehyperbola/NEPS?color=orange&label=Lisence&style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
+[![LICENSE](https://img.shields.io/badge/License-BSD%203--Clause%20Modified-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 
 # NEPS downloads
 ![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
