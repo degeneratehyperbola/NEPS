@@ -41,6 +41,7 @@ public:
 		bool ignoreSmoke = false;
 		bool autoShot = false;
 		bool autoScope = false;
+		bool autoStop = false;
 		bool multipoint = false;
 		float multipointScale = 0.75f;
 		int targeting = 0;
@@ -92,7 +93,6 @@ public:
 		bool ignoreSmoke = false;
 		bool recoilBasedFov = true;
 		int timeLimit = 200;
-		bool onShot = false;
 		bool aimAtRecords = false;
 	} backtrack;
 
