@@ -85,16 +85,13 @@ void Backtrack::run(UserCmd *cmd) noexcept
 	auto localPlayerEyePosition = localPlayer->getEyePosition();
 	const auto aimPunch = localPlayer->getAimPunch();
 
-	Entity *bestTarget = nullptr;
-	int bestTargetIndex = 0;
+	Entity *bestTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle());
 	const Record *bestRecord = nullptr;
 	auto bestFov = 255.0f;
 	Vector bestTargetHeadOrigin = Vector{};
 
-	bestTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle());
 	if (bestTarget)
 	{
-		bestTargetIndex = bestTarget->index();
 		bestRecord = Aimbot::getTargetRecord();
 	} else
 	{
@@ -113,19 +110,18 @@ void Backtrack::run(UserCmd *cmd) noexcept
 			{
 				bestFov = fov;
 				bestTarget = entity;
-				bestTargetIndex = i;
 				bestTargetHeadOrigin = headOrigin;
 			}
 		}
 
 		if (bestTarget)
 		{
-			if (records[bestTargetIndex].size() <= 3 || (!config->backtrack.ignoreSmoke && memory->lineGoesThroughSmoke(localPlayer->getEyePosition(), bestTargetHeadOrigin, 1)))
+			if (records[bestTarget->index()].size() <= 3 || (!config->backtrack.ignoreSmoke && memory->lineGoesThroughSmoke(localPlayer->getEyePosition(), bestTargetHeadOrigin, 1)))
 				return;
 
 			bestFov = 255.0f;
 
-			for (const auto &record : records[bestTargetIndex])
+			for (const auto &record : records[bestTarget->index()])
 			{
 				if (!valid(record.simulationTime))
 					continue;
@@ -143,8 +139,13 @@ void Backtrack::run(UserCmd *cmd) noexcept
 
 	if (bestRecord && bestTarget)
 	{
+		const float remainder = std::fmodf(getLerp(), memory->globalVars->intervalPerTick);
+		float fractionedTime = bestRecord->simulationTime;
+		if (remainder > 0.0f)
+			fractionedTime += memory->globalVars->intervalPerTick - remainder;
+
 		memory->setAbsOrigin(bestTarget, bestRecord->origin);
-		cmd->tickCount = Helpers::timeToTicks(bestRecord->simulationTime + getLerp());
+		cmd->tickCount = Helpers::timeToTicks(fractionedTime + getLerp());
 	}
 }
 

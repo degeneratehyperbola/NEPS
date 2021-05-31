@@ -53,7 +53,7 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 - Place it somewhere memorable ;)
 - Open CS:GO
 - Run the loader with administrator privileges<sup>*</sup>
-- By default menu key is set to DEL on the number pad
+- By default menu key is set to <kbd>DEL</kbd> on the number pad
 - *Voila!*
 
 ## <sup>*</sup>Concerned?
