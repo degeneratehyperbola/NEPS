@@ -6,7 +6,22 @@
 #include "Pad.h"
 #include "VirtualMethod.h"
 
-struct ConVar
+enum CvarFlag
+{
+	FCVAR_DEVELOPMENTONLY = 2,
+	FCVAR_HIDDEN = 16
+};
+
+struct ConCommandBase
+{
+public:
+	VIRTUAL_METHOD(bool, isFlagSet, 2, (int flag), (this, flag))
+	VIRTUAL_METHOD(void, removeFlags, 4, (int flags), (this, flags))
+	VIRTUAL_METHOD(int, getFlags, 5, (), (this))
+	VIRTUAL_METHOD(ConCommandBase*, getNext, 9, (), (this))
+};
+
+struct ConVar : public ConCommandBase
 {
 	VIRTUAL_METHOD(float, getFloat, 12, (), (this))
 	VIRTUAL_METHOD(int, getInt, 13, (), (this))
