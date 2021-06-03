@@ -375,7 +375,7 @@ struct SoundData
 	PAD(44)
 };
 
-static void __stdcall emitSound(SoundData data) noexcept
+static int __stdcall emitSound(SoundData data) noexcept
 {
 	auto modulateVolume = [&data](int(*get)(int))
 	{
@@ -404,7 +404,7 @@ static void __stdcall emitSound(SoundData data) noexcept
 		ShowWindow(window, SW_RESTORE);
 	}
 	data.volume = std::clamp(data.volume, 0.0f, 1.0f);
-	hooks->sound.callOriginal<void, 5>(data);
+	return hooks->sound.callOriginal<int, 5>(data);
 }
 
 static bool __stdcall shouldDrawFog() noexcept
