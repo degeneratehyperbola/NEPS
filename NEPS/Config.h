@@ -14,20 +14,25 @@ class Config
 {
 public:
 	explicit Config(const char *) noexcept;
+
 	bool load(const char8_t *name, bool incremental) noexcept;
-	bool load(size_t, bool incremental) noexcept;
-	void save(size_t) const noexcept;
+	bool load(std::size_t, bool incremental) noexcept;
+	void save(std::size_t) const noexcept;
 	void add(const char *) noexcept;
-	void remove(size_t) noexcept;
-	void rename(size_t, const char *) noexcept;
+	void remove(std::size_t) noexcept;
+	void rename(std::size_t, const char *) noexcept;
 	void reset() noexcept;
 	void listConfigs() noexcept;
 	void openConfigDir() const noexcept;
 
-	constexpr auto &getConfigs() noexcept
+	constexpr auto &getConfigs() noexcept { return configs; }
+
+	struct Font
 	{
-		return configs;
-	}
+		ImFont *tiny;
+		ImFont *medium;
+		ImFont *big;
+	};
 
 	struct Aimbot
 	{
@@ -148,13 +153,6 @@ public:
 		std::unordered_map<std::string, Shared> lootCrates;
 		std::unordered_map<std::string, Shared> otherEntities;
 	} esp;
-
-	struct Font
-	{
-		ImFont *tiny;
-		ImFont *medium;
-		ImFont *big;
-	};
 
 	struct Visuals
 	{
@@ -318,7 +316,6 @@ public:
 	{
 		bool nameStealer = false;
 		bool killMessage = false;
-		bool fakePrime = false;
 		bool revealVotes = false;
 		char clanTag[16] = "\0";
 		int animatedClanTag = 0;

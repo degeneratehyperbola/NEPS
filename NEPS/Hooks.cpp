@@ -338,7 +338,6 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Misc::fixAnimation(lastCmd, sentPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
-		Misc::fakePrime();
 		Misc::forceRelayCluster();
 		break;
 	case FrameStage::RENDER_END:

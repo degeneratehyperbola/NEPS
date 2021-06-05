@@ -41,7 +41,6 @@ Memory::Memory() noexcept
 	viewRender = **reinterpret_cast<ViewRender ***>(findPattern("client", "\x8B\x0D????\xFF\x75\x0C\x8B\x45\x08") + 2);
 	drawScreenEffectMaterial = relativeToAbsolute<uintptr_t>(findPattern("client", "\xE8????\x83\xC4\x0C\x8D\x4D\xF8") + 1);
 	submitReport = reinterpret_cast<decltype(submitReport)>(findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x28\x8B\x4D\x08"));
-	fakePrime = reinterpret_cast<std::uint8_t *>(findPattern("client", "\x17\xF6\x40\x14\x10") - 1);
 
 	const auto tier0 = GetModuleHandleW(L"tier0");
 	debugMsg = reinterpret_cast<decltype(debugMsg)>(GetProcAddress(tier0, "Msg"));

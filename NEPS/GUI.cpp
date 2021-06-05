@@ -2073,7 +2073,6 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	if (ImGui::Button("Fake ban", ImVec2{75.0f, 0.0f}))
 		Misc::fakeBan(true);
 
-	ImGui::Checkbox("Fake prime", &config->griefing.fakePrime);
 	ImGui::Checkbox("Vote reveal", &config->griefing.revealVotes);
 	ImGui::Checkbox("Name stealer", &config->griefing.nameStealer);
 	ImGui::Checkbox("Clock tag", &config->griefing.clocktag);

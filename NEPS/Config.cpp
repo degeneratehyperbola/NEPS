@@ -708,7 +708,6 @@ static void from_json(const json &j, Config::Griefing &g)
 	read<value_t::string>(j, "Ban text", g.banText);
 	read<value_t::object>(j, "Reportbot", g.reportbot);
 	read<value_t::object>(j, "Blockbot", g.blockbot);
-	read(j, "Fake prime", g.fakePrime);
 	read(j, "Vote reveal", g.revealVotes);
 	read(j, "Spam use", g.spamUse);
 }
@@ -1193,7 +1192,6 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Ban text", banText);
 	WRITE("Reportbot", reportbot);
 	WRITE("Blockbot", blockbot);
-	WRITE("Fake prime", fakePrime);
 	WRITE("Vote reveal", revealVotes);
 	WRITE("Spam use", spamUse);
 }
@@ -1460,7 +1458,7 @@ void Config::listConfigs() noexcept
 
 	std::error_code ec;
 	std::transform(std::filesystem::directory_iterator{path, ec},
-		std::filesystem::directory_iterator{ },
+		std::filesystem::directory_iterator{},
 		std::back_inserter(configs),
 		[](const auto &entry) { return std::string{(const char *)entry.path().filename().u8string().c_str()}; });
 }

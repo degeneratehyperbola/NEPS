@@ -937,23 +937,6 @@ void Misc::fixTabletSignal() noexcept
 	}
 }
 
-void Misc::fakePrime() noexcept
-{
-	static bool lastState = false;
-
-	if (config->griefing.fakePrime != lastState)
-	{
-		lastState = config->griefing.fakePrime;
-
-		if (DWORD oldProtect; VirtualProtect(memory->fakePrime, 1, PAGE_EXECUTE_READWRITE, &oldProtect))
-		{
-			constexpr uint8_t patch[]{0x74, 0xEB};
-			*memory->fakePrime = patch[config->griefing.fakePrime];
-			VirtualProtect(memory->fakePrime, 1, oldProtect, nullptr);
-		}
-	}
-}
-
 void Misc::killMessage(GameEvent &event) noexcept
 {
 	if (!config->griefing.killMessage)
