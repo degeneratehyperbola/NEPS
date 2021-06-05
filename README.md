@@ -59,6 +59,10 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 ## <sup>*</sup>Concerned?
 ### Feel free to compile your own version of NEPS loader! Source code of it is available right in this repository.
 
+In order to compile NEPS you will need:
+- Windows SDK 10.0.X.X
+- Platform Toolset v142
+
 # NEPcord
 **NEPS has official Discord as well!**
 
