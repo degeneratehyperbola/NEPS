@@ -143,24 +143,20 @@ public:
 
 	int getAnimationLayerCount() noexcept
 	{
-		return *reinterpret_cast<int *>(this + 0x298C);
+		return *reinterpret_cast<int *>((uintptr_t)this + 0x298C);
 	}
-	AnimLayer *animOverlays() noexcept
+	AnimLayer *animationLayers() noexcept
 	{
-		return *reinterpret_cast<AnimLayer **>(uintptr_t(this) + 0x2980);
+		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2980);
 	}
 	AnimLayer *getAnimationLayer(int overlay) noexcept
 	{
-		return &(*reinterpret_cast<AnimLayer **>(this + 0x2980))[overlay];
+		return &(*reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2980))[overlay];
 	}
 
 	AnimState *getAnimState() noexcept
 	{
-		return *reinterpret_cast<AnimState**>(this + 0x3914);
-	}
-	AnimState &animState() noexcept
-	{
-		return **reinterpret_cast<AnimState **>(this + 0x3914);
+		return *reinterpret_cast<AnimState **>((uintptr_t)this + 0x3914);
 	}
 
 	enum PoseParameter
