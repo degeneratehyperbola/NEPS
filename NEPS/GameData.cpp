@@ -477,6 +477,8 @@ void PlayerData::update(Entity *entity) noexcept
 	colMaxs = collidable->obbMaxs();
 	colMins = collidable->obbMins();
 
+	if (!inViewFrustum) return;
+
 	const auto model = entity->getModel();
 	if (!model)
 		return;
