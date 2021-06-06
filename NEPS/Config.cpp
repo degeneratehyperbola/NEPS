@@ -1419,18 +1419,18 @@ void Config::add(const char *name) noexcept
 	}
 }
 
-void Config::remove(size_t id) noexcept
+void Config::remove(size_t idx) noexcept
 {
 	std::error_code ec;
-	std::filesystem::remove(path / (const char8_t *)configs[id].c_str(), ec);
-	configs.erase(configs.cbegin() + id);
+	std::filesystem::remove(path / (const char8_t *)configs[idx].c_str(), ec);
+	configs.erase(configs.cbegin() + idx);
 }
 
-void Config::rename(size_t item, const char *newName) noexcept
+void Config::rename(size_t idx, const char *newName) noexcept
 {
 	std::error_code ec;
-	std::filesystem::rename(path / (const char8_t *)configs[item].c_str(), path / (const char8_t *)newName, ec);
-	configs[item] = newName;
+	std::filesystem::rename(path / (const char8_t *)configs[idx].c_str(), path / (const char8_t *)newName, ec);
+	configs[idx] = newName;
 }
 
 void Config::reset() noexcept

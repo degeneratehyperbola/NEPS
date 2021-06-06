@@ -1,12 +1,13 @@
 #pragma once
 
 #include "UtlVector.h"
+#include "Pad.h"
 
 struct VarEntry
 {
 	unsigned short type;
 	unsigned short needsToInterpolate;
-	std::byte pad[8];
+	PAD(8)
 };
 
 struct VarMap
