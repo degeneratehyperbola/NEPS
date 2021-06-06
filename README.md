@@ -7,6 +7,7 @@
 [![LICENSE](https://img.shields.io/badge/License-BSD%203--Clause%20Modified-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 
 [![TRAILER](https://img.shields.io/badge/%20-NEPS%20Trailer-orange?style=plastic)](https://www.youtube.com/watch?v=pvU8gO66mTs)
+[![DOWNLOAD](https://img.shields.io/badge/%20-Download-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 
 </div>
 
@@ -48,7 +49,7 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 ### Step-by-step:
 - Download a release NEPS loader (NLoader.exe under assets)
 
-[![DOWNLOAD BUTTON](https://img.shields.io/badge/%20-Download-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
+[![DOWNLOAD](https://img.shields.io/badge/%20-Download-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 
 - Place it somewhere memorable ;)
 - Open CS:GO
@@ -66,8 +67,8 @@ In order to compile NEPS you will need:
 # NEPcord
 **NEPS has official Discord as well!**
 
-[![DISCORD ONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic&logo=discord&logoColor=orange)](https://discord.gg/pwB3XBppVr)
-[![DISCORD JOIN](https://img.shields.io/badge/%20-Join-orange?style=plastic)](https://discord.gg/pwB3XBppVr)
+[![DISCORDONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic&logo=discord&logoColor=orange)](https://discord.gg/pwB3XBppVr)
+[![DISCORDJOIN](https://img.shields.io/badge/%20-Join-orange?style=plastic)](https://discord.gg/pwB3XBppVr)
 
 # We demand support for NEPS!
 If you fell like supporting me, or, perhaps, want me to further maintain and update this project,
@@ -88,7 +89,7 @@ this includes addition of new exciting features, testing and bug fixing. It'd be
 [![LICENSE](https://img.shields.io/badge/License-BSD%203--Clause%20Modified-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 
 # NEPS downloads
-![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
-![LATEST DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/latest/total?color=orange&label=Latest%20release&style=plastic)
+![TOTAL](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
+![LATEST](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/latest/total?color=orange&label=Latest%20release&style=plastic)
 
 ![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
