@@ -142,7 +142,7 @@ public:
 		return table;
 	}
 
-	static std::uintptr_t findPattern(const char *moduleName, std::string pattern) noexcept
+	static std::uintptr_t findPattern(const char *moduleName, std::string pattern, bool reportNotFound = true) noexcept
 	{
 		static auto id = 0;
 		++id;
@@ -171,12 +171,14 @@ public:
 		}
 
 		#ifdef _WIN32
-		MessageBoxA(NULL, ("Failed to find pattern #" + std::to_string(id) + '!').c_str(), "NEPS", MB_OK | MB_ICONWARNING);
+		if (reportNotFound)
+			MessageBoxA(NULL, ("Failed to find pattern #" + std::to_string(id) + '!').c_str(), "NEPS", MB_OK | MB_ICONWARNING);
 		#endif
 
 		return 0;
 	}
 
+	#ifdef OLD_FIND_PAT
 	static std::uintptr_t findPattern(const wchar_t *moduleName, const char *pattern) noexcept
 	{
 		static auto id = 0;
@@ -213,6 +215,7 @@ public:
 
 		return 0;
 	}
+	#endif // OLD_FIND_PAT
 };
 
 inline std::unique_ptr<const Memory> memory;
