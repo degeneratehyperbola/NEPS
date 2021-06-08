@@ -976,11 +976,14 @@ void Misc::antiAfkKick(UserCmd *cmd) noexcept
 		cmd->buttons |= 1 << 26;
 }
 
-void Misc::fixAnimationLOD(FrameStage stage) noexcept
+void Misc::tweakNonLocalPlayerAnim(FrameStage stage) noexcept
 {
-	if (config->misc.fixAnimationLOD && stage == FrameStage::RENDER_START)
+	if (stage == FrameStage::RENDER_START)
 	{
 		if (!localPlayer)
+			return;
+
+		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp)
 			return;
 
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
@@ -989,12 +992,15 @@ void Misc::fixAnimationLOD(FrameStage stage) noexcept
 
 			if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive()) continue;
 
-			*reinterpret_cast<int *>(entity + 0xA28) = 0;
-			*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->framecount;
+			if (config->misc.fixAnimationLOD)
+			{
+				*reinterpret_cast<int *>(entity + 0xA28) = 0;
+				*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->framecount;
+			}
 
-			//if (auto varMap = entity->getVarMap())
-			//	for (int j = 0; j < varMap->entries.size; j++)
-			//		varMap->entries[j].needsToInterpolate = 0;
+			if (auto varMap = entity->getVarMap(); varMap && config->misc.disableInterp)
+				for (int j = 0; j < varMap->entries.size; j++)
+					varMap->entries[j].needsToInterpolate = 0;
 		}
 	}
 }

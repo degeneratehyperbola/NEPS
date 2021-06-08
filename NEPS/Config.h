@@ -369,8 +369,9 @@ public:
 		bool fixMovement = true;
 		bool fixAnimation = true;
 		bool disableModelOcclusion = true;
-		bool unlockInvertory = false;
+		bool disableInterp = false;
 		bool desyncResolver;
+		bool unlockInvertory = false;
 		bool disablePanoramablur = false;
 		struct PreserveKillfeed
 		{
