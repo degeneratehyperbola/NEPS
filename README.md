@@ -8,6 +8,11 @@
 
 [![TRAILER](https://img.shields.io/badge/%20-NEPS%20Trailer-orange?style=plastic)](https://www.youtube.com/watch?v=pvU8gO66mTs)
 [![DOWNLOAD](https://img.shields.io/badge/%20-Download-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
+[![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
+[![STAR](https://img.shields.io/badge/%20-Star%20this%20project!-orange?style=plastic)](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/1200px-Heart_coraz%C3%B3n.svg.png)
+
+[![DISCORDONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic&logo=discord&logoColor=orange)](https://discord.gg/pwB3XBppVr)
+[![DISCORDJOIN](https://img.shields.io/badge/%20-Join-orange?style=plastic)](https://discord.gg/pwB3XBppVr)
 
 </div>
 
@@ -63,20 +68,6 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 In order to compile NEPS you will need:
 - Windows SDK 10.0.X.X
 - Platform Toolset v142
-
-# NEPcord
-**NEPS has official Discord as well!**
-
-[![DISCORDONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic&logo=discord&logoColor=orange)](https://discord.gg/pwB3XBppVr)
-[![DISCORDJOIN](https://img.shields.io/badge/%20-Join-orange?style=plastic)](https://discord.gg/pwB3XBppVr)
-
-# We demand support for NEPS!
-If you fell like supporting me, or, perhaps, want me to further maintain and update this project,
-this includes addition of new exciting features, testing and bug fixing. It'd be very generous of you to support this project at creator's Patreon.
-
-*pwease*
-
-[![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
 
 ![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
 
