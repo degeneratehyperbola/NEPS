@@ -1105,7 +1105,7 @@ static void to_json(json &j, const Config::Misc::PreserveKillfeed &o, const Conf
 
 static void to_json(json &j, const Config::Misc &o)
 {
-	const Config::Misc dummy;
+	const Config::Misc dummy = {};
 
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Grenade predict", nadePredict);
@@ -1249,7 +1249,7 @@ static void to_json(json &j, const Config::Visuals::Dlights &o, const Config::Vi
 
 static void to_json(json &j, const Config::Visuals &o)
 {
-	const Config::Visuals dummy;
+	const Config::Visuals dummy = {};
 
 	WRITE("Aspect ratio", aspectratio);
 	WRITE("Opposite hand knife", oppositeHandKnife);
