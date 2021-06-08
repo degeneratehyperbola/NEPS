@@ -2,7 +2,7 @@
 
 #include "VmtSwap.h"
 
-static auto calculateVmtLength(uintptr_t* vmt) noexcept
+[[nodiscard]] static auto calculateVmtLength(uintptr_t* vmt) noexcept
 {
     std::size_t length = 0;
     MEMORY_BASIC_INFORMATION memoryInfo;
