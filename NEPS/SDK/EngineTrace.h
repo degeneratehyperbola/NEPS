@@ -130,8 +130,8 @@ namespace HitGroup {
 
 struct Trace
 {
-	Vector startpos;
-	Vector endpos;
+	Vector startPos;
+	Vector endPos;
 	PAD(20)
 	float fraction;
 	int contents;

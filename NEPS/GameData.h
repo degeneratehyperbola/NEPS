@@ -153,6 +153,7 @@ struct PlayerData : BaseData
 	Vector colMins, colMaxs;
 	Vector origin;
 	Vector velocity;
+	Vector lookingAt;
 	std::string name;
 	std::string activeWeapon;
 	std::vector<std::pair<Vector, Vector>> bones;

@@ -1432,6 +1432,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGuiCustom::colorPicker("Flags", playerConfig.flags);
 			ImGuiCustom::colorPicker("Offscreen", playerConfig.offscreen);
 			ImGui::SameLine(spacing);
+			ImGuiCustom::colorPicker("Line of sight", playerConfig.lineOfSight);
 		} else if (currentCategory == 2)
 		{
 			auto &weaponConfig = config->esp.weapons[currentItem];
@@ -2442,8 +2443,8 @@ void GUI::renderDebugWindow() noexcept
 	static int idx = -1;
 	if (ImGui::Button("Select...") && localPlayer)
 	{
-		Vector start = localPlayer->getEyePosition();
-		Vector end = start + Vector::fromAngle(interfaces->engine->getViewAngles()) * 1000.0f;
+		const Vector start = localPlayer->getEyePosition();
+		const Vector end = start + Vector::fromAngle(interfaces->engine->getViewAngles()) * 1000.0f;
 
 		Trace trace;
 		interfaces->engineTrace->traceRay({start, end}, ALL_VISIBLE_CONTENTS | CONTENTS_MOVEABLE | CONTENTS_DETAIL, localPlayer.get(), trace);

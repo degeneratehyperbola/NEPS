@@ -549,8 +549,26 @@ static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerDa
 	};
 	
 	drawList->AddConvexPolyFilled(trianglePoints, 3, color);
-	if (config.color[3] <= 0.75f)
-		drawList->AddPolyline(trianglePoints, 3, color2, 0, 8.0f);
+	drawList->AddPolyline(trianglePoints, 3, color2, ImDrawFlags_Closed, 1.0f);
+}
+
+static void drawLineOfSight(const Color4ToggleThickness &config, const PlayerData &playerData)
+{
+	if (!config.enabled)
+		return;
+
+	const auto color = Helpers::calculateColor(config);
+
+	ImVec2 start, end;
+	
+	bool draw = Helpers::worldToScreen((playerData.headMaxs + playerData.headMins) / 2, start);
+	draw = draw && Helpers::worldToScreen(playerData.lookingAt, end);
+
+	if (draw)
+	{
+		drawList->AddLine(start, end, color, config.thickness);
+		drawList->AddCircle(end, 5.0f, color, 0, config.thickness);
+	}
 }
 
 static void renderPlayerEsp(const PlayerData &playerData, const Player &playerConfig) noexcept
@@ -577,6 +595,7 @@ static void renderPlayerEsp(const PlayerData &playerData, const Player &playerCo
 	if (const BoundingBox headBbox = {playerData.headMins, playerData.headMaxs, playerConfig.headBox.scale}; headBbox && playerData.inViewFrustum)
 		renderBox(headBbox, playerConfig.headBox);
 
+	drawLineOfSight(playerConfig.lineOfSight, playerData);
 	drawOffscreen(playerConfig.offscreen, playerData);
 
 	Helpers::setAlphaFactor(1.0f);

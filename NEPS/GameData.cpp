@@ -452,6 +452,15 @@ void PlayerData::update(Entity *entity) noexcept
 	hasDefuser = entity->hasDefuser();
 	ducking = entity->flags() & Entity::FL_DUCKING;
 
+	{
+		const Vector start = entity->getEyePosition();
+		const Vector end = start + Vector::fromAngle(entity->eyeAngles()) * 1000.0f;
+
+		Trace trace;
+		interfaces->engineTrace->traceRay({start, end}, ALL_VISIBLE_CONTENTS | CONTENTS_MOVEABLE | CONTENTS_DETAIL, entity, trace);
+		lookingAt = trace.endPos;
+	}
+
 	scoped = false;
 	reloading = false;
 

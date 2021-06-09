@@ -320,6 +320,7 @@ static void from_json(const json &j, Player &p)
 	read<value_t::object>(j, "Head Box", p.headBox);
 	read<value_t::object>(j, "Flags", p.flags);
 	read<value_t::object>(j, "Offscreen", p.offscreen);
+	read<value_t::object>(j, "Looking at", p.lineOfSight);
 }
 
 static void from_json(const json &j, ImVec2 &v)
@@ -905,6 +906,7 @@ static void to_json(json &j, const Player &o, const Player &dummy = {})
 	WRITE("Head Box", headBox);
 	WRITE("Flags", flags);
 	WRITE("Offscreen", offscreen);
+	WRITE("Looking at", lineOfSight);
 }
 
 static void to_json(json &j, const Weapon &o, const Weapon &dummy = {})
