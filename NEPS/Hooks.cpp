@@ -444,21 +444,7 @@ static void __stdcall lockCursor() noexcept
 
 static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 {
-	#ifdef _DEBUG_NEPS
-	// Check if we always get the same return address
-	if (*static_cast<std::uint32_t *>(_ReturnAddress()) == 0x20244C8B)
-	{
-		static const auto returnAddress = std::uintptr_t(_ReturnAddress());
-		assert(returnAddress == std::uintptr_t(_ReturnAddress()));
-	}
-	if (*reinterpret_cast<std::uint32_t *>(std::uintptr_t(_ReturnAddress()) + 6) == 0x01ACB7FF)
-	{
-		static const auto returnAddress = std::uintptr_t(_ReturnAddress());
-		assert(returnAddress == std::uintptr_t(_ReturnAddress()));
-	}
-	#endif // _DEBUG_NEPS
-
-	if (config->visuals.noScopeOverlay && (*static_cast<std::uint32_t *>(_ReturnAddress()) == 0x20244C8B || *reinterpret_cast<std::uint32_t *>((std::uintptr_t)_ReturnAddress() + 6) == 0x01ACB7FF))
+	if (config->visuals.noScopeOverlay && ((std::uintptr_t)_ReturnAddress() == memory->scopeDust || (std::uintptr_t)_ReturnAddress() == memory->scopeArc))
 		a = 0;
 
 	hooks->surface.callOriginal<void, 15>(r, g, b, a);
