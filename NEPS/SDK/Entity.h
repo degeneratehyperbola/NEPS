@@ -222,7 +222,7 @@ public:
 
 	bool setupBones(Matrix3x4 *out, int maxBones, int boneMask, float currentTime) noexcept
 	{
-		if (config->misc.fixBoneMatrix && this == localPlayer.get() && memory->input->isCameraInThirdPerson)
+		if (config->misc.fixBoneMatrix && this == localPlayer.get())
 		{
 			int *render = reinterpret_cast<int *>(this + 0x274);
 			int *shouldSkipFrame = reinterpret_cast<int *>(this + 0xA68);
