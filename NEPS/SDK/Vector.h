@@ -134,6 +134,11 @@ struct Vector
 		return Vector{x + add, y + add, z + add};
 	}
 
+	constexpr auto operator-() const noexcept
+	{
+		return Vector{-x, -y, -z};
+	}
+
 	Vector &normalize() noexcept
 	{
 		x = std::isfinite(x) ? std::remainder(x, 360.0f) : 0.0f;

@@ -320,6 +320,7 @@ static void from_json(const json &j, Player &p)
 	read<value_t::object>(j, "Head Box", p.headBox);
 	read<value_t::object>(j, "Flags", p.flags);
 	read<value_t::object>(j, "Offscreen", p.offscreen);
+	read<value_t::object>(j, "Looking at", p.lineOfSight);
 }
 
 static void from_json(const json &j, ImVec2 &v)
@@ -663,8 +664,9 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fix movement", m.fixMovement);
 	read(j, "Fix animations", m.fixAnimation);
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
-	read(j, "Unlock invertory", m.unlockInvertory);
+	read(j, "Disable interpolation", m.disableInterp);
 	read(j, "Resolver", m.desyncResolver);
+	read(j, "Unlock invertory", m.unlockInvertory);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
 	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
 	read<value_t::object>(j, "Purchase list", m.purchaseList);
@@ -708,7 +710,6 @@ static void from_json(const json &j, Config::Griefing &g)
 	read<value_t::string>(j, "Ban text", g.banText);
 	read<value_t::object>(j, "Reportbot", g.reportbot);
 	read<value_t::object>(j, "Blockbot", g.blockbot);
-	read(j, "Fake prime", g.fakePrime);
 	read(j, "Vote reveal", g.revealVotes);
 	read(j, "Spam use", g.spamUse);
 }
@@ -905,6 +906,7 @@ static void to_json(json &j, const Player &o, const Player &dummy = {})
 	WRITE("Head Box", headBox);
 	WRITE("Flags", flags);
 	WRITE("Offscreen", offscreen);
+	WRITE("Looking at", lineOfSight);
 }
 
 static void to_json(json &j, const Weapon &o, const Weapon &dummy = {})
@@ -1106,7 +1108,7 @@ static void to_json(json &j, const Config::Misc::PreserveKillfeed &o, const Conf
 
 static void to_json(json &j, const Config::Misc &o)
 {
-	const Config::Misc dummy;
+	const Config::Misc dummy = {};
 
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Grenade predict", nadePredict);
@@ -1122,8 +1124,9 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix movement", fixMovement);
 	WRITE("Fix animations", fixAnimation);
 	WRITE("Disable model occlusion", disableModelOcclusion);
-	WRITE("Unlock invertory", unlockInvertory);
+	WRITE("Disable interpolation", disableInterp);
 	WRITE("Resolver", desyncResolver);
+	WRITE("Unlock invertory", unlockInvertory);
 	WRITE("Disable HUD blur", disablePanoramablur);
 	WRITE("Prepare revolver", prepareRevolver);
 	WRITE("Quick healthshot key", quickHealthshotKey);
@@ -1193,7 +1196,6 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Ban text", banText);
 	WRITE("Reportbot", reportbot);
 	WRITE("Blockbot", blockbot);
-	WRITE("Fake prime", fakePrime);
 	WRITE("Vote reveal", revealVotes);
 	WRITE("Spam use", spamUse);
 }
@@ -1251,7 +1253,7 @@ static void to_json(json &j, const Config::Visuals::Dlights &o, const Config::Vi
 
 static void to_json(json &j, const Config::Visuals &o)
 {
-	const Config::Visuals dummy;
+	const Config::Visuals dummy = {};
 
 	WRITE("Aspect ratio", aspectratio);
 	WRITE("Opposite hand knife", oppositeHandKnife);
@@ -1421,18 +1423,18 @@ void Config::add(const char *name) noexcept
 	}
 }
 
-void Config::remove(size_t id) noexcept
+void Config::remove(size_t idx) noexcept
 {
 	std::error_code ec;
-	std::filesystem::remove(path / (const char8_t *)configs[id].c_str(), ec);
-	configs.erase(configs.cbegin() + id);
+	std::filesystem::remove(path / (const char8_t *)configs[idx].c_str(), ec);
+	configs.erase(configs.cbegin() + idx);
 }
 
-void Config::rename(size_t item, const char *newName) noexcept
+void Config::rename(size_t idx, const char *newName) noexcept
 {
 	std::error_code ec;
-	std::filesystem::rename(path / (const char8_t *)configs[item].c_str(), path / (const char8_t *)newName, ec);
-	configs[item] = newName;
+	std::filesystem::rename(path / (const char8_t *)configs[idx].c_str(), path / (const char8_t *)newName, ec);
+	configs[idx] = newName;
 }
 
 void Config::reset() noexcept
@@ -1460,7 +1462,7 @@ void Config::listConfigs() noexcept
 
 	std::error_code ec;
 	std::transform(std::filesystem::directory_iterator{path, ec},
-		std::filesystem::directory_iterator{ },
+		std::filesystem::directory_iterator{},
 		std::back_inserter(configs),
 		[](const auto &entry) { return std::string{(const char *)entry.path().filename().u8string().c_str()}; });
 }

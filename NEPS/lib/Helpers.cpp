@@ -112,7 +112,7 @@ float Helpers::handleBulletPenetration(SurfaceData *enterSurfaceData, const Trac
 {
 	Vector end;
 	Trace exitTrace;
-	if (!traceToExit(enterTrace, enterTrace.endpos, direction, end, exitTrace))
+	if (!traceToExit(enterTrace, enterTrace.endPos, direction, end, exitTrace))
 		return -1.0f;
 
 	SurfaceData *exitSurfaceData = interfaces->physicsSurfaceProps->getSurfaceData(exitTrace.surface.surfaceProps);
@@ -137,9 +137,9 @@ float Helpers::handleBulletPenetration(SurfaceData *enterSurfaceData, const Trac
 			penetrationModifier = 2.0f;
 	}
 
-	damage -= 11.25f / penetration / penetrationModifier + damage * damageModifier + (exitTrace.endpos - enterTrace.endpos).squareLength() / 24.0f / penetrationModifier;
+	damage -= 11.25f / penetration / penetrationModifier + damage * damageModifier + (exitTrace.endPos - enterTrace.endPos).squareLength() / 24.0f / penetrationModifier;
 
-	result = exitTrace.endpos;
+	result = exitTrace.endPos;
 	return damage;
 }
 
@@ -304,10 +304,10 @@ bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendly
 
 		Vector end;
 		Trace exitTrace;
-		if (!traceToExit(trace, trace.endpos, direction, end, exitTrace))
+		if (!traceToExit(trace, trace.endPos, direction, end, exitTrace))
 			break;
 
-		start = exitTrace.endpos;
+		start = exitTrace.endPos;
 		calcDepth--;
 	}
 

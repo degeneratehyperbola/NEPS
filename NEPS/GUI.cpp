@@ -1432,6 +1432,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGuiCustom::colorPicker("Flags", playerConfig.flags);
 			ImGuiCustom::colorPicker("Offscreen", playerConfig.offscreen);
 			ImGui::SameLine(spacing);
+			ImGuiCustom::colorPicker("Line of sight", playerConfig.lineOfSight);
 		} else if (currentCategory == 2)
 		{
 			auto &weaponConfig = config->esp.weapons[currentItem];
@@ -2073,7 +2074,6 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	if (ImGui::Button("Fake ban", ImVec2{75.0f, 0.0f}))
 		Misc::fakeBan(true);
 
-	ImGui::Checkbox("Fake prime", &config->griefing.fakePrime);
 	ImGui::Checkbox("Vote reveal", &config->griefing.revealVotes);
 	ImGui::Checkbox("Name stealer", &config->griefing.nameStealer);
 	ImGui::Checkbox("Clock tag", &config->griefing.clocktag);
@@ -2213,6 +2213,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
 	ImGui::Checkbox("Sync client animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
+	ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
 	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
 
 	ImGui::NextColumn();
@@ -2442,8 +2443,8 @@ void GUI::renderDebugWindow() noexcept
 	static int idx = -1;
 	if (ImGui::Button("Select...") && localPlayer)
 	{
-		Vector start = localPlayer->getEyePosition();
-		Vector end = start + Vector::fromAngle(interfaces->engine->getViewAngles()) * 1000.0f;
+		const Vector start = localPlayer->getEyePosition();
+		const Vector end = start + Vector::fromAngle(interfaces->engine->getViewAngles()) * 1000.0f;
 
 		Trace trace;
 		interfaces->engineTrace->traceRay({start, end}, ALL_VISIBLE_CONTENTS | CONTENTS_MOVEABLE | CONTENTS_DETAIL, localPlayer.get(), trace);

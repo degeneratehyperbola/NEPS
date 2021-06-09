@@ -54,6 +54,8 @@
 #include "SDK/ConVar.h"
 #include "SDK/ViewSetup.h"
 
+#define FRAME_ADDRESS() ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))
+
 static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	[[maybe_unused]] static const auto initGlobal = [](HWND window) noexcept
@@ -291,7 +293,7 @@ static void __stdcall drawModelExecute(void *ctx, void *state, const ModelRender
 
 static bool __fastcall svCheatsGetBool(void *_this) noexcept
 {
-	if (uintptr_t(_ReturnAddress()) == memory->cameraThink && config->visuals.thirdPerson.keyMode)
+	if ((std::uintptr_t)_ReturnAddress() == memory->cameraThink && config->visuals.thirdPerson.keyMode)
 		return true;
 
 	return hooks->svCheats.getOriginal<bool, 13>()(_this);
@@ -338,7 +340,6 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Misc::fixAnimation(lastCmd, sentPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
-		Misc::fakePrime();
 		Misc::forceRelayCluster();
 		break;
 	case FrameStage::RENDER_END:
@@ -356,7 +357,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Visuals::playerModel(stage);
 		Visuals::disablePostProcessing(stage);
 		Visuals::removeVisualRecoil(stage);
-		Misc::fixAnimationLOD(stage);
+		Misc::tweakNonLocalPlayerAnim(stage);
 		Backtrack::update(stage);
 		SkinChanger::run(stage);
 	}
@@ -375,7 +376,7 @@ struct SoundData
 	PAD(44)
 };
 
-static void __stdcall emitSound(SoundData data) noexcept
+static int __stdcall emitSound(SoundData data) noexcept
 {
 	auto modulateVolume = [&data](int(*get)(int))
 	{
@@ -404,7 +405,7 @@ static void __stdcall emitSound(SoundData data) noexcept
 		ShowWindow(window, SW_RESTORE);
 	}
 	data.volume = std::clamp(data.volume, 0.0f, 1.0f);
-	hooks->sound.callOriginal<void, 5>(data);
+	return hooks->sound.callOriginal<int, 5>(data);
 }
 
 static bool __stdcall shouldDrawFog() noexcept
@@ -443,21 +444,7 @@ static void __stdcall lockCursor() noexcept
 
 static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 {
-	#ifdef _DEBUG_NEPS
-	// Check if we always get the same return address
-	if (*static_cast<std::uint32_t *>(_ReturnAddress()) == 0x20244C8B)
-	{
-		static const auto returnAddress = std::uintptr_t(_ReturnAddress());
-		assert(returnAddress == std::uintptr_t(_ReturnAddress()));
-	}
-	if (*reinterpret_cast<std::uint32_t *>(std::uintptr_t(_ReturnAddress()) + 6) == 0x01ACB7FF)
-	{
-		static const auto returnAddress = std::uintptr_t(_ReturnAddress());
-		assert(returnAddress == std::uintptr_t(_ReturnAddress()));
-	}
-	#endif // _DEBUG_NEPS
-
-	if (config->visuals.noScopeOverlay && (*static_cast<std::uint32_t *>(_ReturnAddress()) == 0x20244C8B || *reinterpret_cast<std::uint32_t *>(std::uintptr_t(_ReturnAddress()) + 6) == 0x01ACB7FF))
+	if (config->visuals.noScopeOverlay && ((std::uintptr_t)_ReturnAddress() == memory->scopeDust || (std::uintptr_t)_ReturnAddress() == memory->scopeArc))
 		a = 0;
 
 	hooks->surface.callOriginal<void, 15>(r, g, b, a);
@@ -613,22 +600,9 @@ static const DemoPlaybackParameters *__stdcall getDemoPlaybackParameters() noexc
 
 static bool __stdcall isPlayingDemo() noexcept
 {
-	#ifdef _DEBUG_NEPS
-	// Check if we always get the same return address
-	if (*static_cast<std::uintptr_t *>(_ReturnAddress()) == 0x0975C084
-		&& **reinterpret_cast<std::uintptr_t **>(std::uintptr_t(_AddressOfReturnAddress()) + 4) == 0x0C75C084)
-	{
-		static const auto returnAddress = std::uintptr_t(_ReturnAddress());
-		assert(returnAddress == std::uintptr_t(_ReturnAddress()));
-	}
-	#endif // _DEBUG_NEPS
-
-	if (config->misc.revealMoney
-		&& *static_cast<uintptr_t *>(_ReturnAddress()) == 0x0975C084 // client.dll : 84 C0 75 09 38 05
-		&& **reinterpret_cast<uintptr_t **>(uintptr_t(_AddressOfReturnAddress()) + 4) == 0x0C75C084) // client.dll : 84 C0 75 0C 5B
-	{
+	if (config->misc.revealMoney && (std::uintptr_t)_ReturnAddress() == memory->demoOrHLTV && *reinterpret_cast<std::uintptr_t *>(FRAME_ADDRESS() + 8) == memory->money)
 		return true;
-	}
+
 	return hooks->engine.callOriginal<bool, 82>();
 }
 
@@ -668,7 +642,7 @@ static void __stdcall renderSmokeOverlay(bool update) noexcept
 
 static bool __stdcall isConnected() noexcept
 {
-	if (config->misc.unlockInvertory && std::uintptr_t(_ReturnAddress()) == memory->invertoryBlock)
+	if (config->misc.unlockInvertory && (std::uintptr_t)_ReturnAddress() == memory->invertoryBlock)
 		return false;
 
 	return hooks->engine.callOriginal<bool, 27>();

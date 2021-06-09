@@ -2,21 +2,28 @@
 
 <div align="center">
 
-# NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS NEPS</h1>
 [![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)](https://github.com/degeneratehyperbola/NEPS/issues)
 [![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 [![LICENSE](https://img.shields.io/badge/License-BSD%203--Clause%20Modified-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 
-</div>
+[![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
+[![UNIVERSALB](https://img.shields.io/badge/%20-One--time%20donation-orange?style=plastic)](https://send.monobank.ua/3cExTPgmhe)
+[![STAR](https://img.shields.io/badge/%20-Star%20this%20project!-orange?style=plastic)](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/1200px-Heart_coraz%C3%B3n.svg.png)
+[![TRAILER](https://img.shields.io/badge/%20-NEPS%20Trailer-orange?style=plastic)](https://www.youtube.com/watch?v=pvU8gO66mTs)
+[![DOWNLOAD](https://img.shields.io/badge/%20-Download-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 
-![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
+[![DISCORDONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic&logo=discord&logoColor=orange)](https://discord.gg/pwB3XBppVr)
+[![DISCORDJOIN](https://img.shields.io/badge/%20-Join-orange?style=plastic)](https://discord.gg/pwB3XBppVr)
+
+</div>
 
 An open source bloat-free CS:GO cheat for Windows, based on Osiris. You should probably give it a go, as it was in development for about a year. With many, MANY features added, many, MANY fixes pushed (even the ones CS:GO itself needed), many, MANY optimizations and more!
 
-### Some NEPS screenshots:
+![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
+
 ![SCREENSHOT](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/menu_neps.png)
 
-# NEPS O_O
+# NEPS level of performance
 This cheat is optimized as far as I was able to keep it clean.
 As a proud owner of a 2013 thinkpad, I think I did a so-far-so-good job at making anyone's CS:GO experience with NEPS, at least, not as stuttery and laggy.
 
@@ -48,7 +55,7 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 ### Step-by-step:
 - Download a release NEPS loader (NLoader.exe under assets)
 
-[![DOWNLOAD BUTTON](https://img.shields.io/badge/%20-Download-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
+[![DOWNLOAD](https://img.shields.io/badge/%20-Download-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
 
 - Place it somewhere memorable ;)
 - Open CS:GO
@@ -59,19 +66,9 @@ If you are not a nerd, than good for you as it is pretty simple to get started!
 ## <sup>*</sup>Concerned?
 ### Feel free to compile your own version of NEPS loader! Source code of it is available right in this repository.
 
-# NEPcord
-**NEPS has official Discord as well!**
-
-[![DISCORD ONLINE](https://img.shields.io/discord/715296405513830442?color=orange&label=Discord&style=plastic&logo=discord&logoColor=orange)](https://discord.gg/pwB3XBppVr)
-[![DISCORD JOIN](https://img.shields.io/badge/%20-Join-orange?style=plastic)](https://discord.gg/pwB3XBppVr)
-
-# We demand support for NEPS!
-If you fell like supporting me, or, perhaps, want me to further maintain and update this project,
-this includes addition of new exciting features, testing and bug fixing. It'd be very generous of you to support this project at creator's Patreon.
-
-*pwease*
-
-[![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
+In order to compile NEPS you will need:
+- Windows SDK 10.0.X.X
+- Platform Toolset v142
 
 ![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)
 
@@ -84,7 +81,7 @@ this includes addition of new exciting features, testing and bug fixing. It'd be
 [![LICENSE](https://img.shields.io/badge/License-BSD%203--Clause%20Modified-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 
 # NEPS downloads
-![TOTAL DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
-![LATEST DOWNLOADS](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/latest/total?color=orange&label=Latest%20release&style=plastic)
+![TOTAL](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/total?color=orange&label=Total&style=plastic)
+![LATEST](https://img.shields.io/github/downloads/degeneratehyperbola/NEPS/latest/total?color=orange&label=Latest%20release&style=plastic)
 
 ![SEPARATOR](https://raw.githubusercontent.com/degeneratehyperbola/NEPS/master/separator.png)

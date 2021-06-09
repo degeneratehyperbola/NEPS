@@ -143,24 +143,20 @@ public:
 
 	int getAnimationLayerCount() noexcept
 	{
-		return *reinterpret_cast<int *>(this + 0x298C);
+		return *reinterpret_cast<int *>((uintptr_t)this + 0x298C);
 	}
-	AnimLayer *animOverlays() noexcept
+	AnimLayer *animationLayers() noexcept
 	{
-		return *reinterpret_cast<AnimLayer **>(uintptr_t(this) + 0x2980);
+		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2980);
 	}
 	AnimLayer *getAnimationLayer(int overlay) noexcept
 	{
-		return &(*reinterpret_cast<AnimLayer **>(this + 0x2980))[overlay];
+		return &(*reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2980))[overlay];
 	}
 
 	AnimState *getAnimState() noexcept
 	{
-		return *reinterpret_cast<AnimState**>(this + 0x3914);
-	}
-	AnimState &animState() noexcept
-	{
-		return **reinterpret_cast<AnimState **>(this + 0x3914);
+		return *reinterpret_cast<AnimState **>((uintptr_t)this + 0x3914);
 	}
 
 	enum PoseParameter
@@ -226,7 +222,7 @@ public:
 
 	bool setupBones(Matrix3x4 *out, int maxBones, int boneMask, float currentTime) noexcept
 	{
-		if (config->misc.fixBoneMatrix && this == localPlayer.get() && memory->input->isCameraInThirdPerson)
+		if (config->misc.fixBoneMatrix && this == localPlayer.get())
 		{
 			int *render = reinterpret_cast<int *>(this + 0x274);
 			int *shouldSkipFrame = reinterpret_cast<int *>(this + 0xA68);

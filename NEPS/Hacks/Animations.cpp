@@ -49,7 +49,7 @@ bool Animations::clientLerped(const UserCmd &cmd, bool sendPacket) noexcept
 
 	if (sendPacket)
 	{
-		std::copy(localPlayer->animOverlays(), localPlayer->animOverlays() + localPlayer->getAnimationLayerCount(), lerpedLayers.begin());
+		std::copy(localPlayer->animationLayers(), localPlayer->animationLayers() + localPlayer->getAnimationLayerCount(), lerpedLayers.begin());
 
 		const auto backupPoseParam = localPlayer->poseParam();
 		const auto backupAbsYaw = localPlayer->getAbsAngle().y;
@@ -60,7 +60,7 @@ bool Animations::clientLerped(const UserCmd &cmd, bool sendPacket) noexcept
 		memory->invalidateBoneCache(localPlayer.get());
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, lerpedState->feetYaw, 0.0f});
 
-		std::copy(lerpedLayers.begin(), lerpedLayers.end(), localPlayer->animOverlays());
+		std::copy(lerpedLayers.begin(), lerpedLayers.end(), localPlayer->animationLayers());
 		localPlayer->getAnimationLayer(12)->weight = FLT_EPSILON;
 
 		matrixUpdated = localPlayer->setupBones(lerpedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
@@ -97,7 +97,7 @@ bool Animations::animSync(const UserCmd &cmd, bool sendPacket) noexcept
 
 	static std::array<AnimLayer, MAX_ANIM_OVERLAYS> networkedLayers;
 
-	std::copy(localPlayer->animOverlays(), localPlayer->animOverlays() + localPlayer->getAnimationLayerCount(), networkedLayers.begin());
+	std::copy(localPlayer->animationLayers(), localPlayer->animationLayers() + localPlayer->getAnimationLayerCount(), networkedLayers.begin());
 
 	localPlayer->clientAnimations() = true;
 	memory->updateState(state, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
@@ -114,7 +114,7 @@ bool Animations::animSync(const UserCmd &cmd, bool sendPacket) noexcept
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->feetYawRate = 0.0f;
 	memory->setAbsAngle(localPlayer.get(), Vector{0.0f, backupAbsYaw, 0.0f});
-	std::copy(networkedLayers.begin(), networkedLayers.end(), localPlayer->animOverlays());
+	std::copy(networkedLayers.begin(), networkedLayers.end(), localPlayer->animationLayers());
 	localPlayer->poseParam() = backupPoseParam;
 	localPlayer->clientAnimations() = true;
 
@@ -139,7 +139,7 @@ void Animations::resolveLBY(Entity *animatable, int seed) noexcept
 	animatable->effectFlags() |= 8;
 
 	memory->invalidateBoneCache(animatable);
-	memory->updateState(state, nullptr, animatable->thirdPersonAngles().x, animatable->thirdPersonAngles().y, 0.0f, nullptr);
+	memory->updateState(state, nullptr, animatable->eyeAngles().x, animatable->eyeAngles().y, 0.0f, nullptr);
 	
 	// Return random desync position out of 3 possible
 	// This hereby gives us a 33% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)

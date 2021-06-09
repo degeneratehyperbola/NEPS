@@ -988,23 +988,6 @@ void Misc::fixTabletSignal() noexcept
 	}
 }
 
-void Misc::fakePrime() noexcept
-{
-	static bool lastState = false;
-
-	if (config->griefing.fakePrime != lastState)
-	{
-		lastState = config->griefing.fakePrime;
-
-		if (DWORD oldProtect; VirtualProtect(memory->fakePrime, 1, PAGE_EXECUTE_READWRITE, &oldProtect))
-		{
-			constexpr uint8_t patch[]{0x74, 0xEB};
-			*memory->fakePrime = patch[config->griefing.fakePrime];
-			VirtualProtect(memory->fakePrime, 1, oldProtect, nullptr);
-		}
-	}
-}
-
 void Misc::killMessage(GameEvent &event) noexcept
 {
 	if (!config->griefing.killMessage)
@@ -1044,19 +1027,31 @@ void Misc::antiAfkKick(UserCmd *cmd) noexcept
 		cmd->buttons |= 1 << 26;
 }
 
-void Misc::fixAnimationLOD(FrameStage stage) noexcept
+void Misc::tweakNonLocalPlayerAnim(FrameStage stage) noexcept
 {
-	if (config->misc.fixAnimationLOD && stage == FrameStage::RENDER_START)
+	if (stage == FrameStage::RENDER_START)
 	{
 		if (!localPlayer)
+			return;
+
+		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp)
 			return;
 
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 		{
 			Entity *entity = interfaces->entityList->getEntity(i);
+
 			if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive()) continue;
-			*reinterpret_cast<int *>(entity + 0xA28) = 0;
-			*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->framecount;
+
+			if (config->misc.fixAnimationLOD)
+			{
+				*reinterpret_cast<int *>(entity + 0xA28) = 0;
+				*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->framecount;
+			}
+
+			if (auto varMap = entity->getVarMap(); varMap && config->misc.disableInterp)
+				for (int j = 0; j < varMap->entries.size; j++)
+					varMap->entries[j].needsToInterpolate = 0;
 		}
 	}
 }
@@ -1532,9 +1527,11 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 			Vector side = fwd.crossProduct(Vector::up());
 			Vector move = Vector{fwd.dotProduct2D(targetVec), side.dotProduct2D(targetVec), 0.0f};
 			move *= 45.0f;
+
 			const float l = move.length2D();
 			if (l > 450.0f)
 				move *= 450.0f / l;
+
 			cmd->forwardmove = move.x;
 			cmd->sidemove = move.y;
 		} else
@@ -1546,9 +1543,11 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 			tar *= tar.dotProduct2D(targetVec);
 			Vector move = Vector{fwd.dotProduct2D(tar), side.dotProduct2D(tar), 0.0f};
 			move *= 45.0f;
+
 			const float l = move.length2D();
 			if (l > 450.0f)
 				move *= 450.0f / l;
+
 			cmd->forwardmove = move.x;
 			cmd->sidemove = move.y;
 		}
