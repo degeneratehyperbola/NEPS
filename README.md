@@ -7,7 +7,7 @@
 [![LICENSE](https://img.shields.io/badge/License-BSD%203--Clause%20Modified-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 
 [![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
-[![UNIVERSALB](https://img.shields.io/badge/%20-One-time%20donation-orange?style=plastic)](https://send.monobank.ua/3cExTPgmhe)
+[![UNIVERSALB](https://img.shields.io/badge/%20-One--time%20donation-orange?style=plastic)](https://send.monobank.ua/3cExTPgmhe)
 [![STAR](https://img.shields.io/badge/%20-Star%20this%20project!-orange?style=plastic)](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/1200px-Heart_coraz%C3%B3n.svg.png)
 [![TRAILER](https://img.shields.io/badge/%20-NEPS%20Trailer-orange?style=plastic)](https://www.youtube.com/watch?v=pvU8gO66mTs)
 [![DOWNLOAD](https://img.shields.io/badge/%20-Download-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
