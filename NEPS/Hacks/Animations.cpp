@@ -139,7 +139,7 @@ void Animations::resolveLBY(Entity *animatable, int seed) noexcept
 	animatable->effectFlags() |= 8;
 
 	memory->invalidateBoneCache(animatable);
-	memory->updateState(state, nullptr, animatable->thirdPersonAngles().x, animatable->thirdPersonAngles().y, 0.0f, nullptr);
+	memory->updateState(state, nullptr, animatable->eyeAngles().x, animatable->eyeAngles().y, 0.0f, nullptr);
 	
 	// Return random desync position out of 3 possible
 	// This hereby gives us a 33% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)
