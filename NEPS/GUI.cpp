@@ -316,12 +316,13 @@ void GUI::renderMenuBar() noexcept
 			ImGui::EndMenu();
 		}
 		ImGui::Separator();
-		if (ImGui::MenuItem("My GitHub"))
-			ShellExecuteW(nullptr, nullptr, L"https://github.com/degeneratehyperbola/NEPS", nullptr, nullptr, SW_SHOW);
-		if (ImGui::MenuItem("My Discord"))
-			ShellExecuteW(nullptr, nullptr, L"https://discord.gg/pwB3XBppVr", nullptr, nullptr, SW_SHOW);
-		if (ImGui::MenuItem("My Patreon"))
-			ShellExecuteW(nullptr, nullptr, L"https://www.patreon.com/hyperbola", nullptr, nullptr, SW_SHOW);
+
+		if (ImGui::MenuItem(Helpers::decode("UYlhS3m1TIWj").c_str()))
+			ShellExecuteA(nullptr, nullptr, Helpers::decode("bIS1dIN7Mz:obYSpeXJvZ3:uM3Sm[3Wv[YKieHWpfYCmdnKwcHFwUlWRVx>>").c_str(), nullptr, nullptr, SW_SHOW);
+		if (ImGui::MenuItem(Helpers::decode("UYlhSHm{Z3:z[B>>").c_str()))
+			ShellExecuteA(nullptr, nullptr, Helpers::decode("bIS1dIN7Mz:lbYOkc4KlMneoM4C4RkOZRoCxWoJ>").c_str(), nullptr, nullptr, SW_SHOW);
+		if (ImGui::MenuItem(Helpers::decode("UYlhVHG1dnWwch>>").c_str()))
+			ShellExecuteA(nullptr, nullptr, Helpers::decode("bIS1dIN7Mz:4e4dvdHG1dnWwcj6kc31wbImx[YKjc3yi").c_str(), nullptr, nullptr, SW_SHOW);
 
 		ImGui::EndMainMenuBar();
 	}
