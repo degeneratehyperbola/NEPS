@@ -1089,7 +1089,7 @@ void Misc::removeCrouchCooldown(UserCmd *cmd) noexcept
 		cmd->buttons |= UserCmd::IN_BULLRUSH;
 }
 
-void Misc::moonwalk(UserCmd *cmd, bool &sendPacket) noexcept
+void Misc::moonwalk(UserCmd *cmd) noexcept
 {
 	if (!localPlayer || localPlayer->moveType() == MoveType::LADDER)
 		return;

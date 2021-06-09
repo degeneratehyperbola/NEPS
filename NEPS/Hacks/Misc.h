@@ -37,7 +37,7 @@ namespace Misc
 	void revealRanks(UserCmd *cmd) noexcept;
 	void autoStrafe(UserCmd *cmd) noexcept;
 	void removeCrouchCooldown(UserCmd *cmd) noexcept;
-	void moonwalk(UserCmd *cmd, bool &sendPacket) noexcept;
+	void moonwalk(UserCmd *cmd) noexcept;
 	void playHitSound(GameEvent &event) noexcept;
 	void playKillSound(GameEvent &event) noexcept;
     void playDeathSound(GameEvent &event) noexcept;
