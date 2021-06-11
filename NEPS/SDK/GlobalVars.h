@@ -16,5 +16,5 @@ struct GlobalVars
 	const int tickCount;
 	const float intervalPerTick;
 
-	float serverTime(UserCmd *= nullptr) const noexcept;
+	float serverTime(UserCmd * = nullptr) const noexcept;
 };
