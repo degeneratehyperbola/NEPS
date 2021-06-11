@@ -612,13 +612,13 @@ static void __stdcall updateColorCorrectionWeights() noexcept
 
 	if (const auto &cfg = config->visuals.colorCorrection; cfg.enabled)
 	{
-		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x498) = cfg.blue;
-		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4A0) = cfg.red;
-		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4A8) = cfg.mono;
-		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4B0) = cfg.saturation;
-		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4C0) = cfg.ghost;
-		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4C8) = cfg.green;
-		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4D0) = cfg.yellow;
+		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x49C) = cfg.blue;
+		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4A4) = cfg.red;
+		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4AC) = cfg.mono;
+		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4B4) = cfg.saturation;
+		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4C4) = cfg.ghost;
+		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4CC) = cfg.green;
+		*reinterpret_cast<float *>(std::uintptr_t(memory->clientMode) + 0x4D4) = cfg.yellow;
 	}
 
 	if (config->visuals.noScopeOverlay)
