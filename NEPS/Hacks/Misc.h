@@ -45,7 +45,6 @@ namespace Misc
 	void runReportbot() noexcept;
 	void resetReportbot() noexcept;
 	void preserveKillfeed(bool roundStart = false) noexcept;
-	void fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept;
 	void blockBot(UserCmd *cmd) noexcept;
 	void visualizeBlockBot(ImDrawList *drawList) noexcept;
 	void useSpam(UserCmd *cmd) noexcept;

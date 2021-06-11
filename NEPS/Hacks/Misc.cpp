@@ -1433,11 +1433,6 @@ void Misc::preserveKillfeed(bool roundStart) noexcept
 	}
 }
 
-void Misc::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
-{
-	Animations::animSync(cmd, sendPacket);
-}
-
 static int blockTargetHandle = 0;
 
 void Misc::blockBot(UserCmd *cmd) noexcept
