@@ -5,17 +5,18 @@
 #include "Entity.h"
 #include "EntityList.h"
 
-float GlobalVars::serverTime(UserCmd* cmd) noexcept
+float GlobalVars::serverTime(UserCmd *cmd) const noexcept
 {
-    static int tick;
-    static UserCmd* lastCmd;
+	static int tick;
+	static UserCmd *lastCmd;
 
-    if (cmd) {
-        if (localPlayer && (!lastCmd || lastCmd->hasbeenpredicted))
-            tick = localPlayer->tickBase();
-        else
-            tick++;
-        lastCmd = cmd;
-    }
-    return tick * intervalPerTick;
+	if (cmd)
+	{
+		if (localPlayer && (!lastCmd || lastCmd->hasbeenpredicted))
+			tick = localPlayer->tickBase();
+		else
+			tick++;
+		lastCmd = cmd;
+	}
+	return tick * intervalPerTick;
 }
