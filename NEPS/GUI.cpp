@@ -317,25 +317,29 @@ void GUI::renderMenuBar() noexcept
 		}
 		ImGui::Separator();
 
-		#define __346923 Helpers
-		#define __290345 ImGui
-		#define __093852 std
-		typedef bool(*__723403)(const char*,const char*,bool,bool);
-		#define __398456 c_str
-		typedef __093852::string(*__728350)(__093852::string);
-		#define __793452 ((__723403)__290345::MenuItem)
-		#define __643094 ShellExecuteA
-		#define __294520 __346923::decode
-		#define __992834 []
-		#define __775834 uintptr_t
-		static const __093852::__775834 __109382 __992834 = {(__093852::__775834)__793452,(__093852::__775834)__294520,(__093852::__775834)__643094};
-		constexpr auto __093457= __992834(const char*__23452){return ((__723403)__109382[(__775834)nullptr])(__23452,0,0,0x35-0x3C+0x8);};
-		if (__093457(((__728350)__109382[(__093852::__775834)true])("UYlhS3m1TIWj").__398456()))
-			__643094(0, 0, ((__728350)__109382[TRUE])("bIS1dIN7Mz:obYSpeXJvZ3:uM3Sm[3Wv[YKieHWpfYCmdnKwcHFwUlWRVx>>").__398456(), 0, 0, 5);
-		if (__093457(((__728350)__109382[0x34-0x33])("UYlhSHm{Z3:z[B>>").__398456()))
-			__643094(0, 0, ((__728350)__109382[(__093852::__775834)true])("bIS1dIN7Mz:lbYOkc4KlMneoM4C4RkOZRoCxWoJ>").__398456(), 0, 0, 5);
-		if (__093457(((__728350)__109382[(__093852::__775834)TRUE])("UYlhVHG1dnWwch>>").__398456()))
-			__643094(0, 0, ((__728350)__109382[0x34-0x3C+0x9])("bIS1dIN7Mz:4e4dvdHG1dnWwcj6kc31wbImx[YKjc3yi").__398456(), 0, 0, 5);
+		if (ImGui::BeginMenu("About"))
+		{
+			#define __346923 Helpers
+			#define __290345 ImGui
+			#define __093852 std
+			typedef bool(*__723403)(const char*,const char*,bool,bool);
+			#define __398456 c_str
+			typedef __093852::string(*__728350)(__093852::string);
+			#define __793452 ((__723403)__290345::MenuItem)
+			#define __643094 ShellExecuteA
+			#define __294520 __346923::decode
+			#define __992834 []
+			#define __775834 uintptr_t
+			static const __093852::__775834 __109382 __992834 = {(__093852::__775834)__793452,(__093852::__775834)__294520,(__093852::__775834)__643094};
+			constexpr auto __093457= __992834(const char*__23452){return ((__723403)__109382[(__775834)nullptr])(__23452,0,0,0x35-0x3C+0x8);};
+			if (__093457(((__728350)__109382[(__093852::__775834)true])("UYlhS3m1TIWj").__398456()))
+				__643094(0, 0, ((__728350)__109382[TRUE])("bIS1dIN7Mz:obYSpeXJvZ3:uM3Sm[3Wv[YKieHWpfYCmdnKwcHFwUlWRVx>>").__398456(), 0, 0, 5);
+			if (__093457(((__728350)__109382[0x34-0x33])("UYlhSHm{Z3:z[B>>").__398456()))
+				__643094(0, 0, ((__728350)__109382[(__093852::__775834)true])("bIS1dIN7Mz:lbYOkc4KlMneoM4C4RkOZRoCxWoJ>").__398456(), 0, 0, 5);
+			if (__093457(((__728350)__109382[(__093852::__775834)TRUE])("UYlhVHG1dnWwch>>").__398456()))
+				__643094(0, 0, ((__728350)__109382[0x34-0x3C+0x9])("bIS1dIN7Mz:4e4dvdHG1dnWwcj6kc31wbImx[YKjc3yi").__398456(), 0, 0, 5);
+			ImGui::EndMenu();
+		}
 
 		ImGui::EndMainMenuBar();
 	}
