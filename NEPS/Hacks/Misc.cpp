@@ -114,12 +114,14 @@ void Misc::updateClanTag() noexcept
 		char s[11];
 		s[0] = '\0';
 		sprintf_s(s, "[%02d:%02d:%02d]", localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
+
 		lastTime = memory->globalVars->realtime;
 		memory->setClanTag(s, s);
 	} else if (config->griefing.customClanTag)
 	{
 		if (memory->globalVars->realtime - lastTime < 0.6f)
 			return;
+
 		if (!clanTag.empty())
 		{
 			static int lastMode = 0;
@@ -151,6 +153,10 @@ void Misc::updateClanTag() noexcept
 		memory->setClanTag(clanTagBuffer.c_str(), clanTagBuffer.c_str());
 	} else
 	{
+		if (memory->globalVars->realtime - lastTime < 0.6f)
+			return;
+
+		lastTime = memory->globalVars->realtime;
 		memory->setClanTag("", "");
 	}
 }
