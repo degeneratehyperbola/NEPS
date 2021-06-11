@@ -2232,12 +2232,14 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Sync client animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
 	ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("Experimental");
 	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("Experimental");
 
 	ImGui::NextColumn();
 
-	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("Experimental");
 	ImGui::Checkbox("Fix tablet signal", &config->misc.fixTabletSignal);
 	ImGui::Checkbox("Radar hack", &config->misc.radarHack);
 	ImGui::Checkbox("Unlock invertory", &config->misc.unlockInvertory);
