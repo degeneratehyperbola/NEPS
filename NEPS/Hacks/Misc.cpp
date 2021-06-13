@@ -161,279 +161,6 @@ void Misc::updateClanTag() noexcept
 	}
 }
 
-#ifdef LEGACY_WATERMARK
-void Misc::spectatorList() noexcept
-{
-	if (!config->misc.spectatorList.enabled)
-		return;
-
-	if (!localPlayer || !localPlayer->isAlive())
-		return;
-
-	interfaces->surface->setTextFont(Surface::font);
-
-	const auto [width, height] = interfaces->surface->getScreenSize();
-
-	auto textPositionY = static_cast<int>(0.5f * height);
-
-	for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i)
-	{
-		const auto entity = interfaces->entityList->getEntity(i);
-		if (!entity || entity->isDormant() || entity->isAlive() || entity->getObserverTarget() != localPlayer.get())
-			continue;
-
-		PlayerInfo playerInfo;
-
-		if (!interfaces->engine->getPlayerInfo(i, playerInfo))
-			continue;
-
-		if (wchar_t name[128]; MultiByteToWideChar(CP_UTF8, 0, playerInfo.name, -1, name, 128))
-		{
-			const auto [textWidth, textHeight] = interfaces->surface->getTextSize(Surface::font, name);
-
-			interfaces->surface->setTextColor(0, 0, 0, 100);
-
-			interfaces->surface->setTextPosition(width - textWidth - 5, textPositionY + 2);
-			interfaces->surface->printText(name);
-			interfaces->surface->setTextPosition(width - textWidth - 6, textPositionY + 1);
-			interfaces->surface->printText(name);
-
-			if (config->misc.spectatorList.rainbow)
-				interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed));
-			else
-				interfaces->surface->setTextColor(config->misc.spectatorList.color);
-
-			interfaces->surface->setTextPosition(width - textWidth - 7, textPositionY);
-			interfaces->surface->printText(name);
-
-			textPositionY += textHeight;
-		}
-	}
-
-	const auto title = L"Spectators";
-
-	const auto [titleWidth, titleHeight] = interfaces->surface->getTextSize(Surface::font, title);
-	textPositionY = static_cast<int>(0.5f * height);
-
-	interfaces->surface->setDrawColor(0, 0, 0, 127);
-
-	interfaces->surface->drawFilledRect(width - titleWidth - 15, textPositionY - titleHeight - 12, width, textPositionY);
-
-	if (config->misc.spectatorList.rainbow)
-		interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed), 255);
-	else
-		interfaces->surface->setDrawColor(static_cast<int>(config->misc.spectatorList.color[0] * 255), static_cast<int>(config->misc.spectatorList.color[1] * 255), static_cast<int>(config->misc.spectatorList.color[2] * 255), 255);
-
-	interfaces->surface->drawOutlinedRect(width - titleWidth - 15, textPositionY - titleHeight - 12, width, textPositionY);
-
-	interfaces->surface->setTextColor(0, 0, 0, 100);
-
-	interfaces->surface->setTextPosition(width - titleWidth - 5, textPositionY - titleHeight - 5);
-	interfaces->surface->printText(title);
-
-	interfaces->surface->setTextPosition(width - titleWidth - 6, textPositionY - titleHeight - 6);
-	interfaces->surface->printText(title);
-
-	if (config->misc.spectatorList.rainbow)
-		interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed));
-	else
-		interfaces->surface->setTextColor(config->misc.spectatorList.color);
-
-	interfaces->surface->setTextPosition(width - titleWidth - 7, textPositionY - titleHeight - 7);
-	interfaces->surface->printText(title);
-}
-#else // LEGACY_WATERMARK
-void Misc::spectatorList() noexcept
-{
-	if (!config->misc.spectatorList.enabled)
-		return;
-
-	if (!localPlayer)
-		return;
-
-	std::vector<const char *> observers;
-
-	GameData::Lock lock;
-	for (auto &observer : GameData::observers())
-	{
-		if (observer.targetIsObservedByLocalPlayer || observer.targetIsLocalPlayer)
-			observers.emplace_back(observer.name);
-	}
-
-	if (!observers.empty() || gui->open)
-	{
-		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-		ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
-		ImGui::PopStyleVar();
-		
-		for (auto &observer : observers)
-			ImGui::TextUnformatted(observer);
-
-		ImGui::End();
-	}
-}
-#endif // !LEGACY_WATERMARK
-
-#ifdef LEGACY_WATERMARK
-void Misc::watermark() noexcept
-{
-	if (config->misc.watermark.enabled)
-	{
-		interfaces->surface->setTextFont(Surface::font);
-
-		const auto watermark = L"Welcome to NEPS.PP";
-
-		static auto frameRate = 1.0f;
-		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
-		const auto [screenWidth, screenHeight] = interfaces->surface->getScreenSize();
-		std::wstring fps{std::to_wstring(static_cast<int>(1 / frameRate)) + L" fps"};
-		const auto [fpsWidth, fpsHeight] = interfaces->surface->getTextSize(Surface::font, fps.c_str());
-
-		float latency = 0.0f;
-		if (auto networkChannel = interfaces->engine->getNetworkChannel(); networkChannel && networkChannel->getLatency(0) > 0.0f)
-			latency = networkChannel->getLatency(0);
-
-		std::wstring ping{L"Ping: " + std::to_wstring(static_cast<int>(latency * 1000)) + L" ms"};
-		const auto [pingWidth, pingHeight] = interfaces->surface->getTextSize(Surface::font, ping.c_str());
-
-		const auto [waterWidth, waterHeight] = interfaces->surface->getTextSize(Surface::font, watermark);
-
-		interfaces->surface->setTextColor(0, 0, 0, 100);
-		interfaces->surface->setDrawColor(0, 0, 0, 127);
-
-		interfaces->surface->drawFilledRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
-
-		interfaces->surface->setTextPosition(screenWidth - pingWidth - 5, fpsHeight + 6);
-		interfaces->surface->printText(ping.c_str());
-		interfaces->surface->setTextPosition(screenWidth - pingWidth - 6, fpsHeight + 7);
-		interfaces->surface->printText(ping.c_str());
-
-		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 5, 6);
-		interfaces->surface->printText(fps.c_str());
-		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 6, 7);
-		interfaces->surface->printText(fps.c_str());
-
-		interfaces->surface->drawFilledRect(0, 0, waterWidth + 14, waterHeight + 11);
-
-		interfaces->surface->setTextPosition(5, 6);
-		interfaces->surface->printText(watermark);
-		interfaces->surface->setTextPosition(6, 7);
-		interfaces->surface->printText(watermark);
-
-		if (config->misc.watermark.rainbow)
-			interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.watermark.rainbowSpeed));
-		else
-			interfaces->surface->setTextColor(config->misc.watermark.color);
-
-		interfaces->surface->setTextPosition(screenWidth - pingWidth - 7, fpsHeight + 5);
-		interfaces->surface->printText(ping.c_str());
-
-		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 7, 5);
-		interfaces->surface->printText(fps.c_str());
-
-		interfaces->surface->setTextPosition(7, 5);
-		interfaces->surface->printText(watermark);
-
-		if (config->misc.watermark.rainbow)
-			interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.watermark.rainbowSpeed));
-		else
-			interfaces->surface->setDrawColor(static_cast<int>(config->misc.watermark.color[0] * 255), static_cast<int>(config->misc.watermark.color[1] * 255), static_cast<int>(config->misc.watermark.color[2] * 255), 255);
-
-		interfaces->surface->drawOutlinedRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
-		interfaces->surface->drawOutlinedRect(0, 0, waterWidth + 14, waterHeight + 11);
-	}
-}
-#else // LEGACY_WATERMARK
-void Misc::watermark() noexcept
-{
-	if (!config->misc.watermark.enabled)
-		return;
-
-	ImGui::SetNextWindowSizeConstraints({150.0f, 0.0f}, {FLT_MAX, FLT_MAX});
-	ImGui::SetNextWindowBgAlpha(0.4f);
-	ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
-	
-	int &pos = config->misc.watermarkPos;
-
-	switch (pos)
-	{
-	case 0:
-		ImGui::SetWindowPos(ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
-		break;
-	case 1:
-		ImGui::SetWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - ImGui::GetWindowSize().x - 10.0f, 10.0f}, ImGuiCond_Always);
-		break;
-	case 2:
-		ImGui::SetWindowPos(ImGui::GetIO().DisplaySize - ImGui::GetWindowSize() - ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
-		break;
-	case 3:
-		ImGui::SetWindowPos(ImVec2{10.0f, ImGui::GetIO().DisplaySize.y - ImGui::GetWindowSize().y - 10.0f}, ImGuiCond_Always);
-		break;
-	}
-
-	if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseClicked[1])
-		ImGui::OpenPopup("##pos_sel");
-
-	if (gui->open && ImGui::BeginPopup("##pos_sel", ImGuiWindowFlags_NoMove))
-	{
-		bool selected = pos == 0;
-		if (ImGui::MenuItem("Top left", nullptr, selected)) pos = 0;
-		selected = pos == 1;
-		if (ImGui::MenuItem("Top right", nullptr, selected)) pos = 1;
-		selected = pos == 2;
-		if (ImGui::MenuItem("Bottom right", nullptr, selected)) pos = 2;
-		selected = pos == 3;
-		if (ImGui::MenuItem("Bottom left", nullptr, selected)) pos = 3;
-		ImGui::EndPopup();
-	}
-
-	constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms"};
-
-	std::ostringstream watermark;
-	watermark << "NEPS > ";
-	watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % otherOnes.size()];
-	ImGui::TextUnformatted(watermark.str().c_str());
-
-	static float frameRate = 1.0f;
-	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
-	ImGui::Text("%.0ffps", 1.0f / frameRate);
-
-	if (interfaces->engine->isConnected())
-	{
-		GameData::Lock lock;
-		const auto session = GameData::session();
-
-		ImGui::SameLine(55.0f);
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-		ImGui::SameLine();
-
-		ImGui::Text("%dms", session.latency);
-
-		ImGui::SameLine(105.0f);
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-		ImGui::SameLine();
-
-		ImGui::Text("%dtps", session.tickrate);
-
-		ImGui::SameLine();
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-		ImGui::SameLine();
-
-		ImGui::TextUnformatted(session.levelName.c_str());
-
-		ImGui::SameLine();
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-		ImGui::SameLine();
-
-		ImGui::TextUnformatted(session.address.c_str());
-	}
-	ImGui::End();
-	
-}
-#endif // !LEGACY_WATERMARK
-
 static void drawCrosshair(ImDrawList *drawList, ImVec2 pos, ImU32 color, int type)
 {
 	bool aa = false;
@@ -578,70 +305,6 @@ void Misc::fastStop(UserCmd *cmd) noexcept
 	const auto negatedDirection = Vector::fromAngle2D(direction) * -speed;
 	cmd->forwardmove = negatedDirection.x;
 	cmd->sidemove = negatedDirection.y;
-}
-
-void Misc::drawBombTimer() noexcept
-{
-	if (!config->misc.bombTimer)
-		return;
-
-	if (!interfaces->engine->isConnected())
-		return;
-
-	GameData::Lock lock;
-	const auto &plantedC4 = GameData::plantedC4();
-	if (!plantedC4.blowTime && !gui->open)
-		return;
-
-	static float windowWidth = 500.0f;
-	ImGui::SetNextWindowPos({(ImGui::GetIO().DisplaySize.x - 500.0f) / 2.0f, 160.0f}, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize({windowWidth, 0}, ImGuiCond_FirstUseEver);
-
-	if (!gui->open)
-		ImGui::SetNextWindowSize({windowWidth, 0});
-
-	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
-	ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
-	
-	std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
-
-	ImGuiCustom::textUnformattedCentered(ss.str().c_str());
-
-	ImGuiCustom::progressBarFullWidth((plantedC4.blowTime - memory->globalVars->currenttime) / plantedC4.timerLength);
-
-	if (plantedC4.defuserHandle != -1)
-	{
-		const bool canDefuse = plantedC4.blowTime >= plantedC4.defuseCountDown;
-
-		if (plantedC4.defuserHandle == GameData::local().handle)
-		{
-			std::ostringstream ss; ss << "Defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
-
-			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
-		} else if (auto playerData = GameData::playerByHandle(plantedC4.defuserHandle))
-		{
-			std::ostringstream ss; ss << playerData->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
-
-			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
-		}
-
-		ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
-
-		if (canDefuse)
-		{
-			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-			ImGuiCustom::textUnformattedCentered("CAN DEFUSE");
-			ImGui::PopStyleColor();
-		} else
-		{
-			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-			ImGuiCustom::textUnformattedCentered("CANNOT DEFUSE");
-			ImGui::PopStyleColor();
-		}
-	}
-
-	windowWidth = ImGui::GetCurrentWindow()->SizeFull.x;
-	ImGui::End();
 }
 
 void Misc::stealNames() noexcept
@@ -1215,120 +878,6 @@ void Misc::playDeathSound(GameEvent &event) noexcept
 	}
 }
 
-void Misc::purchaseList(GameEvent *event) noexcept
-{
-	static std::mutex mtx;
-	std::scoped_lock _{mtx};
-
-	struct PlayerPurchases
-	{
-		int totalCost;
-		std::unordered_map<std::string, int> items;
-	};
-
-	static std::unordered_map<int, PlayerPurchases> playerPurchases;
-	static std::unordered_map<std::string, int> purchaseTotal;
-	static int totalCost;
-
-	static auto freezeEnd = 0.0f;
-
-	if (event)
-	{
-		switch (fnv::hashRuntime(event->getName()))
-		{
-		case fnv::hash("item_purchase"):
-		{
-			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
-
-			if (player && localPlayer && memory->isOtherEnemy(player, localPlayer.get()))
-			{
-				if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(event->getString("weapon")))
-				{
-					auto &purchase = playerPurchases[player->handle()];
-					if (const auto weaponInfo = memory->weaponSystem->getWeaponInfo(definition->getWeaponId()))
-					{
-						purchase.totalCost += weaponInfo->price;
-						totalCost += weaponInfo->price;
-					}
-					const std::string weapon = interfaces->localize->findAsUTF8(definition->getItemBaseName());
-					++purchaseTotal[weapon];
-					++purchase.items[weapon];
-				}
-			}
-			break;
-		}
-		case fnv::hash("round_start"):
-			freezeEnd = 0.0f;
-			playerPurchases.clear();
-			purchaseTotal.clear();
-			totalCost = 0;
-			break;
-		case fnv::hash("round_freeze_end"):
-			freezeEnd = memory->globalVars->realtime;
-			break;
-		}
-	} else
-	{
-		if (!config->misc.purchaseList.enabled)
-			return;
-
-		static const auto mp_buytime = interfaces->cvar->findVar("mp_buytime");
-
-		if ((!interfaces->engine->isInGame() || freezeEnd && memory->globalVars->realtime > freezeEnd + (!config->misc.purchaseList.onlyDuringFreezeTime ? mp_buytime->getFloat() : 0.0f) || playerPurchases.empty() || purchaseTotal.empty()) && !gui->open)
-			return;
-
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-		if (!gui->open)
-			windowFlags |= ImGuiWindowFlags_NoInputs;
-		if (config->misc.purchaseList.noTitleBar)
-			windowFlags |= ImGuiWindowFlags_NoTitleBar;
-
-		ImGui::SetNextWindowSize({200.0f, 200.0f}, ImGuiCond_FirstUseEver);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-		ImGui::Begin("Purchases", nullptr, windowFlags);
-		ImGui::PopStyleVar();
-
-		if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Details)
-		{
-			GameData::Lock lock;
-
-			for (const auto &[handle, purchases] : playerPurchases)
-			{
-				std::string s;
-				s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto &p) { return length + p.first.length() + 2; }));
-				for (const auto &purchasedItem : purchases.items)
-				{
-					if (purchasedItem.second > 1)
-						s += std::to_string(purchasedItem.second) + "x ";
-					s += purchasedItem.first + ", ";
-				}
-
-				if (s.length() >= 2)
-					s.erase(s.length() - 2);
-
-				if (const auto player = GameData::playerByHandle(handle))
-				{
-					if (config->misc.purchaseList.showPrices)
-						ImGui::TextWrapped("%s $%d: %s", player->name.c_str(), purchases.totalCost, s.c_str());
-					else
-						ImGui::TextWrapped("%s: %s", player->name.c_str(), s.c_str());
-				}
-			}
-		} else if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Summary)
-		{
-			for (const auto &purchase : purchaseTotal)
-				ImGui::TextWrapped("%d x %s", purchase.second, purchase.first.c_str());
-
-			if (config->misc.purchaseList.showPrices && totalCost > 0)
-			{
-				ImGui::Separator();
-				ImGui::TextWrapped("Total: $%d", totalCost);
-			}
-		}
-		ImGui::End();
-	}
-}
-
 static std::vector<std::uint64_t> reportedPlayers;
 static int reportbotRound;
 
@@ -1613,6 +1162,455 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 	ImGui::End();
 }
+
+void Misc::drawBombTimer() noexcept
+{
+	if (!config->misc.bombTimer)
+		return;
+
+	if (!interfaces->engine->isConnected())
+		return;
+
+	GameData::Lock lock;
+	const auto &plantedC4 = GameData::plantedC4();
+	if (!plantedC4.blowTime && !gui->open)
+		return;
+
+	static float windowWidth = 500.0f;
+	ImGui::SetNextWindowPos({(ImGui::GetIO().DisplaySize.x - 500.0f) / 2.0f, 160.0f}, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize({windowWidth, 0}, ImGuiCond_FirstUseEver);
+
+	if (!gui->open)
+		ImGui::SetNextWindowSize({windowWidth, 0});
+
+	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
+	ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
+
+	std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
+
+	ImGuiCustom::textUnformattedCentered(ss.str().c_str());
+
+	ImGuiCustom::progressBarFullWidth((plantedC4.blowTime - memory->globalVars->currenttime) / plantedC4.timerLength);
+
+	if (plantedC4.defuserHandle != -1)
+	{
+		const bool canDefuse = plantedC4.blowTime >= plantedC4.defuseCountDown;
+
+		if (plantedC4.defuserHandle == GameData::local().handle)
+		{
+			std::ostringstream ss; ss << "Defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
+
+			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
+		} else if (auto playerData = GameData::playerByHandle(plantedC4.defuserHandle))
+		{
+			std::ostringstream ss; ss << playerData->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
+
+			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
+		}
+
+		ImGuiCustom::progressBarFullWidth((plantedC4.defuseCountDown - memory->globalVars->currenttime) / plantedC4.defuseLength);
+
+		if (canDefuse)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+			ImGuiCustom::textUnformattedCentered("CAN DEFUSE");
+			ImGui::PopStyleColor();
+		} else
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+			ImGuiCustom::textUnformattedCentered("CANNOT DEFUSE");
+			ImGui::PopStyleColor();
+		}
+	}
+
+	windowWidth = ImGui::GetCurrentWindow()->SizeFull.x;
+	ImGui::End();
+}
+
+void Misc::purchaseList(GameEvent *event) noexcept
+{
+	static std::mutex mtx;
+	std::scoped_lock _{mtx};
+
+	struct PlayerPurchases
+	{
+		int totalCost;
+		std::unordered_map<std::string, int> items;
+	};
+
+	static std::unordered_map<int, PlayerPurchases> playerPurchases;
+	static std::unordered_map<std::string, int> purchaseTotal;
+	static int totalCost;
+
+	static auto freezeEnd = 0.0f;
+
+	if (event)
+	{
+		switch (fnv::hashRuntime(event->getName()))
+		{
+		case fnv::hash("item_purchase"):
+		{
+			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
+
+			if (player && localPlayer && memory->isOtherEnemy(player, localPlayer.get()))
+			{
+				if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(event->getString("weapon")))
+				{
+					auto &purchase = playerPurchases[player->handle()];
+					if (const auto weaponInfo = memory->weaponSystem->getWeaponInfo(definition->getWeaponId()))
+					{
+						purchase.totalCost += weaponInfo->price;
+						totalCost += weaponInfo->price;
+					}
+					const std::string weapon = interfaces->localize->findAsUTF8(definition->getItemBaseName());
+					++purchaseTotal[weapon];
+					++purchase.items[weapon];
+				}
+			}
+			break;
+		}
+		case fnv::hash("round_start"):
+			freezeEnd = 0.0f;
+			playerPurchases.clear();
+			purchaseTotal.clear();
+			totalCost = 0;
+			break;
+		case fnv::hash("round_freeze_end"):
+			freezeEnd = memory->globalVars->realtime;
+			break;
+		}
+	} else
+	{
+		if (!config->misc.purchaseList.enabled)
+			return;
+
+		static const auto mp_buytime = interfaces->cvar->findVar("mp_buytime");
+
+		if ((!interfaces->engine->isInGame() || freezeEnd && memory->globalVars->realtime > freezeEnd + (!config->misc.purchaseList.onlyDuringFreezeTime ? mp_buytime->getFloat() : 0.0f) || playerPurchases.empty() || purchaseTotal.empty()) && !gui->open)
+			return;
+
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		if (!gui->open)
+			windowFlags |= ImGuiWindowFlags_NoInputs;
+		if (config->misc.purchaseList.noTitleBar)
+			windowFlags |= ImGuiWindowFlags_NoTitleBar;
+
+		ImGui::SetNextWindowSize({200.0f, 200.0f}, ImGuiCond_FirstUseEver);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
+		ImGui::Begin("Purchases", nullptr, windowFlags);
+		ImGui::PopStyleVar();
+
+		if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Details)
+		{
+			GameData::Lock lock;
+
+			for (const auto &[handle, purchases] : playerPurchases)
+			{
+				std::string s;
+				s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto &p) { return length + p.first.length() + 2; }));
+				for (const auto &purchasedItem : purchases.items)
+				{
+					if (purchasedItem.second > 1)
+						s += std::to_string(purchasedItem.second) + "x ";
+					s += purchasedItem.first + ", ";
+				}
+
+				if (s.length() >= 2)
+					s.erase(s.length() - 2);
+
+				if (const auto player = GameData::playerByHandle(handle))
+				{
+					if (config->misc.purchaseList.showPrices)
+						ImGui::TextWrapped("%s $%d: %s", player->name.c_str(), purchases.totalCost, s.c_str());
+					else
+						ImGui::TextWrapped("%s: %s", player->name.c_str(), s.c_str());
+				}
+			}
+		} else if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Summary)
+		{
+			for (const auto &purchase : purchaseTotal)
+				ImGui::TextWrapped("%d x %s", purchase.second, purchase.first.c_str());
+
+			if (config->misc.purchaseList.showPrices && totalCost > 0)
+			{
+				ImGui::Separator();
+				ImGui::TextWrapped("Total: $%d", totalCost);
+			}
+		}
+		ImGui::End();
+	}
+}
+
+#ifdef LEGACY_WATERMARK
+void Misc::spectatorList() noexcept
+{
+	if (!config->misc.spectatorList.enabled)
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	interfaces->surface->setTextFont(Surface::font);
+
+	const auto [width, height] = interfaces->surface->getScreenSize();
+
+	auto textPositionY = static_cast<int>(0.5f * height);
+
+	for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i)
+	{
+		const auto entity = interfaces->entityList->getEntity(i);
+		if (!entity || entity->isDormant() || entity->isAlive() || entity->getObserverTarget() != localPlayer.get())
+			continue;
+
+		PlayerInfo playerInfo;
+
+		if (!interfaces->engine->getPlayerInfo(i, playerInfo))
+			continue;
+
+		if (wchar_t name[128]; MultiByteToWideChar(CP_UTF8, 0, playerInfo.name, -1, name, 128))
+		{
+			const auto [textWidth, textHeight] = interfaces->surface->getTextSize(Surface::font, name);
+
+			interfaces->surface->setTextColor(0, 0, 0, 100);
+
+			interfaces->surface->setTextPosition(width - textWidth - 5, textPositionY + 2);
+			interfaces->surface->printText(name);
+			interfaces->surface->setTextPosition(width - textWidth - 6, textPositionY + 1);
+			interfaces->surface->printText(name);
+
+			if (config->misc.spectatorList.rainbow)
+				interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed));
+			else
+				interfaces->surface->setTextColor(config->misc.spectatorList.color);
+
+			interfaces->surface->setTextPosition(width - textWidth - 7, textPositionY);
+			interfaces->surface->printText(name);
+
+			textPositionY += textHeight;
+		}
+	}
+
+	const auto title = L"Spectators";
+
+	const auto [titleWidth, titleHeight] = interfaces->surface->getTextSize(Surface::font, title);
+	textPositionY = static_cast<int>(0.5f * height);
+
+	interfaces->surface->setDrawColor(0, 0, 0, 127);
+
+	interfaces->surface->drawFilledRect(width - titleWidth - 15, textPositionY - titleHeight - 12, width, textPositionY);
+
+	if (config->misc.spectatorList.rainbow)
+		interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed), 255);
+	else
+		interfaces->surface->setDrawColor(static_cast<int>(config->misc.spectatorList.color[0] * 255), static_cast<int>(config->misc.spectatorList.color[1] * 255), static_cast<int>(config->misc.spectatorList.color[2] * 255), 255);
+
+	interfaces->surface->drawOutlinedRect(width - titleWidth - 15, textPositionY - titleHeight - 12, width, textPositionY);
+
+	interfaces->surface->setTextColor(0, 0, 0, 100);
+
+	interfaces->surface->setTextPosition(width - titleWidth - 5, textPositionY - titleHeight - 5);
+	interfaces->surface->printText(title);
+
+	interfaces->surface->setTextPosition(width - titleWidth - 6, textPositionY - titleHeight - 6);
+	interfaces->surface->printText(title);
+
+	if (config->misc.spectatorList.rainbow)
+		interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed));
+	else
+		interfaces->surface->setTextColor(config->misc.spectatorList.color);
+
+	interfaces->surface->setTextPosition(width - titleWidth - 7, textPositionY - titleHeight - 7);
+	interfaces->surface->printText(title);
+}
+
+void Misc::watermark() noexcept
+{
+	if (config->misc.watermark.enabled)
+	{
+		interfaces->surface->setTextFont(Surface::font);
+
+		const auto watermark = L"Welcome to NEPS.PP";
+
+		static auto frameRate = 1.0f;
+		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
+		const auto [screenWidth, screenHeight] = interfaces->surface->getScreenSize();
+		std::wstring fps{std::to_wstring(static_cast<int>(1 / frameRate)) + L" fps"};
+		const auto [fpsWidth, fpsHeight] = interfaces->surface->getTextSize(Surface::font, fps.c_str());
+
+		float latency = 0.0f;
+		if (auto networkChannel = interfaces->engine->getNetworkChannel(); networkChannel && networkChannel->getLatency(0) > 0.0f)
+			latency = networkChannel->getLatency(0);
+
+		std::wstring ping{L"Ping: " + std::to_wstring(static_cast<int>(latency * 1000)) + L" ms"};
+		const auto [pingWidth, pingHeight] = interfaces->surface->getTextSize(Surface::font, ping.c_str());
+
+		const auto [waterWidth, waterHeight] = interfaces->surface->getTextSize(Surface::font, watermark);
+
+		interfaces->surface->setTextColor(0, 0, 0, 100);
+		interfaces->surface->setDrawColor(0, 0, 0, 127);
+
+		interfaces->surface->drawFilledRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
+
+		interfaces->surface->setTextPosition(screenWidth - pingWidth - 5, fpsHeight + 6);
+		interfaces->surface->printText(ping.c_str());
+		interfaces->surface->setTextPosition(screenWidth - pingWidth - 6, fpsHeight + 7);
+		interfaces->surface->printText(ping.c_str());
+
+		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 5, 6);
+		interfaces->surface->printText(fps.c_str());
+		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 6, 7);
+		interfaces->surface->printText(fps.c_str());
+
+		interfaces->surface->drawFilledRect(0, 0, waterWidth + 14, waterHeight + 11);
+
+		interfaces->surface->setTextPosition(5, 6);
+		interfaces->surface->printText(watermark);
+		interfaces->surface->setTextPosition(6, 7);
+		interfaces->surface->printText(watermark);
+
+		if (config->misc.watermark.rainbow)
+			interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.watermark.rainbowSpeed));
+		else
+			interfaces->surface->setTextColor(config->misc.watermark.color);
+
+		interfaces->surface->setTextPosition(screenWidth - pingWidth - 7, fpsHeight + 5);
+		interfaces->surface->printText(ping.c_str());
+
+		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 7, 5);
+		interfaces->surface->printText(fps.c_str());
+
+		interfaces->surface->setTextPosition(7, 5);
+		interfaces->surface->printText(watermark);
+
+		if (config->misc.watermark.rainbow)
+			interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.watermark.rainbowSpeed));
+		else
+			interfaces->surface->setDrawColor(static_cast<int>(config->misc.watermark.color[0] * 255), static_cast<int>(config->misc.watermark.color[1] * 255), static_cast<int>(config->misc.watermark.color[2] * 255), 255);
+
+		interfaces->surface->drawOutlinedRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
+		interfaces->surface->drawOutlinedRect(0, 0, waterWidth + 14, waterHeight + 11);
+	}
+}
+#else // LEGACY_WATERMARK
+void Misc::spectatorList() noexcept
+{
+	if (!config->misc.spectatorList.enabled)
+		return;
+
+	if (!localPlayer)
+		return;
+
+	std::vector<const char *> observers;
+
+	GameData::Lock lock;
+	for (auto &observer : GameData::observers())
+	{
+		if (observer.targetIsObservedByLocalPlayer || observer.targetIsLocalPlayer)
+			observers.emplace_back(observer.name);
+	}
+
+	if (!observers.empty() || gui->open)
+	{
+		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
+		ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
+		ImGui::PopStyleVar();
+
+		for (auto &observer : observers)
+			ImGui::TextUnformatted(observer);
+
+		ImGui::End();
+	}
+}
+
+void Misc::watermark() noexcept
+{
+	if (!config->misc.watermark.enabled)
+		return;
+
+	ImGui::SetNextWindowSizeConstraints({150.0f, 0.0f}, {FLT_MAX, FLT_MAX});
+	ImGui::SetNextWindowBgAlpha(0.4f);
+	ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
+
+	int &pos = config->misc.watermarkPos;
+
+	switch (pos)
+	{
+	case 0:
+		ImGui::SetWindowPos(ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
+		break;
+	case 1:
+		ImGui::SetWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - ImGui::GetWindowSize().x - 10.0f, 10.0f}, ImGuiCond_Always);
+		break;
+	case 2:
+		ImGui::SetWindowPos(ImGui::GetIO().DisplaySize - ImGui::GetWindowSize() - ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
+		break;
+	case 3:
+		ImGui::SetWindowPos(ImVec2{10.0f, ImGui::GetIO().DisplaySize.y - ImGui::GetWindowSize().y - 10.0f}, ImGuiCond_Always);
+		break;
+	}
+
+	if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseClicked[1])
+		ImGui::OpenPopup("##pos_sel");
+
+	if (gui->open && ImGui::BeginPopup("##pos_sel", ImGuiWindowFlags_NoMove))
+	{
+		bool selected = pos == 0;
+		if (ImGui::MenuItem("Top left", nullptr, selected)) pos = 0;
+		selected = pos == 1;
+		if (ImGui::MenuItem("Top right", nullptr, selected)) pos = 1;
+		selected = pos == 2;
+		if (ImGui::MenuItem("Bottom right", nullptr, selected)) pos = 2;
+		selected = pos == 3;
+		if (ImGui::MenuItem("Bottom left", nullptr, selected)) pos = 3;
+		ImGui::EndPopup();
+	}
+
+	constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms"};
+
+	std::ostringstream watermark;
+	watermark << "NEPS > ";
+	watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % otherOnes.size()];
+	ImGui::TextUnformatted(watermark.str().c_str());
+
+	static float frameRate = 1.0f;
+	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
+	ImGui::Text("%.0ffps", 1.0f / frameRate);
+
+	if (interfaces->engine->isConnected())
+	{
+		GameData::Lock lock;
+		const auto session = GameData::session();
+
+		ImGui::SameLine(55.0f);
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		ImGui::Text("%dms", session.latency);
+
+		ImGui::SameLine(105.0f);
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		ImGui::Text("%dtps", session.tickrate);
+
+		ImGui::SameLine();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		ImGui::TextUnformatted(session.levelName.c_str());
+
+		ImGui::SameLine();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		ImGui::TextUnformatted(session.address.c_str());
+	}
+	ImGui::End();
+
+}
+#endif // !LEGACY_WATERMARK
 
 void Misc::voteRevealer(GameEvent &event) noexcept
 {
