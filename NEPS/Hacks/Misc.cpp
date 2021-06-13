@@ -1249,7 +1249,7 @@ void Misc::purchaseList(GameEvent *event) noexcept
 		{
 			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
 
-			if (player && localPlayer && memory->isOtherEnemy(player, localPlayer.get()))
+			if (player && localPlayer && localPlayer->isOtherEnemy(player))
 			{
 				if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(event->getString("weapon")))
 				{
@@ -1334,6 +1334,61 @@ void Misc::purchaseList(GameEvent *event) noexcept
 				ImGui::TextWrapped("Total: $%d", totalCost);
 			}
 		}
+		ImGui::End();
+	}
+}
+
+void Misc::teamDamageList(GameEvent *event)
+{
+	static std::mutex mtx;
+	std::scoped_lock _{mtx};
+
+	static std::unordered_map<int, int> damageList;
+
+	if (event)
+	{
+		switch (fnv::hashRuntime(event->getName()))
+		{
+		case fnv::hash("player_hurt"):
+		{
+			const auto attacker = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("attacker")));
+			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
+
+			if (attacker && player && localPlayer && !localPlayer->isOtherEnemy(attacker) && !player->isOtherEnemy(attacker))
+				damageList[attacker->handle()] += event->getInt("dmg_health");
+			break;
+		}
+		case fnv::hash("cs_match_end_restart"):
+			damageList.clear();
+			break;
+		}
+	} else
+	{
+		if (!config->griefing.teamDamageList.enabled)
+			return;
+
+		if (!interfaces->engine->isInGame())
+			return;
+
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		if (config->griefing.teamDamageList.noTitleBar)
+			windowFlags |= ImGuiWindowFlags_NoTitleBar;
+
+		ImGui::SetNextWindowSize({200.0f, 200.0f}, ImGuiCond_FirstUseEver);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
+		ImGui::Begin("Team damage list", nullptr, windowFlags);
+		ImGui::PopStyleVar();
+
+		GameData::Lock lock;
+
+		for (const auto &[handle, damage] : damageList)
+		{
+			if (const auto player = GameData::playerByHandle(handle))
+				ImGui::TextWrapped("%s did %ddp", player->name.c_str(), damage);
+			else if (GameData::local().handle == handle)
+				ImGui::TextWrapped("You did %ddp", damage);
+		}
+
 		ImGui::End();
 	}
 }

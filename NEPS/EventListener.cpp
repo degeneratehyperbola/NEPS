@@ -21,6 +21,7 @@ EventListener::EventListener() noexcept
 	interfaces->gameEventManager->addListener(this, "player_death");
 	interfaces->gameEventManager->addListener(this, "vote_cast");
 	interfaces->gameEventManager->addListener(this, "weapon_fire");
+	interfaces->gameEventManager->addListener(this, "cs_match_end_restart");
 
 	if (const auto desc = memory->getEventDescriptor(interfaces->gameEventManager, "player_death", nullptr))
 		std::swap(desc->listeners[0], desc->listeners[desc->listeners.size - 1]);
@@ -57,6 +58,7 @@ void EventListener::fireGameEvent(GameEvent *event)
 		Misc::playDeathSound(*event);
 		break;
 	case fnv::hash("player_hurt"):
+		Misc::teamDamageList(event);
 		Misc::playHitSound(*event);
 		Visuals::hitEffect(event);
 		Visuals::hitMarker(event);
@@ -69,6 +71,9 @@ void EventListener::fireGameEvent(GameEvent *event)
 		break;
 	case fnv::hash("vote_cast"):
 		Misc::voteRevealer(*event);
+		break;
+	case fnv::hash("cs_match_end_restart"):
+		Misc::teamDamageList(event);
 		break;
 	}
 }

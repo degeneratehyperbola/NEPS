@@ -644,6 +644,12 @@ static void from_json(const json &j, Config::Misc::PurchaseList &pl)
 	read(j, "Mode", pl.mode);
 }
 
+static void from_json(const json &j, Config::Griefing::TeamDamageList &tdl)
+{
+	read(j, "Enabled", tdl.enabled);
+	read(j, "No Title Bar", tdl.noTitleBar);
+}
+
 static void from_json(const json &j, Config::Misc::PreserveKillfeed &o)
 {
 	read(j, "Enabled", o.enabled);
@@ -712,6 +718,7 @@ static void from_json(const json &j, Config::Griefing &g)
 	read<value_t::object>(j, "Blockbot", g.blockbot);
 	read(j, "Vote reveal", g.revealVotes);
 	read(j, "Spam use", g.spamUse);
+	read<value_t::object>(j, "Team damage list", g.teamDamageList);
 }
 
 static void from_json(const json &j, Config::Griefing::Reportbot &r)
@@ -1100,6 +1107,12 @@ static void to_json(json &j, const Config::Misc::PurchaseList &o, const Config::
 	WRITE("Mode", mode);
 }
 
+static void to_json(json &j, const Config::Griefing::TeamDamageList &o, const  Config::Griefing::TeamDamageList &dummy = {})
+{
+	WRITE("Enabled", enabled);
+	WRITE("No Title Bar", noTitleBar);
+}
+
 static void to_json(json &j, const Config::Misc::PreserveKillfeed &o, const Config::Misc::PreserveKillfeed &dummy = {})
 {
 	WRITE("Enabled", enabled);
@@ -1198,6 +1211,7 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Blockbot", blockbot);
 	WRITE("Vote reveal", revealVotes);
 	WRITE("Spam use", spamUse);
+	WRITE("Team damage list", teamDamageList);
 }
 
 static void to_json(json &j, const Config::Movement &o)

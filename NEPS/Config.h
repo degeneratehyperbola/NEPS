@@ -247,6 +247,7 @@ public:
 		Color4ToggleThickness smokeHull = {0.5f, 0.5f, 0.5f, 0.3f};
 		Color4ToggleThickness playerBounds = {1.0f, 1.0f, 1.0f, 1.0f};
 		Color4ToggleThickness playerVel = {1.0f, 1.0f, 1.0f, 1.0f};
+
 		struct ColorCorrection
 		{
 			bool enabled = false;
@@ -258,6 +259,7 @@ public:
 			float green = 0.0f;
 			float yellow = 0.0f;
 		} colorCorrection;
+
 		struct Viewmodel
 		{
 			int fov = 0;
@@ -326,6 +328,12 @@ public:
 		std::string banText = "Cheater has been permanently banned from official CS:GO servers.";
 		bool spamUse = false;
 
+		struct TeamDamageList
+		{
+			bool enabled = false;
+			bool noTitleBar = false;
+		} teamDamageList;
+
 		struct Blockbot
 		{
 			KeyBind bind;
@@ -347,7 +355,6 @@ public:
 			int delay = 1;
 			int rounds = 99;
 		} reportbot;
-
 	} griefing;
 
 	struct Movement
@@ -373,17 +380,20 @@ public:
 		bool desyncResolver;
 		bool unlockInvertory = false;
 		bool disablePanoramablur = false;
+
 		struct PreserveKillfeed
 		{
 			bool enabled = false;
 			bool onlyHeadshots = false;
 		} preserveKillfeed;
+
 		Color3Toggle spectatorList;
 		Color3Toggle watermark;
 		int watermarkPos = 1;
 		KeyBind prepareRevolver;
 		int quickHealthshotKey = 0;
 		float maxAngleDelta = 255.0f;
+
 		struct PurchaseList
 		{
 			bool enabled = false;
@@ -398,6 +408,7 @@ public:
 			};
 			int mode = Details;
 		} purchaseList;
+
 		bool revealRanks = false;
 		bool revealMoney = false;
 		bool revealSuspect = false;

@@ -11,14 +11,11 @@ namespace Misc
 	void edgeJump(UserCmd *cmd) noexcept;
 	void slowwalk(UserCmd *cmd) noexcept;
 	void updateClanTag() noexcept;
-	void spectatorList() noexcept;
-	void watermark() noexcept;
 	void overlayCrosshair(ImDrawList *drawlist) noexcept;
 	void recoilCrosshair(ImDrawList *drawList) noexcept;
 	void prepareRevolver(UserCmd *) noexcept;
 	void fastPlant(UserCmd *) noexcept;
 	void fastStop(UserCmd *) noexcept;
-	void drawBombTimer() noexcept;
 	void stealNames() noexcept;
 	void quickReload(UserCmd *) noexcept;
 	bool changeName(bool, const char *, float) noexcept;
@@ -41,7 +38,6 @@ namespace Misc
 	void playHitSound(GameEvent &event) noexcept;
 	void playKillSound(GameEvent &event) noexcept;
     void playDeathSound(GameEvent &event) noexcept;
-	void purchaseList(GameEvent *event = nullptr) noexcept;
 	void runReportbot() noexcept;
 	void resetReportbot() noexcept;
 	void preserveKillfeed(bool roundStart = false) noexcept;
@@ -49,6 +45,11 @@ namespace Misc
 	void visualizeBlockBot(ImDrawList *drawList) noexcept;
 	void useSpam(UserCmd *cmd) noexcept;
 	void indicators(ImDrawList *drawList) noexcept;
+	void drawBombTimer() noexcept;
+	void purchaseList(GameEvent *event = nullptr) noexcept;
+	void teamDamageList(GameEvent *event = nullptr);
+	void spectatorList() noexcept;
+	void watermark() noexcept;
 	void voteRevealer(GameEvent &event) noexcept;
 	void missCounter(GameEvent *event) noexcept;
 	void resetMissCounter() noexcept;

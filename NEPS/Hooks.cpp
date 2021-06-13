@@ -131,6 +131,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
 
 	Misc::purchaseList();
+	Misc::teamDamageList();
 	Misc::drawBombTimer();
 	Misc::indicators(ImGui::GetBackgroundDrawList());
 

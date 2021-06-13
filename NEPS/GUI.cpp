@@ -2179,6 +2179,18 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
 	}
 
+	ImGui::Checkbox("Team damage list", &config->griefing.teamDamageList.enabled);
+	ImGui::SameLine();
+
+	if (ImGui::ArrowButton("team_damage", ImGuiDir_Right))
+		ImGui::OpenPopup("##team_damage");
+
+	if (ImGui::BeginPopup("##team_damage"))
+	{
+		ImGui::Checkbox("No title bar", &config->griefing.teamDamageList.noTitleBar);
+		ImGui::EndPopup();
+	}
+
 	if (!contentOnly)
 		ImGui::End();
 }
