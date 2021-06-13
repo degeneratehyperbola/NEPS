@@ -974,40 +974,40 @@ static void*                GImAllocatorUserData = NULL;
 
 ImGuiStyle::ImGuiStyle()
 {
-	#define CORNER_RADIUS 4.0f
-	#define BORDER_WIDTH 1.0f
-	#define PADDING_GLOBAL 7.0f
-	#define PADDING_LOCAL 5.0f
-	#define PADDING_LOCAL_HORIZONTAL 5.0f
-	#define PADDING_INNER 3.0f
-	#define PADDING_INNER_HORIZONTAL 5.0f
+	#define IMVAR_CORNER_RADIUS 2.0f
+	#define IMVAR_BORDER_WIDTH 1.0f
+	#define IMVAR_PADDING_GLOBAL 4.0f
+	#define IMVAR_PADDING_LOCAL 3.0f
+	#define IMVAR_PADDING_LOCAL_HORIZONTAL 4.0f
+	#define IMVAR_PADDING_INNER 3.0f
+	#define IMVAR_PADDING_INNER_HORIZONTAL 3.0f
 
 	Alpha = 1.0f;													// Global alpha applies to everything in ImGui
-	WindowPadding = ImVec2(PADDING_GLOBAL, PADDING_GLOBAL);			// Padding within a window
-	WindowRounding = CORNER_RADIUS;									// Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
-	WindowBorderSize = BORDER_WIDTH;								// Thickness of border around windows. Generally set to 0.0f or 1.0f. Other values not well tested.
+	WindowPadding = ImVec2(IMVAR_PADDING_GLOBAL, IMVAR_PADDING_GLOBAL);			// Padding within a window
+	WindowRounding = IMVAR_CORNER_RADIUS;									// Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
+	WindowBorderSize = IMVAR_BORDER_WIDTH;								// Thickness of border around windows. Generally set to 0.0f or 1.0f. Other values not well tested.
 	WindowMinSize = ImVec2(32, 32);									// Minimum window size
 	WindowTitleAlign = ImVec2(0.0f, 0.5f);							// Alignment for title bar text
 	WindowMenuButtonPosition = ImGuiDir_Right;						// Position of the collapsing/docking button in the title bar (left/right). Defaults to ImGuiDir_Left.
-	ChildRounding = CORNER_RADIUS;									// Radius of child window corners rounding. Set to 0.0f to have rectangular child windows
-	ChildBorderSize = BORDER_WIDTH;									// Thickness of border around child windows. Generally set to 0.0f or 1.0f. Other values not well tested.
-	PopupRounding = CORNER_RADIUS;									// Radius of popup window corners rounding. Set to 0.0f to have rectangular child windows
-	PopupBorderSize = BORDER_WIDTH;									// Thickness of border around popup or tooltip windows. Generally set to 0.0f or 1.0f. Other values not well tested.
-	FramePadding = ImVec2(PADDING_INNER, PADDING_INNER);			// Padding within a framed rectangle (used by most widgets)
-	FrameRounding = CORNER_RADIUS;									// Radius of frame corners rounding. Set to 0.0f to have rectangular frames (used by most widgets).
-	FrameBorderSize = BORDER_WIDTH;									// Thickness of border around frames. Generally set to 0.0f or 1.0f. Other values not well tested.
-	ItemSpacing = ImVec2(PADDING_LOCAL_HORIZONTAL, PADDING_LOCAL);	// Horizontal and vertical spacing between widgets/lines
-	ItemInnerSpacing = ImVec2(PADDING_INNER, PADDING_INNER);		// Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label)
+	ChildRounding = IMVAR_CORNER_RADIUS;									// Radius of child window corners rounding. Set to 0.0f to have rectangular child windows
+	ChildBorderSize = IMVAR_BORDER_WIDTH;									// Thickness of border around child windows. Generally set to 0.0f or 1.0f. Other values not well tested.
+	PopupRounding = IMVAR_CORNER_RADIUS;									// Radius of popup window corners rounding. Set to 0.0f to have rectangular child windows
+	PopupBorderSize = IMVAR_BORDER_WIDTH;									// Thickness of border around popup or tooltip windows. Generally set to 0.0f or 1.0f. Other values not well tested.
+	FramePadding = ImVec2(IMVAR_PADDING_INNER_HORIZONTAL, IMVAR_PADDING_INNER);			// Padding within a framed rectangle (used by most widgets)
+	FrameRounding = IMVAR_CORNER_RADIUS;									// Radius of frame corners rounding. Set to 0.0f to have rectangular frames (used by most widgets).
+	FrameBorderSize = IMVAR_BORDER_WIDTH;									// Thickness of border around frames. Generally set to 0.0f or 1.0f. Other values not well tested.
+	ItemSpacing = ImVec2(IMVAR_PADDING_LOCAL_HORIZONTAL, IMVAR_PADDING_LOCAL);	// Horizontal and vertical spacing between widgets/lines
+	ItemInnerSpacing = ImVec2(IMVAR_PADDING_INNER_HORIZONTAL, IMVAR_PADDING_INNER);		// Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label)
 	TouchExtraPadding = ImVec2(0, 0);								// Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
 	IndentSpacing = 21.0f;											// Horizontal spacing when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
-	ColumnsMinSpacing = PADDING_GLOBAL;								// Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
+	ColumnsMinSpacing = IMVAR_PADDING_GLOBAL;								// Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
 	ScrollbarSize = 12.0f;											// Width of the vertical scrollbar, Height of the horizontal scrollbar
-	ScrollbarRounding = CORNER_RADIUS - 2.0f;						// Radius of grab corners rounding for scrollbar
-	GrabMinSize = 6.0f;												// Minimum width/height of a grab box for slider/scrollbar
-	GrabRounding = CORNER_RADIUS - 2.0f;							// Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+	ScrollbarRounding = IMVAR_CORNER_RADIUS;						// Radius of grab corners rounding for scrollbar
+	GrabMinSize = 4.0f;												// Minimum width/height of a grab box for slider/scrollbar
+	GrabRounding = IMVAR_CORNER_RADIUS;							// Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
 	LogSliderDeadzone = 4.0f;										// The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
-	TabRounding = CORNER_RADIUS;									// Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
-	TabBorderSize = BORDER_WIDTH;									// Thickness of border around tabs.
+	TabRounding = IMVAR_CORNER_RADIUS;									// Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
+	TabBorderSize = IMVAR_BORDER_WIDTH;									// Thickness of border around tabs.
 	TabMinWidthForCloseButton = 0.0f;								// Minimum width for close button to appears on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
 	ColorButtonPosition = ImGuiDir_Right;							// Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
 	ButtonTextAlign = ImVec2(0.5f, 0.5f);							// Alignment of button text when button is larger than text.
