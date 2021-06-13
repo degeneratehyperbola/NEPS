@@ -499,7 +499,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 					if (ImGui::BeginDragDropSource())
 					{
-						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 17], sizeof(Config::Aimbot), ImGuiCond_Once);
+						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 11], sizeof(Config::Aimbot), ImGuiCond_Once);
 						ImGui::EndDragDropSource();
 					}
 
@@ -508,7 +508,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
 						{
 							const auto &data = *(Config::Aimbot *)payload->Data;
-							config->aimbot[j + 17] = data;
+							config->aimbot[j + 11] = data;
 						}
 
 						ImGui::EndDragDropTarget();
