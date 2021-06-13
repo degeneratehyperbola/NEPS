@@ -1058,9 +1058,6 @@ void Misc::visualizeBlockBot(ImDrawList *drawList) noexcept
 	if (!config->griefing.blockbot.visualize.enabled)
 		return;
 
-	if (static Helpers::KeyBindState flag; !flag[config->griefing.blockbot.bind])
-		return;
-
 	GameData::Lock lock;
 	const auto &local = GameData::local();
 
