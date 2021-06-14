@@ -424,9 +424,9 @@ public:
 
 	void scheduleFontLoad(const std::string &name) noexcept;
 	bool loadScheduledFonts() noexcept;
-	const auto &getSystemFonts() noexcept { return systemFonts; }
-	const auto &getFonts() noexcept { return fonts; }
-	const auto &getPath() noexcept { return path; }
+	const auto &getSystemFonts() const noexcept { return systemFonts; }
+	const auto &getFonts() const noexcept { return fonts; }
+	const auto &getPath() const noexcept { return path; }
 private:
 	std::vector<std::string> scheduledFonts = {"Default"};
 	std::vector<std::string> systemFonts = {"Default"};
