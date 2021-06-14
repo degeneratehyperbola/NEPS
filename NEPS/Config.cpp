@@ -1568,6 +1568,8 @@ bool Config::loadScheduledFonts() noexcept
 			cfg.OversampleH = cfg.OversampleV = 8;
 			cfg.PixelSnapH = false;
 			cfg.SizePixels = FONT_BIG;
+			if (cfg.Name[0] == '\0')
+				std::sprintf(cfg.Name, "ESP % s, %dpx", fontName.c_str(), static_cast<int>(cfg.SizePixels));
 
 			Font newFont;
 			newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.get(), fontDataSize, FONT_BIG, &cfg, ranges);
