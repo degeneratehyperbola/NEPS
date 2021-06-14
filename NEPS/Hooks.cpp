@@ -54,7 +54,8 @@
 #include "SDK/ConVar.h"
 #include "SDK/ViewSetup.h"
 
-#define FRAME_ADDRESS() ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))
+#define FRAME_ADDRESS ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))
+#define RETURN_ADDRESS std::uintptr_t(_ReturnAddress())
 
 static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
@@ -294,7 +295,7 @@ static void __stdcall drawModelExecute(void *ctx, void *state, const ModelRender
 
 static bool __fastcall svCheatsGetBool(void *_this) noexcept
 {
-	if ((std::uintptr_t)_ReturnAddress() == memory->cameraThink && config->visuals.thirdPerson.keyMode)
+	if (RETURN_ADDRESS == memory->cameraThink && config->visuals.thirdPerson.keyMode)
 		return true;
 
 	return hooks->svCheats.getOriginal<bool, 13>()(_this);
@@ -417,8 +418,8 @@ static bool __stdcall shouldDrawFog() noexcept
 		// Check if we always get the same return address
 		if (*static_cast<std::uint32_t *>(_ReturnAddress()) == 0x6274C084)
 		{
-			static const auto returnAddress = std::uintptr_t(_ReturnAddress());
-			assert(returnAddress == std::uintptr_t(_ReturnAddress()));
+			static const auto returnAddress = RETURN_ADDRESS;
+			assert(returnAddress == RETURN_ADDRESS);
 		}
 		#endif // _DEBUG_NEPS
 
@@ -445,7 +446,7 @@ static void __stdcall lockCursor() noexcept
 
 static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 {
-	if (config->visuals.noScopeOverlay && ((std::uintptr_t)_ReturnAddress() == memory->scopeDust || (std::uintptr_t)_ReturnAddress() == memory->scopeArc))
+	if (config->visuals.noScopeOverlay && (RETURN_ADDRESS == memory->scopeDust || RETURN_ADDRESS == memory->scopeArc))
 		a = 0;
 
 	hooks->surface.callOriginal<void, 15>(r, g, b, a);
@@ -513,9 +514,9 @@ struct RenderableInfo
 
 static int __stdcall listLeavesInBox(const Vector &mins, const Vector &maxs, unsigned short *list, int listMax) noexcept
 {
-	if (std::uintptr_t(_ReturnAddress()) == memory->listLeaves)
+	if (RETURN_ADDRESS == memory->listLeaves)
 	{
-		if (const auto info = *reinterpret_cast<RenderableInfo **>(std::uintptr_t(_AddressOfReturnAddress()) + 0x14); info && info->renderable)
+		if (const auto info = *reinterpret_cast<RenderableInfo **>(FRAME_ADDRESS + 0x18); info && info->renderable)
 		{
 			if (const auto ent = VirtualMethod::call<Entity *, 7>(info->renderable - 4); ent && ent->isPlayer())
 			{
@@ -583,8 +584,8 @@ static const DemoPlaybackParameters *__stdcall getDemoPlaybackParameters() noexc
 	// Check if we always get the same return address
 	if (*static_cast<std::uint64_t *>(_ReturnAddress()) == 0x79801F74C985C88B)
 	{
-		static const auto returnAddress = std::uintptr_t(_ReturnAddress());
-		assert(returnAddress == std::uintptr_t(_ReturnAddress()));
+		static const auto returnAddress = RETURN_ADDRESS;
+		assert(returnAddress == RETURN_ADDRESS);
 	}
 	#endif // _DEBUG_NEPS
 
@@ -601,7 +602,7 @@ static const DemoPlaybackParameters *__stdcall getDemoPlaybackParameters() noexc
 
 static bool __stdcall isPlayingDemo() noexcept
 {
-	if (config->misc.revealMoney && (std::uintptr_t)_ReturnAddress() == memory->demoOrHLTV && *reinterpret_cast<std::uintptr_t *>(FRAME_ADDRESS() + 8) == memory->money)
+	if (config->misc.revealMoney && RETURN_ADDRESS == memory->demoOrHLTV && *reinterpret_cast<std::uintptr_t *>(FRAME_ADDRESS + 8) == memory->money)
 		return true;
 
 	return hooks->engine.callOriginal<bool, 82>();
@@ -643,7 +644,7 @@ static void __stdcall renderSmokeOverlay(bool update) noexcept
 
 static bool __stdcall isConnected() noexcept
 {
-	if (config->misc.unlockInvertory && (std::uintptr_t)_ReturnAddress() == memory->invertoryBlock)
+	if (config->misc.unlockInvertory && RETURN_ADDRESS == memory->invertoryBlock)
 		return false;
 
 	return hooks->engine.callOriginal<bool, 27>();
