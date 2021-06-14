@@ -1565,7 +1565,7 @@ bool Config::loadScheduledFonts() noexcept
 			const auto ranges = Helpers::getFontGlyphRanges();
 			ImFontConfig cfg;
 			cfg.FontDataOwnedByAtlas = false;
-			cfg.OversampleH = cfg.OversampleV = 8;
+			cfg.OversampleH = cfg.OversampleV = 2;
 			cfg.PixelSnapH = false;
 			cfg.SizePixels = FONT_BIG;
 			if (cfg.Name[0] == '\0')
