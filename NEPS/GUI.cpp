@@ -60,19 +60,21 @@ GUI::GUI() noexcept
 	io.LogFilename = nullptr;
 	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
-	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts)))
-	{
-		const std::filesystem::path path = pathToFonts;
-		CoTaskMemFree(pathToFonts);
+	//if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts)))
+	//{
+	//	const std::filesystem::path path = pathToFonts;
+	//	CoTaskMemFree(pathToFonts);
+	//}
 
-		ImFontConfig cfg;
-		cfg.OversampleH = cfg.OversampleV = 8;
-		cfg.PixelSnapH = false;
-		cfg.RasterizerMultiply = 1.4f;
-		cfg.SizePixels = 14.0f;
+	ImFontConfig cfg;
+	cfg.OversampleH = cfg.OversampleV = 1;
+	cfg.PixelSnapH = true;
+	cfg.SizePixels = 13.0f;
+	cfg.GlyphOffset = {1.0f, -1.0f};
+	if (cfg.Name[0] == '\0')
+		std::sprintf(cfg.Name, "NEPS N-Kana (default), %dpx", static_cast<int>(cfg.SizePixels));
 
-		font = io.Fonts->AddFontFromFileTTF((path / "msgothic.ttc").string().c_str(), 14.0f, &cfg, Helpers::getFontGlyphRanges());
-	}
+	font = io.Fonts->AddFontFromMemoryCompressedTTF(Helpers::getDefaultFontData(), Helpers::getDefaultFontSize(), cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
 }
 
 static void drawColorPalette() noexcept
@@ -152,9 +154,9 @@ void GUI::render() noexcept
 
 	drawColorPalette();
 
+	ImGui::ShowDemoWindow();
 	#ifdef _DEBUG_NEPS
 	renderDebugWindow();
-	ImGui::ShowDemoWindow();
 	#endif // _DEBUG_NEPS
 }
 

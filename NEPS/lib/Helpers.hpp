@@ -153,4 +153,7 @@ namespace Helpers
 	}
 
 	std::string decode(std::string) noexcept;
+
+	const void *getDefaultFontData() noexcept;
+	std::size_t getDefaultFontSize() noexcept;
 }

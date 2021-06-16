@@ -18,6 +18,8 @@
 #include "../SDK/PhysicsSurfaceProps.h"
 #include "../SDK/StudioRender.h"
 
+#include "../res_defaultfont.h"
+
 std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 {
 	r = std::clamp(r, 0.0f, 1.0f);
@@ -355,40 +357,47 @@ unsigned int Helpers::calculateColor(float r, float g, float b, float a) noexcep
 	return ImGui::ColorConvertFloat4ToU32({r, g, b, a});
 }
 
-ImWchar* Helpers::getFontGlyphRanges() noexcept
+ImWchar *Helpers::getFontGlyphRanges() noexcept
 {
-    static ImVector<ImWchar> ranges;
-    if (ranges.empty()) {
-        ImFontGlyphRangesBuilder builder;
-        constexpr ImWchar baseRanges[]{
-            0x0100, 0x024F, // Latin Extended-A + Latin Extended-B
-            0x0300, 0x03FF, // Combining Diacritical Marks + Greek/Coptic
-            0x0600, 0x06FF, // Arabic
-            0x0E00, 0x0E7F, // Thai
-			0x2605, 0x2605, // ★
-            0
-        };
-        builder.AddRanges(baseRanges);
-        builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
-        builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseSimplifiedCommon());
-        builder.AddText("\u9F8D\u738B\u2122");
-        builder.BuildRanges(&ranges);
-    }
-    return ranges.Data;
+	static ImVector<ImWchar> ranges;
+	if (ranges.empty())
+	{
+		ImFontGlyphRangesBuilder builder;
+		constexpr ImWchar baseRanges[] = {
+			0x0100, 0x024F, // Latin Extended-A + Latin Extended-B
+			0x0300, 0x03FF, // Combining Diacritical Marks + Greek/Coptic
+			0x0600, 0x06FF, // Arabic
+			0x0E00, 0x0E7F, // Thai
+			//0x0000, 0xFFFF, // Fuck You
+			0
+		};
+		builder.AddRanges(baseRanges);
+		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesDefault());
+		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesJapanese());
+		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseSimplifiedCommon());
+		// ★龍王™
+		builder.AddChar(u'\u2605'); // ★
+		builder.AddChar(u'\u9F8D'); // 龍
+		builder.AddChar(u'\u738B'); // 王
+		builder.AddChar(u'\u2122'); // ™
+		builder.BuildRanges(&ranges);
+	}
+	return ranges.Data;
 }
 
-std::wstring Helpers::toWideString(const std::string& str) noexcept
+std::wstring Helpers::toWideString(const std::string &str) noexcept
 {
-    std::wstring upperCase(str.length(), L'\0');
-    if (const auto newLen = std::mbstowcs(upperCase.data(), str.c_str(), upperCase.length()); newLen != static_cast<std::size_t>(-1))
-        upperCase.resize(newLen);
-    return upperCase;
+	std::wstring upperCase(str.length(), L'\0');
+	if (const auto newLen = std::mbstowcs(upperCase.data(), str.c_str(), upperCase.length()); newLen != static_cast<std::size_t>(-1))
+		upperCase.resize(newLen);
+	return upperCase;
 }
 
 std::wstring Helpers::toUpper(std::wstring str) noexcept
 {
-    std::transform(str.begin(), str.end(), str.begin(), [](wchar_t w) { return std::towupper(w); });
-    return str;
+	std::transform(str.begin(), str.end(), str.begin(), [](wchar_t w) { return std::towupper(w); });
+	return str;
 }
 
 float Helpers::angleDiffDeg(float a1, float a2) noexcept
@@ -638,4 +647,14 @@ std::string Helpers::decode(std::string in) noexcept
 	}
 
 	return out;
+}
+
+const void *Helpers::getDefaultFontData() noexcept
+{
+	return reinterpret_cast<const void *>(_compressedFontData);
+}
+
+std::size_t Helpers::getDefaultFontSize() noexcept
+{
+	return _compressedFontSize;
 }

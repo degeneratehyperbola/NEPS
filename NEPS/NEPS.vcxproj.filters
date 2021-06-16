@@ -493,6 +493,9 @@
     <ClInclude Include="lib\stb\image.h">
       <Filter>lib\stb</Filter>
     </ClInclude>
+    <ClInclude Include="res_defaultfont.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\logo.png">
