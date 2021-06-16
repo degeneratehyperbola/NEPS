@@ -974,13 +974,13 @@ static void*                GImAllocatorUserData = NULL;
 
 ImGuiStyle::ImGuiStyle()
 {
-	#define IMVAR_CORNER_RADIUS 2.0f
-	#define IMVAR_BORDER_WIDTH 1.0f
-	#define IMVAR_PADDING_GLOBAL 4.0f
-	#define IMVAR_PADDING_LOCAL 3.0f
-	#define IMVAR_PADDING_LOCAL_HORIZONTAL 4.0f
-	#define IMVAR_PADDING_INNER 3.0f
-	#define IMVAR_PADDING_INNER_HORIZONTAL 3.0f
+	#define IMVAR_CORNER_RADIUS 2
+	#define IMVAR_BORDER_WIDTH 1
+	#define IMVAR_PADDING_GLOBAL 4
+	#define IMVAR_PADDING_LOCAL 3
+	#define IMVAR_PADDING_LOCAL_HORIZONTAL 4
+	#define IMVAR_PADDING_INNER 2
+	#define IMVAR_PADDING_INNER_HORIZONTAL 3
 
 	Alpha = 1.0f;													// Global alpha applies to everything in ImGui
 	WindowPadding = ImVec2(IMVAR_PADDING_GLOBAL, IMVAR_PADDING_GLOBAL);			// Padding within a window
@@ -1011,9 +1011,9 @@ ImGuiStyle::ImGuiStyle()
 	TabMinWidthForCloseButton = 0.0f;								// Minimum width for close button to appears on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
 	ColorButtonPosition = ImGuiDir_Right;							// Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
 	ButtonTextAlign = ImVec2(0.5f, 0.5f);							// Alignment of button text when button is larger than text.
-	SelectableTextAlign = ImVec2(0.0f, 0.0f);						// Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
+	SelectableTextAlign = ImVec2(0, 0);						// Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
 	DisplayWindowPadding = ImVec2(19, 19);							// Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
-	DisplaySafeAreaPadding = ImVec2(3, 3);							// If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
+	DisplaySafeAreaPadding = ImVec2(2, 2);							// If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
 	MouseCursorScale = 1.0f;										// Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later.
 	AntiAliasedLines = true;										// Enable anti-aliased lines/borders. Disable if you are really tight on CPU/GPU.
 	AntiAliasedLinesUseTex = true;									// Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering.
