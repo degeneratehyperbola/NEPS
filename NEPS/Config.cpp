@@ -1562,7 +1562,6 @@ bool Config::loadScheduledFonts() noexcept
 		auto loadedFont = fonts.find(fontName);
 		if (loadedFont == fonts.cend())
 		{
-			const auto ranges = Helpers::getFontGlyphRanges();
 			ImFontConfig cfg;
 			cfg.FontDataOwnedByAtlas = false;
 			cfg.OversampleH = cfg.OversampleV = 2;
@@ -1572,7 +1571,7 @@ bool Config::loadScheduledFonts() noexcept
 				std::sprintf(cfg.Name, "ESP %s, %dpx", fontName.c_str(), static_cast<int>(cfg.SizePixels));
 
 			Font newFont;
-			newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.get(), fontDataSize, cfg.SizePixels, &cfg, ranges);
+			newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.get(), fontDataSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
 			newFont.tiny = newFont.medium = newFont.big;
 			fonts.emplace(fontName, newFont);
 			result = true;
