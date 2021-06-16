@@ -5,7 +5,7 @@
 
 struct Vector;
 
-class IPlayerResource
+class PlayerResourceInterface
 {
 public:
 	VIRTUAL_METHOD(bool, isAlive, 5, (int index), (this, index))
@@ -16,9 +16,9 @@ public:
 class PlayerResource
 {
 public:
-	auto getIPlayerResource() noexcept
+	auto getPlayerResourceInterface() noexcept
 	{
-		return reinterpret_cast<IPlayerResource *>(uintptr_t(this) + 0x9D8);
+		return reinterpret_cast<PlayerResourceInterface *>(uintptr_t(this) + 0x9D8);
 	}
 
 	NETVAR(bombsiteCenterA, "CCSPlayerResource", "m_bombsiteCenterA", Vector)
@@ -30,7 +30,7 @@ public:
 	NETVAR(competitiveRanking, "CCSPlayerResource", "m_iCompetitiveRanking", int [65])
 	NETVAR(competitiveWins, "CCSPlayerResource", "m_iCompetitiveWins", int [65])
 	NETVAR(teammateColor, "CCSPlayerResource", "m_iCompTeammateColor", int [65])
-	NETVAR(coinFlags, "CCSPlayerResource", "m_nActiveCoinRank", int [65])
+	NETVAR(activeCoinRank, "CCSPlayerResource", "m_nActiveCoinRank", int [65])
 	NETVAR(musicId, "CCSPlayerResource", "m_nMusicID", int [65])
 	NETVAR(level, "CCSPlayerResource", "m_nPersonaDataPublicLevel", int [65])
 	NETVAR(commendsLeader, "CCSPlayerResource", "m_nPersonaDataPublicCommendsLeader", int [65])
