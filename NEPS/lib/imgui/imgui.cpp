@@ -999,16 +999,16 @@ ImGuiStyle::ImGuiStyle()
 	ItemSpacing = ImVec2(IMVAR_PADDING_LOCAL_HORIZONTAL, IMVAR_PADDING_LOCAL);	// Horizontal and vertical spacing between widgets/lines
 	ItemInnerSpacing = ImVec2(IMVAR_PADDING_INNER_HORIZONTAL, IMVAR_PADDING_INNER);		// Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label)
 	TouchExtraPadding = ImVec2(0, 0);								// Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
-	IndentSpacing = 21.0f;											// Horizontal spacing when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
+	IndentSpacing = 21;											// Horizontal spacing when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
 	ColumnsMinSpacing = IMVAR_PADDING_GLOBAL;								// Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
-	ScrollbarSize = 12.0f;											// Width of the vertical scrollbar, Height of the horizontal scrollbar
+	ScrollbarSize = 8;											// Width of the vertical scrollbar, Height of the horizontal scrollbar
 	ScrollbarRounding = IMVAR_CORNER_RADIUS;						// Radius of grab corners rounding for scrollbar
-	GrabMinSize = 4.0f;												// Minimum width/height of a grab box for slider/scrollbar
+	GrabMinSize = 4;												// Minimum width/height of a grab box for slider/scrollbar
 	GrabRounding = IMVAR_CORNER_RADIUS;							// Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
-	LogSliderDeadzone = 4.0f;										// The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
+	LogSliderDeadzone = 4;										// The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
 	TabRounding = IMVAR_CORNER_RADIUS;									// Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
 	TabBorderSize = IMVAR_BORDER_WIDTH;									// Thickness of border around tabs.
-	TabMinWidthForCloseButton = 0.0f;								// Minimum width for close button to appears on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
+	TabMinWidthForCloseButton = 0;								// Minimum width for close button to appears on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
 	ColorButtonPosition = ImGuiDir_Right;							// Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
 	ButtonTextAlign = ImVec2(0.5f, 0.5f);							// Alignment of button text when button is larger than text.
 	SelectableTextAlign = ImVec2(0, 0);						// Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
