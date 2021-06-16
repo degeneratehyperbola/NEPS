@@ -678,7 +678,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 		if (ImGui::BeginPopup("##damage_popup"))
 		{
-			ImGui::PushItemWidth(95.0f);
+			ImGui::PushItemWidth(90);
 			ImGui::InputInt("Min damage auto-wall", &config->aimbot[currentWeapon].minDamageAutoWall);
 			config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
 			ImGui::InputInt("Damage threshold", &config->aimbot[currentWeapon].killshot);
@@ -743,7 +743,6 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 	{
 		if (!window.antiAim)
 			return;
-		ImGui::SetNextWindowSize({0.0f, 0.0f});
 		ImGui::Begin("Anti-aim", &window.antiAim, windowFlags);
 	}
 	ImGui::Checkbox("##yaw", &config->antiAim.yaw);
@@ -792,155 +791,322 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 	{
 		if (!window.triggerbot)
 			return;
-		ImGui::SetNextWindowSize({0.0f, 0.0f});
 		ImGui::Begin("Triggerbot", &window.triggerbot, windowFlags);
 	}
-	static int currentCategory{0};
-	ImGui::PushItemWidth(110.0f);
-	ImGui::Combo("##category", &currentCategory, "All\0Pistols\0Heavy\0SMGs\0Rifles\0Zeus x27\0");
+
+	static int currentWeapon = 0;
+
+	if (ImGui::BeginListBox("##category", {140, 260}))
+	{
+		constexpr std::array categories = {"All", "Pistols", "Heavy", "SMG", "Rifles", "Zeus x27"};
+
+		for (std::size_t i = 0; i < categories.size(); ++i)
+		{
+			switch (i)
+			{
+			case 0:
+				if (ImGui::Selectable(config->triggerbot[0].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 0))
+					currentWeapon = 0;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[0], sizeof(Config::Triggerbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+					{
+						const auto &data = *(Config::Triggerbot *)payload->Data;
+						config->triggerbot[0] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				ImGui::Indent();
+				break;
+			case 5:
+				if (ImGui::Selectable(config->triggerbot[39].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 39))
+					currentWeapon = 39;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[39], sizeof(Config::Triggerbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+					{
+						const auto &data = *(Config::Triggerbot *)payload->Data;
+						config->triggerbot[39] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+				break;
+			case 1:
+			{
+				if (ImGui::Selectable(config->triggerbot[35].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 35))
+					currentWeapon = 35;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[35], sizeof(Config::Triggerbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+					{
+						const auto &data = *(Config::Triggerbot *)payload->Data;
+						config->triggerbot[35] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				constexpr std::array pistols = {"Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-SeveN", "CZ-75", "Desert Eagle", "R8 Revolver"};
+
+				ImGui::Indent();
+
+				for (std::size_t j = 0; j < pistols.size(); ++j)
+				{
+					if (ImGui::Selectable(config->triggerbot[j + 1].bind.keyMode ? (std::string{pistols[j]} + " *").c_str() : pistols[j], currentWeapon == j + 1))
+						currentWeapon = j + 1;
+
+					if (ImGui::BeginDragDropSource())
+					{
+						ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[j + 1], sizeof(Config::Triggerbot), ImGuiCond_Once);
+						ImGui::EndDragDropSource();
+					}
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+						{
+							const auto &data = *(Config::Triggerbot *)payload->Data;
+							config->triggerbot[j + 1] = data;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+
+				ImGui::Unindent();
+				break;
+			}
+			case 2:
+			{
+				if (ImGui::Selectable(config->triggerbot[36].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 36))
+					currentWeapon = 36;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[36], sizeof(Config::Triggerbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+					{
+						const auto &data = *(Config::Triggerbot *)payload->Data;
+						config->triggerbot[36] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				constexpr std::array heavies = {"Nova", "XM1014", "Sawed-Off", "MAG-7", "M249", "Negev"};
+
+				ImGui::Indent();
+
+				for (std::size_t j = 0; j < heavies.size(); ++j)
+				{
+					if (ImGui::Selectable(config->triggerbot[j + 11].bind.keyMode ? (std::string{heavies[j]} + " *").c_str() : heavies[j], currentWeapon == j + 11))
+						currentWeapon = j + 11;
+
+					if (ImGui::BeginDragDropSource())
+					{
+						ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[j + 11], sizeof(Config::Triggerbot), ImGuiCond_Once);
+						ImGui::EndDragDropSource();
+					}
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+						{
+							const auto &data = *(Config::Triggerbot *)payload->Data;
+							config->triggerbot[j + 11] = data;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+
+				ImGui::Unindent();
+				break;
+			}
+			case 3:
+			{
+				if (ImGui::Selectable(config->triggerbot[37].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 37))
+					currentWeapon = 37;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[37], sizeof(Config::Triggerbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+					{
+						const auto &data = *(Config::Triggerbot *)payload->Data;
+						config->triggerbot[37] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				constexpr std::array smgs = {"Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon"};
+
+				ImGui::Indent();
+
+				for (std::size_t j = 0; j < smgs.size(); ++j)
+				{
+					if (ImGui::Selectable(config->triggerbot[j + 17].bind.keyMode ? (std::string{smgs[j]} + " *").c_str() : smgs[j], currentWeapon == j + 17))
+						currentWeapon = j + 17;
+
+					if (ImGui::BeginDragDropSource())
+					{
+						ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[j + 17], sizeof(Config::Triggerbot), ImGuiCond_Once);
+						ImGui::EndDragDropSource();
+					}
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+						{
+							const auto &data = *(Config::Triggerbot *)payload->Data;
+							config->triggerbot[j + 17] = data;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+
+				ImGui::Unindent();
+				break;
+			}
+			case 4:
+			{
+				if (ImGui::Selectable(config->triggerbot[38].bind.keyMode ? (std::string{categories[i]} + " *").c_str() : categories[i], currentWeapon == 38))
+					currentWeapon = 38;
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[38], sizeof(Config::Triggerbot), ImGuiCond_Once);
+					ImGui::EndDragDropSource();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+					{
+						const auto &data = *(Config::Triggerbot *)payload->Data;
+						config->triggerbot[38] = data;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				constexpr std::array rifles = {"Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20"};
+
+				ImGui::Indent();
+
+				for (std::size_t j = 0; j < rifles.size(); ++j)
+				{
+					if (ImGui::Selectable(config->triggerbot[j + 24].bind.keyMode ? (std::string{rifles[j]} + " *").c_str() : rifles[j], currentWeapon == j + 24))
+						currentWeapon = j + 24;
+
+					if (ImGui::BeginDragDropSource())
+					{
+						ImGui::SetDragDropPayload("Triggerbot", &config->triggerbot[j + 24], sizeof(Config::Triggerbot), ImGuiCond_Once);
+						ImGui::EndDragDropSource();
+					}
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+						{
+							const auto &data = *(Config::Triggerbot *)payload->Data;
+							config->triggerbot[j + 24] = data;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+
+				ImGui::Unindent();
+				break;
+			}
+			}
+		}
+		ImGui::EndListBox();
+	}
+
 	ImGui::SameLine();
-	static int currentWeapon{0};
-	switch (currentCategory)
-	{
-	case 0:
-		currentWeapon = 0;
-		ImGui::NewLine();
-		break;
-	case 5:
-		currentWeapon = 39;
-		ImGui::NewLine();
-		break;
 
-	case 1:
+	if (ImGui::BeginChild("##child", {200, 0}, false, ImGuiWindowFlags_NoScrollbar))
 	{
-		static int currentPistol{0};
-		static constexpr const char *pistols[]{"All", "Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-SeveN", "CZ-75", "Desert Eagle", "R8 Revolver"};
+		ImGuiCustom::keyBind("Enabled", config->triggerbot[currentWeapon].bind);
+		ImGui::Separator();
 
-		ImGui::Combo("##sub", &currentPistol, [](void *data, int idx, const char **out_text)
+		ImGui::Checkbox("Friendly fire", &config->triggerbot[currentWeapon].friendlyFire);
+		ImGui::Checkbox("Visible only", &config->triggerbot[currentWeapon].visibleOnly);
+		ImGui::Checkbox("Scoped only", &config->triggerbot[currentWeapon].scopedOnly);
+		ImGui::Checkbox("Ignore flash", &config->triggerbot[currentWeapon].ignoreFlash);
+		ImGui::Checkbox("Ignore smoke", &config->triggerbot[currentWeapon].ignoreSmoke);
+		ImGui::SetNextItemWidth(80);
+		ImGuiCustom::multiCombo("Hit group", config->triggerbot[currentWeapon].hitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+
+		ImGui::PushItemWidth(-1);
+		ImGui::SliderInt("##delay", &config->triggerbot[currentWeapon].shotDelay, 0, 300, "Shot delay %dms", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("##inaccuracy", &config->triggerbot[currentWeapon].maxShotInaccuracy, 0.0f, 1.0f, "Max inaccuracy %.5f", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("##hitchance", &config->triggerbot[currentWeapon].hitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
+		ImGui::SetNextItemWidth(90);
+		ImGui::InputFloat("Distance", &config->triggerbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
+		config->triggerbot[currentWeapon].distance = std::max(config->triggerbot[currentWeapon].distance, 0.0f);
+		ImGui::SetNextItemWidth(90);
+		ImGui::InputInt("Min damage", &config->triggerbot[currentWeapon].minDamage);
+		config->triggerbot[currentWeapon].minDamage = std::max(config->triggerbot[currentWeapon].minDamage, 0);
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("damage_popup", ImGuiDir_Right))
+			ImGui::OpenPopup("##damage_popup");
+
+		if (ImGui::BeginPopup("##damage_popup"))
 		{
-			if (config->triggerbot[idx ? idx : 35].bind.keyMode)
-			{
-				static std::string name;
-				name = pistols[idx];
-				*out_text = name.append(" *").c_str();
-			} else
-			{
-				*out_text = pistols[idx];
-			}
-			return true;
-		}, nullptr, IM_ARRAYSIZE(pistols));
+			ImGui::PushItemWidth(90);
+			ImGui::InputInt("Min damage auto-wall", &config->triggerbot[currentWeapon].minDamageAutoWall);
+			config->triggerbot[currentWeapon].minDamageAutoWall = std::max(config->triggerbot[currentWeapon].minDamageAutoWall, 0);
+			ImGui::InputInt("Damage threshold", &config->triggerbot[currentWeapon].killshot);
+			config->triggerbot[currentWeapon].killshot = std::max(config->triggerbot[currentWeapon].killshot, 0);
+			ImGui::InputInt("Damage threshold auto-wall", &config->triggerbot[currentWeapon].killshotAutoWall);
+			config->triggerbot[currentWeapon].killshotAutoWall = std::max(config->triggerbot[currentWeapon].killshotAutoWall, 0);
+			ImGui::PopItemWidth();
+			ImGui::EndPopup();
+		}
 
-		currentWeapon = currentPistol ? currentPistol : 35;
-		break;
-	}
-	case 2:
-	{
-		static int currentHeavy{0};
-		static constexpr const char *heavies[]{"All", "Nova", "XM1014", "Sawed-Off", "MAG-7", "M249", "Negev"};
-
-		ImGui::Combo("##sub", &currentHeavy, [](void *data, int idx, const char **out_text)
-		{
-			if (config->triggerbot[idx ? idx + 10 : 36].bind.keyMode)
-			{
-				static std::string name;
-				name = heavies[idx];
-				*out_text = name.append(" *").c_str();
-			} else
-			{
-				*out_text = heavies[idx];
-			}
-			return true;
-		}, nullptr, IM_ARRAYSIZE(heavies));
-
-		currentWeapon = currentHeavy ? currentHeavy + 10 : 36;
-		break;
-	}
-	case 3:
-	{
-		static int currentSmg{0};
-		static constexpr const char *smgs[]{"All", "Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon"};
-
-		ImGui::Combo("##sub", &currentSmg, [](void *data, int idx, const char **out_text)
-		{
-			if (config->triggerbot[idx ? idx + 16 : 37].bind.keyMode)
-			{
-				static std::string name;
-				name = smgs[idx];
-				*out_text = name.append(" *").c_str();
-			} else
-			{
-				*out_text = smgs[idx];
-			}
-			return true;
-		}, nullptr, IM_ARRAYSIZE(smgs));
-
-		currentWeapon = currentSmg ? currentSmg + 16 : 37;
-		break;
-	}
-	case 4:
-	{
-		static int currentRifle{0};
-		static constexpr const char *rifles[]{"All", "Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20"};
-
-		ImGui::Combo("##sub", &currentRifle, [](void *data, int idx, const char **out_text)
-		{
-			if (config->triggerbot[idx ? idx + 23 : 38].bind.keyMode)
-			{
-				static std::string name;
-				name = rifles[idx];
-				*out_text = name.append(" *").c_str();
-			} else
-			{
-				*out_text = rifles[idx];
-			}
-			return true;
-		}, nullptr, IM_ARRAYSIZE(rifles));
-
-		currentWeapon = currentRifle ? currentRifle + 23 : 38;
-		break;
-	}
-	}
-	ImGui::SameLine();
-	ImGuiCustom::keyBind("Enabled", config->triggerbot[currentWeapon].bind);
-	ImGui::Separator();
-
-	ImGui::Checkbox("Friendly fire", &config->triggerbot[currentWeapon].friendlyFire);
-	ImGui::Checkbox("Visible only", &config->triggerbot[currentWeapon].visibleOnly);
-	ImGui::Checkbox("Scoped only", &config->triggerbot[currentWeapon].scopedOnly);
-	ImGui::Checkbox("Ignore flash", &config->triggerbot[currentWeapon].ignoreFlash);
-	ImGui::Checkbox("Ignore smoke", &config->triggerbot[currentWeapon].ignoreSmoke);
-	ImGui::SetNextItemWidth(85.0f);
-	ImGuiCustom::multiCombo("Hit group", config->triggerbot[currentWeapon].hitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
-
-	ImGui::PushItemWidth(200.0f);
-	ImGui::SliderInt("##delay", &config->triggerbot[currentWeapon].shotDelay, 0, 300, "Shot delay %dms", ImGuiSliderFlags_Logarithmic);
-	ImGui::SliderFloat("##inaccuracy", &config->triggerbot[currentWeapon].maxShotInaccuracy, 0.0f, 1.0f, "Max inaccuracy %.5f", ImGuiSliderFlags_Logarithmic);
-	ImGui::SliderFloat("##hitchance", &config->triggerbot[currentWeapon].hitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
-	ImGui::SetNextItemWidth(95.0f);
-	ImGui::InputFloat("Distance", &config->triggerbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
-	config->triggerbot[currentWeapon].distance = std::max(config->triggerbot[currentWeapon].distance, 0.0f);
-	ImGui::SetNextItemWidth(95.0f);
-	ImGui::InputInt("Min damage", &config->triggerbot[currentWeapon].minDamage);
-	config->triggerbot[currentWeapon].minDamage = std::max(config->triggerbot[currentWeapon].minDamage, 0);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("damage_popup", ImGuiDir_Right))
-		ImGui::OpenPopup("##damage_popup");
-
-	if (ImGui::BeginPopup("##damage_popup"))
-	{
-		ImGui::SetNextItemWidth(95.0f);
-		ImGui::InputInt("Min damage auto-wall", &config->triggerbot[currentWeapon].minDamageAutoWall);
-		config->triggerbot[currentWeapon].minDamageAutoWall = std::max(config->triggerbot[currentWeapon].minDamageAutoWall, 0);
-		ImGui::SetNextItemWidth(95.0f);
-		ImGui::InputInt("Damage threshold", &config->triggerbot[currentWeapon].killshot);
-		config->triggerbot[currentWeapon].killshot = std::max(config->triggerbot[currentWeapon].killshot, 0);
-		ImGui::SetNextItemWidth(95.0f);
-		ImGui::InputInt("Damage threshold auto-wall", &config->triggerbot[currentWeapon].killshotAutoWall);
-		config->triggerbot[currentWeapon].killshotAutoWall = std::max(config->triggerbot[currentWeapon].killshotAutoWall, 0);
-		ImGui::EndPopup();
+		ImGui::SliderFloat("##burst", &config->triggerbot[currentWeapon].burstTime, 0.0f, 1.0f, "Burst time %.3fs");
 	}
 
-	ImGui::SliderFloat("##burst", &config->triggerbot[currentWeapon].burstTime, 0.0f, 1.0f, "Burst time %.3fs");
+	ImGui::EndChild();
 
 	if (!contentOnly)
 		ImGui::End();
@@ -952,7 +1118,6 @@ void GUI::renderBacktrackWindow(bool contentOnly) noexcept
 	{
 		if (!window.backtrack)
 			return;
-		ImGui::SetNextWindowSize({0.0f, 0.0f});
 		ImGui::Begin("Backtrack", &window.backtrack, windowFlags);
 	}
 	ImGui::Checkbox("Enabled", &config->backtrack.enabled);
@@ -1512,7 +1677,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	{
 		if (!window.visuals)
 			return;
-		ImGui::SetNextWindowSize({490, 0});
+		ImGui::SetNextWindowContentSize({480, 0});
 		ImGui::Begin("Visuals", &window.visuals, windowFlags);
 	}
 
