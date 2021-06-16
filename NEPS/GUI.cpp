@@ -154,9 +154,9 @@ void GUI::render() noexcept
 
 	drawColorPalette();
 
-	ImGui::ShowDemoWindow();
 	#ifdef _DEBUG_NEPS
 	renderDebugWindow();
+	ImGui::ShowDemoWindow();
 	#endif // _DEBUG_NEPS
 }
 
