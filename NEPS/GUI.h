@@ -31,11 +31,11 @@ private:
 	void renderVisualsWindow(bool contentOnly = false) noexcept;
 	void renderSkinChangerWindow(bool contentOnly = false) noexcept;
 	void renderSoundWindow(bool contentOnly = false) noexcept;
-	void renderStyleWindow(bool contentOnly = false) noexcept;
 	void renderExploitsWindow(bool contentOnly = false) noexcept;
 	void renderGriefingWindow(bool contentOnly = false) noexcept;
 	void renderMovementWindow(bool contentOnly = false) noexcept;
 	void renderMiscWindow(bool contentOnly = false) noexcept;
+	void renderStyleWindow(bool contentOnly = false) noexcept;
 	void renderConfigWindow(bool contentOnly = false) noexcept;
 
 	struct
