@@ -116,14 +116,8 @@ static void choseTarget(UserCmd *cmd) noexcept
 				const auto records = Backtrack::getRecords(entity->index());
 				for (const auto &record : records)
 				{
-					if (!Backtrack::valid(record.simulationTime))
+					if (!Backtrack::valid(record.simulationTime) || !record.important)
 						continue;
-
-					if (record.important)
-					{
-						backtrackRecord = &record;
-						break;
-					}
 
 					const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
 					if (goesThroughWall && distance < bestDistance)
