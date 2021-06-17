@@ -619,7 +619,6 @@ bool Helpers::animDataAuthenticity(Entity *animatable) noexcept
 	if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime)) return true;
 	const float oldSimulationTime = animatable->oldSimulationTime();
 	if (!Helpers::timeToTicks(simulationTime - oldSimulationTime)) return true;
-	if (animatable->velocity().length2D() > 90.0f) return true;
 
 	return false;
 }

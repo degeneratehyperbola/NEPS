@@ -144,14 +144,7 @@ void Animations::resolveLBY(Entity *animatable, int seed) noexcept
 	// Return random desync position out of 3 possible
 	// This hereby gives us a 33% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)
 	const auto delta = Helpers::angleDiffDeg(state->feetYaw, state->eyeYaw);
-	constexpr std::array<float, 3> positions = {-60.0f, 0.0f, 60.0f};
-
-	//size_t current = 0;
-	//for (size_t i = 1; i < positions.size(); ++i)
-	//{
-	//	if (Helpers::equals(delta, positions[i], 30.0f))
-	//		current = i;
-	//}
+	static const std::array<float, 3> positions = {animatable->getMaxDesyncAngle(), 0.0f, -animatable->getMaxDesyncAngle()};
 
 	state->feetYaw = state->eyeYaw + positions[rand() % positions.size()];
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
