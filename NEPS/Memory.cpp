@@ -80,7 +80,7 @@ Memory::Memory() noexcept
 	viewRenderBeams = *reinterpret_cast<ViewRenderBeams **>(findPattern("client", "\xB9????\xA1????\xFF\x10\xA1????\xB9" + 1));
 	relayCluster = *(std::string**)(findPattern("steamnetworkingsockets", "\xB8????\xB9????\x0F\x43") + 1);
 
-	setOrAddAttributeValueByNameFunction = relativeToAbsolute<decltype(setOrAddAttributeValueByNameFunction)>(findPattern("client", "\xE8????\x8B\x8D????\x85\xC9\x74\x10") + 1);
+	_setOrAddAttributeValueByName = relativeToAbsolute<decltype(_setOrAddAttributeValueByName)>(findPattern("client", "\xE8????\x8B\x8D????\x85\xC9\x74\x10") + 1);
 
 	localPlayer.init(*reinterpret_cast<Entity ***>(findPattern("client", "\xA1????\x89\x45\xBC\x85\xC0") + 1));
 }
