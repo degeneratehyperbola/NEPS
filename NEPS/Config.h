@@ -302,6 +302,7 @@ public:
 	{
 		int menuStyle = 0;
 		int menuColors = 0;
+		float scaling = 1.0f;
 	} style;
 
 	struct Exploits

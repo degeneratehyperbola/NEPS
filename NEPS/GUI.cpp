@@ -111,6 +111,8 @@ void GUI::render() noexcept
 		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
 	#endif // _DEBUG_NEPS
 
+	ImGui::GetIO().FontGlobalScale = config->style.scaling;
+
 	if (!open)
 		return;
 
@@ -2397,7 +2399,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
 	ImGui::Checkbox("No panorama blur", &config->misc.disablePanoramablur);
 	ImGui::SetNextItemWidth(-1);
-	ImGui::SliderFloat("##angle_delta", &config->misc.maxAngleDelta, 0.0f, 255.0f, "Aimstep %.2f");
+	ImGui::SliderFloat("##angle_delta", &config->misc.maxAngleDelta, 0.0f, 255.0f, "Aimstep %.2fdeg");
 	ImGui::Checkbox("Preserve killfeed", &config->misc.preserveKillfeed.enabled);
 	ImGui::SameLine();
 
@@ -2459,6 +2461,7 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 	//    window = {};
 	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Frontier\0Eastern Sun\0Coca-Cola\0Twotap\0Cherry\0Custom\0"))
 		updateColors();
+	ImGui::SliderFloat("##font_scale", &config->style.scaling, 0.2f, 4.0f, "Font scale %.1f");
 	ImGui::PopItemWidth();
 
 	if (config->style.menuColors == 6)
