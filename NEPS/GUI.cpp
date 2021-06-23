@@ -2394,6 +2394,14 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fix tablet signal", &config->misc.fixTabletSignal);
 	ImGui::Checkbox("Radar hack", &config->misc.radarHack);
 	ImGui::Checkbox("Unlock invertory", &config->misc.unlockInvertory);
+	if (ImGui::Button("Unhide convars")) {
+		auto iterator = interfaces->cvar->factoryInternalIterator();
+		for (iterator->setFirst(); iterator->isValid(); iterator->next()) {
+			auto cmdBase = iterator->get();
+			if (cmdBase->isFlagSet(FCVAR_DEVELOPMENTONLY | FCVAR_HIDDEN))
+				cmdBase->removeFlags(FCVAR_DEVELOPMENTONLY | FCVAR_HIDDEN);
+		}
+	}
 	ImGui::Checkbox("Reveal ranks", &config->misc.revealRanks);
 	ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
