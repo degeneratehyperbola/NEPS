@@ -43,7 +43,7 @@ Memory::Memory() noexcept
 	listLeaves = findPattern("client", "\x56\x52\xFF\x50\x18") + 5;
 	dispatchSound = reinterpret_cast<int *>(findPattern("engine", "\x74\x0B\xE8????\x8B\x3D") + 3);
 	checkFileCRC = reinterpret_cast<int *>(findPattern("engine", "\x8D\x49?\xE8????\x8B\x0D????\x83\xC1?\x8B\x01") + 4);
-	traceToExit = reinterpret_cast<decltype(traceToExit)>(findPattern("client", "\x55\x8B\xEC\x83\xEC\x30\xF3\x0F\x10\x75"));
+	traceToExit = reinterpret_cast<decltype(traceToExit)>(findPattern("client", "\x55\x8B\xEC\x83\xEC\x4C\xF3\x0F\x10\x75"));
 	viewRender = **reinterpret_cast<ViewRender ***>(findPattern("client", "\x8B\x0D????\xFF\x75\x0C\x8B\x45\x08") + 2);
 	drawScreenEffectMaterial = relativeToAbsolute<uintptr_t>(findPattern("client", "\xE8????\x83\xC4\x0C\x8D\x4D\xF8") + 1);
 	submitReport = reinterpret_cast<decltype(submitReport)>(findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x28\x8B\x4D\x08"));
