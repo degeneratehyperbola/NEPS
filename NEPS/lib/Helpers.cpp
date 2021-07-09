@@ -89,6 +89,7 @@ static bool traceToExit(const Trace &enterTrace, const Vector &start, const Vect
 {
 	bool result = false;
 	#ifdef _WIN32
+	#if false
 	const auto traceToExitFn = memory->traceToExit;
 	__asm {
 		push exitTrace
@@ -107,6 +108,7 @@ static bool traceToExit(const Trace &enterTrace, const Vector &start, const Vect
 		mov result, al
 	}
 	#endif
+	#endif // _WIN32
 	return result;
 }
 
