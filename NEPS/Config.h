@@ -62,8 +62,8 @@ public:
 		float shotHitchance = 0.0f;
 		float maxAimInaccuracy = 1.0f;
 		int interpolation = 0;
-		float smooth = 0.0f;
-		float linearSpeed = 255.0f;
+		float quadratic = 0.0f;
+		float linear = 255.0f;
 		int hitGroup = 127;
 		bool betweenShots = true;
 		bool safeOnly;

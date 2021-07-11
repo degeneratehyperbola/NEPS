@@ -708,7 +708,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::SetNextItemWidth(100);
-		ImGui::Combo("Interpolation", &config->aimbot[currentWeapon].interpolation, "None\0Linear\0Quadratic\0Both\0");
+		ImGui::Combo("Smoothing", &config->aimbot[currentWeapon].interpolation, "None\0Linear\0Quadratic\0Both\0");
 		switch (config->aimbot[currentWeapon].interpolation)
 		{
 		case 0:
