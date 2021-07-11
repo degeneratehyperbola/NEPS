@@ -188,9 +188,6 @@ Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &desti
 	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
-#define AUTOWALL_CALC_DEPTH 4
-#define AUTOWALL_MIN_PENETRATION 0.1f
-
 int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire, int hitgroupFlags, bool *goesThroughWall, const Backtrack::Record *ghost, int ghostHitbox) noexcept
 {
 	if (!localPlayer)
@@ -206,7 +203,7 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 	float traveled = direction.length();
 	direction /= traveled;
 
-	auto calcDepth = AUTOWALL_CALC_DEPTH;
+	auto calcDepth = 4;
 
 	constexpr auto hitboxToHitGroup = [](int hitbox) constexpr noexcept -> int
 	{
@@ -292,7 +289,7 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 
 		const auto surfaceData = interfaces->physicsSurfaceProps->getSurfaceData(trace.surface.surfaceProps);
 
-		if (surfaceData->penetrationmodifier < AUTOWALL_MIN_PENETRATION)
+		if (surfaceData->penetrationmodifier < 0.1f)
 			break;
 
 		damage = handleBulletPenetration(surfaceData, trace, direction, start, weaponData->penetration, damage);
@@ -311,7 +308,7 @@ bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendly
 	Vector direction = destination - start;
 	direction /= direction.length();
 
-	auto calcDepth = AUTOWALL_CALC_DEPTH;
+	auto calcDepth = 4;
 
 	while (calcDepth)
 	{
@@ -339,7 +336,7 @@ bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendly
 
 		const auto surfaceData = interfaces->physicsSurfaceProps->getSurfaceData(trace.surface.surfaceProps);
 
-		if (surfaceData->penetrationmodifier < AUTOWALL_MIN_PENETRATION)
+		if (surfaceData->penetrationmodifier < 0.1f)
 			break;
 
 		Vector end;
