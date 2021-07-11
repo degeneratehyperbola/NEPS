@@ -54,7 +54,7 @@ bool Entity::canSee(Entity *other, const Vector &pos) noexcept
 		return false;
 
 	Trace trace;
-	interfaces->engineTrace->traceRay({eyePos, pos}, 0x46004009, this, trace);
+	interfaces->engineTrace->traceRay({eyePos, pos}, MASK_SHOT & ~CONTENTS_WINDOW, this, trace);
 	return trace.entity == other || trace.fraction > 0.97f;
 }
 
