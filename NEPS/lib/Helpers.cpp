@@ -87,29 +87,65 @@ std::array<float, 4U> Helpers::rainbowColor(float speed, float alpha) noexcept
 
 static bool traceToExit(const Trace &enterTrace, const Vector &start, const Vector &direction, Vector &end, Trace &exitTrace)
 {
-	bool result = false;
-	#ifdef _WIN32
-	#if false
-	const auto traceToExitFn = memory->traceToExit;
-	__asm {
-		push exitTrace
-		mov eax, direction
-		push[eax]Vector.z
-		push[eax]Vector.y
-		push[eax]Vector.x
-		mov eax, start
-		push[eax]Vector.z
-		push[eax]Vector.y
-		push[eax]Vector.x
-		mov edx, enterTrace
-		mov ecx, end
-		call traceToExitFn
-		add esp, 28
-		mov result, al
+	float distance = 0.0f;
+
+	constexpr auto didHit = [](const Trace &trace) noexcept
+	{
+		return trace.fraction < 1.0f || trace.allSolid || trace.startSolid;
+	};
+
+	constexpr auto didHitNonWorld = [](Entity *entity) noexcept
+	{
+		return entity != nullptr && entity == interfaces->entityList->getEntity(0);
+	};
+
+	while (distance <= 90.0f)
+	{
+		distance += 4.0f;
+		end = start + direction * distance;
+
+		int pointContents = interfaces->engineTrace->getPointContents(end, MASK_SHOT_HULL | CONTENTS_HITBOX);
+
+		if (pointContents & MASK_SHOT_HULL && (!(pointContents & CONTENTS_HITBOX)))
+			continue;
+
+		auto march = end - (direction * 4.0f);
+
+		interfaces->engineTrace->traceRay({end, march}, MASK_SHOT, nullptr, exitTrace);
+
+		if (exitTrace.startSolid && exitTrace.surface.flags & SURF_HITBOX)
+		{
+			interfaces->engineTrace->traceRay({end, start}, MASK_SHOT & ~CONTENTS_HITBOX, exitTrace.entity, exitTrace);
+
+			if (didHit(exitTrace) && !exitTrace.startSolid)
+			{
+				end = exitTrace.endPos;
+				return true;
+			}
+			continue;
+		}
+
+		if (!didHit(exitTrace) || exitTrace.startSolid)
+		{
+			if (exitTrace.entity)
+			{
+				if (didHitNonWorld(enterTrace.entity))
+					return true;
+			}
+			continue;
+		}
+
+		if (((exitTrace.surface.flags >> 7) & 1) && !((enterTrace.surface.flags >> 7) & 1))
+			continue;
+
+		if (exitTrace.planeNormal.dotProduct(direction) <= 1.0f)
+		{
+			float fraction = exitTrace.fraction * 4.0f;
+			end = end - (direction * fraction);
+			return true;
+		}
 	}
-	#endif
-	#endif // _WIN32
-	return result;
+	return false;
 }
 
 float Helpers::handleBulletPenetration(SurfaceData *enterSurfaceData, const Trace &enterTrace, const Vector &direction, Vector &result, float penetration, float damage) noexcept
@@ -218,7 +254,7 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 
 	while (damage >= 1.0f && calcDepth)
 	{
-		interfaces->engineTrace->traceRay({start, destination}, 0x4600400B, localPlayer.get(), trace);
+		interfaces->engineTrace->traceRay({start, destination}, MASK_SHOT, localPlayer.get(), trace);
 
 		if (trace.fraction == 1.0f)
 		{
@@ -279,7 +315,7 @@ bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendly
 
 	while (calcDepth)
 	{
-		interfaces->engineTrace->traceRay({start, destination}, 0x4600400B, localPlayer.get(), trace);
+		interfaces->engineTrace->traceRay({start, destination}, MASK_SHOT, localPlayer.get(), trace);
 
 		if (trace.fraction == 1.0f)
 			break;
