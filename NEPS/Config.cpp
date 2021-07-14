@@ -346,8 +346,8 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Auto stop", a.autoStop);
 	read(j, "Distance", a.distance);
 	read(j, "Fov", a.fov);
-	read(j, "Smooth start", a.smooth);
-	read(j, "Linear speed", a.linearSpeed);
+	read(j, "Smooth start", a.quadratic);
+	read(j, "Linear speed", a.linear);
 	read(j, "Interpolation", a.interpolation);
 	read(j, "Hitgroup", a.hitGroup);
 	read(j, "Targeting", a.targeting);
@@ -967,8 +967,8 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Auto stop", autoStop);
 	WRITE("Distance", distance);
 	WRITE("Fov", fov);
-	WRITE("Smooth start", smooth);
-	WRITE("Linear speed", linearSpeed);
+	WRITE("Smooth start", quadratic);
+	WRITE("Linear speed", linear);
 	WRITE("Interpolation", interpolation);
 	WRITE("Hitgroup", hitGroup);
 	WRITE("Targeting", targeting);

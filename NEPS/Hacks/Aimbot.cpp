@@ -433,11 +433,11 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			}
 
 			if (config->aimbot[weaponIndex].interpolation == 2 || config->aimbot[weaponIndex].interpolation == 3)
-				angle = angle * (1.0f - config->aimbot[weaponIndex].smooth);
+				angle = angle * (1.0f - config->aimbot[weaponIndex].quadratic);
 
 			const auto l = angle.length();
-			if ((config->aimbot[weaponIndex].interpolation == 1 || config->aimbot[weaponIndex].interpolation == 3) && l > config->aimbot[weaponIndex].linearSpeed)
-				angle *= config->aimbot[weaponIndex].linearSpeed / l;
+			if ((config->aimbot[weaponIndex].interpolation == 1 || config->aimbot[weaponIndex].interpolation == 3) && l > config->aimbot[weaponIndex].linear)
+				angle *= config->aimbot[weaponIndex].linear / l;
 
 			if (angle.notNull())
 			{

@@ -714,14 +714,14 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		case 0:
 			break;
 		case 1:
-			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linear, 0.0f, 20.0f, "Speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
 			break;
 		case 2:
-			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Smoothness %.4f");
+			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Smoothness %.4f");
 			break;
 		case 3:
-			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linearSpeed, 0.0f, 20.0f, "Linear %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
-			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].smooth, 0.0f, 1.0f, "Quadratic %.4f");
+			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linear, 0.0f, 20.0f, "Linear %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Quadratic %.4f");
 			break;
 		}
 
