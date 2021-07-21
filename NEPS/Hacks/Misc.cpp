@@ -456,6 +456,8 @@ void Misc::changeConVarsTick() noexcept
 	shadowVar->setValue(!config->visuals.noShadows);
 	static auto lerpVar = interfaces->cvar->findVar("cl_interpolate");
 	lerpVar->setValue(true);
+	static auto exrpVar = interfaces->cvar->findVar("cl_extrapolate");
+	exrpVar->setValue(false);
 	static auto jigglebonesVar = interfaces->cvar->findVar("r_jiggle_bones");
 	jigglebonesVar->setValue(false);
 	static auto ragdollGravity = interfaces->cvar->findVar("cl_ragdoll_gravity");
