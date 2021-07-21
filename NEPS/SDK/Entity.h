@@ -460,3 +460,5 @@ public:
 	NETVAR(fireIsBurning, "CInferno", "m_bFireIsBurning", bool [100])
 	NETVAR(fireCount, "CInferno", "m_fireCount", int)
 };
+
+static_assert(sizeof(Entity) == 1);

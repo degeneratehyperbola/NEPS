@@ -1283,9 +1283,9 @@ void Misc::purchaseList(GameEvent *event) noexcept
 		if (!config->misc.purchaseList.enabled)
 			return;
 
-		static const auto mp_buytime = interfaces->cvar->findVar("mp_buytime");
+		static const auto buyTimeVar = interfaces->cvar->findVar("mp_buytime");
 
-		if ((!interfaces->engine->isInGame() || freezeEnd && memory->globalVars->realtime > freezeEnd + (!config->misc.purchaseList.onlyDuringFreezeTime ? mp_buytime->getFloat() : 0.0f) || playerPurchases.empty() || purchaseTotal.empty()) && !gui->open)
+		if ((!interfaces->engine->isInGame() || freezeEnd && memory->globalVars->realtime > freezeEnd + (!config->misc.purchaseList.onlyDuringFreezeTime ? buyTimeVar->getFloat() : 0.0f) || playerPurchases.empty() || purchaseTotal.empty()) && !gui->open)
 			return;
 
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
