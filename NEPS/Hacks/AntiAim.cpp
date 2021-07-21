@@ -10,9 +10,7 @@
 #include "../SDK/UserCmd.h"
 #include "../SDK/GlobalVars.h"
 
-static bool canDoFakePitch = false;
-
-static bool lbyUpdate()
+static bool lbyUpdate() noexcept
 {
 	auto time = memory->globalVars->serverTime();
 	static float nextLby;
@@ -33,26 +31,29 @@ static bool lbyUpdate()
 	return false;
 }
 
-void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
+static bool canAntiAim(UserCmd *cmd) noexcept
 {
-	canDoFakePitch = false;
-
 	if (!localPlayer)
-		return;
+		return false;
 
 	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
-		return;
+		return false;
 
 	if (cmd->buttons & UserCmd::IN_USE || !localPlayer->isAlive())
-		return;
+		return false;
 
 	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
-		return;
+		return false;
 
 	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
-		return;
+		return false;
 
-	canDoFakePitch = true;
+	return true;
+}
+
+void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
+{
+	if (!canAntiAim(cmd)) return;
 
 	if (static Helpers::KeyBindState flag; config->antiAim.fakeDuckPackets && flag[config->antiAim.fakeDuck])
 	{
@@ -114,7 +115,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 {
-	if (canDoFakePitch && config->antiAim.fakeUp)
+	if (canAntiAim(cmd) && config->antiAim.fakeUp)
 	{
 		cmd->viewangles.x = -540.0f;
 		cmd->forwardmove = -cmd->forwardmove;
