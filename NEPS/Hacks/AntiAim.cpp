@@ -12,7 +12,7 @@
 
 static bool canDoFakePitch = false;
 
-bool lbyUpdate()
+static bool lbyUpdate()
 {
 	auto time = memory->globalVars->serverTime();
 	static float nextLby;
@@ -85,8 +85,8 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		{
 			if (lbyUpdate())
 			{
-				cmd->viewangles.y -= desyncAngle;
 				sendPacket = false;
+				cmd->viewangles.y -= desyncAngle;
 			} else if (!sendPacket)
 			{
 				cmd->viewangles.y += desyncAngle;
