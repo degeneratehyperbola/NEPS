@@ -906,7 +906,7 @@ void Misc::runReportbot() noexcept
 		if (!entity || entity == localPlayer.get())
 			continue;
 
-		if (config->griefing.reportbot.target != 2 && (entity->isOtherEnemy(localPlayer.get()) ? config->griefing.reportbot.target != 0 : config->griefing.reportbot.target != 1))
+		if (config->griefing.reportbot.target != 2 && (localPlayer->isOtherEnemy(entity) ? config->griefing.reportbot.target != 0 : config->griefing.reportbot.target != 1))
 			continue;
 
 		PlayerInfo playerInfo;

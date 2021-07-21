@@ -391,7 +391,7 @@ ProjectileData::ProjectileData(Entity *projectile) noexcept : BaseData{projectil
 		if (thrower == localPlayer.get())
 			thrownByLocalPlayer = true;
 		else
-			thrownByEnemy = memory->isOtherEnemy(localPlayer.get(), thrower);
+			thrownByEnemy = localPlayer->isOtherEnemy(thrower);
 	}
 
 	handle = projectile->handle();
@@ -429,7 +429,7 @@ void PlayerData::update(Entity *entity) noexcept
 
 	if (localPlayer)
 	{
-		enemy = memory->isOtherEnemy(entity, localPlayer.get());
+		enemy = localPlayer->isOtherEnemy(entity);
 		visible = alive && entity->visibleTo(localPlayer.get());
 	}
 
