@@ -463,11 +463,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 	}
 }
 
-Vector Aimbot::getTargetPoint() noexcept
-{
-	return targetPoint;
-}
-
 int Aimbot::getTargetHandle() noexcept
 {
 	return targetHandle;
