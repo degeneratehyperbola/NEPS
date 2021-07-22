@@ -299,58 +299,6 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 	return -1;
 }
 
-bool Helpers::canHit(const Vector &destination, Trace &trace, bool allowFriendlyFire, bool *goesThroughWall) noexcept
-{
-	if (!localPlayer)
-		return false;
-
-	Vector start = localPlayer->getEyePosition();
-	Vector direction = destination - start;
-	direction /= direction.length();
-
-	auto calcDepth = 4;
-
-	while (calcDepth)
-	{
-		interfaces->engineTrace->traceRay({start, destination}, MASK_SHOT, localPlayer.get(), trace);
-
-		if (trace.fraction == 1.0f)
-			break;
-
-		if (trace.hitGroup > HitGroup::Generic && trace.hitGroup <= HitGroup::RightLeg)
-		{
-			if (!trace.entity || !trace.entity->isPlayer())
-				break;
-
-			if (!allowFriendlyFire && !localPlayer->isOtherEnemy(trace.entity))
-				break;
-
-			if (trace.entity->gunGameImmunity())
-				break;
-
-			return true;
-		}
-
-		if (goesThroughWall)
-			*goesThroughWall = true;
-
-		const auto surfaceData = interfaces->physicsSurfaceProps->getSurfaceData(trace.surface.surfaceProps);
-
-		if (surfaceData->penetrationmodifier < 0.1f)
-			break;
-
-		Vector end;
-		Trace exitTrace;
-		if (!traceToExit(trace, trace.endPos, direction, end, exitTrace))
-			break;
-
-		start = exitTrace.endPos;
-		calcDepth--;
-	}
-
-	return false;
-}
-
 float Helpers::findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept
 {
 	float f = targetRadius / (std::tan(spread + inaccuracy) * distance);
