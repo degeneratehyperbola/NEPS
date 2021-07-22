@@ -163,6 +163,16 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 					continue;
 
+				auto allowedHitgroup = config->aimbot[weaponIndex].hitGroup;
+
+				if (config->aimbot[weaponIndex].safeOnly && !Helpers::animDataAuthenticity(entity))
+				{
+					allowedHitgroup = config->aimbot[weaponIndex].safeHitGroup;
+				}
+
+				if (!allowedHitgroup)
+					continue;
+
 				const Backtrack::Record *backtrackRecord = nullptr;
 				const auto doScope = config->aimbot[weaponIndex].autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
 				const auto doStop = config->aimbot[weaponIndex].autoStop && localPlayer->flags() & Entity::FL_ONGROUND && localPlayer->moveType() != MoveType::NOCLIP && localPlayer->moveType() != MoveType::LADDER;
@@ -172,7 +182,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					bool goesThroughWall = false;
 					Trace trace;
 					auto origin = bufferBones[8].origin();
-					bool canHit = Helpers::canHit(origin, trace, config->aimbot[weaponIndex].friendlyFire, &goesThroughWall);
+					bool canHit = Helpers::findDamage(origin, weaponData, trace, config->aimbot[weaponIndex].friendlyFire, 128, &goesThroughWall);
 
 					if (canHit && trace.entity == entity && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
 					{
@@ -220,16 +230,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					if (backtrackRecord)
 						std::copy(std::begin(backtrackRecord->matrix), std::end(backtrackRecord->matrix), bufferBones.data());
 				}
-
-				auto allowedHitgroup = config->aimbot[weaponIndex].hitGroup;
-
-				if (config->aimbot[weaponIndex].safeOnly && !Helpers::animDataAuthenticity(entity))
-				{
-					allowedHitgroup = config->aimbot[weaponIndex].safeHitGroup;
-				}
-
-				if (!allowedHitgroup)
-					continue;
 
 				for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
 				{
