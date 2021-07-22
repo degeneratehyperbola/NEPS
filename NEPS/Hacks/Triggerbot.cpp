@@ -12,8 +12,6 @@
 #include "../SDK/StudioRender.h"
 #include "Triggerbot.h"
 
-static int weaponIndex = 0;
-
 void Triggerbot::run(UserCmd* cmd) noexcept
 {
 	if (!localPlayer) return;
@@ -29,7 +27,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
     if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
         return;
 
-    weaponIndex = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
+    auto weaponIndex = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
     if (!weaponIndex)
         return;
 
