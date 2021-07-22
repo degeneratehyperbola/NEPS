@@ -51,8 +51,5 @@ namespace Misc
 	void spectatorList() noexcept;
 	void watermark() noexcept;
 	void voteRevealer(GameEvent &event) noexcept;
-	void missCounter(GameEvent *event) noexcept;
-	void resetMissCounter() noexcept;
-	void desyncResolver(Entity *animatable) noexcept;
 	void forceRelayCluster() noexcept;
 }

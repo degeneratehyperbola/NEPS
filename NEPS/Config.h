@@ -68,6 +68,7 @@ public:
 		bool betweenShots = true;
 		bool safeOnly;
 		int safeHitGroup = 6;
+		bool desyncResolver = false;
 	};
 	std::array<Aimbot, 40> aimbot;
 
@@ -377,7 +378,6 @@ public:
 		bool fixAnimation = true;
 		bool disableModelOcclusion = true;
 		bool disableInterp = false;
-		bool desyncResolver;
 		bool unlockInvertory = false;
 		bool disablePanoramablur = false;
 

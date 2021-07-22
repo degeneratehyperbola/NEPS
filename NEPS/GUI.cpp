@@ -731,6 +731,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(80);
 		ImGuiCustom::multiCombo("##safe_hit_group", config->aimbot[currentWeapon].safeHitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+
+		ImGui::Checkbox("Desync resolver", &config->aimbot[currentWeapon].desyncResolver);
 	}
 
 	ImGui::EndChild();
@@ -2382,9 +2384,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Sync client animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
 	ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
-	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("Experimental");
-	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Experimental");
 

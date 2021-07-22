@@ -3,6 +3,7 @@
 #include "EventListener.h"
 #include "lib/fnv.hpp"
 #include "GameData.h"
+#include "Hacks/Aimbot.h"
 #include "Hacks/Misc.h"
 #include "Hacks/SkinChanger.h"
 #include "Hacks/Visuals.h"
@@ -43,7 +44,7 @@ void EventListener::fireGameEvent(GameEvent *event)
 	case fnv::hash("round_start"):
 		GameData::clearProjectileList();
 		Misc::preserveKillfeed(true);
-		Misc::resetMissCounter();
+		Aimbot::resetMissCounter();
 		[[fallthrough]];
 	case fnv::hash("item_purchase"):
 	case fnv::hash("round_freeze_end"):
@@ -64,7 +65,7 @@ void EventListener::fireGameEvent(GameEvent *event)
 		Visuals::hitMarker(event);
 		[[fallthrough]];
 	case fnv::hash("weapon_fire"):
-		Misc::missCounter(event);
+		Aimbot::missCounter(event);
 		break;
 	case fnv::hash("bullet_impact"):
 		Visuals::bulletBeams(event);

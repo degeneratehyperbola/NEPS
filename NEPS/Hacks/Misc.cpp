@@ -1684,48 +1684,6 @@ void Misc::voteRevealer(GameEvent &event) noexcept
 	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s %s voted %c%s\x1", entity->isOtherEnemy(localPlayer.get()) ? "Enemy" : "Teammate", entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
 }
 
-static int shots = 0;
-static int hits = 0;
-static unsigned int salt = 1;
-
-void Misc::missCounter(GameEvent *event) noexcept
-{
-	if (!localPlayer)
-		return;
-
-	if (event)
-	{
-		switch (fnv::hashRuntime(event->getName()))
-		{
-		case fnv::hash("weapon_fire"):
-			if (localPlayer->getUserId() == event->getInt("userid"))
-				shots++;
-			break;
-		case fnv::hash("player_hurt"):
-			if (localPlayer->getUserId() == event->getInt("attacker"))
-				hits++;
-			break;
-		}
-		return;
-	}
-}
-
-void Misc::resetMissCounter() noexcept
-{
-	shots = 0;
-	hits = 0;
-	++salt;
-}
-
-void Misc::desyncResolver(Entity *animatable) noexcept
-{
-	if (!config->misc.desyncResolver)
-		return;
-
-	if (animatable)
-		Animations::resolveLBY(animatable, shots - hits + salt);
-}
-
 void Misc::forceRelayCluster() noexcept
 {
 	std::string dataCentersList[] = {"", "syd", "vie", "gru", "scl", "dxb", "par", "fra", "hkg",
