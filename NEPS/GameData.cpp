@@ -9,15 +9,18 @@
 
 #include "SDK/ClientClass.h"
 #include "SDK/Engine.h"
+#include "SDK/EngineTrace.h"
 #include "SDK/Entity.h"
 #include "SDK/EntityList.h"
 #include "SDK/GlobalVars.h"
 #include "SDK/Localize.h"
 #include "SDK/LocalPlayer.h"
 #include "SDK/ModelInfo.h"
+#include "SDK/ModelRender.h"
 #include "SDK/NetworkChannel.h"
 #include "SDK/PlayerResource.h"
 #include "SDK/Sound.h"
+#include "SDK/UtlVector.h"
 #include "SDK/WeaponId.h"
 #include "SDK/WeaponData.h"
 

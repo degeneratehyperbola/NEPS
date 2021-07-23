@@ -4,6 +4,7 @@ struct UserCmd;
 enum class FrameStage;
 class GameEvent;
 struct ViewSetup;
+struct ImDrawList;
 
 namespace Visuals
 {

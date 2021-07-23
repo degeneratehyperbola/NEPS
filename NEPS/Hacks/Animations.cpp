@@ -1,24 +1,11 @@
 #include <array>
-#include <random>
 
 #include "Animations.h"
+#include "Memory.h"
 
-#include "../SDK/AnimState.h"
-#include "../SDK/ConVar.h"
 #include "../SDK/Entity.h"
 #include "../SDK/Input.h"
-#include "../SDK/GlobalVars.h"
-#include "../SDK/LocalPlayer.h"
-#include "../SDK/Matrix3x4.h"
-#include "../SDK/ModelInfo.h"
-#include "../SDK/NetworkChannel.h"
 #include "../SDK/UserCmd.h"
-#include "../SDK/Vector.h"
-
-#include "../Config.h"
-#include "../GameData.h"
-#include "../Interfaces.h"
-#include "../Memory.h"
 
 static AnimState *lerpedState = new AnimState{};
 static std::array<Matrix3x4, MAX_STUDIO_BONES> lerpedBones;

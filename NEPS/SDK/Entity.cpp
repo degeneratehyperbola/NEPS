@@ -2,6 +2,8 @@
 
 #include "../Memory.h"
 #include "../Interfaces.h"
+
+#include "EngineTrace.h"
 #include "GlobalVars.h"
 #include "Localize.h"
 #include "ModelInfo.h"

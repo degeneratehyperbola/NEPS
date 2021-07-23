@@ -1,9 +1,9 @@
-#include "../lib/fnv.hpp"
-#include "../lib/Helpers.hpp"
-#include "../GameData.h"
 #include "Visuals.h"
 
+#include "../GameData.h"
+
 #include "../SDK/Beam.h"
+#include "../SDK/Cvar.h"
 #include "../SDK/ConVar.h"
 #include "../SDK/Entity.h"
 #include "../SDK/FrameStage.h"
@@ -18,6 +18,9 @@
 #include "../SDK/Surface.h"
 #include "../SDK/ModelInfo.h"
 #include "../SDK/ViewSetup.h"
+
+#include "../lib/fnv.hpp"
+#include "../lib/Helpers.hpp"
 
 #include "../lib/imgui/imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS

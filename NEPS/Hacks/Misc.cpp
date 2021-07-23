@@ -1,46 +1,37 @@
-﻿#include "../Config.h"
-#include "../Interfaces.h"
-#include "../Memory.h"
-#include "../Netvars.h"
+﻿#include "Misc.h"
 
 #include "EnginePrediction.h"
-#include "Misc.h"
-#include "Animations.h"
-#include "Aimbot.h"
 
-#include "../SDK/AnimState.h"
 #include "../SDK/Client.h"
 #include "../SDK/ClientMode.h"
+#include "../SDK/ClassID.h"
+#include "../SDK/ClientClass.h"
 #include "../SDK/ConVar.h"
+#include "../SDK/Cvar.h"
 #include "../SDK/Entity.h"
+#include "../SDK/EngineTrace.h"
 #include "../SDK/FrameStage.h"
 #include "../SDK/GameEvent.h"
-#include "../SDK/GlobalVars.h"
-#include "../SDK/ItemSchema.h"
 #include "../SDK/Input.h"
+#include "../SDK/ItemSchema.h"
 #include "../SDK/Localize.h"
-#include "../SDK/LocalPlayer.h"
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/NetworkStringTable.h"
 #include "../SDK/Panorama.h"
-#include "../SDK/Sound.h"
 #include "../SDK/Surface.h"
-#include "../SDK/UserCmd.h"
-#include "../SDK/WeaponData.h"
+#include "../SDK/VarMapping.h"
 #include "../SDK/WeaponSystem.h"
 
+#include "../Config.h"
 #include "../GUI.h"
-#include "../lib/Helpers.hpp"
 #include "../GameData.h"
+#include "../Interfaces.h"
 
-#include "../lib/imgui/imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "../lib/imgui/imgui_internal.h"
 #include "../lib/ImguiCustom.hpp"
 
-#include <mutex>
 #include <numeric>
-#include <sstream>
 
 void Misc::edgeJump(UserCmd *cmd) noexcept
 {

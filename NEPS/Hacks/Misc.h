@@ -4,7 +4,6 @@ enum class FrameStage;
 class GameEvent;
 struct ImDrawList;
 struct UserCmd;
-struct Vector;
 
 namespace Misc
 {

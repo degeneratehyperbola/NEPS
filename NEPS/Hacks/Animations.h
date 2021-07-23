@@ -3,7 +3,6 @@
 class Entity;
 class Matrix3x4;
 struct UserCmd;
-struct Vector;
 
 namespace Animations
 {

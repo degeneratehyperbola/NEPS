@@ -1,16 +1,20 @@
+#include "Triggerbot.h"
+
 #include "../Config.h"
 #include "../Interfaces.h"
 #include "../Memory.h"
 #include "../GameData.h"
-#include "../lib/Helpers.hpp"
+
 #include "../SDK/Entity.h"
+#include "../SDK/EngineTrace.h"
 #include "../SDK/PhysicsSurfaceProps.h"
 #include "../SDK/GlobalVars.h"
 #include "../SDK/UserCmd.h"
 #include "../SDK/WeaponData.h"
 #include "../SDK/WeaponId.h"
 #include "../SDK/StudioRender.h"
-#include "Triggerbot.h"
+
+#include "../lib/Helpers.hpp"
 
 void Triggerbot::run(UserCmd* cmd) noexcept
 {

@@ -2,11 +2,14 @@
 
 #include "Chams.h"
 #include "Animations.h"
+#include "Backtrack.h"
+
 #include "../Config.h"
 #include "../GameData.h"
 #include "../Hooks.h"
 #include "../Interfaces.h"
-#include "Backtrack.h"
+
+#include "../SDK/ClientClass.h"
 #include "../SDK/ConVar.h"
 #include "../SDK/Entity.h"
 #include "../SDK/EntityList.h"
@@ -14,6 +17,7 @@
 #include "../SDK/LocalPlayer.h"
 #include "../SDK/Material.h"
 #include "../SDK/MaterialSystem.h"
+#include "../SDK/ModelRender.h"
 #include "../SDK/Vector.h"
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/StudioRender.h"

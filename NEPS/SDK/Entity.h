@@ -1,21 +1,15 @@
 #pragma once
 
 #include "AnimState.h"
-#include "ClientClass.h"
-#include "Cvar.h"
 #include "Engine.h"
-#include "EngineTrace.h"
 #include "EntityList.h"
-#include "Input.h"
+#include "GlobalVars.h"
 #include "LocalPlayer.h"
 #include "Matrix3x4.h"
-#include "ModelRender.h"
 #include "ModelInfo.h"
-#include "VarMapping.h"
 #include "Vector.h"
 #include "VirtualMethod.h"
 #include "WeaponData.h"
-#include "WeaponId.h"
 
 #include "../Config.h"
 #include "../Interfaces.h"
@@ -24,6 +18,10 @@
 
 #include <functional>
 
+struct ClientClass;
+struct Model;
+struct VarMap;
+
 #define PLAYER_EYE_HEIGHT 64.093811f
 #define PLAYER_DUCK_EYE_HEIGHT 46.076218f
 #define PLAYER_HEIGHT 72.0f
@@ -31,8 +29,6 @@
 
 #define MAX_ANIM_OVERLAYS 15
 
-struct AnimState;
-struct AnimLayer;
 
 enum class MoveType
 {

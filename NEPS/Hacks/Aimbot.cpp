@@ -1,6 +1,7 @@
 #include "Aimbot.h"
 #include "Animations.h"
 #include "Backtrack.h"
+
 #include "../Config.h"
 #include "../Interfaces.h"
 #ifdef _DEBUG_NEPS
@@ -8,6 +9,7 @@
 #endif // _DEBUG_NEPS
 #include "../Memory.h"
 #include "../SDK/AnimState.h"
+#include "../SDK/EngineTrace.h"
 #include "../SDK/Entity.h"
 #include "../SDK/UserCmd.h"
 #include "../SDK/Vector.h"
@@ -17,6 +19,7 @@
 #include "../SDK/ModelInfo.h"
 #include "../SDK/PhysicsSurfaceProps.h"
 #include "../SDK/WeaponData.h"
+
 #include "../lib/Helpers.hpp"
 
 static Vector targetPoint;

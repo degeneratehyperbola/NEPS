@@ -32,6 +32,10 @@
 #include "Hacks/Triggerbot.h"
 #include "Hacks/Visuals.h"
 
+#include "SDK/ClassID.h"
+#include "SDK/ClientClass.h"
+#include "SDK/ConVar.h"
+#include "SDK/Cvar.h"
 #include "SDK/Engine.h"
 #include "SDK/Entity.h"
 #include "SDK/EntityList.h"
@@ -51,7 +55,6 @@
 #include "SDK/StudioRender.h"
 #include "SDK/Surface.h"
 #include "SDK/UserCmd.h"
-#include "SDK/ConVar.h"
 #include "SDK/ViewSetup.h"
 
 #define FRAME_ADDRESS ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))

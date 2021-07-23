@@ -1,24 +1,27 @@
-#include <cmath>
-#include <cwctype>
-#include <tuple>
-
-#include "imgui/imgui.h"
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui/imgui_internal.h"
-
 #include "Helpers.hpp"
+
+#include "../Hacks/Backtrack.h"
+
 #include "../Config.h"
 #include "../ConfigStructs.h"
 #include "../GameData.h"
 #include "../Memory.h"
-#include "../Hacks/Backtrack.h"
+#include "../res_defaultfont.h"
+
+#include "../SDK/EngineTrace.h"
 #include "../SDK/GlobalVars.h"
 #include "../SDK/AnimState.h"
 #include "../SDK/Entity.h"
 #include "../SDK/PhysicsSurfaceProps.h"
 #include "../SDK/StudioRender.h"
 
-#include "../res_defaultfont.h"
+#include "imgui/imgui.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui/imgui_internal.h"
+
+#include <cmath>
+#include <cwctype>
+#include <tuple>
 
 std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 {
