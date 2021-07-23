@@ -1,11 +1,9 @@
 #include "Config.h"
-#include "Interfaces.h"
 #include "Netvars.h"
 #include "SDK/Client.h"
 #include "SDK/ClientClass.h"
 #include "SDK/Entity.h"
 #include "SDK/Recv.h"
-#include "SDK/ModelInfo.h"
 
 static int random(int min, int max) noexcept
 {

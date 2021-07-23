@@ -8,7 +8,6 @@
 #include "Hacks/SkinChanger.h"
 #include "Hacks/Visuals.h"
 #include "Interfaces.h"
-#include "Memory.h"
 
 EventListener::EventListener() noexcept
 {

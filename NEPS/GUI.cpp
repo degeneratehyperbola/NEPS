@@ -1,39 +1,29 @@
 #include <cwctype>
-#include <fstream>
-#include <functional>
-#include <string>
-#include <sstream>
 #include <ShlObj.h>
-#include <Windows.h>
 #include <shellapi.h>
-#include <ShlObj.h>
 
 #include "lib/imgui/imgui.h"
-#include "lib/imgui/imgui_impl_win32.h"
 #include "lib/imgui/imgui_stdlib.h"
 
 #include "lib/ImguiCustom.hpp"
-#include "lib/Texture/TextureDX9.h"
 
 #include "GUI.h"
-#include "GameData.h"
-#include "Config.h"
-#include "lib/Helpers.hpp"
 #include "Hooks.h"
 #include "Interfaces.h"
-#include "Memory.h"
 #include "Hacks/Misc.h"
-#include "Hacks/Visuals.h"
-#include "Hacks/SkinChanger.h"
-#include "Hacks/Aimbot.h"
-
-#include "resource.h"
 
 #ifdef _DEBUG_NEPS
+#include "GameData.h"
+#include "resource.h"
 #include "Hacks/Animations.h"
+
+#include "lib/Texture/TextureDX9.h"
+
 #include "SDK/Client.h"
 #include "SDK/ClientClass.h"
 #include "SDK/ClientMode.h"
+#include "SDK/ConVar.h"
+#include "SDK/Cvar.h"
 #include "SDK/Effects.h"
 #include "SDK/EngineTrace.h"
 #include "SDK/Entity.h"
@@ -42,10 +32,6 @@
 #include "SDK/PlayerResource.h"
 #endif // _DEBUG_NEPS
 #include "SDK/Engine.h"
-#include "SDK/ConVar.h"
-#include "SDK/Cvar.h"
-#include "SDK/Input.h"
-#include "SDK/InputSystem.h"
 
 constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;

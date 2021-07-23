@@ -1,5 +1,4 @@
 #include <clocale>
-#include <Windows.h>
 #include "Hooks.h"
 
 // Last digit is always 0. Free byte for actual info

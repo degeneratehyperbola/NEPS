@@ -1,23 +1,15 @@
 #include <functional>
 #include <intrin.h>
-#include <string>
-#include <sstream>
-#include <Windows.h>
-#include <Psapi.h>
 
-#include "lib/imgui/imgui.h"
 #include "lib/imgui/imgui_impl_dx9.h"
 #include "lib/imgui/imgui_impl_win32.h"
 
 #include "lib/minhook/minhook.h"
 
-#include "Config.h"
 #include "EventListener.h"
 #include "GameData.h"
 #include "GUI.h"
 #include "Hooks.h"
-#include "Interfaces.h"
-#include "Memory.h"
 
 #include "Hacks/Aimbot.h"
 #include "Hacks/Animations.h"
@@ -28,33 +20,22 @@
 #include "Hacks/StreamProofESP.h"
 #include "Hacks/Glow.h"
 #include "Hacks/Misc.h"
-#include "Hacks/SkinChanger.h"
 #include "Hacks/Triggerbot.h"
 #include "Hacks/Visuals.h"
 
-#include "SDK/ClassID.h"
 #include "SDK/ClientClass.h"
-#include "SDK/ConVar.h"
 #include "SDK/Cvar.h"
-#include "SDK/Engine.h"
 #include "SDK/Entity.h"
-#include "SDK/EntityList.h"
 #include "SDK/FrameStage.h"
-#include "SDK/GameEvent.h"
 #include "SDK/GameUI.h"
-#include "SDK/GlobalVars.h"
 #include "SDK/Input.h"
 #include "SDK/InputSystem.h"
-#include "SDK/MaterialSystem.h"
 #include "SDK/ModelRender.h"
-#include "SDK/NetworkChannel.h"
 #include "SDK/Panel.h"
-#include "SDK/RenderContext.h"
 #include "SDK/SoundInfo.h"
 #include "SDK/SoundEmitter.h"
 #include "SDK/StudioRender.h"
 #include "SDK/Surface.h"
-#include "SDK/UserCmd.h"
 #include "SDK/ViewSetup.h"
 
 #define FRAME_ADDRESS ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))

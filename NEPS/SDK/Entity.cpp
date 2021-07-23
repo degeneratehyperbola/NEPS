@@ -1,12 +1,7 @@
 #include "Entity.h"
 
-#include "../Memory.h"
-#include "../Interfaces.h"
-
 #include "EngineTrace.h"
-#include "GlobalVars.h"
 #include "Localize.h"
-#include "ModelInfo.h"
 #include "PlayerResource.h"
 
 bool Entity::isOtherEnemy(Entity *other) noexcept
