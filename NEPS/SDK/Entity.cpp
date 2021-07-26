@@ -59,10 +59,14 @@ bool Entity::visibleTo(Entity *other) noexcept
 {
 	assert(isAlive());
 
-	if (other->canSee(this, getAbsOrigin() + Vector{0.0f, 0.0f, 5.0f}))
+	Entity *targetEntity = other;
+	if (!other->isAlive() && other->getObserverMode() == ObsMode::InEye && other->getObserverTarget())
+		targetEntity = other->getObserverTarget();
+
+	if (targetEntity->canSee(this, getAbsOrigin() + Vector{0.0f, 0.0f, 5.0f}))
 		return true;
 
-	if (other->canSee(this, getEyePosition() + Vector{0.0f, 0.0f, 5.0f}))
+	if (targetEntity->canSee(this, getEyePosition() + Vector{0.0f, 0.0f, 5.0f}))
 		return true;
 
 	const auto model = getModel();
@@ -84,7 +88,7 @@ bool Entity::visibleTo(Entity *other) noexcept
 	for (const int boxNum : {Hitbox::Belly, Hitbox::LeftForearm, Hitbox::RightForearm})
 	{
 		const auto hitbox = set->getHitbox(boxNum);
-		if (hitbox && other->canSee(this, boneMatrices[hitbox->bone].origin()))
+		if (hitbox && targetEntity->canSee(this, boneMatrices[hitbox->bone].origin()))
 			return true;
 	}
 
