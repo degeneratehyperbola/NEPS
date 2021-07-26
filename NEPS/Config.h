@@ -57,8 +57,6 @@ public:
 		KeyBind damageOverride;
 		int minDamageOverride = 0;
 		int minDamageAutoWallOverride = 0;
-		int killshot = 10;
-		int killshotAutoWall = 10;
 		float shotHitchance = 0.0f;
 		float maxAimInaccuracy = 1.0f;
 		int interpolation = 0;

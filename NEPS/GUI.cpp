@@ -636,6 +636,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Auto shot", &config->aimbot[currentWeapon].autoShot);
 		ImGui::Checkbox("Auto scope", &config->aimbot[currentWeapon].autoScope);
 		ImGui::Checkbox("Auto stop", &config->aimbot[currentWeapon].autoStop);
+		ImGui::Checkbox("Desync resolver", &config->aimbot[currentWeapon].desyncResolver);
 
 		ImGui::SetNextItemWidth(80);
 		ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
@@ -660,22 +661,9 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::SetNextItemWidth(90);
 		ImGui::InputInt("Min damage", &config->aimbot[currentWeapon].minDamage);
 		config->aimbot[currentWeapon].minDamage = std::max(config->aimbot[currentWeapon].minDamage, 0);
-		ImGui::SameLine();
-		if (ImGui::ArrowButton("damage_popup", ImGuiDir_Right))
-			ImGui::OpenPopup("##damage_popup");
-
-		if (ImGui::BeginPopup("##damage_popup"))
-		{
-			ImGui::PushItemWidth(90);
-			ImGui::InputInt("Min damage auto-wall", &config->aimbot[currentWeapon].minDamageAutoWall);
-			config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
-			ImGui::InputInt("Damage threshold", &config->aimbot[currentWeapon].killshot);
-			config->aimbot[currentWeapon].killshot = std::max(config->aimbot[currentWeapon].killshot, 0);
-			ImGui::InputInt("Damage threshold auto-wall", &config->aimbot[currentWeapon].killshotAutoWall);
-			config->aimbot[currentWeapon].killshotAutoWall = std::max(config->aimbot[currentWeapon].killshotAutoWall, 0);
-			ImGui::PopItemWidth();
-			ImGui::EndPopup();
-		}
+		ImGui::SetNextItemWidth(90);
+		ImGui::InputInt("Min damage auto-wall", &config->aimbot[currentWeapon].minDamageAutoWall);
+		config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
 
 		ImGuiCustom::keyBind("Override", config->aimbot[currentWeapon].damageOverride);
 		ImGui::SameLine();
@@ -717,8 +705,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(80);
 		ImGuiCustom::multiCombo("##safe_hit_group", config->aimbot[currentWeapon].safeHitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
-
-		ImGui::Checkbox("Desync resolver", &config->aimbot[currentWeapon].desyncResolver);
 	}
 
 	ImGui::EndChild();

@@ -358,8 +358,6 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read<value_t::object>(j, "Override damage", a.damageOverride);
 	read(j, "Min damage override", a.minDamageOverride);
 	read(j, "Min damage auto-wall override", a.minDamageAutoWallOverride);
-	read(j, "Killshot", a.killshot);
-	read(j, "Killshot auto-wall", a.killshotAutoWall);
 	read(j, "Between shots", a.betweenShots);
 	read(j, "Safe only", a.safeOnly);
 	read(j, "Safe mode", a.safeHitGroup);
@@ -381,8 +379,6 @@ static void from_json(const json &j, Config::Triggerbot &t)
 	read(j, "Max inaccuracy", t.maxShotInaccuracy);
 	read(j, "Min damage", t.minDamage);
 	read(j, "Min damage auto-wall", t.minDamageAutoWall);
-	read(j, "Killshot", t.killshot);
-	read(j, "Killshot auto-wall", t.killshotAutoWall);
 	read(j, "Burst Time", t.burstTime);
 }
 
@@ -978,8 +974,6 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Override damage", damageOverride);
 	WRITE("Min damage override", minDamageOverride);
 	WRITE("Min damage auto-wall override", minDamageAutoWallOverride);
-	WRITE("Killshot", killshot);
-	WRITE("Killshot auto-wall", killshotAutoWall);
 	WRITE("Between shots", betweenShots);
 	WRITE("Safe only", safeOnly);
 	WRITE("Safe mode", safeHitGroup);

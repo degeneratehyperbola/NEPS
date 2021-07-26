@@ -386,15 +386,15 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 						if (!goesThroughWall)
 						{
-							if (damage <= std::min(minDamage, entity->health() + config->aimbot[weaponIndex].killshot))
+							if (damage <= std::min(minDamage, entity->health()))
 								continue;
-							if (damage <= std::min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshot))
+							if (damage <= std::min(bestDamage, entity->health()))
 								continue;
 						} else
 						{
-							if (damage <= std::min(minDamageAutoWall, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
+							if (damage <= std::min(minDamageAutoWall, entity->health()))
 								continue;
-							if (damage <= std::min(bestDamage, entity->health() + config->aimbot[weaponIndex].killshotAutoWall))
+							if (damage <= std::min(bestDamage, entity->health()))
 								continue;
 						}
 
