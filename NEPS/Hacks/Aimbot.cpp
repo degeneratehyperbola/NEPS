@@ -89,24 +89,26 @@ void Aimbot::run(UserCmd *cmd) noexcept
 	if (!config->aimbot[weaponIndex].bind.keyMode)
 		weaponIndex = 0;
 
+	const auto &cfg = config->aimbot[weaponIndex];
+
 	const auto weaponData = activeWeapon->getWeaponData();
 	if (!weaponData)
 		return;
 
-	if (static Helpers::KeyBindState flag; !flag[config->aimbot[weaponIndex].bind]) return;
+	if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;
 
-	if (!config->aimbot[weaponIndex].hitGroup)
+	if (!cfg.hitGroup)
 		return;
 
-    if (!config->aimbot[weaponIndex].betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
+    if (!cfg.betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
         return;
 
-    if (!config->aimbot[weaponIndex].ignoreFlash && localPlayer->isFlashed())
+    if (!cfg.ignoreFlash && localPlayer->isFlashed())
         return;
 
-    if ((cmd->buttons & UserCmd::IN_ATTACK || config->aimbot[weaponIndex].autoShot || config->aimbot[weaponIndex].aimlock) && activeWeapon->getInaccuracy() <= config->aimbot[weaponIndex].maxAimInaccuracy) {
+    if ((cmd->buttons & UserCmd::IN_ATTACK || cfg.autoShot || cfg.aimlock) && activeWeapon->getInaccuracy() <= cfg.maxAimInaccuracy) {
 
-		if (config->aimbot[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !config->aimbot[weaponIndex].autoScope)
+		if (cfg.scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !cfg.autoScope)
 			return;
 
 		static auto prevTargetHandle = targetHandle;
@@ -114,7 +116,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		if (prevTargetHandle != targetHandle)
 			resetMissCounter();
 
-		static auto chooseTarget = [&weaponIndex](UserCmd *cmd) noexcept
+		static const auto chooseTarget = [&cfg, &weaponIndex](UserCmd *cmd) noexcept
 		{
 			targetPoint = Vector{};
 			targetHandle = 0;
@@ -133,15 +135,15 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			bool doOverride = false;
 			{
 				static Helpers::KeyBindState flag;
-				doOverride = flag[config->aimbot[weaponIndex].damageOverride];
+				doOverride = flag[cfg.damageOverride];
 			}
-			const auto minDamage = doOverride ? config->aimbot[weaponIndex].minDamageOverride : config->aimbot[weaponIndex].minDamage;
-			const auto minDamageAutoWall = doOverride ? config->aimbot[weaponIndex].minDamageAutoWallOverride : config->aimbot[weaponIndex].minDamageAutoWall;
+			const auto minDamage = doOverride ? cfg.minDamageOverride : cfg.minDamage;
+			const auto minDamageAutoWall = doOverride ? cfg.minDamageAutoWallOverride : cfg.minDamageAutoWall;
 
-			auto bestFov = config->aimbot[weaponIndex].fov;
-			auto bestDistance = config->aimbot[weaponIndex].distance ? config->aimbot[weaponIndex].distance : INFINITY;
+			auto bestFov = cfg.fov;
+			auto bestDistance = cfg.distance ? cfg.distance : INFINITY;
 			auto bestDamage = 0;
-			auto bestHitchance = config->aimbot[weaponIndex].shotHitchance;
+			auto bestHitchance = cfg.shotHitchance;
 
 			std::array<Matrix3x4, MAX_STUDIO_BONES> bufferBones;
 
@@ -153,41 +155,41 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					continue;
 
 				const auto enemy = localPlayer->isOtherEnemy(entity);
-				if (!config->aimbot[weaponIndex].friendlyFire && !enemy)
+				if (!cfg.friendlyFire && !enemy)
 					continue;
 
 				const auto hitboxSet = entity->getHitboxSet();
 				if (!hitboxSet)
 					continue;
 
-				if (config->aimbot[weaponIndex].desyncResolver)
+				if (cfg.desyncResolver)
 					Animations::resolveLBY(entity, shots - hits + salt);
 
 				if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 					continue;
 
-				auto allowedHitgroup = config->aimbot[weaponIndex].hitGroup;
+				auto allowedHitgroup = cfg.hitGroup;
 
-				if (config->aimbot[weaponIndex].safeOnly && !Helpers::animDataAuthenticity(entity))
+				if (cfg.safeOnly && !Helpers::animDataAuthenticity(entity))
 				{
-					allowedHitgroup = config->aimbot[weaponIndex].safeHitGroup;
+					allowedHitgroup = cfg.safeHitGroup;
 				}
 
 				if (!allowedHitgroup)
 					continue;
 
 				const Backtrack::Record *backtrackRecord = nullptr;
-				const auto doScope = config->aimbot[weaponIndex].autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
-				const auto doStop = config->aimbot[weaponIndex].autoStop && localPlayer->flags() & Entity::FL_ONGROUND && localPlayer->moveType() != MoveType::NOCLIP && localPlayer->moveType() != MoveType::LADDER;
+				const auto doScope = cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
+				const auto doStop = cfg.autoStop && localPlayer->flags() & Entity::FL_ONGROUND && localPlayer->moveType() != MoveType::NOCLIP && localPlayer->moveType() != MoveType::LADDER;
 				const auto doBacktrack = config->backtrack.aimAtRecords && config->backtrack.enabled && enemy;
 				if (doScope || doBacktrack || doStop)
 				{
 					bool goesThroughWall = false;
 					Trace trace;
 					auto origin = bufferBones[8].origin();
-					bool canHit = Helpers::findDamage(origin, weaponData, trace, config->aimbot[weaponIndex].friendlyFire, 128, &goesThroughWall);
+					bool canHit = Helpers::findDamage(origin, weaponData, trace, cfg.friendlyFire, 128, &goesThroughWall);
 
-					if (canHit && trace.entity == entity && (!config->aimbot[weaponIndex].visibleOnly || !goesThroughWall))
+					if (canHit && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
 					{
 						if (doScope)
 							cmd->buttons |= UserCmd::IN_ATTACK2;
@@ -247,13 +249,13 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 					std::vector<Vector> points;
 
-					if (config->aimbot[weaponIndex].multipoint)
+					if (cfg.multipoint)
 					{
 						switch (hitboxIdx)
 						{
 						case Hitbox::Head:
 						{
-							const float r = hitbox.capsuleRadius * config->aimbot[weaponIndex].multipointScale;
+							const float r = hitbox.capsuleRadius * cfg.multipointScale;
 							const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
 							const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
 							Vector mid = (min + max) * 0.5f;
@@ -275,7 +277,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						}
 						case Hitbox::UpperChest:
 						{
-							const float r = hitbox.capsuleRadius * config->aimbot[weaponIndex].multipointScale;
+							const float r = hitbox.capsuleRadius * cfg.multipointScale;
 							const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
 							const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
 							Vector axis = max - min;
@@ -297,7 +299,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						}
 						case Hitbox::Thorax:
 						{
-							const float r = hitbox.capsuleRadius * config->aimbot[weaponIndex].multipointScale;
+							const float r = hitbox.capsuleRadius * cfg.multipointScale;
 							const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
 							const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
 							Vector mid = (min + max) * 0.5f;
@@ -312,7 +314,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 						}
 						case Hitbox::Pelvis:
 						{
-							const float r = hitbox.capsuleRadius * config->aimbot[weaponIndex].multipointScale;
+							const float r = hitbox.capsuleRadius * cfg.multipointScale;
 							const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
 							const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
 							Vector axis = max - min;
@@ -378,9 +380,9 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 						bool goesThroughWall = false;
 						Trace trace;
-						const auto damage = Helpers::findDamage(point, weaponData, trace, config->aimbot[weaponIndex].friendlyFire, allowedHitgroup, &goesThroughWall, backtrackRecord, hitboxIdx);
+						const auto damage = Helpers::findDamage(point, weaponData, trace, cfg.friendlyFire, allowedHitgroup, &goesThroughWall, backtrackRecord, hitboxIdx);
 
-						if (config->aimbot[weaponIndex].visibleOnly && goesThroughWall) continue;
+						if (cfg.visibleOnly && goesThroughWall) continue;
 
 						if (!backtrackRecord && trace.entity != entity) continue;
 
@@ -398,10 +400,10 @@ void Aimbot::run(UserCmd *cmd) noexcept
 								continue;
 						}
 
-						if (!config->aimbot[weaponIndex].ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, point, 1))
+						if (!cfg.ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, point, 1))
 							continue;
 
-						switch (config->aimbot[weaponIndex].targeting)
+						switch (cfg.targeting)
 						{
 						case 0:
 							if (fov < bestFov)
@@ -456,7 +458,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{};
 			const auto localPlayerEyePosition = localPlayer->getEyePosition();
 
-			if (lastCommand == cmd->commandNumber - 1 && lastAngles.notNull() && config->aimbot[weaponIndex].silent)
+			if (lastCommand == cmd->commandNumber - 1 && lastAngles.notNull() && cfg.silent)
 				cmd->viewangles = lastAngles;
 
 			auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, targetPoint, cmd->viewangles + aimPunch);
@@ -469,22 +471,22 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				clamped = true;
 			}
 
-			if (config->aimbot[weaponIndex].interpolation == 2 || config->aimbot[weaponIndex].interpolation == 3)
-				angle = angle * (1.0f - config->aimbot[weaponIndex].quadratic);
+			if (cfg.interpolation == 2 || cfg.interpolation == 3)
+				angle = angle * (1.0f - cfg.quadratic);
 
 			const auto l = angle.length();
-			if ((config->aimbot[weaponIndex].interpolation == 1 || config->aimbot[weaponIndex].interpolation == 3) && l > config->aimbot[weaponIndex].linear)
-				angle *= config->aimbot[weaponIndex].linear / l;
+			if ((cfg.interpolation == 1 || cfg.interpolation == 3) && l > cfg.linear)
+				angle *= cfg.linear / l;
 
 			if (angle.notNull())
 			{
 				cmd->viewangles += angle;
 
-				if (!config->aimbot[weaponIndex].silent)
+				if (!cfg.silent)
 					interfaces->engine->setViewAngles(cmd->viewangles);
 			}
 
-			if (config->aimbot[weaponIndex].autoShot && activeWeapon->nextPrimaryAttack() <= time)
+			if (cfg.autoShot && activeWeapon->nextPrimaryAttack() <= time)
 				cmd->buttons |= UserCmd::IN_ATTACK;
 
 			if (clamped)
