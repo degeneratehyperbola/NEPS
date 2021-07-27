@@ -55,48 +55,51 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 {
 	if (!canAntiAim(cmd)) return;
 
-	if (static Helpers::KeyBindState flag; config->antiAim.fakeDuckPackets && flag[config->antiAim.fakeDuck])
+	const auto &cfg = config->antiAim;
+
+	if (static Helpers::KeyBindState flag; cfg.fakeDuckPackets && flag[cfg.fakeDuck])
 	{
-		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= config->antiAim.fakeDuckPackets;
+		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= cfg.fakeDuckPackets;
 
 		cmd->buttons |= UserCmd::IN_BULLRUSH;
 		cmd->buttons &= ~UserCmd::IN_DUCK;
 
-		if (interfaces->engine->getNetworkChannel()->chokedPackets > (config->antiAim.fakeDuckPackets / 2))
+		if (interfaces->engine->getNetworkChannel()->chokedPackets > (cfg.fakeDuckPackets / 2))
 			cmd->buttons |= UserCmd::IN_DUCK;
-	} else if (static Helpers::KeyBindState flag; flag[config->antiAim.choke] && config->antiAim.chokedPackets)
-		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= config->antiAim.chokedPackets;
+	} else if (static Helpers::KeyBindState flag; flag[cfg.choke] && cfg.chokedPackets)
+		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= cfg.chokedPackets;
 
-	if (config->antiAim.corrected && localPlayer->velocity().length2D() > 10.0f)
+	if (cfg.reduceSlide && localPlayer->velocity().length2D() > 10.0f)
 		return;
 
 	static bool flip = true;
 
-	if (config->antiAim.flipKey && GetAsyncKeyState(config->antiAim.flipKey) & 1)
+	if (cfg.flipKey && GetAsyncKeyState(cfg.flipKey) & 1)
 		flip = !flip;
 
-	if (config->antiAim.pitch && cmd->viewangles.x == currentViewAngles.x)
-		cmd->viewangles.x = config->antiAim.pitchAngle;
+	if (cfg.pitch && cmd->viewangles.x == currentViewAngles.x)
+		cmd->viewangles.x = cfg.pitchAngle;
 
-	if (config->antiAim.desync && cmd->viewangles.y == currentViewAngles.y)
+	if (cfg.desync && cmd->viewangles.y == currentViewAngles.y)
 	{
-		const float desyncAngle = flip ? -120.0f : 120.0f;
+		const float fake = flip ? cfg.fakeYaw : -cfg.fakeYaw;
+		const float real = flip ? cfg.realYaw : -cfg.realYaw;
 
-		if (config->antiAim.extended)
+		if (cfg.lbyBreaker)
 		{
 			if (lbyUpdate())
 			{
 				sendPacket = false;
-				cmd->viewangles.y -= desyncAngle;
+				cmd->viewangles.y += fake;
 			} else if (!sendPacket)
 			{
-				cmd->viewangles.y += desyncAngle;
+				cmd->viewangles.y += real;
 			}
 		} else
 		{
 			if (!sendPacket)
 			{
-				cmd->viewangles.y += desyncAngle;
+				cmd->viewangles.y += real;
 			}
 
 			if (fabsf(cmd->sidemove) < 5.0f)
@@ -109,8 +112,8 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		}
 	}
 
-	if (config->antiAim.yaw)
-		cmd->viewangles.y += config->antiAim.yawAngle;
+	if (cfg.yaw)
+		cmd->viewangles.y += cfg.yawAngle;
 }
 
 bool AntiAim::fakePitch(UserCmd *cmd) noexcept

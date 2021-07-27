@@ -105,8 +105,10 @@ public:
 		bool yaw = false;
 		float yawAngle = 0.0f;
 		bool desync = false;
-		bool corrected = true;
-		bool extended = false;
+		bool reduceSlide = true;
+		bool lbyBreaker = false;
+		float fakeYaw = 120.0f;
+		float realYaw = -120.0f;
 		bool fakeUp = false;
 		int flipKey = 0;
 		KeyBind fakeDuck;

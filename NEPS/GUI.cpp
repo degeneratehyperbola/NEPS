@@ -738,10 +738,12 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 
 	if (ImGui::BeginPopup("##desync"))
 	{
-		ImGui::Checkbox("Reduce slide", &config->antiAim.corrected);
+		ImGui::Checkbox("Reduce slide", &config->antiAim.reduceSlide);
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Turn off AA when moving");
-		ImGui::Checkbox("Extended", &config->antiAim.extended);
+		ImGui::Checkbox("LBY breaker", &config->antiAim.lbyBreaker);
+		ImGui::SliderFloat("##fake_lby", &config->antiAim.fakeYaw, -120.0f, 120.0f, "Fake LBY %.2fdeg");
+		ImGui::SliderFloat("##real_lby", &config->antiAim.realYaw, -120.0f, 120.0f, "Real LBY %.2fdeg");
 		ImGuiCustom::keyBind("Flip key", &config->antiAim.flipKey);
 		ImGui::EndPopup();
 	}
