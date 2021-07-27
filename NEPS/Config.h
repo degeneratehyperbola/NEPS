@@ -85,8 +85,6 @@ public:
 		float distance = 0.0f;
 		int minDamage = 0;
 		int minDamageAutoWall = 0;
-		int killshot = 10;
-		int killshotAutoWall = 10;
 		float burstTime = 0.0f;
 	};
 	std::array<Triggerbot, 40> triggerbot;

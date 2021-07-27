@@ -107,8 +107,8 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 	}
 
 	auto minDamage = goesThroughWall ?
-		std::min(cfg.minDamageAutoWall, trace.entity->health() + cfg.killshotAutoWall) :
-		std::min(cfg.minDamage, trace.entity->health() + cfg.killshot);
+		std::min(cfg.minDamageAutoWall, trace.entity->health()) :
+		std::min(cfg.minDamage, trace.entity->health());
 
     if (damage >= minDamage) {
         cmd->buttons |= UserCmd::IN_ATTACK;

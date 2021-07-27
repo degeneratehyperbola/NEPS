@@ -995,8 +995,6 @@ static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerb
 	WRITE("Max inaccuracy", maxShotInaccuracy);
 	WRITE("Min damage", minDamage);
 	WRITE("Min damage auto-wall", minDamageAutoWall);
-	WRITE("Killshot", killshot);
-	WRITE("Killshot auto-wall", killshotAutoWall);
 	WRITE("Burst Time", burstTime);
 }
 
