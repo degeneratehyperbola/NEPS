@@ -4,9 +4,6 @@
 
 #include "../Config.h"
 #include "../Interfaces.h"
-#ifdef _DEBUG_NEPS
-#include "../GameData.h"
-#endif // _DEBUG_NEPS
 #include "../Memory.h"
 #include "../SDK/AnimState.h"
 #include "../SDK/EngineTrace.h"
@@ -57,6 +54,337 @@ void Aimbot::resetMissCounter() noexcept
 	shots = 0;
 	hits = 0;
 	++salt;
+}
+
+static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) noexcept
+{
+	targetPoint = Vector{};
+	targetHandle = 0;
+	targetRecord = nullptr;
+
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+	if (!activeWeapon || !activeWeapon->clip())
+		return;
+
+	const auto weaponData = activeWeapon->getWeaponData();
+	if (!weaponData)
+		return;
+
+	const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{};
+	const auto localPlayerEyePosition = localPlayer->getEyePosition();
+	bool doOverride = false;
+	{
+		static Helpers::KeyBindState flag;
+		doOverride = flag[cfg.damageOverride];
+	}
+	const auto minDamage = doOverride ? cfg.minDamageOverride : cfg.minDamage;
+	const auto minDamageAutoWall = doOverride ? cfg.minDamageAutoWallOverride : cfg.minDamageAutoWall;
+
+	auto bestFov = cfg.fov;
+	auto bestDistance = cfg.distance ? cfg.distance : INFINITY;
+	auto bestDamage = 0;
+	auto bestHitchance = cfg.shotHitchance;
+
+	std::array<Matrix3x4, MAX_STUDIO_BONES> bufferBones;
+
+	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
+	{
+		auto entity = interfaces->entityList->getEntity(i);
+
+		if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || entity->gunGameImmunity())
+			continue;
+
+		const auto enemy = localPlayer->isOtherEnemy(entity);
+		if (!cfg.friendlyFire && !enemy)
+			continue;
+
+		const auto hitboxSet = entity->getHitboxSet();
+		if (!hitboxSet)
+			continue;
+
+		if (cfg.desyncResolver)
+			Animations::resolveLBY(entity, shots - hits + salt);
+
+		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
+			continue;
+
+		auto allowedHitgroup = cfg.hitGroup;
+
+		if (cfg.safeOnly && !Helpers::animDataAuthenticity(entity))
+		{
+			allowedHitgroup = cfg.safeHitGroup;
+		}
+
+		if (!allowedHitgroup)
+			continue;
+
+		const Backtrack::Record *backtrackRecord = nullptr;
+		const auto doScope = cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
+		const auto doStop = cfg.autoStop && localPlayer->flags() & Entity::FL_ONGROUND && localPlayer->moveType() != MoveType::NOCLIP && localPlayer->moveType() != MoveType::LADDER;
+		const auto doBacktrack = config->backtrack.aimAtRecords && config->backtrack.enabled && enemy;
+		if (doScope || doBacktrack || doStop)
+		{
+			bool goesThroughWall = false;
+			Trace trace;
+			auto origin = bufferBones[8].origin();
+			bool canHit = Helpers::findDamage(origin, weaponData, trace, cfg.friendlyFire, 128, &goesThroughWall);
+
+			if (canHit && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
+			{
+				if (doScope)
+					cmd->buttons |= UserCmd::IN_ATTACK2;
+
+				if (doStop)
+				{
+					const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 4;
+
+					if (cmd->forwardmove && cmd->sidemove)
+					{
+						const float maxSpeedRoot = maxSpeed * static_cast<float>(M_SQRT1_2);
+						cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
+						cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
+					} else if (cmd->forwardmove)
+					{
+						cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeed : maxSpeed;
+					} else if (cmd->sidemove)
+					{
+						cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeed : maxSpeed;
+					}
+				}
+			}
+
+			if (doBacktrack)
+			{
+				auto bestDistance = origin.distTo(localPlayerEyePosition);
+
+				const auto records = Backtrack::getRecords(entity->index());
+				for (const auto &record : records)
+				{
+					if (!Backtrack::valid(record.simulationTime) || !record.important)
+						continue;
+
+					const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
+					if (goesThroughWall && distance < bestDistance)
+					{
+						bestDistance = distance;
+						backtrackRecord = &record;
+					}
+				}
+			}
+
+			if (backtrackRecord)
+				std::copy(std::begin(backtrackRecord->matrix), std::end(backtrackRecord->matrix), bufferBones.data());
+		}
+
+		for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
+		{
+			if (hitboxIdx == Hitbox::LeftHand ||
+				hitboxIdx == Hitbox::RightHand ||
+				hitboxIdx == Hitbox::Neck ||
+				hitboxIdx == Hitbox::LowerChest ||
+				hitboxIdx == Hitbox::Belly)
+				continue;
+
+			const auto hitbox = *hitboxSet->getHitbox(hitboxIdx);
+
+			std::vector<Vector> points;
+
+			if (cfg.multipoint)
+			{
+				switch (hitboxIdx)
+				{
+				case Hitbox::Head:
+				{
+					const float r = hitbox.capsuleRadius * cfg.multipointScale;
+					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
+					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
+					Vector mid = (min + max) * 0.5f;
+					Vector axis = max - min;
+					axis /= axis.length();
+
+					Vector v1 = min.crossProduct(max);
+					v1 /= v1.length();
+					v1 *= r;
+					Vector v2 = v1.rotate(axis, 120.0f);
+					Vector v3 = v2.rotate(axis, 120.0f);
+
+					points.emplace_back(mid);
+					points.emplace_back(max + v1);
+					points.emplace_back(max + v2);
+					points.emplace_back(max + v3);
+					points.emplace_back(max + axis * r);
+					break;
+				}
+				case Hitbox::UpperChest:
+				{
+					const float r = hitbox.capsuleRadius * cfg.multipointScale;
+					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
+					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
+					Vector axis = max - min;
+					axis /= axis.length();
+					Vector axisRel = hitbox.bbMax - hitbox.bbMin;
+					axisRel /= axisRel.length();
+					Vector midRel = (hitbox.bbMin + hitbox.bbMax) * 0.5f;
+
+					Vector v1 = hitbox.bbMin.crossProduct(hitbox.bbMax);
+					v1 /= v1.length();
+					v1 *= r;
+
+					axis *= r;
+
+					points.emplace_back((midRel + v1).transform(bufferBones[hitbox.bone]));
+					points.emplace_back(max + axis);
+					points.emplace_back(min - axis);
+					break;
+				}
+				case Hitbox::Thorax:
+				{
+					const float r = hitbox.capsuleRadius * cfg.multipointScale;
+					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
+					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
+					Vector mid = (min + max) * 0.5f;
+					Vector axis = max - min;
+					axis /= axis.length();
+					axis *= r;
+
+					points.emplace_back(mid);
+					points.emplace_back(max + axis);
+					points.emplace_back(min - axis);
+					break;
+				}
+				case Hitbox::Pelvis:
+				{
+					const float r = hitbox.capsuleRadius * cfg.multipointScale;
+					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
+					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
+					Vector axis = max - min;
+					axis /= axis.length();
+					Vector axisRel = hitbox.bbMax - hitbox.bbMin;
+					axisRel /= axisRel.length();
+					Vector midRel = (hitbox.bbMin + hitbox.bbMax) * 0.5f;
+
+					Vector v1 = hitbox.bbMin.crossProduct(hitbox.bbMax);
+					v1 /= v1.length();
+					v1 *= r;
+
+					axis *= r;
+
+					points.emplace_back((midRel - v1).transform(bufferBones[hitbox.bone]));
+					points.emplace_back(max + axis);
+					points.emplace_back(min - axis);
+					break;
+				}
+				case Hitbox::LeftFoot:
+				case Hitbox::RightFoot:
+					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
+					break;
+				default:
+					points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
+					break;
+				}
+			} else
+			{
+				switch (hitboxIdx)
+				{
+				case Hitbox::LeftFoot:
+				case Hitbox::RightFoot:
+				case Hitbox::Head:
+				case Hitbox::UpperChest:
+				case Hitbox::Thorax:
+				case Hitbox::Pelvis:
+					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
+					break;
+				default:
+					points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
+					break;
+				}
+			}
+
+			const float radius = Helpers::approxRadius(hitbox, hitboxIdx);
+
+			for (auto &point : points)
+			{
+				const auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, point, cmd->viewangles + aimPunch);
+
+				const auto fov = std::hypot(angle.x, angle.y);
+				if (fov >= bestFov)
+					continue;
+
+				const auto distance = localPlayerEyePosition.distTo(point);
+				if (distance >= bestDistance || distance > weaponData->range)
+					continue;
+
+				const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), radius, distance);
+				if (hitchance <= bestHitchance)
+					continue;
+
+				bool goesThroughWall = false;
+				Trace trace;
+				const auto damage = Helpers::findDamage(point, weaponData, trace, cfg.friendlyFire, allowedHitgroup, &goesThroughWall, backtrackRecord, hitboxIdx);
+
+				if (cfg.visibleOnly && goesThroughWall) continue;
+
+				if (!backtrackRecord && trace.entity != entity) continue;
+
+				if (!goesThroughWall)
+				{
+					if (damage <= std::min(minDamage, entity->health()))
+						continue;
+					if (damage <= std::min(bestDamage, entity->health()))
+						continue;
+				} else
+				{
+					if (damage <= std::min(minDamageAutoWall, entity->health()))
+						continue;
+					if (damage <= std::min(bestDamage, entity->health()))
+						continue;
+				}
+
+				if (!cfg.ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, point, 1))
+					continue;
+
+				switch (cfg.targeting)
+				{
+				case 0:
+					if (fov < bestFov)
+					{
+						bestFov = fov;
+						targetPoint = point;
+						targetHandle = entity->handle();
+						targetRecord = backtrackRecord;
+					}
+					break;
+				case 1:
+					if (damage > bestDamage)
+					{
+						bestDamage = damage;
+						targetPoint = point;
+						targetHandle = entity->handle();
+						targetRecord = backtrackRecord;
+					}
+					break;
+				case 2:
+					if (hitchance > bestHitchance)
+					{
+						bestHitchance = hitchance;
+						targetPoint = point;
+						targetHandle = entity->handle();
+						targetRecord = backtrackRecord;
+					}
+					break;
+				case 3:
+					if (distance < bestDistance)
+					{
+						bestDistance = distance;
+						targetPoint = point;
+						targetHandle = entity->handle();
+						targetRecord = backtrackRecord;
+					}
+					break;
+				}
+			}
+		}
+	}
 }
 
 void Aimbot::run(UserCmd *cmd) noexcept
@@ -116,338 +444,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		if (prevTargetHandle != targetHandle)
 			resetMissCounter();
 
-		static const auto chooseTarget = [&cfg, &weaponIndex](UserCmd *cmd) noexcept
-		{
-			targetPoint = Vector{};
-			targetHandle = 0;
-			targetRecord = nullptr;
-
-			const auto activeWeapon = localPlayer->getActiveWeapon();
-			if (!activeWeapon || !activeWeapon->clip())
-				return;
-
-			const auto weaponData = activeWeapon->getWeaponData();
-			if (!weaponData)
-				return;
-
-			const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{};
-			const auto localPlayerEyePosition = localPlayer->getEyePosition();
-			bool doOverride = false;
-			{
-				static Helpers::KeyBindState flag;
-				doOverride = flag[cfg.damageOverride];
-			}
-			const auto minDamage = doOverride ? cfg.minDamageOverride : cfg.minDamage;
-			const auto minDamageAutoWall = doOverride ? cfg.minDamageAutoWallOverride : cfg.minDamageAutoWall;
-
-			auto bestFov = cfg.fov;
-			auto bestDistance = cfg.distance ? cfg.distance : INFINITY;
-			auto bestDamage = 0;
-			auto bestHitchance = cfg.shotHitchance;
-
-			std::array<Matrix3x4, MAX_STUDIO_BONES> bufferBones;
-
-			for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
-			{
-				auto entity = interfaces->entityList->getEntity(i);
-
-				if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || entity->gunGameImmunity())
-					continue;
-
-				const auto enemy = localPlayer->isOtherEnemy(entity);
-				if (!cfg.friendlyFire && !enemy)
-					continue;
-
-				const auto hitboxSet = entity->getHitboxSet();
-				if (!hitboxSet)
-					continue;
-
-				if (cfg.desyncResolver)
-					Animations::resolveLBY(entity, shots - hits + salt);
-
-				if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
-					continue;
-
-				auto allowedHitgroup = cfg.hitGroup;
-
-				if (cfg.safeOnly && !Helpers::animDataAuthenticity(entity))
-				{
-					allowedHitgroup = cfg.safeHitGroup;
-				}
-
-				if (!allowedHitgroup)
-					continue;
-
-				const Backtrack::Record *backtrackRecord = nullptr;
-				const auto doScope = cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
-				const auto doStop = cfg.autoStop && localPlayer->flags() & Entity::FL_ONGROUND && localPlayer->moveType() != MoveType::NOCLIP && localPlayer->moveType() != MoveType::LADDER;
-				const auto doBacktrack = config->backtrack.aimAtRecords && config->backtrack.enabled && enemy;
-				if (doScope || doBacktrack || doStop)
-				{
-					bool goesThroughWall = false;
-					Trace trace;
-					auto origin = bufferBones[8].origin();
-					bool canHit = Helpers::findDamage(origin, weaponData, trace, cfg.friendlyFire, 128, &goesThroughWall);
-
-					if (canHit && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
-					{
-						if (doScope)
-							cmd->buttons |= UserCmd::IN_ATTACK2;
-
-						if (doStop)
-						{
-							const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 4;
-
-							if (cmd->forwardmove && cmd->sidemove)
-							{
-								const float maxSpeedRoot = maxSpeed * static_cast<float>(M_SQRT1_2);
-								cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
-								cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
-							} else if (cmd->forwardmove)
-							{
-								cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeed : maxSpeed;
-							} else if (cmd->sidemove)
-							{
-								cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeed : maxSpeed;
-							}
-						}
-					}
-
-					if (doBacktrack)
-					{
-						auto bestDistance = origin.distTo(localPlayerEyePosition);
-
-						const auto records = Backtrack::getRecords(entity->index());
-						for (const auto &record : records)
-						{
-							if (!Backtrack::valid(record.simulationTime) || !record.important)
-								continue;
-
-							const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
-							if (goesThroughWall && distance < bestDistance)
-							{
-								bestDistance = distance;
-								backtrackRecord = &record;
-							}
-						}
-					}
-
-					if (backtrackRecord)
-						std::copy(std::begin(backtrackRecord->matrix), std::end(backtrackRecord->matrix), bufferBones.data());
-				}
-
-				for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
-				{
-					if (hitboxIdx == Hitbox::LeftHand ||
-						hitboxIdx == Hitbox::RightHand ||
-						hitboxIdx == Hitbox::Neck ||
-						hitboxIdx == Hitbox::LowerChest ||
-						hitboxIdx == Hitbox::Belly)
-						continue;
-
-					const auto hitbox = *hitboxSet->getHitbox(hitboxIdx);
-
-					std::vector<Vector> points;
-
-					if (cfg.multipoint)
-					{
-						switch (hitboxIdx)
-						{
-						case Hitbox::Head:
-						{
-							const float r = hitbox.capsuleRadius * cfg.multipointScale;
-							const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
-							const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
-							Vector mid = (min + max) * 0.5f;
-							Vector axis = max - min;
-							axis /= axis.length();
-
-							Vector v1 = min.crossProduct(max);
-							v1 /= v1.length();
-							v1 *= r;
-							Vector v2 = v1.rotate(axis, 120.0f);
-							Vector v3 = v2.rotate(axis, 120.0f);
-
-							points.emplace_back(mid);
-							points.emplace_back(max + v1);
-							points.emplace_back(max + v2);
-							points.emplace_back(max + v3);
-							points.emplace_back(max + axis * r);
-							break;
-						}
-						case Hitbox::UpperChest:
-						{
-							const float r = hitbox.capsuleRadius * cfg.multipointScale;
-							const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
-							const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
-							Vector axis = max - min;
-							axis /= axis.length();
-							Vector axisRel = hitbox.bbMax - hitbox.bbMin;
-							axisRel /= axisRel.length();
-							Vector midRel = (hitbox.bbMin + hitbox.bbMax) * 0.5f;
-
-							Vector v1 = hitbox.bbMin.crossProduct(hitbox.bbMax);
-							v1 /= v1.length();
-							v1 *= r;
-
-							axis *= r;
-
-							points.emplace_back((midRel + v1).transform(bufferBones[hitbox.bone]));
-							points.emplace_back(max + axis);
-							points.emplace_back(min - axis);
-							break;
-						}
-						case Hitbox::Thorax:
-						{
-							const float r = hitbox.capsuleRadius * cfg.multipointScale;
-							const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
-							const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
-							Vector mid = (min + max) * 0.5f;
-							Vector axis = max - min;
-							axis /= axis.length();
-							axis *= r;
-
-							points.emplace_back(mid);
-							points.emplace_back(max + axis);
-							points.emplace_back(min - axis);
-							break;
-						}
-						case Hitbox::Pelvis:
-						{
-							const float r = hitbox.capsuleRadius * cfg.multipointScale;
-							const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
-							const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
-							Vector axis = max - min;
-							axis /= axis.length();
-							Vector axisRel = hitbox.bbMax - hitbox.bbMin;
-							axisRel /= axisRel.length();
-							Vector midRel = (hitbox.bbMin + hitbox.bbMax) * 0.5f;
-
-							Vector v1 = hitbox.bbMin.crossProduct(hitbox.bbMax);
-							v1 /= v1.length();
-							v1 *= r;
-
-							axis *= r;
-
-							points.emplace_back((midRel - v1).transform(bufferBones[hitbox.bone]));
-							points.emplace_back(max + axis);
-							points.emplace_back(min - axis);
-							break;
-						}
-						case Hitbox::LeftFoot:
-						case Hitbox::RightFoot:
-							points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
-							break;
-						default:
-							points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
-							break;
-						}
-					} else
-					{
-						switch (hitboxIdx)
-						{
-						case Hitbox::LeftFoot:
-						case Hitbox::RightFoot:
-						case Hitbox::Head:
-						case Hitbox::UpperChest:
-						case Hitbox::Thorax:
-						case Hitbox::Pelvis:
-							points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
-							break;
-						default:
-							points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
-							break;
-						}
-					}
-
-					const float radius = Helpers::approxRadius(hitbox, hitboxIdx);
-
-					for (auto &point : points)
-					{
-						const auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, point, cmd->viewangles + aimPunch);
-
-						const auto fov = std::hypot(angle.x, angle.y);
-						if (fov >= bestFov)
-							continue;
-
-						const auto distance = localPlayerEyePosition.distTo(point);
-						if (distance >= bestDistance || distance > weaponData->range)
-							continue;
-
-						const auto hitchance = Helpers::findHitchance(activeWeapon->getInaccuracy(), activeWeapon->getSpread(), radius, distance);
-						if (hitchance <= bestHitchance)
-							continue;
-
-						bool goesThroughWall = false;
-						Trace trace;
-						const auto damage = Helpers::findDamage(point, weaponData, trace, cfg.friendlyFire, allowedHitgroup, &goesThroughWall, backtrackRecord, hitboxIdx);
-
-						if (cfg.visibleOnly && goesThroughWall) continue;
-
-						if (!backtrackRecord && trace.entity != entity) continue;
-
-						if (!goesThroughWall)
-						{
-							if (damage <= std::min(minDamage, entity->health()))
-								continue;
-							if (damage <= std::min(bestDamage, entity->health()))
-								continue;
-						} else
-						{
-							if (damage <= std::min(minDamageAutoWall, entity->health()))
-								continue;
-							if (damage <= std::min(bestDamage, entity->health()))
-								continue;
-						}
-
-						if (!cfg.ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, point, 1))
-							continue;
-
-						switch (cfg.targeting)
-						{
-						case 0:
-							if (fov < bestFov)
-							{
-								bestFov = fov;
-								targetPoint = point;
-								targetHandle = entity->handle();
-								targetRecord = backtrackRecord;
-							}
-							break;
-						case 1:
-							if (damage > bestDamage)
-							{
-								bestDamage = damage;
-								targetPoint = point;
-								targetHandle = entity->handle();
-								targetRecord = backtrackRecord;
-							}
-							break;
-						case 2:
-							if (hitchance > bestHitchance)
-							{
-								bestHitchance = hitchance;
-								targetPoint = point;
-								targetHandle = entity->handle();
-								targetRecord = backtrackRecord;
-							}
-							break;
-						case 3:
-							if (distance < bestDistance)
-							{
-								bestDistance = distance;
-								targetPoint = point;
-								targetHandle = entity->handle();
-								targetRecord = backtrackRecord;
-							}
-							break;
-						}
-					}
-				}
-			}
-		};
-
-		chooseTarget(cmd);
+		chooseTarget(cfg, cmd);
 
 		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
 		if (target && targetPoint.notNull())
