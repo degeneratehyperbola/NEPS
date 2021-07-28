@@ -155,6 +155,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 			interfaces->studioRender->forcedMaterialOverride(nullptr);
 		}
 
+		if (appliedChams) hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);
 		applyChams(config->chams["Local player"].materials, health);
     } else if (localPlayer->isOtherEnemy(player))
 	{
@@ -168,6 +169,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 			}
 		}
 
+		if (appliedChams) hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);
         applyChams(config->chams["Enemies"].materials, health);
     } else {
         applyChams(config->chams["Allies"].materials, health);
