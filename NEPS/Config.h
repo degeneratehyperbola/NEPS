@@ -107,8 +107,8 @@ public:
 		bool desync = false;
 		bool reduceSlide = true;
 		bool lbyBreaker = false;
-		float fakeYaw = 120.0f;
-		float realYaw = -120.0f;
+		float fakeYaw = 60.0f;
+		float realYaw = -60.0f;
 		bool fakeUp = false;
 		int flipKey = 0;
 		KeyBind fakeDuck;

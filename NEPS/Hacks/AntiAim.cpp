@@ -82,8 +82,11 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 	if (cfg.desync && cmd->viewangles.y == currentViewAngles.y)
 	{
-		const float fake = flip ? cfg.fakeYaw : -cfg.fakeYaw;
-		const float real = flip ? cfg.realYaw : -cfg.realYaw;
+		float fake = flip ? cfg.fakeYaw : -cfg.fakeYaw;
+		float real = flip ? cfg.realYaw : -cfg.realYaw;
+		const bool fakeLessThanReal = fake < real;
+		fake += fakeLessThanReal ? -60.0f : 60.0f;
+		real += fakeLessThanReal ? 60.0f : -60.0f;
 
 		if (cfg.lbyBreaker)
 		{
