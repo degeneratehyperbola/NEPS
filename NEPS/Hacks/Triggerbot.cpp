@@ -45,9 +45,6 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 
 	if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;
 
-	if (activeWeapon->getInaccuracy() > cfg.maxShotInaccuracy)
-        return;
-
 	if (!cfg.hitGroup)
 		return;
 

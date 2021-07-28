@@ -432,7 +432,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
     if (!cfg.ignoreFlash && localPlayer->isFlashed())
         return;
 
-    if ((cmd->buttons & UserCmd::IN_ATTACK || cfg.autoShot || cfg.aimlock) && activeWeapon->getInaccuracy() <= cfg.maxAimInaccuracy) {
+    if ((cmd->buttons & UserCmd::IN_ATTACK || cfg.autoShot || cfg.aimlock)) {
 
 		if (cfg.scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !cfg.autoScope)
 			return;

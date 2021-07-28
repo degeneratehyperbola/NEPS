@@ -651,7 +651,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 		ImGui::PushItemWidth(-1);
 		ImGui::SliderFloat("##scale", &config->aimbot[currentWeapon].multipointScale, 0.5f, 1.0f, "Multipoint scale %.5f");
-		ImGui::SliderFloat("##inaccuracy", &config->aimbot[currentWeapon].maxAimInaccuracy, 0.0f, 1.0f, "Max aim inaccuracy %.5f", ImGuiSliderFlags_Logarithmic);
 		ImGui::SliderFloat("##fov", &config->aimbot[currentWeapon].fov, 0.0f, 255.0f, "FOV %.2fdeg", ImGuiSliderFlags_Logarithmic);
 		ImGui::SliderFloat("##hitchance", &config->aimbot[currentWeapon].shotHitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
 		ImGui::SetNextItemWidth(90);
@@ -1055,7 +1054,6 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 
 		ImGui::PushItemWidth(-1);
 		ImGui::SliderInt("##delay", &config->triggerbot[currentWeapon].shotDelay, 0, 300, "Shot delay %dms", ImGuiSliderFlags_Logarithmic);
-		ImGui::SliderFloat("##inaccuracy", &config->triggerbot[currentWeapon].maxShotInaccuracy, 0.0f, 1.0f, "Max inaccuracy %.5f", ImGuiSliderFlags_Logarithmic);
 		ImGui::SliderFloat("##hitchance", &config->triggerbot[currentWeapon].hitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
 		ImGui::SetNextItemWidth(90);
 		ImGui::InputFloat("Distance", &config->triggerbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");

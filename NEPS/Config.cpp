@@ -351,7 +351,6 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Interpolation", a.interpolation);
 	read(j, "Hitgroup", a.hitGroup);
 	read(j, "Targeting", a.targeting);
-	read(j, "Max aim inaccuracy", a.maxAimInaccuracy);
 	read(j, "Hitchance", a.shotHitchance);
 	read(j, "Min damage", a.minDamage);
 	read(j, "Min damage auto-wall", a.minDamageAutoWall);
@@ -376,7 +375,6 @@ static void from_json(const json &j, Config::Triggerbot &t)
 	read(j, "Hitchance", t.hitchance);
 	read(j, "Distance", t.distance);
 	read(j, "Shot delay", t.shotDelay);
-	read(j, "Max inaccuracy", t.maxShotInaccuracy);
 	read(j, "Min damage", t.minDamage);
 	read(j, "Min damage auto-wall", t.minDamageAutoWall);
 	read(j, "Burst Time", t.burstTime);
@@ -970,7 +968,6 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Interpolation", interpolation);
 	WRITE("Hitgroup", hitGroup);
 	WRITE("Targeting", targeting);
-	WRITE("Max aim inaccuracy", maxAimInaccuracy);
 	WRITE("Hitchance", shotHitchance);
 	WRITE("Min damage", minDamage);
 	WRITE("Min damage auto-wall", minDamageAutoWall);
@@ -995,7 +992,6 @@ static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerb
 	WRITE("Hitchance", hitchance);
 	WRITE("Distance", distance);
 	WRITE("Shot delay", shotDelay);
-	WRITE("Max inaccuracy", maxShotInaccuracy);
 	WRITE("Min damage", minDamage);
 	WRITE("Min damage auto-wall", minDamageAutoWall);
 	WRITE("Burst Time", burstTime);

@@ -58,7 +58,6 @@ public:
 		int minDamageOverride = 0;
 		int minDamageAutoWallOverride = 0;
 		float shotHitchance = 0.0f;
-		float maxAimInaccuracy = 1.0f;
 		int interpolation = 0;
 		float quadratic = 0.0f;
 		float linear = 255.0f;
@@ -80,7 +79,6 @@ public:
 		bool ignoreSmoke = false;
 		int hitGroup = 127;
 		int shotDelay = 0;
-		float maxShotInaccuracy = 1.0f;
 		float hitchance = 0.0f;
 		float distance = 0.0f;
 		int minDamage = 0;
