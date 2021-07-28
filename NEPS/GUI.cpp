@@ -699,7 +699,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
 
-		ImGui::Checkbox("Safe mode", &config->aimbot[currentWeapon].safeOnly);
+		ImGui::Checkbox("When resolved", &config->aimbot[currentWeapon].safeOnly);
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(80);
 		ImGuiCustom::multiCombo("##safe_hit_group", config->aimbot[currentWeapon].safeHitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
