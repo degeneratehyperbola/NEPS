@@ -143,8 +143,6 @@ void Chams::renderPlayer(Entity* player) noexcept
         applyChams(config->chams["Defusing"].materials, health);
 	} else if (player == localPlayer.get())
 	{
-		applyChams(config->chams["Local player"].materials, health);
-
 		if (config->antiAim.desync || config->antiAim.fakeUp) {
 			Matrix3x4 fakeBones[MAX_STUDIO_BONES];
 			Animations::copyLerpedBones(fakeBones);
@@ -153,24 +151,24 @@ void Chams::renderPlayer(Entity* player) noexcept
 			for (int i = 0; i < MAX_STUDIO_BONES; i++)
 				fakeBones[i].setOrigin(fakeBones[i].origin() + origin);
 
-			if (!appliedChams) hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);
 			applyChams(config->chams["Desync"].materials, health, fakeBones);
 			interfaces->studioRender->forcedMaterialOverride(nullptr);
 		}
+
+		applyChams(config->chams["Local player"].materials, health);
     } else if (localPlayer->isOtherEnemy(player))
 	{
-        applyChams(config->chams["Enemies"].materials, health);
-
 		if (config->backtrack.enabled)
 		{
 			const auto &records = Backtrack::getRecords(player->index());
-			if (records.size() && Backtrack::valid(records.front().simulationTime) && records.back().origin != player->origin())
+			if (records.size() && Backtrack::valid(records.front().simulationTime))
 			{
-				if (!appliedChams) hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);
 				applyChams(config->chams["Backtrack"].materials, health, records.back().matrix);
 				interfaces->studioRender->forcedMaterialOverride(nullptr);
 			}
 		}
+
+        applyChams(config->chams["Enemies"].materials, health);
     } else {
         applyChams(config->chams["Allies"].materials, health);
     }
