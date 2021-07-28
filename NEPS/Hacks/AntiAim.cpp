@@ -51,6 +51,17 @@ static bool canAntiAim(UserCmd *cmd) noexcept
 	return true;
 }
 
+static void forceLbyUpdate(UserCmd *cmd) noexcept
+{
+	if (fabsf(cmd->sidemove) < 5.0f)
+	{
+		if (localPlayer->flags() & Entity::FL_DUCKING)
+			cmd->sidemove = cmd->tickCount & 1 ? 3.25f : -3.25f;
+		else
+			cmd->sidemove = cmd->tickCount & 1 ? 1.1f : -1.1f;
+	}
+}
+
 void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
 	if (!canAntiAim(cmd)) return;
@@ -75,7 +86,9 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	static bool flip = true;
 
 	if (cfg.flipKey && GetAsyncKeyState(cfg.flipKey) & 1)
+	{
 		flip = !flip;
+	}
 
 	if (cfg.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = cfg.pitchAngle;
@@ -105,13 +118,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 				cmd->viewangles.y += real;
 			}
 
-			if (fabsf(cmd->sidemove) < 5.0f)
-			{
-				if (localPlayer->flags() & Entity::FL_DUCKING)
-					cmd->sidemove = cmd->tickCount & 1 ? 3.25f : -3.25f;
-				else
-					cmd->sidemove = cmd->tickCount & 1 ? 1.1f : -1.1f;
-			}
+			forceLbyUpdate(cmd);
 		}
 	}
 
