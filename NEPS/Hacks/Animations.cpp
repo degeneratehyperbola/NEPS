@@ -113,9 +113,9 @@ bool Animations::animSynced(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
-void Animations::resolveLBY(Entity *animatable, int seed) noexcept
+void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 {
-	if (!seed || !animatable || !animatable->isPlayer())
+	if (!misses || !animatable || !animatable->isPlayer())
 		return;
 
 	if (Helpers::animDataAuthenticity(animatable))
@@ -134,17 +134,21 @@ void Animations::resolveLBY(Entity *animatable, int seed) noexcept
 	animatable->clientAnimations() = true;
 	memory->updateState(state, nullptr, animatable->eyeAngles().x, animatable->eyeAngles().y, 0.0f, nullptr);
 	animatable->clientAnimations() = false;
-	
-	// Return random desync position out of 3 possible
-	// This hereby gives us a 33% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)
-	std::srand(seed);
 
-	const auto delta = Helpers::angleDiffDeg(state->feetYaw, state->eyeYaw);
-	const std::array<float, 3> positions = {animatable->getMaxDesyncAngle(), 0.0f, -animatable->getMaxDesyncAngle()};
+	const auto delta = Helpers::angleDiffDeg(state->feetYaw, animatable->eyeAngles().y);
+	if (delta > 35.0f && misses < 3)
+		state->feetYaw = animatable->eyeAngles().y - animatable->getMaxDesyncAngle();
+	if (delta < -35.0f && misses < 3)
+		state->feetYaw = animatable->eyeAngles().y + animatable->getMaxDesyncAngle();
+	else
+	{
+		std::srand(misses);
+		const std::array<float, 3> positions = {animatable->getMaxDesyncAngle(), 0.0f, -animatable->getMaxDesyncAngle()};
+		state->feetYaw = state->eyeYaw + positions[rand() % positions.size()];
+	}
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->feetYawRate = 0.0f;
-	state->feetYaw = state->eyeYaw + positions[rand() % positions.size()];
 
 	animatable->clientAnimations() = true;
 	animatable->effectFlags() = backupEffects;

@@ -25,7 +25,6 @@ static const Backtrack::Record *targetRecord;
 
 static int shots = 0;
 static int hits = 0;
-static unsigned int salt = 1;
 
 void Aimbot::missCounter(GameEvent *event) noexcept
 {
@@ -53,7 +52,6 @@ void Aimbot::resetMissCounter() noexcept
 {
 	shots = 0;
 	hits = 0;
-	++salt;
 }
 
 static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) noexcept
@@ -103,7 +101,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 			continue;
 
 		if (cfg.desyncResolver)
-			Animations::resolveLBY(entity, shots - hits + salt);
+			Animations::resolveLBY(entity, shots - hits);
 
 		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 			continue;
