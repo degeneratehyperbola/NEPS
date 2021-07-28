@@ -21,7 +21,7 @@ void Animations::copyLerpedBones(Matrix3x4 *out) noexcept
 	if (out) std::copy(lerpedBones.begin(), lerpedBones.end(), out);
 }
 
-bool Animations::clientLerped(const UserCmd &cmd, bool sendPacket) noexcept
+bool Animations::animDesynced(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	assert(lerpedState);
 
@@ -70,7 +70,7 @@ bool Animations::clientLerped(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
-bool Animations::animSync(const UserCmd &cmd, bool sendPacket) noexcept
+bool Animations::animSynced(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	bool matrixUpdated = false;
 
@@ -125,22 +125,27 @@ void Animations::resolveLBY(Entity *animatable, int seed) noexcept
 	if (!state)
 		return;
 
-	std::srand(seed);
+	if (state->lastClientSideAnimationUpdateFramecount == memory->globalVars->framecount)
+		state->lastClientSideAnimationUpdateFramecount -= 1;
 
 	const auto backupEffects = animatable->effectFlags();
 	animatable->effectFlags() |= 8;
-
-	memory->invalidateBoneCache(animatable);
+	
+	animatable->clientAnimations() = true;
 	memory->updateState(state, nullptr, animatable->eyeAngles().x, animatable->eyeAngles().y, 0.0f, nullptr);
+	animatable->clientAnimations() = false;
 	
 	// Return random desync position out of 3 possible
 	// This hereby gives us a 33% chance to resolve target correctly, unless difference between those positions is much more than the width of the head (when target is using some bizarre extended anti-aim with dual berettas and pitch = 0)
+	std::srand(seed);
+
 	const auto delta = Helpers::angleDiffDeg(state->feetYaw, state->eyeYaw);
 	const std::array<float, 3> positions = {animatable->getMaxDesyncAngle(), 0.0f, -animatable->getMaxDesyncAngle()};
 
-	state->feetYaw = state->eyeYaw + positions[rand() % positions.size()];
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->feetYawRate = 0.0f;
+	state->feetYaw = state->eyeYaw + positions[rand() % positions.size()];
 
+	animatable->clientAnimations() = true;
 	animatable->effectFlags() = backupEffects;
 }
