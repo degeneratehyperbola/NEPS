@@ -397,6 +397,7 @@ static void from_json(const json &j, Config::AntiAim &a)
 	read(j, "Pitch angle", a.pitchAngle);
 	read(j, "Yaw", a.yaw);
 	read(j, "Yaw angle", a.yawAngle);
+	read(j, "Look at enemies", a.lookAtEnemies);
 	read(j, "Desync", a.desync);
 	read(j, "Desync cor", a.reduceSlide);
 	read(j, "Desync ext", a.lbyBreaker);
@@ -1015,6 +1016,7 @@ static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &du
 	WRITE("Pitch angle", pitchAngle);
 	WRITE("Yaw", yaw);
 	WRITE("Yaw angle", yawAngle);
+	WRITE("Look at enemies", lookAtEnemies);
 	WRITE("Desync", desync);
 	WRITE("Desync cor", reduceSlide);
 	WRITE("Desync ext", lbyBreaker);

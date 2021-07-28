@@ -93,7 +93,32 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (cfg.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = cfg.pitchAngle;
 
-	if (cfg.desync && cmd->viewangles.y == currentViewAngles.y)
+	if (cfg.lookAtEnemies && cmd->viewangles.y == currentViewAngles.y)
+	{
+		auto bestFov = 255.0f;
+
+		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
+		{
+			auto entity = interfaces->entityList->getEntity(i);
+
+			if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive())
+				continue;
+
+			if (!localPlayer->isOtherEnemy(entity))
+				continue;
+
+			const auto angle = Helpers::calculateRelativeAngle(localPlayer->getEyePosition(), entity->getBonePosition(0), cmd->viewangles);
+
+			const auto fov = std::hypot(angle.x, angle.y);
+			if (fov < bestFov)
+			{
+				bestFov = fov;
+				cmd->viewangles.y += angle.y;
+			}
+		}
+	}
+
+	if (cfg.desync)
 	{
 		float fake = flip ? cfg.fakeYaw : -cfg.fakeYaw;
 		float real = flip ? cfg.realYaw : -cfg.realYaw;

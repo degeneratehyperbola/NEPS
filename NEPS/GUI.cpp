@@ -731,6 +731,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 		ImGui::SameLine();
 		ImGui::SliderFloat("##pitch_sl", &config->antiAim.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
 	}
+	ImGui::Checkbox("Look at enemies", &config->antiAim.lookAtEnemies);
 	ImGui::Checkbox("Desync", &config->antiAim.desync);
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("Desync advanced", ImGuiDir_Right))
@@ -742,7 +743,8 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Turn off AA when moving");
 		ImGui::Checkbox("LBY breaker", &config->antiAim.lbyBreaker);
-		ImGui::SliderFloat("##fake_lby", &config->antiAim.fakeYaw, -60.0f, 60.0f, "Fake LBY %.2fdeg");
+		if (config->antiAim.lbyBreaker)
+			ImGui::SliderFloat("##fake_lby", &config->antiAim.fakeYaw, -60.0f, 60.0f, "Fake LBY %.2fdeg");
 		ImGui::SliderFloat("##real_lby", &config->antiAim.realYaw, -60.0f, 60.0f, "Real LBY %.2fdeg");
 		ImGuiCustom::keyBind("Flip key", &config->antiAim.flipKey);
 		ImGui::EndPopup();
