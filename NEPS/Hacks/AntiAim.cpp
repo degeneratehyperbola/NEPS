@@ -96,6 +96,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (cfg.lookAtEnemies && cmd->viewangles.y == currentViewAngles.y)
 	{
 		auto bestFov = 255.0f;
+		auto bestAngle = 0.0f;
 
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 		{
@@ -113,9 +114,11 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			if (fov < bestFov)
 			{
 				bestFov = fov;
-				cmd->viewangles.y += angle.y;
+				bestAngle = angle.y;
 			}
 		}
+
+		cmd->viewangles.y += bestAngle;
 	}
 
 	if (cfg.desync)
