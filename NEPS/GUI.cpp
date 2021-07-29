@@ -613,6 +613,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 			}
 			}
 		}
+		ImGui::Unindent();
+
 		ImGui::EndListBox();
 	}
 
