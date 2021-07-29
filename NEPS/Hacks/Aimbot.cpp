@@ -19,7 +19,7 @@
 
 #include "../lib/Helpers.hpp"
 
-static Vector targetPoint;
+static Vector targetAngle;
 static int targetHandle;
 static const Backtrack::Record *targetRecord;
 
@@ -56,7 +56,7 @@ void Aimbot::resetMissCounter() noexcept
 
 static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) noexcept
 {
-	targetPoint = Vector{};
+	targetAngle = Vector{};
 	targetHandle = 0;
 	targetRecord = nullptr;
 
@@ -347,7 +347,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 					if (fov < bestFov)
 					{
 						bestFov = fov;
-						targetPoint = point;
+						targetAngle = angle;
 						targetHandle = entity->handle();
 						targetRecord = backtrackRecord;
 					}
@@ -356,7 +356,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 					if (damage > bestDamage)
 					{
 						bestDamage = damage;
-						targetPoint = point;
+						targetAngle = angle;
 						targetHandle = entity->handle();
 						targetRecord = backtrackRecord;
 					}
@@ -365,7 +365,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 					if (hitchance > bestHitchance)
 					{
 						bestHitchance = hitchance;
-						targetPoint = point;
+						targetAngle = angle;
 						targetHandle = entity->handle();
 						targetRecord = backtrackRecord;
 					}
@@ -374,7 +374,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 					if (distance < bestDistance)
 					{
 						bestDistance = distance;
-						targetPoint = point;
+						targetAngle = angle;
 						targetHandle = entity->handle();
 						targetRecord = backtrackRecord;
 					}
@@ -445,37 +445,35 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		chooseTarget(cfg, cmd);
 
 		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
-		if (target && targetPoint.notNull())
+		if (target && targetAngle.notNull())
 		{
 			static Vector lastAngles = cmd->viewangles;
 			static int lastCommand = 0;
 
 			const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{};
-			const auto localPlayerEyePosition = localPlayer->getEyePosition();
 
 			if (lastCommand == cmd->commandNumber - 1 && lastAngles.notNull() && cfg.silent)
 				cmd->viewangles = lastAngles;
 
-			auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, targetPoint, cmd->viewangles + aimPunch);
 			bool clamped = false;
 
-			if (std::abs(angle.x) > config->misc.maxAngleDelta || std::abs(angle.y) > config->misc.maxAngleDelta)
+			if (std::abs(targetAngle.x) > config->misc.maxAngleDelta || std::abs(targetAngle.y) > config->misc.maxAngleDelta)
 			{
-				angle.x = std::clamp(angle.x, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
-				angle.y = std::clamp(angle.y, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
+				targetAngle.x = std::clamp(targetAngle.x, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
+				targetAngle.y = std::clamp(targetAngle.y, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
 				clamped = true;
 			}
 
 			if (cfg.interpolation == 2 || cfg.interpolation == 3)
-				angle = angle * (1.0f - cfg.quadratic);
+				targetAngle = targetAngle * (1.0f - cfg.quadratic);
 
-			const auto l = angle.length();
+			const auto l = targetAngle.length();
 			if ((cfg.interpolation == 1 || cfg.interpolation == 3) && l > cfg.linear)
-				angle *= cfg.linear / l;
+				targetAngle *= cfg.linear / l;
 
-			if (angle.notNull())
+			if (targetAngle.notNull())
 			{
-				cmd->viewangles += angle;
+				cmd->viewangles += targetAngle;
 
 				if (!cfg.silent)
 					interfaces->engine->setViewAngles(cmd->viewangles);
