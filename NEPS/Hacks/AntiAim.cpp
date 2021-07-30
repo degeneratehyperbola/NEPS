@@ -123,11 +123,12 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 	if (cfg.desync)
 	{
+		const auto desync = localPlayer->getMaxDesyncAngle();
 		float fake = flip ? cfg.fakeYaw : -cfg.fakeYaw;
 		float real = flip ? cfg.realYaw : -cfg.realYaw;
 		const bool fakeLessThanReal = cfg.lbyBreaker ? fake < real : 0.0f < real;
-		fake += fakeLessThanReal ? -100.0f : 100.0f;
-		real += fakeLessThanReal ? 60.0f : -60.0f;
+		fake += fakeLessThanReal ? desync : -desync;
+		real += fakeLessThanReal ? -desync : desync;
 
 		if (cfg.lbyBreaker)
 		{

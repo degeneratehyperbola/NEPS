@@ -10,20 +10,20 @@
 enum class FrameStage;
 struct UserCmd;
 
+struct Record
+{
+	Vector origin;
+	float simulationTime;
+	bool important;
+	bool hasHelmet;
+	int armor;
+	Matrix3x4 matrix[MAX_STUDIO_BONES];
+};
+
 namespace Backtrack
 {
 	void update(FrameStage) noexcept;
 	void run(UserCmd *) noexcept;
-
-	struct Record
-	{
-		Vector origin;
-		float simulationTime;
-		bool important;
-		bool hasHelmet;
-		int armor;
-		Matrix3x4 matrix[MAX_STUDIO_BONES];
-	};
 
 	const std::deque<Record> &getRecords(std::size_t index) noexcept;
 	float getLerp() noexcept;

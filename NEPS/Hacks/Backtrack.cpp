@@ -14,7 +14,7 @@
 
 #include "../lib/Helpers.hpp"
 
-static std::array<std::deque<Backtrack::Record>, 65> records;
+static std::array<std::deque<Record>, 65> records;
 
 struct Cvars {
     ConVar* updateRateVar;
@@ -106,7 +106,7 @@ void Backtrack::run(UserCmd *cmd) noexcept
 
 			const auto &headOrigin = entity->getBonePosition(8);
 
-			auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, headOrigin, cmd->viewangles + (config->backtrack.recoilBasedFov ? aimPunch : Vector{}));
+			auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, headOrigin, cmd->viewangles + aimPunch);
 			auto fov = std::hypotf(angle.x, angle.y);
 			if (fov < bestFov)
 			{
@@ -128,7 +128,7 @@ void Backtrack::run(UserCmd *cmd) noexcept
 				if (!valid(record.simulationTime))
 					continue;
 
-				auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, record.origin, cmd->viewangles + (config->backtrack.recoilBasedFov ? aimPunch : Vector{}));
+				auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, record.origin, cmd->viewangles + aimPunch);
 				auto fov = std::hypotf(angle.x, angle.y);
 				if (fov < bestFov)
 				{
@@ -151,7 +151,7 @@ void Backtrack::run(UserCmd *cmd) noexcept
 	}
 }
 
-const std::deque<Backtrack::Record> &Backtrack::getRecords(std::size_t index) noexcept
+const std::deque<Record> &Backtrack::getRecords(std::size_t index) noexcept
 {
 	return records[index];
 }

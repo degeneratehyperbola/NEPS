@@ -1124,10 +1124,8 @@ void GUI::renderBacktrackWindow(bool contentOnly) noexcept
 	}
 	ImGui::Checkbox("Enabled", &config->backtrack.enabled);
 	ImGui::Checkbox("Ignore smoke", &config->backtrack.ignoreSmoke);
-	ImGui::Checkbox("Recoil based fov", &config->backtrack.recoilBasedFov);
 	ImGui::PushItemWidth(180);
 	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 200, "Time limit %dms");
-	ImGui::Checkbox("Aim at records", &config->backtrack.aimAtRecords);
 
 	ImGui::PopItemWidth();
 	if (!contentOnly)

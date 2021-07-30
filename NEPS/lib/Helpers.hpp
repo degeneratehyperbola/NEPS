@@ -20,7 +20,7 @@ struct WeaponInfo;
 struct Color4;
 struct AnimState;
 struct StudioBbox;
-namespace Backtrack { struct Record; }
+struct Record;
 
 #define PI std::numbers::pi_v<float>
 
@@ -49,7 +49,7 @@ namespace Helpers
 
 	float handleBulletPenetration(SurfaceData *enterSurfaceData, const Trace &enterTrace, const Vector &direction, Vector &result, float penetration, float damage) noexcept;
 
-	int findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire = false, int hitgroupFlags = 1 << 7, bool *goesThroughWall = nullptr, const Backtrack::Record *ghost = nullptr, int ghostHitBox = 0) noexcept;
+	int findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire = false, int hitgroupFlags = 1 << 7, bool *goesThroughWall = nullptr, const Record *ghost = nullptr, int ghostHitBox = 0) noexcept;
 
 	float findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept;
 

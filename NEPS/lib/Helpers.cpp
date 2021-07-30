@@ -182,7 +182,7 @@ Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &desti
 	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
-int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire, int hitgroupFlags, bool *goesThroughWall, const Backtrack::Record *ghost, int ghostHitbox) noexcept
+int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire, int hitgroupFlags, bool *goesThroughWall, const Record *ghost, int ghostHitbox) noexcept
 {
 	if (!localPlayer)
 		return -1;

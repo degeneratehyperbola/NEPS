@@ -21,7 +21,7 @@
 
 static Vector targetAngle;
 static int targetHandle;
-static const Backtrack::Record *targetRecord;
+static const Record *targetRecord;
 
 static int shots = 0;
 static int hits = 0;
@@ -116,10 +116,10 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 		if (!allowedHitgroup)
 			continue;
 
-		const Backtrack::Record *backtrackRecord = nullptr;
+		const Record *backtrackRecord = nullptr;
 		const auto doScope = cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
 		const auto doStop = cfg.autoStop && localPlayer->flags() & Entity::FL_ONGROUND && localPlayer->moveType() != MoveType::NOCLIP && localPlayer->moveType() != MoveType::LADDER;
-		const auto doBacktrack = config->backtrack.aimAtRecords && config->backtrack.enabled && enemy;
+		const auto doBacktrack = config->backtrack.enabled && enemy;
 		if (doScope || doBacktrack || doStop)
 		{
 			bool goesThroughWall = false;
@@ -500,7 +500,7 @@ int Aimbot::getTargetHandle() noexcept
 	return targetHandle;
 }
 
-const Backtrack::Record *Aimbot::getTargetRecord() noexcept
+const Record *Aimbot::getTargetRecord() noexcept
 {
 	return targetRecord;
 }
