@@ -29,7 +29,6 @@ struct VarMap;
 
 #define MAX_ANIM_OVERLAYS 15
 
-
 enum class MoveType
 {
     NOCLIP = 8,
@@ -105,14 +104,14 @@ public:
 	enum PlayerFlags
 	{
 		FL_ONGROUND = 1 << 0, // At rest / on the ground
-		FL_DUCKING = 1 << 1, // Player flag -- Player is fully crouched
-		FL_WATERJUMP = 1 << 2, // player jumping out of water
-		FL_ONTRAIN = 1 << 3, // Player is _controlling_ a train, so movement commands should be ignored on client during prediction
+		FL_DUCKING = 1 << 1, // Player flag - player is fully crouched
+		FL_WATERJUMP = 1 << 2, // Player jumping out of water
+		FL_ONTRAIN = 1 << 3, // Player is controlling a train, so movement commands should be ignored on client during prediction
 		FL_INRAIN = 1 << 4, // Indicates the entity is standing in rain
 		FL_FROZEN = 1 << 5, // Player is frozen for 3rd person camera
 		FL_ATCONTROLS = 1 << 6, // Player can't move, but keeps key inputs for controlling another entity
 		FL_CLIENT = 1 << 7, // Is a player
-		FL_FAKECLIENT = 1 << 8, // Fake client, simulated server side; don't send network messages to them. NON-PLAYER SPECIFIC (i.e. not used by GameMovement or the client.dll ) - Can still be applied to players, though
+		FL_FAKECLIENT = 1 << 8, // Fake client, simulated server side; don't send network messages to them. NON-PLAYER SPECIFIC (i.e. not used by GameMovement or the client.dll) - can still be applied to players, though
 		FL_INWATER = 1 << 9, // In water
 		FL_FLY = 1 << 10, // Changes the SV_Movestep() behavior to not need to be on ground
 		FL_SWIM = 1 << 11, // Changes the SV_Movestep() behavior to not need to be on ground (but stay in water)
@@ -120,10 +119,10 @@ public:
 		FL_NPC = 1 << 13,
 		FL_GODMODE = 1 << 14,
 		FL_NOTARGET = 1 << 15,
-		FL_AIMTARGET = 1 << 16, // set if the crosshair needs to aim onto the entity
-		FL_PARTIALGROUND = 1 << 17, // not all corners are valid
+		FL_AIMTARGET = 1 << 16, // Set if the crosshair needs to aim onto the entity
+		FL_PARTIALGROUND = 1 << 17, // Not all corners are valid
 		FL_STATICPROP = 1 << 18, // Eetsa static prop!
-		FL_GRAPHED = 1 << 19, // worldgraph has this ent listed as something that blocks a connection
+		FL_GRAPHED = 1 << 19, // Worldgraph has this ent listed as something that blocks a connection
 		FL_GRENADE = 1 << 20,
 		FL_STEPMOVEMENT = 1 << 21, // Changes the SV_Movestep() behavior to not do any processing
 		FL_DONTTOUCH = 1 << 22, // Doesn't generate touch functions, generates Untouch() for anything it was touching when this flag was set
@@ -134,7 +133,7 @@ public:
 		FL_ONFIRE = 1 << 27, // You know...
 		FL_DISSOLVING = 1 << 28, // We're dissolving!
 		FL_TRANSRAGDOLL = 1 << 29, // In the process of turning into a client side ragdoll
-		FL_UNBLOCKABLE_BY_PLAYER = 1 << 30 // pusher that can't be blocked by the player
+		FL_UNBLOCKABLE_BY_PLAYER = 1 << 30 // Pusher that can't be blocked by the player
 	};
 
 	int getAnimationLayerCount() noexcept
@@ -144,10 +143,6 @@ public:
 	AnimLayer *animationLayers() noexcept
 	{
 		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2980);
-	}
-	AnimLayer *getAnimationLayer(int overlay) noexcept
-	{
-		return &(*reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2980))[overlay];
 	}
 
 	AnimState *getAnimState() noexcept

@@ -53,7 +53,8 @@ bool Animations::animDesynced(const UserCmd &cmd, bool sendPacket) noexcept
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, lerpedState->feetYaw, 0.0f});
 
 		std::copy(lerpedLayers.begin(), lerpedLayers.end(), localPlayer->animationLayers());
-		localPlayer->getAnimationLayer(12)->weight = FLT_EPSILON;
+		if (const auto layers = localPlayer->animationLayers())
+			layers[12].weight = FLT_EPSILON;
 
 		matrixUpdated = localPlayer->setupBones(lerpedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
@@ -135,21 +136,58 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 	memory->updateState(state, nullptr, animatable->eyeAngles().x, animatable->eyeAngles().y, 0.0f, nullptr);
 	animatable->clientAnimations() = false;
 
+	if (!animatable->animationLayers())
+		return;
+
+	std::array<AnimLayer, MAX_ANIM_OVERLAYS> layers;
+	std::copy(animatable->animationLayers(), animatable->animationLayers() + animatable->getAnimationLayerCount(), layers.begin());
+
 	const auto delta = Helpers::angleDiffDeg(state->feetYaw, animatable->eyeAngles().y);
-	if (delta > 35.0f && misses < 3)
-		state->feetYaw = animatable->eyeAngles().y - animatable->getMaxDesyncAngle();
-	if (delta < -35.0f && misses < 3)
-		state->feetYaw = animatable->eyeAngles().y + animatable->getMaxDesyncAngle();
+
+	std::array<float, 3U> records;
+	
+	state->feetYaw = animatable->eyeAngles().y;
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
+	records[0] = layers[6].playbackRate;
+
+	state->feetYaw = animatable->eyeAngles().y + 60.0f;
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
+	records[1] = layers[6].playbackRate;
+
+	state->feetYaw = animatable->eyeAngles().y - 60.0f;
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
+	records[2] = layers[6].playbackRate;
+
+	if (!layers[3].weight && !layers[3].cycle || layers[3].sequence == 979)
+	{
+		if (delta < 0.0f)
+			state->feetYaw = animatable->eyeAngles().y - animatable->getMaxDesyncAngle();
+		else
+			state->feetYaw = animatable->eyeAngles().y + animatable->getMaxDesyncAngle();
+	}
+	else if (static_cast<int>(layers[12].weight * 1000) == static_cast<int>(layers[6].weight * 1000))
+	{
+		const auto a = fabsf(layers[6].playbackRate - records[0]);
+		const auto b = fabsf(layers[6].playbackRate - records[1]);
+		const auto c = fabsf(layers[6].playbackRate - records[2]);
+
+		if (a < c || b <= c || (c * 1000))
+		{
+			if (a >= c && b > c && !(c * 1000))
+				state->feetYaw = animatable->eyeAngles().y - animatable->getMaxDesyncAngle();
+		} else
+			state->feetYaw = animatable->eyeAngles().y + animatable->getMaxDesyncAngle();
+	}
 	else
 	{
-		std::srand(misses);
 		const std::array<float, 3> positions = {animatable->getMaxDesyncAngle(), 0.0f, -animatable->getMaxDesyncAngle()};
-		state->feetYaw = state->eyeYaw + positions[rand() % positions.size()];
+		state->feetYaw = animatable->eyeAngles().y + positions[misses % positions.size()];
 	}
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->feetYawRate = 0.0f;
 
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 	animatable->clientAnimations() = true;
 	animatable->effectFlags() = backupEffects;
 }
