@@ -165,7 +165,7 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 		else
 			state->feetYaw = animatable->eyeAngles().y + animatable->getMaxDesyncAngle();
 	}
-	else if (static_cast<int>(layers[12].weight * 1000) == static_cast<int>(layers[6].weight * 1000))
+	else if (static_cast<int>(layers[12].weight * 1000) == static_cast<int>(layers[6].weight * 1000) || !static_cast<int>(layers[12].weight * 1000))
 	{
 		const auto a = fabsf(layers[6].playbackRate - records[0]);
 		const auto b = fabsf(layers[6].playbackRate - records[1]);
