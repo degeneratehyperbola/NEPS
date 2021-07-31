@@ -145,7 +145,8 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 	const auto delta = Helpers::angleDiffDeg(state->feetYaw, animatable->eyeAngles().y);
 
 	std::array<float, 3U> records;
-	
+	const auto bFeetYaw = state->feetYaw;
+
 	state->feetYaw = animatable->eyeAngles().y;
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 	records[0] = layers[6].playbackRate;
@@ -157,6 +158,8 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 	state->feetYaw = animatable->eyeAngles().y - 60.0f;
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 	records[2] = layers[6].playbackRate;
+
+	state->feetYaw = bFeetYaw;
 
 	if (!layers[3].weight && !layers[3].cycle || layers[3].sequence == 979)
 	{
@@ -178,7 +181,7 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 		} else
 			state->feetYaw = animatable->eyeAngles().y + animatable->getMaxDesyncAngle();
 	}
-	else
+	else if (misses > 3)
 	{
 		const std::array<float, 3> positions = {animatable->getMaxDesyncAngle(), 0.0f, -animatable->getMaxDesyncAngle()};
 		state->feetYaw = animatable->eyeAngles().y + positions[misses % positions.size()];
