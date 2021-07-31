@@ -167,9 +167,9 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 	}
 	else if (static_cast<int>(layers[12].weight * 1000) == static_cast<int>(layers[6].weight * 1000) || !static_cast<int>(layers[12].weight * 1000))
 	{
-		const auto a = fabsf(layers[6].playbackRate - records[0]);
-		const auto b = fabsf(layers[6].playbackRate - records[1]);
-		const auto c = fabsf(layers[6].playbackRate - records[2]);
+		const auto a = std::fabsf(layers[6].playbackRate - records[0]);
+		const auto b = std::fabsf(layers[6].playbackRate - records[1]);
+		const auto c = std::fabsf(layers[6].playbackRate - records[2]);
 
 		if (a < c || b <= c || (c * 1000))
 		{

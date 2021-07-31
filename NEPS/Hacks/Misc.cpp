@@ -622,7 +622,7 @@ void Misc::fixMovement(UserCmd *cmd, float yaw) noexcept
 	{
 		float oldYaw = yaw + (yaw < 0.0f ? 360.0f : 0.0f);
 		float newYaw = cmd->viewangles.y + (cmd->viewangles.y < 0.0f ? 360.0f : 0.0f);
-		float yawDelta = newYaw < oldYaw ? fabsf(newYaw - oldYaw) : 360.0f - fabsf(newYaw - oldYaw);
+		float yawDelta = newYaw < oldYaw ? std::fabsf(newYaw - oldYaw) : 360.0f - std::fabsf(newYaw - oldYaw);
 		yawDelta = 360.0f - yawDelta;
 
 		const float forwardmove = cmd->forwardmove;
