@@ -12,13 +12,13 @@
 
 static bool lbyUpdate() noexcept
 {
+	if (!localPlayer)
+		return false;
+
 	auto time = memory->globalVars->serverTime();
 	static float nextLby;
 	
-	if (~localPlayer->flags() & Entity::FL_ONGROUND)
-	{
-		return false;
-	} else if (localPlayer->velocity().length2D() > 0.1f)
+	if (localPlayer->velocity().length2D() > 0.1f || std::fabsf(localPlayer->velocity().z) > 100.0f)
 	{
 		nextLby = time + 0.22f;
 		return false;
@@ -53,7 +53,7 @@ static bool canAntiAim(UserCmd *cmd) noexcept
 
 static void forceLbyUpdate(UserCmd *cmd) noexcept
 {
-	if (fabsf(cmd->sidemove) < 5.0f)
+	if (std::fabsf(cmd->sidemove) < 5.0f)
 	{
 		if (localPlayer->flags() & Entity::FL_DUCKING)
 			cmd->sidemove = cmd->tickCount & 1 ? 3.25f : -3.25f;
