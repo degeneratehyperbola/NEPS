@@ -59,6 +59,9 @@ bool Entity::visibleTo(Entity *other) noexcept
 {
 	assert(isAlive());
 
+	if (!this || !other)
+		return false;
+
 	Entity *targetEntity = other;
 	if (!other->isAlive() && other->getObserverMode() == ObsMode::InEye && other->getObserverTarget())
 		targetEntity = other->getObserverTarget();
