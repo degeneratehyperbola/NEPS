@@ -356,6 +356,7 @@ public:
 	struct Movement
 	{
 		bool bunnyHop = false;
+		int bunnyHopChance{ 0 };
 		bool autoStrafe = false;
 		KeyBind edgeJump;
 		bool fastStop = false;
