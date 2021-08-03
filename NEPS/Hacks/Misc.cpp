@@ -711,7 +711,7 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 		return;
 
 	const float speed = localPlayer->velocity().length2D();
-	if (speed < 5.0f)
+	if (speed < 10.0f)
 		return;
 
 	constexpr auto perfectDelta = [](float speed) noexcept
