@@ -42,16 +42,13 @@ static bool canAntiAim(UserCmd *cmd) noexcept
 	if (cmd->buttons & UserCmd::IN_USE || !localPlayer->isAlive())
 		return false;
 
-	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
-		return false;
-
 	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
 		return false;
 
 	return true;
 }
 
-static void forceLbyUpdate(UserCmd *cmd) noexcept
+static void microMovement(UserCmd *cmd) noexcept
 {
 	if (std::fabsf(cmd->sidemove) < 5.0f)
 	{
@@ -66,19 +63,29 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 {
 	if (!canAntiAim(cmd)) return;
 
+	const auto networkChannel = interfaces->engine->getNetworkChannel();
+	if (!networkChannel)
+		return;
+
 	const auto &cfg = config->antiAim;
 
 	if (static Helpers::KeyBindState flag; cfg.fakeDuckPackets && flag[cfg.fakeDuck])
 	{
-		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= cfg.fakeDuckPackets;
+		sendPacket = networkChannel->chokedPackets >= cfg.fakeDuckPackets;
 
 		cmd->buttons |= UserCmd::IN_BULLRUSH;
 		cmd->buttons &= ~UserCmd::IN_DUCK;
 
-		if (interfaces->engine->getNetworkChannel()->chokedPackets > (cfg.fakeDuckPackets / 2))
+		if (networkChannel->chokedPackets < cfg.fakeDuckPackets / 2 || networkChannel->chokedPackets > cfg.fakeDuckPackets / 2 + 3)
+			cmd->buttons &= ~UserCmd::IN_ATTACK;
+
+		if (networkChannel->chokedPackets > (cfg.fakeDuckPackets / 2))
 			cmd->buttons |= UserCmd::IN_DUCK;
 	} else if (static Helpers::KeyBindState flag; flag[cfg.choke] && cfg.chokedPackets)
-		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= cfg.chokedPackets;
+		sendPacket = networkChannel->chokedPackets >= cfg.chokedPackets;
+
+	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
+		return;
 
 	if (cfg.reduceSlide && localPlayer->velocity().length2D() > 10.0f)
 		return;
@@ -124,30 +131,25 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (cfg.desync)
 	{
 		const auto desync = localPlayer->getMaxDesyncAngle();
-		float fake = flip ? cfg.fakeYaw : -cfg.fakeYaw;
-		float real = flip ? cfg.realYaw : -cfg.realYaw;
-		const bool fakeLessThanReal = cfg.lbyBreaker ? fake < real : 0.0f < real;
-		fake += fakeLessThanReal ? desync : -desync;
-		real += fakeLessThanReal ? -desync : desync;
-
-		if (cfg.lbyBreaker)
+		float a = 0.0f;
+		float b = flip ? 120.0f : -120.0f;
+		switch (cfg.desyncType)
 		{
-			if (lbyUpdate())
-			{
-				sendPacket = false;
-				cmd->viewangles.y += fake;
-			} else if (!sendPacket)
-			{
-				cmd->viewangles.y += real;
-			}
-		} else
-		{
-			if (!sendPacket)
-			{
-				cmd->viewangles.y += real;
-			}
+		case 1: a = b < 0.0f ? -desync : desync; break;
+		case 2: a = b > 0.0f ? -desync : desync; break;
+		}
+		const bool fakeLessThanReal = a < b;
+		b += fakeLessThanReal ? 60.0f : -60.0f;
 
-			forceLbyUpdate(cmd);
+		if (cfg.desyncType && lbyUpdate())
+		{
+			sendPacket = false;
+			cmd->viewangles.y += a;
+		} else if (!cfg.desyncType) microMovement(cmd);
+
+		if (!sendPacket)
+		{
+			cmd->viewangles.y += b;
 		}
 	}
 
@@ -157,7 +159,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 {
-	if (canAntiAim(cmd) && config->antiAim.fakeUp)
+	if (canAntiAim(cmd) && config->antiAim.fakeUp && !Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
 	{
 		cmd->viewangles.x = -540.0f;
 		cmd->forwardmove = -cmd->forwardmove;
