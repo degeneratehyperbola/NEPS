@@ -412,14 +412,41 @@ void Misc::bunnyHop(UserCmd *cmd) noexcept
 {
 	if (!localPlayer)
 		return;
+	static bool hasLanded = true;
+	static int bhopInSeries = 1;
+	static float lastTimeInAir{};
+	static int chanceToHit = config->movement.bunnyHopChance;
+	static auto wasLastTimeOnGround{ localPlayer->flags() & 1 };
 
-	static auto wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
+	chanceToHit = config->movement.bunnyHopChance;
 
-	if (config->movement.bunnyHop && !(localPlayer->flags() & Entity::FL_ONGROUND) && localPlayer->moveType() != MoveType::LADDER && !wasLastTimeOnGround)
-		cmd->buttons &= ~UserCmd::IN_JUMP;
+	if (bhopInSeries <= 1) {
+		chanceToHit = chanceToHit * 1.5;
+	}
 
-	wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
+	//config->misc.DEBUG = bhopInSeries;
+
+
+	if (config->movement.bunnyHopChance && !(localPlayer->flags() & 1) && localPlayer->moveType() != MoveType::LADDER && !wasLastTimeOnGround)
+		if (rand() % 100 <= chanceToHit) {
+			cmd->buttons &= ~UserCmd::IN_JUMP;
+		}
+	//memory->globalVars->realtime - lastTimeInAir <= 2 &&
+	if (!wasLastTimeOnGround && hasLanded) {
+		bhopInSeries++;
+		lastTimeInAir = memory->globalVars->realtime;
+		hasLanded = false;
+	}
+	if (wasLastTimeOnGround) {
+		hasLanded = true;
+		if (memory->globalVars->realtime - lastTimeInAir >= 3) {
+			bhopInSeries = 0;
+		}
+	}
+
+	wasLastTimeOnGround = localPlayer->flags() & 1;
 }
+
 
 void Misc::fakeBan(bool set) noexcept
 {
