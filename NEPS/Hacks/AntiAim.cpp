@@ -15,7 +15,7 @@ static bool lbyUpdate() noexcept
 	if (!localPlayer)
 		return false;
 
-	auto time = memory->globalVars->serverTime();
+	const auto time = memory->globalVars->serverTime();
 	static float nextLby;
 	
 	if (localPlayer->velocity().length2D() > 0.1f || std::fabsf(localPlayer->velocity().z) > 100.0f)
@@ -59,6 +59,24 @@ static void microMovement(UserCmd *cmd) noexcept
 	}
 }
 
+static const Config::AntiAim &getCurrentConfig()
+{
+	constexpr std::array categories = {"Freestand", "Slowwalk", "Fake duck", "Run", "Airborne"};
+
+	if (static Helpers::KeyBindState flag; flag[config->exploits.fakeDuck])
+		return config->antiAim[categories[2]];
+	else if (localPlayer->flags() & Entity::FL_ONGROUND)
+	{
+		if (localPlayer->velocity().length2D() < 5.0f)
+			return config->antiAim[categories[0]];
+		else if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk])
+			return config->antiAim[categories[1]];
+		else
+			return config->antiAim[categories[3]];
+	} else
+		return config->antiAim[categories[4]];
+}
+
 void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
 	if (!canAntiAim(cmd)) return;
@@ -67,27 +85,25 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (!networkChannel)
 		return;
 
-	const auto &cfg = config->antiAim;
+	const auto &cfg = getCurrentConfig();
+	const auto time = memory->globalVars->serverTime();
 
-	if (static Helpers::KeyBindState flag; cfg.fakeDuckPackets && flag[cfg.fakeDuck])
+	if (static Helpers::KeyBindState flag; config->exploits.fakeDuckPackets && flag[config->exploits.fakeDuck])
 	{
-		sendPacket = networkChannel->chokedPackets >= cfg.fakeDuckPackets;
+		sendPacket = networkChannel->chokedPackets >= config->exploits.fakeDuckPackets;
 
 		cmd->buttons |= UserCmd::IN_BULLRUSH;
 		cmd->buttons &= ~UserCmd::IN_DUCK;
 
-		if (networkChannel->chokedPackets < cfg.fakeDuckPackets / 2 || networkChannel->chokedPackets > cfg.fakeDuckPackets / 2 + 3)
+		if (networkChannel->chokedPackets < config->exploits.fakeDuckPackets / 2 || networkChannel->chokedPackets > config->exploits.fakeDuckPackets / 2 + 3)
 			cmd->buttons &= ~UserCmd::IN_ATTACK;
 
-		if (networkChannel->chokedPackets > (cfg.fakeDuckPackets / 2))
+		if (networkChannel->chokedPackets > (config->exploits.fakeDuckPackets / 2))
 			cmd->buttons |= UserCmd::IN_DUCK;
 	} else if (static Helpers::KeyBindState flag; flag[cfg.choke] && cfg.chokedPackets)
 		sendPacket = networkChannel->chokedPackets >= cfg.chokedPackets;
 
 	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
-		return;
-
-	if (cfg.reduceSlide && localPlayer->velocity().length2D() > 10.0f)
 		return;
 
 	static bool flip = true;
@@ -130,27 +146,22 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 	if (cfg.desync)
 	{
-		const auto desync = localPlayer->getMaxDesyncAngle();
-		float a = 0.0f;
+		float a = flip ? -120.0f : 120.0f;
 		float b = flip ? 120.0f : -120.0f;
-		switch (cfg.desyncType)
-		{
-		case 1: a = b < 0.0f ? -desync : desync; break;
-		case 2: a = b > 0.0f ? -desync : desync; break;
-		}
-		const bool fakeLessThanReal = a < b;
-		b += fakeLessThanReal ? 60.0f : -60.0f;
 
-		if (cfg.desyncType && lbyUpdate())
+		if (cfg.desyncType == 0)
+		{
+			microMovement(cmd);
+
+			if (!sendPacket)
+				cmd->viewangles.y += b;
+		}
+		else if (lbyUpdate())
 		{
 			sendPacket = false;
 			cmd->viewangles.y += a;
-		} else if (!cfg.desyncType) microMovement(cmd);
-
-		if (!sendPacket)
-		{
+		} else if (!sendPacket)
 			cmd->viewangles.y += b;
-		}
 	}
 
 	if (cfg.yaw)
@@ -159,7 +170,12 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 {
-	if (canAntiAim(cmd) && config->antiAim.fakeUp && !Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
+	if (!canAntiAim(cmd))
+		return false;
+
+	const auto &cfg = getCurrentConfig();
+
+	if (cfg.fakeUp && !Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
 	{
 		cmd->viewangles.x = -540.0f;
 		cmd->forwardmove = -cmd->forwardmove;

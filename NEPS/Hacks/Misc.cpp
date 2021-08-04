@@ -345,8 +345,8 @@ void Misc::quickReload(UserCmd *cmd) noexcept
 
 				if (interfaces->entityList->getEntityFromHandle(weaponHandle) == reloadedWeapon)
 				{
-					cmd->weaponselect = reloadedWeapon->index();
-					cmd->weaponsubtype = reloadedWeapon->getWeaponSubType();
+					cmd->weaponSelect = reloadedWeapon->index();
+					cmd->weaponSubtype = reloadedWeapon->getWeaponSubType();
 					break;
 				}
 			}
@@ -364,8 +364,8 @@ void Misc::quickReload(UserCmd *cmd) noexcept
 
 				if (auto weapon = interfaces->entityList->getEntityFromHandle(weaponHandle); weapon && weapon != reloadedWeapon)
 				{
-					cmd->weaponselect = weapon->index();
-					cmd->weaponsubtype = weapon->getWeaponSubType();
+					cmd->weaponSelect = weapon->index();
+					cmd->weaponSubtype = weapon->getWeaponSubType();
 					break;
 				}
 			}
@@ -580,8 +580,8 @@ void Misc::quickHealthshot(UserCmd *cmd) noexcept
 
 				if (const auto weapon{interfaces->entityList->getEntityFromHandle(weaponHandle)}; weapon && weapon->getClientClass()->classId == ClassId::Healthshot)
 				{
-					cmd->weaponselect = weapon->index();
-					cmd->weaponsubtype = weapon->getWeaponSubType();
+					cmd->weaponSelect = weapon->index();
+					cmd->weaponSubtype = weapon->getWeaponSubType();
 					return;
 				}
 			}
@@ -711,7 +711,7 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 		return;
 
 	const float speed = localPlayer->velocity().length2D();
-	if (speed < 10.0f)
+	if (speed < 5.0f)
 		return;
 
 	constexpr auto perfectDelta = [](float speed) noexcept

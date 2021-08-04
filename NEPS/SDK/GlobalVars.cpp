@@ -9,7 +9,7 @@ float GlobalVars::serverTime(UserCmd *cmd) const noexcept
 
 	if (cmd)
 	{
-		if (localPlayer && (!lastCmd || lastCmd->hasbeenpredicted))
+		if (localPlayer && (!lastCmd || lastCmd->hasBeenPredicted))
 			tick = localPlayer->tickBase();
 		else
 			tick++;

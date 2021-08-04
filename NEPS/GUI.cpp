@@ -739,45 +739,83 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			return;
 		ImGui::Begin("Anti-aim", &window.antiAim, windowFlags);
 	}
-	ImGui::Checkbox("##yaw", &config->antiAim.yaw);
-	ImGui::SameLine();
-	ImGui::SliderFloat("##yaw_sl", &config->antiAim.yawAngle, -180.0f, 180.0f, "Yaw %.2fdeg");
-	ImGui::Checkbox("Fake pitch up", &config->antiAim.fakeUp);
-	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("May get you insta-overwatch");
-	if (!config->antiAim.fakeUp)
+
+	constexpr std::array categories = {"Freestand", "Slowwalk", "Fake duck", "Run", "Airborne"};
+	static std::size_t currentCategory;
+
+	if (ImGui::BeginListBox("##list", {70, 110}))
 	{
-		ImGui::Checkbox("##pitch", &config->antiAim.pitch);
+		for (std::size_t i = 0; i < categories.size(); ++i)
+		{
+			if (ImGui::Selectable(categories[i], currentCategory == i))
+				currentCategory = i;
+
+			if (ImGui::BeginDragDropSource())
+			{
+				ImGui::SetDragDropPayload("Anti-aim", &config->antiAim[categories[i]], sizeof(Config::AntiAim), ImGuiCond_Once);
+				ImGui::EndDragDropSource();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Anti-aim"))
+				{
+					const auto &data = *(Config::AntiAim *)payload->Data;
+					config->antiAim[categories[i]] = data;
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+		}
+		ImGui::EndListBox();
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::BeginChild("##child", {210, 0}, false, ImGuiWindowFlags_NoScrollbar))
+	{
+		auto &currentConfig = config->antiAim[categories[currentCategory]];
+
+		ImGui::Checkbox("##yaw", &currentConfig.yaw);
 		ImGui::SameLine();
-		ImGui::SliderFloat("##pitch_sl", &config->antiAim.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
-	}
-	ImGui::Checkbox("Look at enemies", &config->antiAim.lookAtEnemies);
-	ImGui::Checkbox("Desync", &config->antiAim.desync);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("Desync advanced", ImGuiDir_Right))
-		ImGui::OpenPopup("##desync");
+		ImGui::SetNextItemWidth(-1);
+		ImGui::SliderFloat("##yaw_sl", &currentConfig.yawAngle, -180.0f, 180.0f, "Yaw %.2fdeg");
+		if (!currentConfig.fakeUp)
+		{
+			ImGui::Checkbox("##pitch", &currentConfig.pitch);
+			ImGui::SameLine();
+			ImGui::SetNextItemWidth(-1);
+			ImGui::SliderFloat("##pitch_sl", &currentConfig.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
+		}
+		ImGui::Checkbox("Look at enemies", &currentConfig.lookAtEnemies);
+		ImGui::Checkbox("Desync", &currentConfig.desync);
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("Desync advanced", ImGuiDir_Right))
+			ImGui::OpenPopup("##desync");
 
-	if (ImGui::BeginPopup("##desync"))
-	{
-		ImGui::Checkbox("Reduce slide", &config->antiAim.reduceSlide);
-		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Turn off AA when moving");
-		ImGui::Checkbox("LBY breaker", &config->antiAim.lbyBreaker);
-		if (config->antiAim.lbyBreaker)
-			ImGui::SliderFloat("##fake_lby", &config->antiAim.fakeYaw, -60.0f, 60.0f, "Fake LBY %.2fdeg");
-		ImGui::SliderFloat("##real_lby", &config->antiAim.realYaw, -60.0f, 60.0f, "Real LBY %.2fdeg");
-		ImGuiCustom::keyBind("Flip key", &config->antiAim.flipKey);
-		ImGui::EndPopup();
+		if (ImGui::BeginPopup("##desync"))
+		{
+			ImGui::SetNextItemWidth(100);
+			ImGui::Combo("Desync type", &currentConfig.desyncType, "Micro movement\0Opposite\0Swap\0");
+			ImGuiCustom::keyBind("Flip key", &currentConfig.flipKey);
+
+			ImGui::Separator();
+
+			ImGui::Checkbox("Fake pitch up", &currentConfig.fakeUp);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("May get you insta-overwatch");
+			ImGui::EndPopup();
+		}
+
+		ImGui::SetNextItemWidth(90.0f);
+		ImGui::InputInt("Choked packets", &currentConfig.chokedPackets, 1, 5);
+		currentConfig.chokedPackets = std::clamp(currentConfig.chokedPackets, 0, 64);
+		ImGui::SameLine();
+		ImGuiCustom::keyBind("##choke", currentConfig.choke);
 	}
 
-	ImGuiCustom::keyBind("Fake duck", config->antiAim.fakeDuck);
-	ImGui::SetNextItemWidth(90.0f);
-	ImGui::InputInt("Fake duck packets", &config->antiAim.fakeDuckPackets, 1, 5);
-	ImGui::SetNextItemWidth(90.0f);
-	ImGui::InputInt("Choked packets", &config->antiAim.chokedPackets, 1, 5);
-	config->antiAim.chokedPackets = std::clamp(config->antiAim.chokedPackets, 0, 64);
-	ImGui::SameLine();
-	ImGuiCustom::keyBind("##choke", config->antiAim.choke);
+	ImGui::EndChild();
+
 	if (!contentOnly)
 		ImGui::End();
 }
@@ -1190,11 +1228,11 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 			return;
 		ImGui::Begin("Chams", &window.chams, windowFlags);
 	}
-	static int currentCategory{0};
-	ImGui::PushItemWidth(110);
 
+	static int currentCategory = 0;
 	static int material = 1;
 
+	ImGui::PushItemWidth(110);
 	if (ImGui::Combo("##category", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Backtrack\0Local player\0Desync\0Weapon\0Sleeves\0Hands\0World weapons\0C4\0Defuse kits\0Ragdolls\0Props\0"))
 		material = 1;
 
@@ -1566,7 +1604,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		ImGui::SetNextItemWidth(220.0f);
 		if (ImGui::BeginCombo("##font", config->getSystemFonts()[sharedConfig.font.index].c_str()))
 		{
-			for (size_t i = 0; i < config->getSystemFonts().size(); i++)
+			for (size_t i = 0; i < config->getSystemFonts().size(); ++i)
 			{
 				bool isSelected = config->getSystemFonts()[i] == sharedConfig.font.name;
 				if (ImGui::Selectable(config->getSystemFonts()[i].c_str(), isSelected, 0, {250.0f, 0.0f}))
@@ -2198,6 +2236,9 @@ void GUI::renderExploitsWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Anti AFK kick", &config->exploits.antiAfkKick);
 	ImGui::Checkbox("Fast duck", &config->exploits.fastDuck);
+	ImGuiCustom::keyBind("Fake duck", config->exploits.fakeDuck);
+	ImGui::SetNextItemWidth(90.0f);
+	ImGui::InputInt("Fake duck packets", &config->exploits.fakeDuckPackets, 1, 5);
 	ImGui::Checkbox("Moonwalk", &config->exploits.moonwalk);
 	ImGuiCustom::keyBind("Slowwalk", config->exploits.slowwalk);
 
@@ -2299,7 +2340,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 
 		ss << "say ";
 
-		for (int i = 0; i <= 75; i++)
+		for (int i = 0; i <= 75; ++i)
 			ss << "\xE2\x80\xA9";
 
 		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
@@ -2313,7 +2354,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 
 		ss << "say ";
 
-		for (int i = 0; i <= 30; i++)
+		for (int i = 0; i <= 30; ++i)
 			ss << "\uFDFD ";
 
 		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
@@ -2466,7 +2507,7 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 	if (config->style.menuColors == 6)
 	{
 		ImGuiStyle &style = ImGui::GetStyle();
-		for (int i = 0; i < ImGuiCol_COUNT; i++)
+		for (int i = 0; i < ImGuiCol_COUNT; ++i)
 		{
 			if (i && i & 3) ImGui::SameLine(170.0f * (i & 3));
 
@@ -2620,141 +2661,142 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 #ifdef _DEBUG_NEPS
 void GUI::renderDebugWindow() noexcept
 {
-	ImGui::Columns(2, nullptr, false);
+	ImGui::Columns(3, nullptr, false);
 
-	if (ImGui::Button("Test chat hook"))
-		memory->clientMode->getHudChat()->printf(0, "\x1N \x2N \x3N \x4N \x5N \x6N \x7N \x8N \x9N \xAN \xBN \xCN \xDN \xEN \xFN \x10N \x1");
-
-	if (ImGui::Button("List client classes"))
 	{
-		for (int i = 0; i <= interfaces->entityList->getHighestEntityIndex(); i++)
-		{
-			auto entity = interfaces->entityList->getEntity(i);
-			if (!entity) continue;
+		if (ImGui::Button("Test chat virtual methods"))
+			memory->clientMode->getHudChat()->printf(0, "\x1N \x2N \x3N \x4N \x5N \x6N \x7N \x8N \x9N \xAN \xBN \xCN \xDN \xEN \xFN \x10N \x1");
 
-			memory->conColorMsg({0, 200, 0, 255}, std::to_string(i).c_str());
-			memory->debugMsg(": ");
-			memory->conColorMsg({0, 120, 255, 255}, entity->getClientClass()->networkName);
-			memory->debugMsg(" -> ");
-			memory->conColorMsg({255, 120, 255, 255}, std::to_string((int)entity->getClientClass()->classId).c_str());
-			memory->debugMsg("   ");
+		if (ImGui::Button("List client classes"))
+		{
+			for (int i = 0; i <= interfaces->entityList->getHighestEntityIndex(); i++)
+			{
+				auto entity = interfaces->entityList->getEntity(i);
+				if (!entity) continue;
+
+				memory->conColorMsg({0, 200, 0, 255}, std::to_string(i).c_str());
+				memory->debugMsg(": ");
+				memory->conColorMsg({0, 120, 255, 255}, entity->getClientClass()->networkName);
+				memory->debugMsg(" -> ");
+				memory->conColorMsg({255, 120, 255, 255}, std::to_string((int)entity->getClientClass()->classId).c_str());
+				memory->debugMsg("   ");
+			}
 		}
-	}
 
-	static const char *entName;
-	static ClassId entClassId;
-	static int idx = -1;
-	if (ImGui::Button("Select...") && localPlayer)
-	{
-		const Vector start = localPlayer->getEyePosition();
-		const Vector end = start + Vector::fromAngle(interfaces->engine->getViewAngles()) * 1000.0f;
-
-		Trace trace;
-		interfaces->engineTrace->traceRay({start, end}, ALL_VISIBLE_CONTENTS | CONTENTS_MOVEABLE | CONTENTS_DETAIL, localPlayer.get(), trace);
-
-		if (trace.entity)
+		static const char *entName;
+		static ClassId entClassId;
+		static int idx = -1;
+		if (ImGui::Button("Select...") && localPlayer)
 		{
-			auto clientClass = trace.entity->getClientClass();
+			const Vector start = localPlayer->getEyePosition();
+			const Vector end = start + Vector::fromAngle(interfaces->engine->getViewAngles()) * 1000.0f;
+
+			Trace trace;
+			interfaces->engineTrace->traceRay({start, end}, ALL_VISIBLE_CONTENTS | CONTENTS_MOVEABLE | CONTENTS_DETAIL, localPlayer.get(), trace);
+
+			if (trace.entity)
+			{
+				auto clientClass = trace.entity->getClientClass();
+				entName = clientClass->networkName;
+				entClassId = clientClass->classId;
+				idx = trace.entity->index();
+			}
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Select self") && localPlayer)
+		{
+			auto clientClass = localPlayer->getClientClass();
 			entName = clientClass->networkName;
 			entClassId = clientClass->classId;
-			idx = trace.entity->index();
+			idx = localPlayer->index();
 		}
-	}
 
-	ImGui::SameLine();
-
-	if (ImGui::Button("Select self") && localPlayer)
-	{
-		auto clientClass = localPlayer->getClientClass();
-		entName = clientClass->networkName;
-		entClassId = clientClass->classId;
-		idx = localPlayer->index();
-	}
-
-	Entity *entity = interfaces->entityList->getEntity(idx);
-	if (entName)
-	{
-		ImGui::TextUnformatted("Selected:");
-		ImGui::SameLine();
-		ImGui::TextColored({1.0f, 1.0f, 0.0f, 1.0f}, "%s", entName);
-		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("In entity list at %i", idx);
-		ImGui::SameLine();
-		ImGui::TextColored({0.0f, 0.3f, 1.0f, 1.0f}, "%i", entClassId);
-	}
-
-	static std::array<float, 3> lightColor = {1.0f, 1.0f, 1.0f};
-	static float radius = 120.0f;
-	static float life = 20.0f;
-	static int exponent = 2;
-
-	ImGuiCustom::colorPicker("Light color", lightColor.data());
-	ImGui::SliderFloat("##radius", &radius, 0.0f, 5000.0f, "Light radius %.3f", ImGuiSliderFlags_Logarithmic);
-	ImGui::SliderInt("##exponent", &exponent, 0, 12, "Light exponent %d");
-	ImGui::SliderFloat("##life", &life, 0.0f, 100.0f, "Light lifetime %.3f");
-
-	static DynamicLight *dlight = nullptr;
-	if (entity && entClassId != ClassId::World && ImGui::Button("Allocade d-light for selected entity"))
-	{
-		dlight = interfaces->effects->allocDlight(idx);
-		if (dlight)
+		Entity *entity = interfaces->entityList->getEntity(idx);
+		if (entName)
 		{
-			dlight->outerAngle = 0.0f;
-			dlight->flags = 0;
-			dlight->decay = 0.0f;
-			dlight->die = memory->globalVars->currenttime + life;
-			dlight->origin = entity->getAbsOrigin();
-			dlight->radius = radius;
-			dlight->color.r = static_cast<unsigned char>(lightColor[0] * 255);
-			dlight->color.g = static_cast<unsigned char>(lightColor[1] * 255);
-			dlight->color.b = static_cast<unsigned char>(lightColor[2] * 255);
-			dlight->color.exponent = exponent;
+			ImGui::TextUnformatted("Selected:");
+			ImGui::SameLine();
+			ImGui::TextColored({1.0f, 1.0f, 0.0f, 1.0f}, "%s", entName);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("In entity list at %i", idx);
+			ImGui::SameLine();
+			ImGui::TextColored({0.0f, 0.3f, 1.0f, 1.0f}, "%i", entClassId);
 		}
+
+		static std::array<float, 3> lightColor = {1.0f, 1.0f, 1.0f};
+		static float radius = 120.0f;
+		static float life = 20.0f;
+		static int exponent = 2;
+
+		ImGuiCustom::colorPicker("Light color", lightColor.data());
+		ImGui::SliderFloat("##radius", &radius, 0.0f, 5000.0f, "Light radius %.3f", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderInt("##exponent", &exponent, 0, 12, "Light exponent %d");
+		ImGui::SliderFloat("##life", &life, 0.0f, 100.0f, "Light lifetime %.3f");
+
+		static DynamicLight *dlight = nullptr;
+		if (entity && entClassId != ClassId::World && ImGui::Button("Allocade d-light for selected entity"))
+		{
+			dlight = interfaces->effects->allocDlight(idx);
+			if (dlight)
+			{
+				dlight->outerAngle = 0.0f;
+				dlight->flags = 0;
+				dlight->decay = 0.0f;
+				dlight->die = memory->globalVars->currenttime + life;
+				dlight->origin = entity->getAbsOrigin();
+				dlight->radius = radius;
+				dlight->color.r = static_cast<unsigned char>(lightColor[0] * 255);
+				dlight->color.g = static_cast<unsigned char>(lightColor[1] * 255);
+				dlight->color.b = static_cast<unsigned char>(lightColor[2] * 255);
+				dlight->color.exponent = exponent;
+			}
+		}
+
+		if (entity && entity->isPlayer() && ImGui::Button("Resolve selected"))
+			Animations::resolveLBY(entity, 10);
+
+		static bool data = false;
+		if (entity && entity->isPlayer() && ImGui::Button("Data authenticity for selected"))
+			data = Helpers::animDataAuthenticity(entity);
+
+		if (data)
+			ImGui::TextUnformatted("Last authentic");
+
+		if (ImGui::Button("Precache info"))
+			interfaces->engine->clientCmdUnrestricted("sv_precacheinfo");
+
+		const auto &colors = ImGui::GetStyle().Colors;
+		std::ostringstream ss;
+
+		for (int i = 0; i < ImGuiCol_COUNT; ++i)
+		{
+			ss << "colors[ImGuiCol_" << ImGui::GetStyleColorName(i) << "] = {";
+			ss.precision(2);
+			ss << std::fixed << colors[i].x;
+			ss << "f, ";
+			ss << colors[i].y;
+			ss << "f, ";
+			ss << colors[i].z;
+			ss << "f, ";
+			ss << colors[i].w;
+			ss << "f};\n";
+		}
+
+		if (ImGui::Button("Copy style colors"))
+			ImGui::SetClipboardText(ss.str().c_str());
 	}
-
-	if (entity && entity->isPlayer() && ImGui::Button("Resolve selected"))
-		Animations::resolveLBY(entity, 10);
-
-	static bool data = false;
-	if (entity && entity->isPlayer() && ImGui::Button("Data authenticity for selected"))
-		data = Helpers::animDataAuthenticity(entity);
-
-	if (data)
-		ImGui::TextUnformatted("Last authentic");
-
-	if (ImGui::Button("Precache info"))
-		interfaces->engine->clientCmdUnrestricted("sv_precacheinfo");
-
-	const auto &colors = ImGui::GetStyle().Colors;
-	std::ostringstream ss;
-
-	for (int i = 0; i < ImGuiCol_COUNT; i++)
-	{
-		ss << "colors[ImGuiCol_" << ImGui::GetStyleColorName(i) << "] = {";
-		ss.precision(2);
-		ss << std::fixed << colors[i].x;
-		ss << "f, ";
-		ss << colors[i].y;
-		ss << "f, ";
-		ss << colors[i].z;
-		ss << "f, ";
-		ss << colors[i].w;
-		ss << "f};\n";
-	}
-
-	if (ImGui::Button("Copy style colors"))
-		ImGui::SetClipboardText(ss.str().c_str());
 
 	ImGui::NextColumn();
-
+	
 	{
-		GameData::Lock lock;
-
-		auto playerResource = *memory->playerResource;
-
-		if (localPlayer)
 		{
-			if (playerResource)
+			GameData::Lock lock;
+
+			auto playerResource = *memory->playerResource;
+
+			if (localPlayer && playerResource)
 			{
 				if (ImGui::BeginTable("shrek", 4))
 				{
@@ -2808,18 +2850,80 @@ void GUI::renderDebugWindow() noexcept
 				ImGui::InputInt("Ranking", &playerResource->competitiveRanking()[localPlayer->index()]);
 			}
 		}
+
+		ImGui::TextColored({1.0f, 0.8f, 0.0f, 1.0f}, "Local player");
+		ImGui::SameLine();
+		ImGui::TextUnformatted("at");
+		ImGui::SameLine();
+		ImGui::TextColored({0.0f, 0.2f, 1.0f, 1.0f}, "0x%p", localPlayer.get());
+		ImGui::SameLine();
+
+		char buffer[9];
+		sprintf(buffer, "%p", localPlayer.get());
+		if (ImGui::Button("Copy"))
+			ImGui::SetClipboardText(buffer);
 	}
 
-	ImGui::TextColored({1.0f, 0.8f, 0.0f, 1.0f}, "Local player");
-	ImGui::SameLine();
-	ImGui::TextUnformatted("at");
-	ImGui::SameLine();
-	ImGui::TextColored({0.0f, 0.2f, 1.0f, 1.0f}, "0x%p", localPlayer.get());
-	ImGui::SameLine();
+	ImGui::NextColumn();
 
-	char buffer[9];
-	sprintf(buffer, "%p", localPlayer.get());
-	if (ImGui::Button("Copy"))
-		ImGui::SetClipboardText(buffer);
+	{
+		if (localPlayer)
+		{
+			const auto layers = localPlayer->animationLayers();
+
+			if (ImGui::BeginTable("shrek2", 5))
+			{
+				ImGui::TableSetupColumn("Name", 0, 5.0f);
+				ImGui::TableSetupColumn("Weight");
+				ImGui::TableSetupColumn("Rate");
+				ImGui::TableSetupColumn("Seq");
+				ImGui::TableSetupColumn("Cycle");
+				ImGui::TableHeadersRow();
+
+				for (int i = 0; i < localPlayer->getAnimationLayerCount(); ++i)
+				{
+					ImGui::TableNextRow();
+					ImGui::PushID(ImGui::TableGetRowIndex());
+
+					if (ImGui::TableNextColumn())
+					{
+						switch (i)
+						{
+						case 0: ImGui::TextUnformatted("AIMMATRIX"); break;
+						case 1: ImGui::TextUnformatted("WEAPON_ACTION"); break;
+						case 2: ImGui::TextUnformatted("WEAPON_ACTION_RECROUCH"); break;
+						case 3: ImGui::TextUnformatted("ADJUST"); break;
+						case 4: ImGui::TextUnformatted("MOVEMENT_JUMP_OR_FALL"); break;
+						case 5: ImGui::TextUnformatted("MOVEMENT_LAND_OR_CLIMB"); break;
+						case 6: ImGui::TextUnformatted("MOVEMENT_MOVE"); break;
+						case 7: ImGui::TextUnformatted("MOVEMENT_STRAFECHANGE"); break;
+						case 8: ImGui::TextUnformatted("WHOLE_BODY"); break;
+						case 9: ImGui::TextUnformatted("FLASHED"); break;
+						case 10: ImGui::TextUnformatted("FLINCH"); break;
+						case 11: ImGui::TextUnformatted("ALIVELOOP"); break;
+						case 12: ImGui::TextUnformatted("LEAN"); break;
+						case 13: ImGui::TextUnformatted("???"); break;
+						case 14: ImGui::TextUnformatted("???"); break;
+						case 15: ImGui::TextUnformatted("???"); break;
+						}
+					}
+
+					if (ImGui::TableNextColumn())
+						ImGui::Text("%.4f", layers[i].weight);
+
+					if (ImGui::TableNextColumn())
+						ImGui::Text("%.4f", layers[i].playbackRate);
+
+					if (ImGui::TableNextColumn())
+						ImGui::Text("%i", layers[i].sequence);
+
+					if (ImGui::TableNextColumn())
+						ImGui::Text("%.4f", layers[i].cycle);
+				}
+
+				ImGui::EndTable();
+			}
+		}
+	}
 }
 #endif // _DEBUG_NEPS
