@@ -400,6 +400,7 @@ void PlayerData::update(Entity *entity) noexcept
 {
 	handle = entity->handle();
 	name = entity->getPlayerName();
+	inViewFrustum = !interfaces->engine->cullBox(obbMins + origin, obbMaxs + origin);
 
 	if (entity->isDormant())
 	{
@@ -415,7 +416,6 @@ void PlayerData::update(Entity *entity) noexcept
 	static_cast<BaseData &>(*this) = {entity};
 	origin = entity->getAbsOrigin();
 	velocity = entity->velocity();
-	inViewFrustum = !interfaces->engine->cullBox(obbMins + origin, obbMaxs + origin);
 	alive = entity->isAlive();
 
 	if (localPlayer)
