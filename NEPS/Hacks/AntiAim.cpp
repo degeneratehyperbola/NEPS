@@ -61,20 +61,18 @@ static void microMovement(UserCmd *cmd) noexcept
 
 static const Config::AntiAim &getCurrentConfig()
 {
-	constexpr std::array categories = {"Freestand", "Slowwalk", "Fake duck", "Run", "Airborne"};
+	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
 
-	if (static Helpers::KeyBindState flag; flag[config->exploits.fakeDuck])
-		return config->antiAim[categories[2]];
-	else if (localPlayer->flags() & Entity::FL_ONGROUND)
+	if (localPlayer->flags() & Entity::FL_ONGROUND)
 	{
 		if (localPlayer->velocity().length2D() < 5.0f)
 			return config->antiAim[categories[0]];
 		else if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk])
 			return config->antiAim[categories[1]];
 		else
-			return config->antiAim[categories[3]];
+			return config->antiAim[categories[2]];
 	} else
-		return config->antiAim[categories[4]];
+		return config->antiAim[categories[3]];
 }
 
 void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
@@ -116,8 +114,9 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (cfg.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = cfg.pitchAngle;
 
-	if (cfg.lookAtEnemies && cmd->viewangles.y == currentViewAngles.y)
+	if (cfg.hideHead && cmd->viewangles.y == currentViewAngles.y)
 	{
+		Entity *bestTarget = nullptr;
 		auto bestFov = 255.0f;
 		auto bestAngle = 0.0f;
 
@@ -136,13 +135,36 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			const auto fov = std::hypot(angle.x, angle.y);
 			if (fov < bestFov)
 			{
+				bestTarget = entity;
 				bestFov = fov;
 				bestAngle = angle.y;
 			}
 		}
 
 		cmd->viewangles.y += bestAngle;
+
+		const auto state = localPlayer->getAnimState();
+		if (!state)
+			goto proceed;
+
+		constexpr std::array positions = {90.0f, 135.0f, 180.0f, -135.0f, -90.0f};
+		const auto backupYaw = state->eyeYaw;
+
+		auto bestDamage = localPlayer->health();
+
+		for (const auto &yaw : positions)
+		{
+			state->eyeYaw += yaw;
+
+			//const auto damage
+
+			state->eyeYaw = backupYaw;
+		}
+
+		state->eyeYaw = backupYaw;
 	}
+
+	proceed:
 
 	if (cfg.desync)
 	{

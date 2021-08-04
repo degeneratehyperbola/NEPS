@@ -106,14 +106,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 			continue;
 
-		auto allowedHitgroup = cfg.hitGroup;
-
-		if (cfg.safeOnly && !Helpers::animDataAuthenticity(entity))
-		{
-			allowedHitgroup = cfg.safeHitGroup;
-		}
-
-		if (!allowedHitgroup)
+		if (!cfg.hitGroup)
 			continue;
 
 		const Record *backtrackRecord = nullptr;
@@ -320,7 +313,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 				Trace trace;
 				const auto damage = Helpers::findDamage(point, localPlayer.get(), trace, cfg.friendlyFire, &goesThroughWall, backtrackRecord, hitboxIdx);
 
-				if (~allowedHitgroup & (1 << (trace.hitGroup - 1)))
+				if (~cfg.hitGroup & (1 << (trace.hitGroup - 1)))
 					continue;
 
 				if (cfg.visibleOnly && goesThroughWall) continue;

@@ -63,8 +63,6 @@ public:
 		float linear = 255.0f;
 		int hitGroup = 127;
 		bool betweenShots = true;
-		bool safeOnly;
-		int safeHitGroup = 6;
 		bool desyncResolver = false;
 	};
 	std::array<Aimbot, 40> aimbot;
@@ -100,7 +98,7 @@ public:
 		float pitchAngle = 0.0f;
 		bool yaw = false;
 		float yawAngle = 0.0f;
-		bool lookAtEnemies = false;
+		bool hideHead = false;
 		bool desync = false;
 		int desyncType = 0;
 		bool fakeUp = false;

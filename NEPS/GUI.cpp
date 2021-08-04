@@ -718,11 +718,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
-
-		ImGui::Checkbox("When unsure", &config->aimbot[currentWeapon].safeOnly);
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(80);
-		ImGuiCustom::multiCombo("##safe_hit_group", config->aimbot[currentWeapon].safeHitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
 	}
 
 	ImGui::EndChild();
@@ -740,7 +735,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 		ImGui::Begin("Anti-aim", &window.antiAim, windowFlags);
 	}
 
-	constexpr std::array categories = {"Freestand", "Slowwalk", "Fake duck", "Run", "Airborne"};
+	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
 	static std::size_t currentCategory;
 
 	if (ImGui::BeginListBox("##list", {70, 110}))
@@ -776,10 +771,14 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 	{
 		auto &currentConfig = config->antiAim[categories[currentCategory]];
 
-		ImGui::Checkbox("##yaw", &currentConfig.yaw);
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(-1);
-		ImGui::SliderFloat("##yaw_sl", &currentConfig.yawAngle, -180.0f, 180.0f, "Yaw %.2fdeg");
+		if (!currentConfig.hideHead)
+		{
+			ImGui::Checkbox("##yaw", &currentConfig.yaw);
+			ImGui::SameLine();
+			ImGui::SetNextItemWidth(-1);
+			ImGui::SliderFloat("##yaw_sl", &currentConfig.yawAngle, -180.0f, 180.0f, "Yaw %.2fdeg");
+		}
+		ImGui::Checkbox("Hide head", &currentConfig.hideHead);
 		if (!currentConfig.fakeUp)
 		{
 			ImGui::Checkbox("##pitch", &currentConfig.pitch);
@@ -787,7 +786,6 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SetNextItemWidth(-1);
 			ImGui::SliderFloat("##pitch_sl", &currentConfig.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
 		}
-		ImGui::Checkbox("Look at enemies", &currentConfig.lookAtEnemies);
 		ImGui::Checkbox("Desync", &currentConfig.desync);
 		ImGui::SameLine();
 		if (ImGui::ArrowButton("Desync advanced", ImGuiDir_Right))

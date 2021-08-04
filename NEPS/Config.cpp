@@ -358,8 +358,6 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Min damage override", a.minDamageOverride);
 	read(j, "Min damage auto-wall override", a.minDamageAutoWallOverride);
 	read(j, "Between shots", a.betweenShots);
-	read(j, "Safe only", a.safeOnly);
-	read(j, "Safe mode", a.safeHitGroup);
 	read(j, "Resolver", a.desyncResolver);
 }
 
@@ -393,7 +391,7 @@ static void from_json(const json &j, Config::AntiAim &a)
 	read(j, "Pitch angle", a.pitchAngle);
 	read(j, "Yaw", a.yaw);
 	read(j, "Yaw angle", a.yawAngle);
-	read(j, "Look at enemies", a.lookAtEnemies);
+	read(j, "Look at enemies", a.hideHead);
 	read(j, "Desync", a.desync);
 	read(j, "Desync type", a.desyncType);
 	read(j, "Fake up", a.fakeUp);
@@ -970,8 +968,6 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Min damage override", minDamageOverride);
 	WRITE("Min damage auto-wall override", minDamageAutoWallOverride);
 	WRITE("Between shots", betweenShots);
-	WRITE("Safe only", safeOnly);
-	WRITE("Safe mode", safeHitGroup);
 	WRITE("Resolver", desyncResolver);
 }
 
@@ -1005,7 +1001,7 @@ static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &du
 	WRITE("Pitch angle", pitchAngle);
 	WRITE("Yaw", yaw);
 	WRITE("Yaw angle", yawAngle);
-	WRITE("Look at enemies", lookAtEnemies);
+	WRITE("Look at enemies", hideHead);
 	WRITE("Desync", desync);
 	WRITE("Desync type", desyncType);
 	WRITE("Fake up", fakeUp);
