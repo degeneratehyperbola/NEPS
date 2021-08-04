@@ -63,7 +63,6 @@ public:
 		float linear = 255.0f;
 		int hitGroup = 127;
 		bool betweenShots = true;
-		bool desyncResolver = false;
 	};
 	std::array<Aimbot, 40> aimbot;
 
@@ -369,6 +368,7 @@ public:
 		bool fixAnimation = true;
 		bool disableModelOcclusion = true;
 		bool disableInterp = false;
+		bool desyncResolver = false;
 		bool unlockInvertory = false;
 		bool disablePanoramablur = false;
 

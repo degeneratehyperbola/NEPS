@@ -358,7 +358,6 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Min damage override", a.minDamageOverride);
 	read(j, "Min damage auto-wall override", a.minDamageAutoWallOverride);
 	read(j, "Between shots", a.betweenShots);
-	read(j, "Resolver", a.desyncResolver);
 }
 
 static void from_json(const json &j, Config::Triggerbot &t)
@@ -659,6 +658,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fix animations", m.fixAnimation);
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
 	read(j, "Disable interpolation", m.disableInterp);
+	read(j, "Resolver", m.desyncResolver);
 	read(j, "Unlock invertory", m.unlockInvertory);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
 	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
@@ -968,7 +968,6 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Min damage override", minDamageOverride);
 	WRITE("Min damage auto-wall override", minDamageAutoWallOverride);
 	WRITE("Between shots", betweenShots);
-	WRITE("Resolver", desyncResolver);
 }
 
 static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerbot &dummy = {})
@@ -1115,6 +1114,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix animations", fixAnimation);
 	WRITE("Disable model occlusion", disableModelOcclusion);
 	WRITE("Disable interpolation", disableInterp);
+	WRITE("Resolver", desyncResolver);
 	WRITE("Unlock invertory", unlockInvertory);
 	WRITE("Disable HUD blur", disablePanoramablur);
 	WRITE("Prepare revolver", prepareRevolver);

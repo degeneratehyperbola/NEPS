@@ -340,7 +340,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Visuals::playerModel(stage);
 		Visuals::disablePostProcessing(stage);
 		Visuals::removeVisualRecoil(stage);
-		Misc::tweakNonLocalPlayerAnim(stage);
+		Misc::tweakPlayerAnim(stage);
 		Backtrack::update(stage);
 		SkinChanger::run(stage);
 	}

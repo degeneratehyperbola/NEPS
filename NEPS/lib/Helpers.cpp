@@ -585,7 +585,7 @@ float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept
 bool Helpers::animDataAuthenticity(Entity *animatable) noexcept
 {
 	if (!animatable->isPlayer())
-		return false;
+		return true;
 
 	if (animatable->moveType() == MoveType::LADDER) return true;
 	if (animatable->moveType() == MoveType::NOCLIP) return true;

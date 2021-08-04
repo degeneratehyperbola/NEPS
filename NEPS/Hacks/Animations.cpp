@@ -117,11 +117,15 @@ bool Animations::animSynced(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
-void Animations::resolveLBY(Entity *animatable, int misses) noexcept
+struct ResolverData
 {
-	if (!animatable->isPlayer())
-		return;
+	std::array<float, 3U> layer6PlaybackRate;
+};
 
+static std::array<ResolverData, 65> playerResolverData;
+
+void Animations::resolveLBY(Entity *animatable) noexcept
+{
 	if (Helpers::animDataAuthenticity(animatable))
 		return;
 
@@ -135,9 +139,9 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 
 	const auto layers = animatable->animationLayers();
 
-	static std::array<float, 3U> records;
-	std::rotate(records.begin(), records.begin() + 1, records.end());
-	records[0] = layers[6].playbackRate;
+	auto &resolverData = playerResolverData[animatable->index()];
+	std::rotate(resolverData.layer6PlaybackRate.begin(), resolverData.layer6PlaybackRate.begin() + 1, resolverData.layer6PlaybackRate.end());
+	resolverData.layer6PlaybackRate[0] = layers[6].playbackRate;
 
 	signed char side = 0;
 	if (animatable->velocity().length2D() < 0.1f)
@@ -149,9 +153,9 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 	}
 	else if (!static_cast<int>(layers[12].weight * 1000) && static_cast<int>(layers[12].weight * 1000) == static_cast<int>(layers[6].weight * 1000))
 	{
-		const auto a = std::fabsf(layers[6].playbackRate - records[0]);
-		const auto b = std::fabsf(layers[6].playbackRate - records[1]);
-		const auto c = std::fabsf(layers[6].playbackRate - records[2]);
+		const auto a = std::fabsf(layers[6].playbackRate - resolverData.layer6PlaybackRate[0]);
+		const auto b = std::fabsf(layers[6].playbackRate - resolverData.layer6PlaybackRate[1]);
+		const auto c = std::fabsf(layers[6].playbackRate - resolverData.layer6PlaybackRate[2]);
 
 		if (a < c || b <= c || static_cast<int>(c * 1000))
 		{

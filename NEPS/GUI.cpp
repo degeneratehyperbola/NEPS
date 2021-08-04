@@ -657,7 +657,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Auto shot", &config->aimbot[currentWeapon].autoShot);
 		ImGui::Checkbox("Auto scope", &config->aimbot[currentWeapon].autoScope);
 		ImGui::Checkbox("Auto stop", &config->aimbot[currentWeapon].autoStop);
-		ImGui::Checkbox("Desync resolver", &config->aimbot[currentWeapon].desyncResolver);
 
 		ImGui::SetNextItemWidth(80);
 		ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
@@ -2423,6 +2422,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Experimental");
+	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
 
 	ImGui::NextColumn();
 

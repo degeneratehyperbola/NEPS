@@ -100,9 +100,6 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 		if (!hitboxSet)
 			continue;
 
-		if (cfg.desyncResolver)
-			Animations::resolveLBY(entity, shots - hits);
-
 		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 			continue;
 
