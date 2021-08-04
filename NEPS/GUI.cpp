@@ -1269,7 +1269,7 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Ignore-Z", &chams.ignorez);
 
 	if (currentCategory == 6)
-		if (ImGui::Button("Fix desync chams", {240, 25}))
+		if (ImGui::Button("Fix desync chams", {-1, 25}))
 			SkinChanger::scheduleHudUpdate();
 
 	if (!contentOnly)
