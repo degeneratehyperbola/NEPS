@@ -771,14 +771,10 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 	{
 		auto &currentConfig = config->antiAim[categories[currentCategory]];
 
-		if (!currentConfig.hideHead)
-		{
-			ImGui::Checkbox("##yaw", &currentConfig.yaw);
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(-1);
-			ImGui::SliderFloat("##yaw_sl", &currentConfig.yawAngle, -180.0f, 180.0f, "Yaw %.2fdeg");
-		}
-		ImGui::Checkbox("Hide head", &currentConfig.hideHead);
+		ImGui::Checkbox("##yaw", &currentConfig.yaw);
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(-1);
+		ImGui::SliderFloat("##yaw_sl", &currentConfig.yawAngle, -180.0f, 180.0f, "Yaw %.2fdeg");
 		if (!currentConfig.fakeUp)
 		{
 			ImGui::Checkbox("##pitch", &currentConfig.pitch);
@@ -786,6 +782,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SetNextItemWidth(-1);
 			ImGui::SliderFloat("##pitch_sl", &currentConfig.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
 		}
+		ImGui::Checkbox("Hide head", &currentConfig.hideHead);
 		ImGui::Checkbox("Desync", &currentConfig.desync);
 		ImGui::SameLine();
 		if (ImGui::ArrowButton("Desync advanced", ImGuiDir_Right))

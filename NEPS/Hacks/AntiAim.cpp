@@ -4,6 +4,7 @@
 #include "../Memory.h"
 #include "../Interfaces.h"
 #include "../SDK/Engine.h"
+#include "../SDK/EngineTrace.h"
 #include "../SDK/Entity.h"
 #include "../SDK/EntityList.h"
 #include "../SDK/NetworkChannel.h"
@@ -147,21 +148,29 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		if (!state)
 			goto proceed;
 
-		constexpr std::array positions = {90.0f, 135.0f, 180.0f, -135.0f, -90.0f};
+		constexpr std::array positions = {90.0f, 45.0f, 0.0f, -45.0f, -90.0f};
 		const auto backupYaw = state->eyeYaw;
 
 		auto bestDamage = localPlayer->health();
+		bestAngle = 0.0f;
 
 		for (const auto &yaw : positions)
 		{
 			state->eyeYaw += yaw;
 
-			//const auto damage
+			Trace trace;
+			const auto damage = Helpers::findDamage(localPlayer->getBonePosition(8), bestTarget, trace);
+
+			if (damage < bestDamage)
+			{
+				bestDamage = damage;
+				bestAngle = yaw;
+			}
 
 			state->eyeYaw = backupYaw;
 		}
 
-		state->eyeYaw = backupYaw;
+		cmd->viewangles.y += bestAngle;
 	}
 
 	proceed:
