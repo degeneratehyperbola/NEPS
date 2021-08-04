@@ -2419,9 +2419,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
 	ImGui::Checkbox("Sync client animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
-	ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
-	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("Experimental");
 	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
 
 	ImGui::NextColumn();
