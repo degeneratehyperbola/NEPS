@@ -86,7 +86,6 @@ public:
 	VIRTUAL_METHOD(bool, isPlayer, 157, (), (this))
 	VIRTUAL_METHOD(bool, isWeapon, 165, (), (this))
 	VIRTUAL_METHOD(int, getWeaponSubType, 281, (), (this))
-	VIRTUAL_METHOD(Vector, getEyePosition, 284, (), (this))
 	VIRTUAL_METHOD(ObsMode, getObserverMode, 293, (), (this))
 	VIRTUAL_METHOD(Entity *, getObserverTarget, 294, (), (this))
 	VIRTUAL_METHOD(Vector, getAimPunch, 345, (), (this))
@@ -100,6 +99,12 @@ public:
 	{
 		return interfaces->entityList->getEntityFromHandle(activeWeapon());
 	}
+
+	Vector getEyePosition() noexcept
+	{
+		return getAbsOrigin() + viewOffset();
+	}
+
 	
 	enum PlayerFlags
 	{
@@ -386,6 +391,7 @@ public:
 	NETVAR(fovStart, "CBasePlayer", "m_iFOVStart", int)
 	NETVAR(defaultFov, "CBasePlayer", "m_iDefaultFOV", int)
 	NETVAR(flags, "CBasePlayer", "m_fFlags", int)
+	NETVAR(viewOffset, "CBasePlayer", "m_vecViewOffset[0]", Vector)
 	NETVAR(tickBase, "CBasePlayer", "m_nTickBase", int)
 	NETVAR(aimPunchAngle, "CBasePlayer", "m_aimPunchAngle", Vector)
 	NETVAR(viewPunchAngle, "CBasePlayer", "m_viewPunchAngle", Vector)
