@@ -182,17 +182,22 @@ Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &desti
 	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
-int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire, int hitgroupFlags, bool *goesThroughWall, const Record *ghost, int ghostHitbox) noexcept
+int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire, bool *goesThroughWall, const Record *ghost, int ghostHitbox) noexcept
 {
-	if (!localPlayer)
+	if (!attacker)
 		return -1;
 
+	const auto activeWeapon = attacker->getActiveWeapon();
+	if (!activeWeapon)
+		return -1;
+
+	const auto weaponData = activeWeapon->getWeaponData();
 	if (!weaponData)
 		return -1;
 
 	float damage = static_cast<float>(weaponData->damage);
 
-	Vector start = localPlayer->getEyePosition();
+	Vector start = attacker->getEyePosition();
 	Vector direction = destination - start;
 	float traveled = direction.length();
 	direction /= traveled;
@@ -245,7 +250,7 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 
 	while (damage >= 1.0f && calcDepth)
 	{
-		interfaces->engineTrace->traceRay({start, destination}, MASK_SHOT, localPlayer.get(), trace);
+		interfaces->engineTrace->traceRay({start, destination}, MASK_SHOT, attacker, trace);
 
 		if (trace.fraction == 1.0f)
 		{
@@ -253,8 +258,6 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 				break;
 
 			const auto hitGroup = hitboxToHitGroup(ghostHitbox);
-			if (~hitgroupFlags & (1 << (hitGroup - 1)))
-				break;
 
 			calcDamage(weaponData, ghost->hasHelmet, ghost->armor, hitGroup, traveled, damage);
 			return static_cast<int>(damage);
@@ -269,9 +272,6 @@ int Helpers::findDamage(const Vector &destination, const WeaponInfo *weaponData,
 				break;
 
 			if (trace.entity->gunGameImmunity())
-				break;
-
-			if (~hitgroupFlags & (1 << (trace.hitGroup - 1)))
 				break;
 
 			calcDamage(weaponData, trace.entity->hasHelmet(), trace.entity->armor(), trace.hitGroup, traveled * trace.fraction, damage);

@@ -125,7 +125,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 			bool goesThroughWall = false;
 			Trace trace;
 			auto origin = bufferBones[8].origin();
-			bool canHit = Helpers::findDamage(origin, weaponData, trace, cfg.friendlyFire, 128, &goesThroughWall);
+			bool canHit = Helpers::findDamage(origin, localPlayer.get(), trace, cfg.friendlyFire, &goesThroughWall);
 
 			if (canHit && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
 			{
@@ -318,7 +318,10 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 
 				bool goesThroughWall = false;
 				Trace trace;
-				const auto damage = Helpers::findDamage(point, weaponData, trace, cfg.friendlyFire, allowedHitgroup, &goesThroughWall, backtrackRecord, hitboxIdx);
+				const auto damage = Helpers::findDamage(point, localPlayer.get(), trace, cfg.friendlyFire, &goesThroughWall, backtrackRecord, hitboxIdx);
+
+				if (~allowedHitgroup & (1 << (trace.hitGroup - 1)))
+					continue;
 
 				if (cfg.visibleOnly && goesThroughWall) continue;
 
