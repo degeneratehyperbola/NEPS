@@ -131,6 +131,7 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 
 	const auto backupEffects = animatable->effectFlags();
 	animatable->effectFlags() |= 8;
+	animatable->clientAnimations() = false;
 
 	const auto layers = animatable->animationLayers();
 
