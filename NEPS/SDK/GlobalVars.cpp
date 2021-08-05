@@ -5,15 +5,15 @@
 float GlobalVars::serverTime(UserCmd *cmd) const noexcept
 {
 	static int tick;
-	static UserCmd *lastCmd;
+	static UserCmd *previousCmd;
 
 	if (cmd)
 	{
-		if (localPlayer && (!lastCmd || lastCmd->hasBeenPredicted))
+		if (localPlayer && (!previousCmd || previousCmd->hasBeenPredicted))
 			tick = localPlayer->tickBase();
 		else
 			tick++;
-		lastCmd = cmd;
+		previousCmd = cmd;
 	}
 	return tick * intervalPerTick;
 }

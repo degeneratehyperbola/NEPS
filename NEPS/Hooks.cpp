@@ -153,8 +153,8 @@ static void __fastcall checkFileCRC() noexcept
 	hooks->originalCheckFileCRC();
 }
 
-static bool lastSendPacket;
-static UserCmd lastCmd;
+static bool previousSendPacket;
+static UserCmd previousCmd;
 
 static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 {
@@ -224,8 +224,8 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	previousViewAngles = cmd->viewangles;
 
-	lastSendPacket = sendPacket;
-	lastCmd = *cmd;
+	previousSendPacket = sendPacket;
+	previousCmd = *cmd;
 
 	{
 		if (fakePitchPerformed)
@@ -320,7 +320,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 	case FrameStage::NET_UPDATE_END:
 		break;
 	case FrameStage::RENDER_START:
-		Animations::animSynced(lastCmd, lastSendPacket);
+		Animations::animSynced(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::forceRelayCluster();
