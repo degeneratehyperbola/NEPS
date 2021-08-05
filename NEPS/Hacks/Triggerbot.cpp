@@ -78,9 +78,9 @@ void Triggerbot::run(UserCmd* cmd) noexcept
     if (!cfg.ignoreSmoke && memory->lineGoesThroughSmoke(startPos, endPos, 1))
         return;
 
-	bool goesThroughWall = false;
 	Trace trace;
-	const int damage = Helpers::findDamage(endPos, localPlayer.get(), trace, cfg.friendlyFire, &goesThroughWall);
+	const int damage = Helpers::findDamage(endPos, localPlayer.get(), trace, cfg.friendlyFire);
+	const auto goesThroughWall = trace.startPos != localPlayer->getEyePosition();
 
 	lastTime = now;
 	

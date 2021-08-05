@@ -182,7 +182,7 @@ Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &desti
 	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
-int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire, bool *goesThroughWall, const Record *ghost, int ghostHitbox) noexcept
+int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitbox) noexcept
 {
 	if (!attacker)
 		return -1;
@@ -277,9 +277,6 @@ int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trac
 			calcDamage(weaponData, trace.entity->hasHelmet(), trace.entity->armor(), trace.hitGroup, traveled * trace.fraction, damage);
 			return static_cast<int>(damage);
 		}
-
-		if (goesThroughWall)
-			*goesThroughWall = true;
 
 		const auto surfaceData = interfaces->physicsSurfaceProps->getSurfaceData(trace.surface.surfaceProps);
 

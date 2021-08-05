@@ -112,10 +112,10 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 		const auto doBacktrack = config->backtrack.enabled && enemy;
 		if (doScope || doBacktrack || doStop)
 		{
-			bool goesThroughWall = false;
 			Trace trace;
 			auto origin = bufferBones[8].origin();
-			bool canHit = Helpers::findDamage(origin, localPlayer.get(), trace, cfg.friendlyFire, &goesThroughWall);
+			bool canHit = Helpers::findDamage(origin, localPlayer.get(), trace, cfg.friendlyFire);
+			const auto goesThroughWall = trace.startPos != localPlayerEyePosition;
 
 			if (canHit && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
 			{
@@ -306,9 +306,9 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 				if (hitchance <= bestHitchance)
 					continue;
 
-				bool goesThroughWall = false;
 				Trace trace;
-				const auto damage = Helpers::findDamage(point, localPlayer.get(), trace, cfg.friendlyFire, &goesThroughWall, backtrackRecord, hitboxIdx);
+				const auto damage = Helpers::findDamage(point, localPlayer.get(), trace, cfg.friendlyFire, backtrackRecord, hitboxIdx);
+				bool goesThroughWall = trace.startPos != localPlayerEyePosition;
 
 				if (~cfg.hitGroup & (1 << (trace.hitGroup - 1)))
 					continue;
