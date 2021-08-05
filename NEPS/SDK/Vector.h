@@ -182,7 +182,7 @@ struct Vector
 		return Vector{y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x};
 	}
 
-	auto rotate(Vector &axis, float angle) const noexcept
+	auto rotate(const Vector &axis, float angle) const noexcept
 	{
 		const auto cos = std::cos(Helpers::degreesToRadians(angle));
 		const auto sin = std::sin(Helpers::degreesToRadians(angle));
