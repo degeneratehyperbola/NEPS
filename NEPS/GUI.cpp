@@ -2746,15 +2746,16 @@ void GUI::renderDebugWindow() noexcept
 			}
 		}
 
-		if (entity && entity->isPlayer() && ImGui::Button("Resolve selected"))
-			Animations::resolveLBY(entity);
+		if (entity && entity->isPlayer())
+		{
+			if (ImGui::Button("Resolve selected"))
+				Animations::resolveLBY(entity); 
 
-		static bool data = false;
-		if (entity && entity->isPlayer() && ImGui::Button("Data authenticity for selected"))
-			data = Helpers::animDataAuthenticity(entity);
-
-		if (data)
-			ImGui::TextUnformatted("Last authentic");
+			if (Helpers::animDataAuthenticity(entity))
+				ImGui::TextUnformatted("Animations authentic");
+			else
+				ImGui::TextUnformatted("Desync possible");
+		}
 
 		if (ImGui::Button("Precache info"))
 			interfaces->engine->clientCmdUnrestricted("sv_precacheinfo");

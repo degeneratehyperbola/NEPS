@@ -35,7 +35,7 @@ struct AnimState
 	float eyePitch;
 	float eyeYaw;
 	float pitch;
-	float feetYaw;
+	float feetYaw; // Lower body yaw or LBY
 	float lastFeetYaw;
 	float currentTorsoYaw;
 	float unknownVelocityLean; // Changes when moving/jumping/hitting ground

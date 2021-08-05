@@ -509,8 +509,8 @@ static int __stdcall listLeavesInBox(const Vector &mins, const Vector &maxs, uns
 
 					constexpr float maxCoord = 16384.0f;
 					constexpr float minCoord = -maxCoord;
-					constexpr Vector min{minCoord, minCoord, minCoord};
-					constexpr Vector max{maxCoord, maxCoord, maxCoord};
+					constexpr Vector min = {minCoord, minCoord, minCoord};
+					constexpr Vector max = {maxCoord, maxCoord, maxCoord};
 					return hooks->bspQuery.callOriginal<int, 6>(std::cref(min), std::cref(max), list, listMax);
 				}
 			}
