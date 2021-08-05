@@ -1,4 +1,5 @@
 #include "AntiAim.h"
+#include "Backtrack.h"
 
 #include "../GameData.h"
 #include "../Memory.h"
@@ -10,27 +11,6 @@
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/UserCmd.h"
 #include "../SDK/GlobalVars.h"
-
-static bool lbyUpdate() noexcept
-{
-	if (!localPlayer)
-		return false;
-
-	const auto time = memory->globalVars->serverTime();
-	static float nextLby;
-	
-	if (localPlayer->velocity().length2D() > 0.1f || std::fabsf(localPlayer->velocity().z) > 100.0f)
-	{
-		nextLby = time + 0.22f;
-		return false;
-	} else if (time >= nextLby)
-	{
-		nextLby = time + 1.1f;
-		return true;
-	}
-	
-	return false;
-}
 
 static bool canAntiAim(UserCmd *cmd) noexcept
 {
@@ -144,36 +124,31 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 		cmd->viewangles.y += bestAngle;
 
-		const auto state = localPlayer->getAnimState();
-		if (!state)
-			goto proceed;
-
-		constexpr std::array positions = {90.0f, 45.0f, 0.0f, -45.0f, -90.0f};
-		const auto backupYaw = state->eyeYaw;
-
-		auto bestDamage = localPlayer->health();
 		bestAngle = 0.0f;
+		constexpr std::array positions = {-18.0f, 18.0f};
+		std::array active = {false, false};
+		const auto fwd = Vector::fromAngle2D(cmd->viewangles.y);
+		const auto side = fwd.crossProduct(Vector::up());
 
-		for (const auto &yaw : positions)
+		for (std::size_t i = 0; i < positions.size(); ++i)
 		{
-			state->eyeYaw += yaw;
+			const auto start = localPlayer->getEyePosition() + side * positions[i];
+			const auto end = start + fwd * 50.0f;
 
 			Trace trace;
-			const auto damage = Helpers::findDamage(localPlayer->getBonePosition(8), bestTarget, trace);
+			interfaces->engineTrace->traceRay({start, end}, CONTENTS_SOLID | CONTENTS_WINDOW, localPlayer.get(), trace);
 
-			if (damage < bestDamage)
-			{
-				bestDamage = damage;
-				bestAngle = yaw;
-			}
-
-			state->eyeYaw = backupYaw;
+			if (trace.fraction != 1.0f)
+				active[i] = true;
 		}
+
+		if (active[0] && !active[1])
+			bestAngle = -90.0f;
+		else if (!active[0] && active[1])
+			bestAngle = 90.0f;
 
 		cmd->viewangles.y += bestAngle;
 	}
-
-	proceed:
 
 	if (cfg.desync)
 	{
@@ -187,7 +162,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			if (!sendPacket)
 				cmd->viewangles.y += b;
 		}
-		else if (lbyUpdate())
+		else if (static float nextLbyUpdate; Helpers::lbyUpdate(localPlayer.get(), nextLbyUpdate))
 		{
 			sendPacket = false;
 			cmd->viewangles.y += a;

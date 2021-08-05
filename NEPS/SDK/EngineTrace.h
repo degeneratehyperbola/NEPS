@@ -31,8 +31,8 @@
 // CONTENTS_OPAQUE + SURF_NODRAW count as CONTENTS_OPAQUE (shadow-casting toolsblocklight textures)
 #define CONTENTS_BLOCKLIGHT 0x400
 
-#define CONTENTS_TEAM1 0x800 // per team contents used to differentiate collisions 
-#define CONTENTS_TEAM2 0x1000 // between players and objects on different teams
+#define CONTENTS_TEAM1 0x800 // Per team contents used to differentiate collisions 
+#define CONTENTS_TEAM2 0x1000 // Between players and objects on different teams
 
 // Ignore CONTENTS_OPAQUE on surfaces that have SURF_NODRAW
 #define CONTENTS_IGNORE_NODRAW_OPAQUE 0x2000
