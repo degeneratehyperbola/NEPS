@@ -1151,7 +1151,10 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 		ImGuiCustom::progressBarFullWidth(static_cast<float>(networkChannel->chokedPackets) / 16);
 	}
 
-	ImGui::TextUnformatted(("Speed " + std::to_string(std::lroundf(local.velocity.length2D())) + "u").c_str());
+	ImGui::TextUnformatted("Height");
+	ImGuiCustom::progressBarFullWidth((local.eyePosition.z - local.origin.z - PLAYER_EYE_HEIGHT_CROUCH) / (PLAYER_EYE_HEIGHT - PLAYER_EYE_HEIGHT_CROUCH));
+
+	ImGui::Text("Speed %.0fu", local.velocity.length2D());
 
 	if (memory->input->isCameraInThirdPerson)
 		ImGui::TextUnformatted("In thirdperson");

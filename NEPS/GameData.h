@@ -76,6 +76,7 @@ struct LocalPlayerData
 	int handle;
 	float flashDuration;
 	int observerTargetHandle;
+	Vector eyePosition;
 	Vector aimPunch;
 	Vector aimPunchAngle;
 	Vector origin;

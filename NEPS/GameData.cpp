@@ -262,6 +262,7 @@ void LocalPlayerData::update() noexcept
 	handle = localPlayer->handle();
 	flashDuration = localPlayer->flashDuration();
 
+	eyePosition = localPlayer->getEyePosition();
 	aimPunch = localPlayer->getEyePosition() + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000.0f;
 	aimPunchAngle = localPlayer->getAimPunch();
 
