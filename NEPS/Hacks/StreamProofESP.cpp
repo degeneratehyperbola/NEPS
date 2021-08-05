@@ -231,7 +231,7 @@ static ImVec2 renderText(float distance, float cullDistance, const Color4Border 
 
 	if (cullDistance > 0 && distance > cullDistance)
 		return {};
-	else if (cullDistance < 0 && distance < cullDistance)
+	else if (cullDistance < 0 && distance < -cullDistance)
 		return {};
 
 	const auto textSize = ImGui::CalcTextSize(text);
