@@ -63,9 +63,6 @@ public:
 		float linear = 255.0f;
 		int hitGroup = 127;
 		bool betweenShots = true;
-		bool safeOnly;
-		int safeHitGroup = 6;
-		bool desyncResolver = false;
 	};
 	std::array<Aimbot, 40> aimbot;
 
@@ -100,19 +97,15 @@ public:
 		float pitchAngle = 0.0f;
 		bool yaw = false;
 		float yawAngle = 0.0f;
-		bool lookAtEnemies = false;
+		bool hideHead = false;
 		bool desync = false;
-		bool reduceSlide = true;
-		bool lbyBreaker = false;
-		float fakeYaw = 60.0f;
-		float realYaw = -60.0f;
+		int desyncType = 0;
 		bool fakeUp = false;
 		int flipKey = 0;
-		KeyBind fakeDuck;
-		int fakeDuckPackets = 0;
-		int chokedPackets = 0;
 		KeyBind choke;
-	} antiAim;
+		int chokedPackets = 0;
+	};
+	std::unordered_map<std::string, AntiAim> antiAim;
 
 	struct Glow : Color4
 	{
@@ -302,9 +295,11 @@ public:
 
 	struct Exploits
 	{
+		KeyBind fakeDuck;
+		int fakeDuckPackets = 0;
+		KeyBind slowwalk;
 		bool moonwalk = false;
 		bool antiAfkKick = false;
-		KeyBind slowwalk;
 		bool fastDuck = false;
 		KeyBind doubletap;
 		bool bypassPure = true;
@@ -374,6 +369,7 @@ public:
 		bool fixAnimation = true;
 		bool disableModelOcclusion = true;
 		bool disableInterp = false;
+		bool desyncResolver = false;
 		bool unlockInvertory = false;
 		bool disablePanoramablur = false;
 

@@ -100,20 +100,10 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 		if (!hitboxSet)
 			continue;
 
-		if (cfg.desyncResolver)
-			Animations::resolveLBY(entity, shots - hits);
-
 		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 			continue;
 
-		auto allowedHitgroup = cfg.hitGroup;
-
-		if (cfg.safeOnly && !Helpers::animDataAuthenticity(entity))
-		{
-			allowedHitgroup = cfg.safeHitGroup;
-		}
-
-		if (!allowedHitgroup)
+		if (!cfg.hitGroup)
 			continue;
 
 		const Record *backtrackRecord = nullptr;
@@ -125,7 +115,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 			bool goesThroughWall = false;
 			Trace trace;
 			auto origin = bufferBones[8].origin();
-			bool canHit = Helpers::findDamage(origin, weaponData, trace, cfg.friendlyFire, 128, &goesThroughWall);
+			bool canHit = Helpers::findDamage(origin, localPlayer.get(), trace, cfg.friendlyFire, &goesThroughWall);
 
 			if (canHit && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
 			{
@@ -318,7 +308,10 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 
 				bool goesThroughWall = false;
 				Trace trace;
-				const auto damage = Helpers::findDamage(point, weaponData, trace, cfg.friendlyFire, allowedHitgroup, &goesThroughWall, backtrackRecord, hitboxIdx);
+				const auto damage = Helpers::findDamage(point, localPlayer.get(), trace, cfg.friendlyFire, &goesThroughWall, backtrackRecord, hitboxIdx);
+
+				if (~cfg.hitGroup & (1 << (trace.hitGroup - 1)))
+					continue;
 
 				if (cfg.visibleOnly && goesThroughWall) continue;
 

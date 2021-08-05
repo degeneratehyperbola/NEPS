@@ -164,11 +164,11 @@ float Backtrack::getLerp() noexcept
 
 bool Backtrack::valid(float simTime) noexcept
 {
-	const auto network = interfaces->engine->getNetworkChannel();
-	if (!network)
+	const auto networkChannel = interfaces->engine->getNetworkChannel();
+	if (!networkChannel)
 		return false;
 
-	auto delta = std::clamp(network->getLatency(0) + network->getLatency(1) + getLerp(), 0.0f, cvars.maxUnlagVar->getFloat()) - (memory->globalVars->serverTime() - simTime);
+	auto delta = std::clamp(networkChannel->getLatency(0) + networkChannel->getLatency(1) + getLerp(), 0.0f, cvars.maxUnlagVar->getFloat()) - (memory->globalVars->serverTime() - simTime);
 	return std::abs(delta) <= 0.2f;
 }
 

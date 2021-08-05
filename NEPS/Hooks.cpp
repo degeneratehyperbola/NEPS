@@ -227,7 +227,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	lastSendPacket = sendPacket;
 	lastCmd = *cmd;
 
-	if (config->antiAim.desync || config->antiAim.fakeUp)
 	{
 		if (fakePitchPerformed)
 			cmd->viewangles.x = -89.0f; // Fake pitch visualization
@@ -341,7 +340,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Visuals::playerModel(stage);
 		Visuals::disablePostProcessing(stage);
 		Visuals::removeVisualRecoil(stage);
-		Misc::tweakNonLocalPlayerAnim(stage);
+		Misc::tweakPlayerAnim(stage);
 		Backtrack::update(stage);
 		SkinChanger::run(stage);
 	}
@@ -464,7 +463,7 @@ static void __stdcall overrideView(ViewSetup *setup) noexcept
 			if ((!localPlayer->isScoped() || config->visuals.forceFov))
 				setup->fov = curFov;
 
-			if (static Helpers::KeyBindState fakeDuck; fakeDuck[config->antiAim.fakeDuck])
+			if (static Helpers::KeyBindState fakeDuck; fakeDuck[config->exploits.fakeDuck])
 				setup->origin.z = localPlayer->origin().z + PLAYER_EYE_HEIGHT;
 
 			if (config->visuals.viewmodel.enabled && !localPlayer->isScoped() && !memory->input->isCameraInThirdPerson)

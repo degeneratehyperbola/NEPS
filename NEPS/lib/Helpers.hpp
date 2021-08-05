@@ -49,7 +49,7 @@ namespace Helpers
 
 	float handleBulletPenetration(SurfaceData *enterSurfaceData, const Trace &enterTrace, const Vector &direction, Vector &result, float penetration, float damage) noexcept;
 
-	int findDamage(const Vector &destination, const WeaponInfo *weaponData, Trace &trace, bool allowFriendlyFire = false, int hitgroupFlags = 1 << 7, bool *goesThroughWall = nullptr, const Record *ghost = nullptr, int ghostHitBox = 0) noexcept;
+	int findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire = false, bool *goesThroughWall = nullptr, const Record *ghost = nullptr, int ghostHitBox = -1) noexcept;
 
 	float findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept;
 

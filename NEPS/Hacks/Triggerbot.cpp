@@ -80,9 +80,12 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 
 	bool goesThroughWall = false;
 	Trace trace;
-	const int damage = Helpers::findDamage(endPos, weaponData, trace, cfg.friendlyFire, cfg.hitGroup, &goesThroughWall);
+	const int damage = Helpers::findDamage(endPos, localPlayer.get(), trace, cfg.friendlyFire, &goesThroughWall);
 
 	lastTime = now;
+	
+	if (~cfg.hitGroup & (1 << (trace.hitGroup - 1)))
+		return;
 
 	if (cfg.visibleOnly && goesThroughWall)
 		return;

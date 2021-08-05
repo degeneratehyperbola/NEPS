@@ -1,5 +1,6 @@
 ﻿#include "Misc.h"
 
+#include "Animations.h"
 #include "EnginePrediction.h"
 
 #include "../SDK/Client.h"
@@ -345,8 +346,8 @@ void Misc::quickReload(UserCmd *cmd) noexcept
 
 				if (interfaces->entityList->getEntityFromHandle(weaponHandle) == reloadedWeapon)
 				{
-					cmd->weaponselect = reloadedWeapon->index();
-					cmd->weaponsubtype = reloadedWeapon->getWeaponSubType();
+					cmd->weaponSelect = reloadedWeapon->index();
+					cmd->weaponSubtype = reloadedWeapon->getWeaponSubType();
 					break;
 				}
 			}
@@ -364,8 +365,8 @@ void Misc::quickReload(UserCmd *cmd) noexcept
 
 				if (auto weapon = interfaces->entityList->getEntityFromHandle(weaponHandle); weapon && weapon != reloadedWeapon)
 				{
-					cmd->weaponselect = weapon->index();
-					cmd->weaponsubtype = weapon->getWeaponSubType();
+					cmd->weaponSelect = weapon->index();
+					cmd->weaponSubtype = weapon->getWeaponSubType();
 					break;
 				}
 			}
@@ -607,8 +608,8 @@ void Misc::quickHealthshot(UserCmd *cmd) noexcept
 
 				if (const auto weapon{interfaces->entityList->getEntityFromHandle(weaponHandle)}; weapon && weapon->getClientClass()->classId == ClassId::Healthshot)
 				{
-					cmd->weaponselect = weapon->index();
-					cmd->weaponsubtype = weapon->getWeaponSubType();
+					cmd->weaponSelect = weapon->index();
+					cmd->weaponSubtype = weapon->getWeaponSubType();
 					return;
 				}
 			}
@@ -665,14 +666,14 @@ void Misc::antiAfkKick(UserCmd *cmd) noexcept
 		cmd->buttons |= 1 << 26;
 }
 
-void Misc::tweakNonLocalPlayerAnim(FrameStage stage) noexcept
+void Misc::tweakPlayerAnim(FrameStage stage) noexcept
 {
 	if (stage == FrameStage::RENDER_START)
 	{
 		if (!localPlayer)
 			return;
 
-		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp)
+		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp && !config->misc.desyncResolver)
 			return;
 
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
@@ -685,6 +686,11 @@ void Misc::tweakNonLocalPlayerAnim(FrameStage stage) noexcept
 			{
 				*reinterpret_cast<int *>(entity + 0xA28) = 0;
 				*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->framecount;
+			}
+
+			if (config->misc.desyncResolver)
+			{
+				Animations::resolveLBY(entity);
 			}
 
 			if (auto varMap = entity->getVarMap(); varMap && config->misc.disableInterp)

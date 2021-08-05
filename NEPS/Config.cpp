@@ -358,9 +358,6 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Min damage override", a.minDamageOverride);
 	read(j, "Min damage auto-wall override", a.minDamageAutoWallOverride);
 	read(j, "Between shots", a.betweenShots);
-	read(j, "Safe only", a.safeOnly);
-	read(j, "Safe mode", a.safeHitGroup);
-	read(j, "Resolver", a.desyncResolver);
 }
 
 static void from_json(const json &j, Config::Triggerbot &t)
@@ -393,18 +390,13 @@ static void from_json(const json &j, Config::AntiAim &a)
 	read(j, "Pitch angle", a.pitchAngle);
 	read(j, "Yaw", a.yaw);
 	read(j, "Yaw angle", a.yawAngle);
-	read(j, "Look at enemies", a.lookAtEnemies);
+	read(j, "Look at enemies", a.hideHead);
 	read(j, "Desync", a.desync);
-	read(j, "Desync cor", a.reduceSlide);
-	read(j, "Desync ext", a.lbyBreaker);
-	read(j, "Desync fake", a.fakeYaw);
-	read(j, "Desync real", a.realYaw);
+	read(j, "Desync type", a.desyncType);
 	read(j, "Fake up", a.fakeUp);
 	read(j, "Flip key", a.flipKey);
-	read<value_t::object>(j, "Fake duck", a.fakeDuck);
-	read(j, "Fake duck packets", a.fakeDuckPackets);
-	read(j, "Choked packets", a.chokedPackets);
 	read<value_t::object>(j, "Choke", a.choke);
+	read(j, "Choked packets", a.chokedPackets);
 }
 
 static void from_json(const json &j, Config::Glow &g)
@@ -615,7 +607,7 @@ static void from_json(const json &j, Config::Style &s)
 
 		ImGuiStyle &style = ImGui::GetStyle();
 
-		for (int i = 0; i < ImGuiCol_COUNT; i++)
+		for (int i = 0; i < ImGuiCol_COUNT; ++i)
 		{
 			if (const char *name = ImGui::GetStyleColorName(i); colors.contains(name))
 			{
@@ -666,6 +658,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fix animations", m.fixAnimation);
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
 	read(j, "Disable interpolation", m.disableInterp);
+	read(j, "Resolver", m.desyncResolver);
 	read(j, "Unlock invertory", m.unlockInvertory);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
 	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
@@ -690,6 +683,8 @@ static void from_json(const json &j, Config::Exploits &e)
 {
 	read(j, "Anti AFK kick", e.antiAfkKick);
 	read(j, "Fast duck", e.fastDuck);
+	read<value_t::object>(j, "Fake duck", e.fakeDuck);
+	read(j, "Fake duck packets", e.fakeDuckPackets);
 	read(j, "Moonwalk", e.moonwalk);
 	read<value_t::object>(j, "Slowwalk", e.slowwalk);
 	read<value_t::object>(j, "Doubletap", e.doubletap);
@@ -763,7 +758,7 @@ bool Config::load(const char8_t *name, bool incremental) noexcept
 	read(j, "Aimbot", aimbot);
 	read(j, "Triggerbot", triggerbot);
 	read<value_t::object>(j, "Backtrack", backtrack);
-	read<value_t::object>(j, "Anti aim", antiAim);
+	read(j, "Anti aim", antiAim);
 	read(j, "Glow", glow);
 	read(j, "Chams", chams);
 	read<value_t::object>(j, "ESP", esp);
@@ -974,9 +969,6 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Min damage override", minDamageOverride);
 	WRITE("Min damage auto-wall override", minDamageAutoWallOverride);
 	WRITE("Between shots", betweenShots);
-	WRITE("Safe only", safeOnly);
-	WRITE("Safe mode", safeHitGroup);
-	WRITE("Resolver", desyncResolver);
 }
 
 static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerbot &dummy = {})
@@ -1009,18 +1001,13 @@ static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &du
 	WRITE("Pitch angle", pitchAngle);
 	WRITE("Yaw", yaw);
 	WRITE("Yaw angle", yawAngle);
-	WRITE("Look at enemies", lookAtEnemies);
+	WRITE("Look at enemies", hideHead);
 	WRITE("Desync", desync);
-	WRITE("Desync cor", reduceSlide);
-	WRITE("Desync ext", lbyBreaker);
-	WRITE("Desync fake", fakeYaw);
-	WRITE("Desync real", realYaw);
+	WRITE("Desync type", desyncType);
 	WRITE("Fake up", fakeUp);
 	WRITE("Flip key", flipKey);
-	WRITE("Fake duck", fakeDuck);
-	WRITE("Fake duck packets", fakeDuckPackets);
-	WRITE("Choked packets", chokedPackets);
 	WRITE("Choke", choke);
+	WRITE("Choked packets", chokedPackets);
 }
 
 static void to_json(json &j, const Config::Glow &o, const Config::Glow &dummy = {})
@@ -1128,6 +1115,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix animations", fixAnimation);
 	WRITE("Disable model occlusion", disableModelOcclusion);
 	WRITE("Disable interpolation", disableInterp);
+	WRITE("Resolver", desyncResolver);
 	WRITE("Unlock invertory", unlockInvertory);
 	WRITE("Disable HUD blur", disablePanoramablur);
 	WRITE("Prepare revolver", prepareRevolver);
@@ -1152,6 +1140,8 @@ static void to_json(json &j, const Config::Exploits &o)
 
 	WRITE("Anti AFK kick", antiAfkKick);
 	WRITE("Fast duck", fastDuck);
+	WRITE("Fake duck", fakeDuck);
+	WRITE("Fake duck packets", fakeDuckPackets);
 	WRITE("Moonwalk", moonwalk);
 	WRITE("Slowwalk", slowwalk);
 	WRITE("Doubletap", doubletap);
@@ -1343,7 +1333,7 @@ static void to_json(json &j, const Config::Style &o)
 	auto &colors = j["Colors"];
 	ImGuiStyle &style = ImGui::GetStyle();
 
-	for (int i = 0; i < ImGuiCol_COUNT; i++)
+	for (int i = 0; i < ImGuiCol_COUNT; ++i)
 		colors[ImGui::GetStyleColorName(i)] = style.Colors[i];
 }
 

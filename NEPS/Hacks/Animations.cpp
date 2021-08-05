@@ -39,7 +39,7 @@ bool Animations::animDesynced(const UserCmd &cmd, bool sendPacket) noexcept
 
 	const auto layers = localPlayer->animationLayers();
 
-	static std::array<AnimLayer, MAX_ANIM_OVERLAYS> lerpedLayers;
+	static std::array<AnimLayer, MAX_ANIM_LAYERS> lerpedLayers;
 
 	if (sendPacket)
 	{
@@ -55,7 +55,7 @@ bool Animations::animDesynced(const UserCmd &cmd, bool sendPacket) noexcept
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, lerpedState->feetYaw, 0.0f});
 
 		std::copy(lerpedLayers.begin(), lerpedLayers.end(), layers);
-		layers[12].weight = FLT_EPSILON;
+		layers[Entity::ANIMATION_LAYER_LEAN].weight = FLT_EPSILON;
 
 		matrixUpdated = localPlayer->setupBones(lerpedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
@@ -90,8 +90,9 @@ bool Animations::animSynced(const UserCmd &cmd, bool sendPacket) noexcept
 	if (state->lastClientSideAnimationUpdateFramecount == memory->globalVars->framecount)
 		state->lastClientSideAnimationUpdateFramecount -= 1;
 
-	static std::array<AnimLayer, MAX_ANIM_OVERLAYS> networkedLayers;
+	static std::array<AnimLayer, MAX_ANIM_LAYERS> networkedLayers;
 
+	layers[Entity::ANIMATION_LAYER_LEAN].weight = FLT_EPSILON;
 	std::copy(layers, layers + localPlayer->getAnimationLayerCount(), networkedLayers.begin());
 
 	localPlayer->clientAnimations() = true;
@@ -116,11 +117,15 @@ bool Animations::animSynced(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
-void Animations::resolveLBY(Entity *animatable, int misses) noexcept
+struct ResolverData
 {
-	if (!misses || !animatable || !animatable->isPlayer())
-		return;
+	std::array<float, 3U> layer6PlaybackRate;
+};
 
+static std::array<ResolverData, 65> playerResolverData;
+
+void Animations::resolveLBY(Entity *animatable) noexcept
+{
 	if (Helpers::animDataAuthenticity(animatable))
 		return;
 
@@ -128,34 +133,15 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 	if (!state)
 		return;
 
-	if (state->lastClientSideAnimationUpdateFramecount == memory->globalVars->framecount)
-		state->lastClientSideAnimationUpdateFramecount -= 1;
-
 	const auto backupEffects = animatable->effectFlags();
 	animatable->effectFlags() |= 8;
-	
-	animatable->clientAnimations() = true;
-	memory->updateState(state, nullptr, animatable->eyeAngles().x, animatable->eyeAngles().y, 0.0f, nullptr);
 	animatable->clientAnimations() = false;
 
 	const auto layers = animatable->animationLayers();
 
-	std::array<float, 3U> records;
-	const auto backupFeetYaw = state->feetYaw;
-
-	state->feetYaw = animatable->eyeAngles().y;
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
-	records[0] = layers[6].playbackRate;
-
-	state->feetYaw = animatable->eyeAngles().y + 60.0f;
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
-	records[1] = layers[6].playbackRate;
-
-	state->feetYaw = animatable->eyeAngles().y - 60.0f;
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
-	records[2] = layers[6].playbackRate;
-
-	state->feetYaw = backupFeetYaw;
+	auto &resolverData = playerResolverData[animatable->index()];
+	std::rotate(resolverData.layer6PlaybackRate.begin(), resolverData.layer6PlaybackRate.begin() + 1, resolverData.layer6PlaybackRate.end());
+	resolverData.layer6PlaybackRate[0] = layers[6].playbackRate;
 
 	signed char side = 0;
 	if (animatable->velocity().length2D() < 0.1f)
@@ -167,9 +153,9 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 	}
 	else if (!static_cast<int>(layers[12].weight * 1000) && static_cast<int>(layers[12].weight * 1000) == static_cast<int>(layers[6].weight * 1000))
 	{
-		const auto a = std::fabsf(layers[6].playbackRate - records[0]);
-		const auto b = std::fabsf(layers[6].playbackRate - records[1]);
-		const auto c = std::fabsf(layers[6].playbackRate - records[2]);
+		const auto a = std::fabsf(layers[6].playbackRate - resolverData.layer6PlaybackRate[0]);
+		const auto b = std::fabsf(layers[6].playbackRate - resolverData.layer6PlaybackRate[1]);
+		const auto c = std::fabsf(layers[6].playbackRate - resolverData.layer6PlaybackRate[2]);
 
 		if (a < c || b <= c || static_cast<int>(c * 1000))
 		{
@@ -178,7 +164,7 @@ void Animations::resolveLBY(Entity *animatable, int misses) noexcept
 		} else side = -1;
 	}
 
-	state->feetYaw = animatable->eyeAngles().y - animatable->getMaxDesyncAngle() * side;
+	state->feetYaw = animatable->eyeAngles().y + animatable->getMaxDesyncAngle() * side;
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->feetYawRate = 0.0f;

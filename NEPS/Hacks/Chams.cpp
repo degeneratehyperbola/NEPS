@@ -143,7 +143,7 @@ void Chams::renderPlayer(Entity* player) noexcept
         applyChams(config->chams["Defusing"].materials, health);
 	} else if (player == localPlayer.get())
 	{
-		if (config->antiAim.desync || config->antiAim.fakeUp) {
+		{
 			Matrix3x4 fakeBones[MAX_STUDIO_BONES];
 			Animations::copyLerpedBones(fakeBones);
 			const auto &origin = localPlayer->getRenderOrigin();

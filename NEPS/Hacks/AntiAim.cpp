@@ -4,6 +4,7 @@
 #include "../Memory.h"
 #include "../Interfaces.h"
 #include "../SDK/Engine.h"
+#include "../SDK/EngineTrace.h"
 #include "../SDK/Entity.h"
 #include "../SDK/EntityList.h"
 #include "../SDK/NetworkChannel.h"
@@ -15,7 +16,7 @@ static bool lbyUpdate() noexcept
 	if (!localPlayer)
 		return false;
 
-	auto time = memory->globalVars->serverTime();
+	const auto time = memory->globalVars->serverTime();
 	static float nextLby;
 	
 	if (localPlayer->velocity().length2D() > 0.1f || std::fabsf(localPlayer->velocity().z) > 100.0f)
@@ -42,16 +43,13 @@ static bool canAntiAim(UserCmd *cmd) noexcept
 	if (cmd->buttons & UserCmd::IN_USE || !localPlayer->isAlive())
 		return false;
 
-	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
-		return false;
-
 	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
 		return false;
 
 	return true;
 }
 
-static void forceLbyUpdate(UserCmd *cmd) noexcept
+static void microMovement(UserCmd *cmd) noexcept
 {
 	if (std::fabsf(cmd->sidemove) < 5.0f)
 	{
@@ -62,25 +60,49 @@ static void forceLbyUpdate(UserCmd *cmd) noexcept
 	}
 }
 
+static const Config::AntiAim &getCurrentConfig()
+{
+	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
+
+	if (localPlayer->flags() & Entity::FL_ONGROUND)
+	{
+		if (localPlayer->velocity().length2D() < 5.0f)
+			return config->antiAim[categories[0]];
+		else if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk])
+			return config->antiAim[categories[1]];
+		else
+			return config->antiAim[categories[2]];
+	} else
+		return config->antiAim[categories[3]];
+}
+
 void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
 	if (!canAntiAim(cmd)) return;
 
-	const auto &cfg = config->antiAim;
+	const auto networkChannel = interfaces->engine->getNetworkChannel();
+	if (!networkChannel)
+		return;
 
-	if (static Helpers::KeyBindState flag; cfg.fakeDuckPackets && flag[cfg.fakeDuck])
+	const auto &cfg = getCurrentConfig();
+	const auto time = memory->globalVars->serverTime();
+
+	if (static Helpers::KeyBindState flag; config->exploits.fakeDuckPackets && flag[config->exploits.fakeDuck])
 	{
-		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= cfg.fakeDuckPackets;
+		sendPacket = networkChannel->chokedPackets >= config->exploits.fakeDuckPackets;
 
 		cmd->buttons |= UserCmd::IN_BULLRUSH;
 		cmd->buttons &= ~UserCmd::IN_DUCK;
 
-		if (interfaces->engine->getNetworkChannel()->chokedPackets > (cfg.fakeDuckPackets / 2))
+		if (networkChannel->chokedPackets < config->exploits.fakeDuckPackets / 2 || networkChannel->chokedPackets > config->exploits.fakeDuckPackets / 2 + 3)
+			cmd->buttons &= ~UserCmd::IN_ATTACK;
+
+		if (networkChannel->chokedPackets > (config->exploits.fakeDuckPackets / 2))
 			cmd->buttons |= UserCmd::IN_DUCK;
 	} else if (static Helpers::KeyBindState flag; flag[cfg.choke] && cfg.chokedPackets)
-		sendPacket = interfaces->engine->getNetworkChannel()->chokedPackets >= cfg.chokedPackets;
+		sendPacket = networkChannel->chokedPackets >= cfg.chokedPackets;
 
-	if (cfg.reduceSlide && localPlayer->velocity().length2D() > 10.0f)
+	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
 		return;
 
 	static bool flip = true;
@@ -93,8 +115,9 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (cfg.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = cfg.pitchAngle;
 
-	if (cfg.lookAtEnemies && cmd->viewangles.y == currentViewAngles.y)
+	if (cfg.hideHead && cmd->viewangles.y == currentViewAngles.y)
 	{
+		Entity *bestTarget = nullptr;
 		auto bestFov = 255.0f;
 		auto bestAngle = 0.0f;
 
@@ -113,42 +136,63 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			const auto fov = std::hypot(angle.x, angle.y);
 			if (fov < bestFov)
 			{
+				bestTarget = entity;
 				bestFov = fov;
 				bestAngle = angle.y;
 			}
 		}
 
 		cmd->viewangles.y += bestAngle;
+
+		const auto state = localPlayer->getAnimState();
+		if (!state)
+			goto proceed;
+
+		constexpr std::array positions = {90.0f, 45.0f, 0.0f, -45.0f, -90.0f};
+		const auto backupYaw = state->eyeYaw;
+
+		auto bestDamage = localPlayer->health();
+		bestAngle = 0.0f;
+
+		for (const auto &yaw : positions)
+		{
+			state->eyeYaw += yaw;
+
+			Trace trace;
+			const auto damage = Helpers::findDamage(localPlayer->getBonePosition(8), bestTarget, trace);
+
+			if (damage < bestDamage)
+			{
+				bestDamage = damage;
+				bestAngle = yaw;
+			}
+
+			state->eyeYaw = backupYaw;
+		}
+
+		cmd->viewangles.y += bestAngle;
 	}
+
+	proceed:
 
 	if (cfg.desync)
 	{
-		const auto desync = localPlayer->getMaxDesyncAngle();
-		float fake = flip ? cfg.fakeYaw : -cfg.fakeYaw;
-		float real = flip ? cfg.realYaw : -cfg.realYaw;
-		const bool fakeLessThanReal = cfg.lbyBreaker ? fake < real : 0.0f < real;
-		fake += fakeLessThanReal ? desync : -desync;
-		real += fakeLessThanReal ? -desync : desync;
+		float a = flip ? -120.0f : 120.0f;
+		float b = flip ? 120.0f : -120.0f;
 
-		if (cfg.lbyBreaker)
+		if (cfg.desyncType == 0)
 		{
-			if (lbyUpdate())
-			{
-				sendPacket = false;
-				cmd->viewangles.y += fake;
-			} else if (!sendPacket)
-			{
-				cmd->viewangles.y += real;
-			}
-		} else
-		{
+			microMovement(cmd);
+
 			if (!sendPacket)
-			{
-				cmd->viewangles.y += real;
-			}
-
-			forceLbyUpdate(cmd);
+				cmd->viewangles.y += b;
 		}
+		else if (lbyUpdate())
+		{
+			sendPacket = false;
+			cmd->viewangles.y += a;
+		} else if (!sendPacket)
+			cmd->viewangles.y += b;
 	}
 
 	if (cfg.yaw)
@@ -157,7 +201,12 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 {
-	if (canAntiAim(cmd) && config->antiAim.fakeUp)
+	if (!canAntiAim(cmd))
+		return false;
+
+	const auto &cfg = getCurrentConfig();
+
+	if (cfg.fakeUp && !Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
 	{
 		cmd->viewangles.x = -540.0f;
 		cmd->forwardmove = -cmd->forwardmove;

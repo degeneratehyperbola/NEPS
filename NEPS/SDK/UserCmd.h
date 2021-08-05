@@ -29,10 +29,10 @@ struct UserCmd
 	float upmove;
 	int buttons;
 	char impulse;
-	int weaponselect;
-	int weaponsubtype;
+	int weaponSelect;
+	int weaponSubtype;
 	int randomSeed;
 	short mousedx;
 	short mousedy;
-	bool hasbeenpredicted;
+	bool hasBeenPredicted;
 };
