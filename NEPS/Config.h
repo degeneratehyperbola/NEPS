@@ -99,7 +99,7 @@ public:
 		float yawAngle = 0.0f;
 		bool hideHead = false;
 		bool desync = false;
-		int desyncType = 0;
+		int desyncType = 1;
 		bool fakeUp = false;
 		int flipKey = 0;
 		KeyBind choke;

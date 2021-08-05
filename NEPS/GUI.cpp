@@ -790,7 +790,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 		if (ImGui::BeginPopup("##desync"))
 		{
 			ImGui::SetNextItemWidth(100);
-			ImGui::Combo("Desync type", &currentConfig.desyncType, "Micro movement\0Opposite\0Swap\0");
+			ImGui::Combo("Desync type", &currentConfig.desyncType, "Micro movement\0Opposite\0Interchanged\0Fake desync\0Sway\0");
 			ImGuiCustom::keyBind("Flip key", &currentConfig.flipKey);
 
 			ImGui::Separator();

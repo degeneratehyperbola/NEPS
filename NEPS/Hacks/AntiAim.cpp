@@ -85,13 +85,6 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
 		return;
 
-	static bool flip = true;
-
-	if (cfg.flipKey && GetAsyncKeyState(cfg.flipKey) & 1)
-	{
-		flip = !flip;
-	}
-
 	if (cfg.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = cfg.pitchAngle;
 
@@ -150,10 +143,37 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		cmd->viewangles.y += bestAngle;
 	}
 
+	static float nextLbyUpdate;
+	const bool lbyUpdate = Helpers::lbyUpdate(localPlayer.get(), nextLbyUpdate);
+
 	if (cfg.desync)
 	{
-		float a = flip ? -120.0f : 120.0f;
-		float b = flip ? 120.0f : -120.0f;
+		static bool flip = true;
+
+		float a = 0.0f;
+		float b = 0.0f;
+		switch (cfg.desyncType)
+		{
+		case 0:
+			b = flip ? 120.0f : -120.0f;
+			break;
+		case 1:
+			a = flip ? -120.0f : 120.0f;
+			b = flip ? 120.0f : -120.0f;
+			break;
+		case 2:
+			a = flip ? -120.0f : 120.0f;
+			b = flip ? 60.0f : -60.0f;
+			break;
+		case 3:
+		case 4:
+			a = flip ? 120.0f : -120.0f;
+			b = flip ? 120.0f : -120.0f;
+			break;
+		}
+
+		if (cfg.flipKey && GetAsyncKeyState(cfg.flipKey) & 1 || cfg.desyncType == 4 && lbyUpdate)
+			flip = !flip;
 
 		if (cfg.desyncType == 0)
 		{
@@ -162,7 +182,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			if (!sendPacket)
 				cmd->viewangles.y += b;
 		}
-		else if (static float nextLbyUpdate; Helpers::lbyUpdate(localPlayer.get(), nextLbyUpdate))
+		else if (lbyUpdate)
 		{
 			sendPacket = false;
 			cmd->viewangles.y += a;
