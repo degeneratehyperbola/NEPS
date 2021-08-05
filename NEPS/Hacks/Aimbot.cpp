@@ -148,7 +148,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 				const auto records = Backtrack::getRecords(entity->index());
 				for (const auto &record : records)
 				{
-					if (!Backtrack::valid(record.simulationTime) || !record.important)
+					if (!Backtrack::valid(record.simulationTime))
 						continue;
 
 					const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
