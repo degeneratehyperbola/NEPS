@@ -633,3 +633,21 @@ std::size_t Helpers::getDefaultFontSize() noexcept
 {
 	return _compressedFontSize;
 }
+
+bool Helpers::lbyUpdate(Entity *animatable, float &nextUpdate) noexcept
+{
+	if (!animatable->isPlayer())
+		return false;
+
+	const auto time = memory->globalVars->serverTime();
+
+	if (animatable->velocity().length2D() > 0.1f || std::fabsf(animatable->velocity().z) > 100.0f)
+		nextUpdate = time + 0.22f;
+	else if (time >= nextUpdate)
+	{
+		nextUpdate = time + 1.1f;
+		return true;
+	}
+
+	return false;
+}

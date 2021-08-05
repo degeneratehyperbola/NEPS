@@ -155,4 +155,6 @@ namespace Helpers
 
 	const void *getDefaultFontData() noexcept;
 	std::size_t getDefaultFontSize() noexcept;
+
+	bool lbyUpdate(Entity *animatable, float &nextUpdate) noexcept;
 }
