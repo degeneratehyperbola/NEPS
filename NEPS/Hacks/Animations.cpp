@@ -120,6 +120,7 @@ bool Animations::animSynced(const UserCmd &cmd, bool sendPacket) noexcept
 struct ResolverData
 {
 	std::array<AnimLayer, MAX_ANIM_LAYERS> previousLayers;
+	float previousFeetYaw = 0.0f;
 	float nextLbyUpdate = 0.0f;
 };
 
@@ -134,9 +135,13 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 	if (!state)
 		return;
 
-	const auto layers = animatable->animationLayers();
 	auto &resolverData = playerResolverData[animatable->index()];
 	const auto lbyUpdate = Helpers::lbyUpdate(animatable, resolverData.nextLbyUpdate);
+	const auto layers = animatable->animationLayers();
+
+	state->feetYaw = resolverData.previousFeetYaw;
+	animatable->updateClientSideAnimation();
+	resolverData.previousFeetYaw = state->feetYaw;
 
 	const auto backupFeetYaw = state->feetYaw;
 	std::array<float, 3U> layerMovePlaybackRates;
@@ -175,18 +180,14 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 				side = 1;
 		} else
 			side = -1;
-	}
+	} else
+		side = rand() % 3 - 1;
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.data());
 
-	animatable->clientAnimations() = false;
-
-	state->feetYaw = animatable->eyeAngles().y - animatable->getMaxDesyncAngle() * side;
-
-	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
-	state->feetYawRate = 0.0f;
+	if (side)
+		state->feetYaw = animatable->eyeAngles().y + 60.0f * side;
 
 	animatable->updateClientSideAnimation();
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, animatable->simulationTime());
-	animatable->clientAnimations() = true;
 }
