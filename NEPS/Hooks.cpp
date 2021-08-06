@@ -230,7 +230,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	{
 		if (fakePitchPerformed)
 			cmd->viewangles.x = -89.0f; // Fake pitch visualization
-		Animations::animDesynced(*cmd, sendPacket);
+		Animations::desyncedAnimations(*cmd, sendPacket);
 		cmd->viewangles.x = previousViewAngles.x; // Restore view angles after visualizing fake pitch
 	}
 
@@ -320,7 +320,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 	case FrameStage::NET_UPDATE_END:
 		break;
 	case FrameStage::RENDER_START:
-		Animations::animSynced(previousCmd, previousSendPacket);
+		Animations::animationFix(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::forceRelayCluster();

@@ -7,23 +7,23 @@
 #include "../SDK/Input.h"
 #include "../SDK/UserCmd.h"
 
-static AnimState *lerpedState = new AnimState{};
-static std::array<Matrix3x4, MAX_STUDIO_BONES> lerpedBones;
+static AnimState *desyncedState = new AnimState{};
+static std::array<Matrix3x4, MAX_STUDIO_BONES> desyncedBones;
 
 void Animations::releaseState() noexcept
 {
-	if (lerpedState)
-		delete lerpedState;
+	if (desyncedState)
+		delete desyncedState;
 }
 
 void Animations::copyLerpedBones(Matrix3x4 *out) noexcept
 {
-	if (out) std::copy(lerpedBones.begin(), lerpedBones.end(), out);
+	if (out) std::copy(desyncedBones.begin(), desyncedBones.end(), out);
 }
 
-bool Animations::animDesynced(const UserCmd &cmd, bool sendPacket) noexcept
+bool Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcept
 {
-	assert(lerpedState);
+	assert(desyncedState);
 
 	bool matrixUpdated = false;
 
@@ -33,36 +33,27 @@ bool Animations::animDesynced(const UserCmd &cmd, bool sendPacket) noexcept
 
 	if (static auto spawnTime = localPlayer->spawnTime(); !interfaces->engine->isInGame() || spawnTime != localPlayer->spawnTime())
 	{
-		memory->createState(lerpedState, localPlayer.get());
+		memory->createState(desyncedState, localPlayer.get());
 		spawnTime = localPlayer->spawnTime();
 	}
 
-	const auto layers = localPlayer->animationLayers();
-
-	static std::array<AnimLayer, MAX_ANIM_LAYERS> lerpedLayers;
-
 	if (sendPacket)
 	{
-		std::copy(layers, layers + localPlayer->getAnimationLayerCount(), lerpedLayers.begin());
-
 		const auto backupPoseParam = localPlayer->poseParam();
 		const auto backupAbsYaw = localPlayer->getAbsAngle().y;
 
-		*(int *)(localPlayer.get() + 0xA68) = 0;
-
-		memory->updateState(lerpedState, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
+		memory->updateState(desyncedState, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
 		memory->invalidateBoneCache(localPlayer.get());
-		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, lerpedState->feetYaw, 0.0f});
+		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, desyncedState->feetYaw, 0.0f});
 
-		std::copy(lerpedLayers.begin(), lerpedLayers.end(), layers);
-		layers[Entity::ANIMATION_LAYER_LEAN].weight = FLT_EPSILON;
+		localPlayer->animationLayers()[Entity::ANIMATION_LAYER_LEAN].weight = FLT_EPSILON;
 
-		matrixUpdated = localPlayer->setupBones(lerpedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
+		matrixUpdated = localPlayer->setupBones(desyncedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 		if (const auto &origin = localPlayer->getRenderOrigin(); matrixUpdated)
 			for (int i = 0; i < MAX_STUDIO_BONES; i++)
 			{
-				lerpedBones[i].setOrigin(lerpedBones[i].origin() - origin);
+				desyncedBones[i].setOrigin(desyncedBones[i].origin() - origin);
 			}
 
 		localPlayer->poseParam() = backupPoseParam;
@@ -72,7 +63,7 @@ bool Animations::animDesynced(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
-bool Animations::animSynced(const UserCmd &cmd, bool sendPacket) noexcept
+bool Animations::animationFix(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	bool matrixUpdated = false;
 
@@ -81,23 +72,14 @@ bool Animations::animSynced(const UserCmd &cmd, bool sendPacket) noexcept
 	if (!memory->input->isCameraInThirdPerson || !config->misc.fixAnimation)
 		return matrixUpdated;
 
-	const auto layers = localPlayer->animationLayers();
 	auto state = localPlayer->getAnimState();
 
 	static auto backupPoseParam = localPlayer->poseParam();
 	static auto backupAbsYaw = state->feetYaw;
 
-	if (state->lastClientSideAnimationUpdateFramecount == memory->globalVars->framecount)
-		state->lastClientSideAnimationUpdateFramecount -= 1;
+	localPlayer->animationLayers()[Entity::ANIMATION_LAYER_LEAN].weight = FLT_EPSILON;
 
-	static std::array<AnimLayer, MAX_ANIM_LAYERS> networkedLayers;
-
-	layers[Entity::ANIMATION_LAYER_LEAN].weight = FLT_EPSILON;
-	std::copy(layers, layers + localPlayer->getAnimationLayerCount(), networkedLayers.begin());
-
-	localPlayer->clientAnimations() = true;
 	memory->updateState(state, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
-	localPlayer->clientAnimations() = false;
 
 	matrixUpdated = localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
@@ -107,12 +89,8 @@ bool Animations::animSynced(const UserCmd &cmd, bool sendPacket) noexcept
 		backupAbsYaw = state->feetYaw;
 	}
 
-	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
-	state->feetYawRate = 0.0f;
 	memory->setAbsAngle(localPlayer.get(), Vector{0.0f, backupAbsYaw, 0.0f});
-	std::copy(networkedLayers.begin(), networkedLayers.end(), layers);
 	localPlayer->poseParam() = backupPoseParam;
-	localPlayer->clientAnimations() = true;
 
 	return matrixUpdated;
 }
@@ -183,7 +161,7 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 	} else
 		side = rand() % 3 - 1;
 
-	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.data());
+	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
 	if (side)
 		state->feetYaw = animatable->eyeAngles().y + 60.0f * side;
