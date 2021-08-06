@@ -310,12 +310,6 @@
     <ClInclude Include="SDK\ConVar.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="SDK\SoundInfo.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\SoundEmitter.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\PhysicsSurfaceProps.h">
       <Filter>SDK</Filter>
     </ClInclude>

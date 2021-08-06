@@ -5,7 +5,7 @@
 struct ViewSetup
 {
 	PAD(172)
-	void *csm;
+	void *csmVolumeCuller;
 	float fov;
 	float fovViewmodel;
 	Vector origin;

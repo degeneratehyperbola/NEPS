@@ -32,8 +32,7 @@
 #include "SDK/InputSystem.h"
 #include "SDK/ModelRender.h"
 #include "SDK/Panel.h"
-#include "SDK/SoundInfo.h"
-#include "SDK/SoundEmitter.h"
+#include "SDK/Sound.h"
 #include "SDK/StudioRender.h"
 #include "SDK/Surface.h"
 #include "SDK/ViewSetup.h"
@@ -227,12 +226,10 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	previousSendPacket = sendPacket;
 	previousCmd = *cmd;
 
-	{
-		if (fakePitchPerformed)
-			cmd->viewangles.x = -89.0f; // Fake pitch visualization
-		Animations::desyncedAnimations(*cmd, sendPacket);
-		cmd->viewangles.x = previousViewAngles.x; // Restore view angles after visualizing fake pitch
-	}
+	if (fakePitchPerformed)
+		cmd->viewangles.x = -89.0f; // Fake pitch visualization
+	Animations::desyncedAnimations(*cmd, sendPacket);
+	cmd->viewangles.x = previousViewAngles.x; // Restore view angles after visualizing fake pitch
 
 	return false;
 }
@@ -274,12 +271,12 @@ static void __stdcall drawModelExecute(void *ctx, void *state, const ModelRender
 	interfaces->studioRender->forcedMaterialOverride(nullptr);
 }
 
-static bool __fastcall svCheatsGetBool(void *_this) noexcept
+static bool __fastcall svCheatsGetBool(void *thisptr) noexcept
 {
 	if (RETURN_ADDRESS == memory->cameraThink && config->visuals.thirdPerson.keyMode)
 		return true;
 
-	return hooks->svCheats.getOriginal<bool, 13>()(_this);
+	return hooks->svCheats.getOriginal<bool, 13>()(thisptr);
 }
 
 static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept
@@ -347,17 +344,6 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 
 	hooks->client.callOriginal<void, 37>(stage);
 }
-
-struct SoundData
-{
-	int filter;
-	int entityIndex;
-	int channel;
-	const char *soundEntry;
-	PAD(8)
-	float volume;
-	PAD(44)
-};
 
 static int __stdcall emitSound(SoundData data) noexcept
 {
