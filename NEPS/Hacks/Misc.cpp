@@ -428,7 +428,7 @@ void Misc::bunnyHop(UserCmd *cmd) noexcept
 	//config->misc.DEBUG = bhopInSeries;
 
 
-	if (config->movement.bunnyHopChance && !(localPlayer->flags() & 1) && localPlayer->moveType() != MoveType::LADDER && !wasLastTimeOnGround)
+	if (config->movement.bunnyHopChance && !(localPlayer->flags() & 1) && localPlayer->moveType() != MoveType::Ladder && !wasLastTimeOnGround)
 		if (rand() % 100 <= chanceToHit) {
 			cmd->buttons &= ~UserCmd::IN_JUMP;
 		}
