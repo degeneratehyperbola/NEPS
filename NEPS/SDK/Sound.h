@@ -32,7 +32,7 @@ struct SoundData
 	Vector origin;
 	PAD(3)
 	bool updatePosition;
-	float sountTime;
+	float soundTime;
 	int speakerEntity;
 	PAD(4)
 };
