@@ -16,24 +16,24 @@ struct SoundInfo
 	int soundIndex;
 };
 
-struct SoundData
+struct SoundParams
 {
 	void *filter;
-	int entityIndex;
+	int entityIndex = -1;
 	int channel;
 	const char *soundEntry;
 	int soundEntryHash;
 	const char *sample;
-	float volume;
+	float volume = 1.0f;
 	int seed;
 	int soundLevel;
 	int flags;
-	int pitch;
+	int pitch = 100;
 	Vector origin;
 	PAD(3)
 	bool updatePosition;
-	float soundTime;
-	int speakerEntity;
+	float soundTime = 0.0f;
+	int speakerEntity = -1;
 	PAD(4)
 };
 
@@ -62,5 +62,5 @@ public:
 class Sound
 {
 public:
-	VIRTUAL_METHOD(int, emitSound, 5, (SoundData data), (this, data))
+	VIRTUAL_METHOD(int, emitSound, 5, (SoundParams data), (this, data))
 };

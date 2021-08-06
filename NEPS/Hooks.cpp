@@ -345,27 +345,27 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 	hooks->client.callOriginal<void, 37>(stage);
 }
 
-static int __stdcall emitSound(SoundData data) noexcept
+static int __stdcall emitSound(SoundParams params) noexcept
 {
-	auto modulateVolume = [&data](int(*get)(int))
+	auto modulateVolume = [&params](int(*get)(int))
 	{
-		if (const auto entity = interfaces->entityList->getEntity(data.entityIndex); localPlayer && entity && entity->isPlayer())
+		if (const auto entity = interfaces->entityList->getEntity(params.entityIndex); localPlayer && entity && entity->isPlayer())
 		{
-			if (data.entityIndex == localPlayer->index())
-				data.volume *= get(0) / 100.0f;
+			if (params.entityIndex == localPlayer->index())
+				params.volume *= get(0) / 100.0f;
 			else if (!entity->isOtherEnemy(localPlayer.get()))
-				data.volume *= get(1) / 100.0f;
+				params.volume *= get(1) / 100.0f;
 			else
-				data.volume *= get(2) / 100.0f;
+				params.volume *= get(2) / 100.0f;
 		}
 	};
 
 	modulateVolume([](int index) { return config->sound.players[index].masterVolume; });
 
-	if (strstr(data.soundEntry, "Weapon") && strstr(data.soundEntry, "Single"))
+	if (strstr(params.soundEntry, "Weapon") && strstr(params.soundEntry, "Single"))
 	{
 		modulateVolume([](int index) { return config->sound.players[index].weaponVolume; });
-	} else if (config->misc.autoAccept && !strcmp(data.soundEntry, "UIPanorama.popup_accept_match_beep"))
+	} else if (config->misc.autoAccept && !strcmp(params.soundEntry, "UIPanorama.popup_accept_match_beep"))
 	{
 		memory->acceptMatch("");
 		auto window = hooks->getProcessWindow();
@@ -373,8 +373,8 @@ static int __stdcall emitSound(SoundData data) noexcept
 		FlashWindowEx(&flash);
 		ShowWindow(window, SW_RESTORE);
 	}
-	data.volume = std::clamp(data.volume, 0.0f, 1.0f);
-	return hooks->sound.callOriginal<int, 5>(data);
+	params.volume = std::clamp(params.volume, 0.0f, 1.0f);
+	return hooks->sound.callOriginal<int, 5>(params);
 }
 
 static bool __stdcall shouldDrawFog() noexcept
