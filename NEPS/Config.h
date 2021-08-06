@@ -48,7 +48,7 @@ public:
 		bool autoScope = false;
 		bool autoStop = false;
 		bool multipoint = false;
-		float multipointScale = 0.75f;
+		float multipointScale = 0.8f;
 		int targeting = 0;
 		float fov = 1.0f;
 		float distance = 0.0f;
