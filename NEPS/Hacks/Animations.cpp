@@ -159,7 +159,7 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 		} else
 			side = -1;
 	} else
-		side = rand() % 3 - 1;
+		side = (rand() & 1) * 2 - 1;
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
