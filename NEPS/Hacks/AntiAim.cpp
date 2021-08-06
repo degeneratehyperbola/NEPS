@@ -118,15 +118,15 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		cmd->viewangles.y += bestAngle;
 
 		bestAngle = 0.0f;
-		constexpr std::array positions = {-18.0f, 18.0f};
-		std::array active = {false, false};
+		constexpr std::array positions = {-20.0f, 0.0f, 20.0f};
+		std::array active = {false, false, false};
 		const auto fwd = Vector::fromAngle2D(cmd->viewangles.y);
 		const auto side = fwd.crossProduct(Vector::up());
 
 		for (std::size_t i = 0; i < positions.size(); ++i)
 		{
 			const auto start = localPlayer->getEyePosition() + side * positions[i];
-			const auto end = start + fwd * 50.0f;
+			const auto end = start + fwd * 100.0f;
 
 			Trace trace;
 			interfaces->engineTrace->traceRay({start, end}, CONTENTS_SOLID | CONTENTS_WINDOW, localPlayer.get(), trace);
@@ -135,9 +135,9 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 				active[i] = true;
 		}
 
-		if (active[0] && !active[1])
+		if (active[0] && active[1] && !active[2])
 			bestAngle = -90.0f;
-		else if (!active[0] && active[1])
+		else if (!active[0] && active[1] && active[2])
 			bestAngle = 90.0f;
 
 		cmd->viewangles.y += bestAngle;
