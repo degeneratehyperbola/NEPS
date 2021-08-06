@@ -44,7 +44,7 @@ void Visuals::playerModel(FrameStage stage) noexcept
 	constexpr auto getModel = [](Team team) constexpr noexcept -> const char *
 	{
 		constexpr std::array models{
-			//"models/player/custom_player/legacy/anime/astolfo/astolfo_v1.mdl", // proof that all cheaters are femboys
+			//"models/player/custom_player/legacy/anime/astolfo/astolfo_v1.mdl", // Proof that all cheaters are femboys
 			"models/player/custom_player/legacy/ctm_fbi_variantb.mdl",
 			"models/player/custom_player/legacy/ctm_fbi_variantf.mdl",
 			"models/player/custom_player/legacy/ctm_fbi_variantg.mdl",

@@ -30,6 +30,7 @@
 #include "SDK/EntityList.h"
 #include "SDK/NetworkStringTable.h"
 #include "SDK/PlayerResource.h"
+#include "SDK/Surface.h"
 #endif // _DEBUG_NEPS
 #include "SDK/Engine.h"
 
@@ -348,7 +349,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::Begin("Aimbot", &window.aimbot, windowFlags);
 	}
 
-	ImGui::PushItemWidth(110);
 	static int currentWeapon = 0;
 
 	if (ImGui::BeginListBox("##category", {140, 260}))
@@ -1113,7 +1113,7 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginChild("##child", {200, 0}, false, ImGuiWindowFlags_NoScrollbar))
+	if (ImGui::BeginChild("##child", {170, 0}, false, ImGuiWindowFlags_NoScrollbar))
 	{
 		ImGuiCustom::keyBind("Enabled", config->triggerbot[currentWeapon].bind);
 		ImGui::Separator();
@@ -1155,6 +1155,7 @@ void GUI::renderBacktrackWindow(bool contentOnly) noexcept
 		ImGui::Begin("Backtrack", &window.backtrack, windowFlags);
 	}
 	ImGui::Checkbox("Enabled", &config->backtrack.enabled);
+	ImGui::SameLine(90);
 	ImGui::Checkbox("Ignore smoke", &config->backtrack.ignoreSmoke);
 	ImGui::PushItemWidth(180);
 	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 200, "Time limit %dms");
@@ -1174,26 +1175,24 @@ void GUI::renderGlowWindow(bool contentOnly) noexcept
 		ImGui::Begin("Glow", &window.glow, windowFlags);
 	}
 
-	static int currentCategory{0};
+	static int currentCategory = 0;
 
-	ImGui::PushItemWidth(110);
+	ImGui::PushItemWidth(100);
 
-	ImGui::PushID(0);
-	ImGui::Combo("", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Local player\0Weapons\0C4\0Planted C4\0Chickens\0Defuse kits\0Projectiles\0Hostages\0Ragdolls\0");
-	ImGui::PopID();
+	ImGui::Combo("##category", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Local player\0Weapons\0C4\0Planted C4\0Chickens\0Defuse kits\0Projectiles\0Hostages\0Ragdolls\0");
 	static int currentItem{0};
 	if (currentCategory <= 3)
 	{
 		ImGui::SameLine();
-		static int currentType{0};
-		ImGui::PushID(1);
-		ImGui::Combo("", &currentType, "All\0Visible\0Occluded\0");
-		ImGui::PopID();
+		static int currentType = 0;
+		ImGui::Combo("##type", &currentType, "All\0Visible\0Occluded\0");
 		currentItem = currentCategory * 3 + currentType;
 	} else
 	{
 		currentItem = currentCategory + 8;
 	}
+
+	ImGui::PopItemWidth();
 
 	ImGui::SameLine();
 	ImGui::Checkbox("Enabled", &config->glow[currentItem].enabled);
@@ -1589,13 +1588,13 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginChild("##child", {360, 0}, false, ImGuiWindowFlags_NoScrollbar))
+	if (ImGui::BeginChild("##child", {320, 0}, false, ImGuiWindowFlags_NoScrollbar))
 	{
 		auto &sharedConfig = getConfigShared(currentCategory, currentItem);
 
 		ImGui::Checkbox("Enabled", &sharedConfig.enabled);
-		ImGui::SameLine(ImGui::GetContentRegionMax().x - 220.0f);
-		ImGui::SetNextItemWidth(220.0f);
+		ImGui::SameLine(ImGui::GetContentRegionMax().x - 200);
+		ImGui::SetNextItemWidth(200);
 		if (ImGui::BeginCombo("##font", config->getSystemFonts()[sharedConfig.font.index].c_str()))
 		{
 			for (size_t i = 0; i < config->getSystemFonts().size(); ++i)
@@ -2183,12 +2182,12 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 	constexpr auto soundUi = [](const char *label, int &sound, std::string &path) noexcept
 	{
 		ImGui::PushID(label);
-		ImGui::PushItemWidth(110.0f);
+		ImGui::PushItemWidth(110);
 
 		ImGui::Combo(label, &sound, "None\0Metal\0Switch press\0Bell\0Glass\0Custom\0");
 		if (sound == 5)
 		{
-			ImGui::InputText("Filename", &path);
+			ImGui::InputTextWithHint("##path", "Filename", &path);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Audio file must be put in csgo/sound/ directory");
 		}
@@ -2231,8 +2230,8 @@ void GUI::renderExploitsWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Anti AFK kick", &config->exploits.antiAfkKick);
 	ImGui::Checkbox("Fast duck", &config->exploits.fastDuck);
 	ImGuiCustom::keyBind("Fake duck", config->exploits.fakeDuck);
-	ImGui::SetNextItemWidth(90.0f);
-	ImGui::InputInt("Fake duck packets", &config->exploits.fakeDuckPackets, 1, 5);
+	ImGui::SetNextItemWidth(-1);
+	ImGui::InputInt("##duck_packets", &config->exploits.fakeDuckPackets, 1, 5);
 	ImGui::Checkbox("Moonwalk", &config->exploits.moonwalk);
 	ImGuiCustom::keyBind("Slowwalk", config->exploits.slowwalk);
 
@@ -2256,7 +2255,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	static std::string playerName;
 	ImGui::SetNextItemWidth(192.0f);
 	ImGui::InputText("##player_name", &playerName);
-	if (ImGui::Button("Change name"))
+	if (ImGui::Button("Change name", {-1, 0}))
 		Misc::changeName(false, (playerName + "\x1").c_str(), 5.0f);
 
 	ImGui::SetNextItemWidth(192.0f);
@@ -2264,7 +2263,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	ImGui::SetNextItemWidth(112.0f);
 	ImGui::Combo("##ban_color", &config->griefing.banColor, "White\0Red\0Purple\0Green\0Light green\0Turquoise\0Light red\0Gray\0Yellow\0Gray 2\0Light blue\0Gray/Purple\0Blue\0Pink\0Dark orange\0Orange\0");
 	ImGui::SameLine();
-	if (ImGui::Button("Fake ban", ImVec2{75.0f, 0.0f}))
+	if (ImGui::Button("Fake ban", {-1, 0}))
 		Misc::fakeBan(true);
 
 	ImGui::Checkbox("Vote reveal", &config->griefing.revealVotes);
@@ -2328,7 +2327,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	}
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
-	if (ImGui::Button("Nuke chat", {85.0f, 0.0f}))
+	if (ImGui::Button("Nuke chat", {85, 0}))
 	{
 		std::ostringstream ss;
 
@@ -2342,7 +2341,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Basmala chat", {101.0f, 0.0f}))
+	if (ImGui::Button("Basmala chat", {-1, 0}))
 	{
 		std::ostringstream ss;
 
@@ -2420,6 +2419,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Sync client animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
 	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
+	//ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
 
 	ImGui::NextColumn();
 
@@ -2488,13 +2488,14 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 		ImGui::Begin("Style", &window.style, windowFlags);
 	}
 
-	ImGui::PushItemWidth(120);
+	ImGui::PushItemWidth(100);
 	//if (ImGui::Combo("Menu style", &config->style.menuStyle, "Classic\0One window\0"))
 	//    window = {};
 	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Frontier\0Eastern Sun\0Coca-Cola\0Twotap\0Cherry\0Custom\0"))
 		updateColors();
-	ImGui::SliderFloat("##font_scale", &config->style.scaling, 0.2f, 4.0f, "Font scale %.1f");
 	ImGui::PopItemWidth();
+	ImGui::SetNextItemWidth(-1);
+	ImGui::SliderFloat("##font_scale", &config->style.scaling, 0.2f, 4.0f, "Font scale %.1f");
 
 	if (config->style.menuColors == 6)
 	{
@@ -2539,7 +2540,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 	static std::string buffer;
 
 	ImGui::PushItemWidth(-1);
-	if (ImGui::ListBox("", &currentConfig, [](void *data, int idx, const char **out_text)
+	if (ImGui::ListBox("##cfgs", &currentConfig, [](void *data, int idx, const char **out_text)
 	{
 		auto &vector = *static_cast<std::vector<std::string>*>(data);
 		*out_text = vector[idx].c_str();
@@ -2547,18 +2548,16 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 	}, &configItems, configItems.size(), 5) && currentConfig != -1)
 		buffer = configItems[currentConfig];
 
-	ImGui::PushID(0);
-	if (ImGui::InputTextWithHint("", "Config name", &buffer, ImGuiInputTextFlags_EnterReturnsTrue))
+	if (ImGui::InputTextWithHint("##cfg_name", "Config name", &buffer, ImGuiInputTextFlags_EnterReturnsTrue))
 	{
 		if (currentConfig != -1)
 			config->rename(currentConfig, buffer.c_str());
 	}
-	ImGui::PopID();
 	ImGui::PopItemWidth();
 
 	ImGui::NextColumn();
 
-	static const ImVec2 size = {-1, 0};
+	static const ImVec2 size = {-1, 20};
 
 	if (ImGui::Button("Open folder", size))
 		config->openConfigDir();
@@ -2656,10 +2655,10 @@ void GUI::renderDebugWindow() noexcept
 	ImGui::Columns(3, nullptr, false);
 
 	{
-		if (ImGui::Button("Test chat virtual methods"))
+		if (ImGui::Button("Test chat virtual methods", {-1, 0}))
 			memory->clientMode->getHudChat()->printf(0, "\x1N \x2N \x3N \x4N \x5N \x6N \x7N \x8N \x9N \xAN \xBN \xCN \xDN \xEN \xFN \x10N \x1");
 
-		if (ImGui::Button("List client classes"))
+		if (ImGui::Button("List client classes", {-1, 0}))
 		{
 			for (int i = 0; i <= interfaces->entityList->getHighestEntityIndex(); i++)
 			{
@@ -2723,12 +2722,14 @@ void GUI::renderDebugWindow() noexcept
 		static int exponent = 2;
 
 		ImGuiCustom::colorPicker("Light color", lightColor.data());
+		ImGui::PushItemWidth(-1);
 		ImGui::SliderFloat("##radius", &radius, 0.0f, 5000.0f, "Light radius %.3f", ImGuiSliderFlags_Logarithmic);
 		ImGui::SliderInt("##exponent", &exponent, 0, 12, "Light exponent %d");
 		ImGui::SliderFloat("##life", &life, 0.0f, 100.0f, "Light lifetime %.3f");
+		ImGui::PopItemWidth();
 
 		static DynamicLight *dlight = nullptr;
-		if (entity && entClassId != ClassId::World && ImGui::Button("Allocade d-light for selected entity"))
+		if (entity && entClassId != ClassId::World && ImGui::Button("Allocade d-light for selected entity", {-1, 0}))
 		{
 			dlight = interfaces->effects->allocDlight(idx);
 			if (dlight)
@@ -2748,7 +2749,7 @@ void GUI::renderDebugWindow() noexcept
 
 		if (entity && entity->isPlayer())
 		{
-			if (ImGui::Button("Resolve selected"))
+			if (ImGui::Button("Resolve selected", {-1, 0}))
 				Animations::resolveLBY(entity); 
 
 			if (Helpers::animDataAuthenticity(entity))
@@ -2757,7 +2758,7 @@ void GUI::renderDebugWindow() noexcept
 				ImGui::TextUnformatted("Desync possible");
 		}
 
-		if (ImGui::Button("Precache info"))
+		if (ImGui::Button("Precache info", {-1, 0}))
 			interfaces->engine->clientCmdUnrestricted("sv_precacheinfo");
 
 		const auto &colors = ImGui::GetStyle().Colors;
@@ -2777,7 +2778,7 @@ void GUI::renderDebugWindow() noexcept
 			ss << "f};\n";
 		}
 
-		if (ImGui::Button("Copy style colors"))
+		if (ImGui::Button("Copy style colors", {-1, 0}))
 			ImGui::SetClipboardText(ss.str().c_str());
 	}
 
@@ -2866,7 +2867,7 @@ void GUI::renderDebugWindow() noexcept
 
 			if (ImGui::BeginTable("shrek2", 5))
 			{
-				ImGui::TableSetupColumn("Name", 0, 5.0f);
+				ImGui::TableSetupColumn("Name", 0, 4.0f);
 				ImGui::TableSetupColumn("Weight");
 				ImGui::TableSetupColumn("Rate");
 				ImGui::TableSetupColumn("Seq");
@@ -2916,6 +2917,22 @@ void GUI::renderDebugWindow() noexcept
 
 				ImGui::EndTable();
 			}
+		}
+
+		static std::string soundPath;
+
+		ImGui::SetNextItemWidth(-1);
+		ImGui::InputTextWithHint("##snd_path", "Relative sound path", &soundPath);
+
+		if (ImGui::Button("Play sound", {-1, 0}))
+			interfaces->surface->playSound(soundPath.c_str());
+
+		if (ImGui::Button("Precache sound", {-1, 0}))
+		{
+			if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+				soundprecache->addString(false, soundPath.c_str());
+
+			interfaces->engine->clientCmdUnrestricted("snd_updateaudiocache");
 		}
 	}
 }
