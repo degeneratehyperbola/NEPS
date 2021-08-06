@@ -118,7 +118,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		cmd->viewangles.y += bestAngle;
 
 		bestAngle = 0.0f;
-		constexpr std::array positions = {-20.0f, 0.0f, 20.0f};
+		constexpr std::array positions = {-30.0f, 0.0f, 30.0f};
 		std::array active = {false, false, false};
 		const auto fwd = Vector::fromAngle2D(cmd->viewangles.y);
 		const auto side = fwd.crossProduct(Vector::up());
