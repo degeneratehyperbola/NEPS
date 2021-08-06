@@ -23,7 +23,7 @@ static bool canAntiAim(UserCmd *cmd) noexcept
 	if (cmd->buttons & UserCmd::IN_USE || !localPlayer->isAlive())
 		return false;
 
-	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
 		return false;
 
 	return true;
@@ -33,7 +33,7 @@ static void microMovement(UserCmd *cmd) noexcept
 {
 	if (std::fabsf(cmd->sidemove) < 5.0f)
 	{
-		if (localPlayer->flags() & Entity::FL_DUCKING)
+		if (localPlayer->flags() & PlayerFlag_Crouched)
 			cmd->sidemove = cmd->tickCount & 1 ? 3.25f : -3.25f;
 		else
 			cmd->sidemove = cmd->tickCount & 1 ? 1.1f : -1.1f;
@@ -44,7 +44,7 @@ static const Config::AntiAim &getCurrentConfig()
 {
 	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
 
-	if (localPlayer->flags() & Entity::FL_ONGROUND)
+	if (localPlayer->flags() & PlayerFlag_OnGround)
 	{
 		if (localPlayer->velocity().length2D() < 5.0f)
 			return config->antiAim[categories[0]];

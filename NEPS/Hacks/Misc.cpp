@@ -42,10 +42,10 @@ void Misc::edgeJump(UserCmd *cmd) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
 		return;
 
-	if ((EnginePrediction::getFlags() & Entity::FL_ONGROUND) && !(localPlayer->flags() & Entity::FL_ONGROUND))
+	if ((EnginePrediction::getFlags() & PlayerFlag_OnGround) && !(localPlayer->flags() & PlayerFlag_OnGround))
 		cmd->buttons |= UserCmd::IN_JUMP;
 }
 
@@ -54,7 +54,7 @@ void Misc::slowwalk(UserCmd *cmd) noexcept
 	if (static Helpers::KeyBindState flag; !flag[config->exploits.slowwalk])
 		return;
 
-	if (!localPlayer || !localPlayer->isAlive() || ~localPlayer->flags() & Entity::FL_ONGROUND || localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
+	if (!localPlayer || !localPlayer->isAlive() || ~localPlayer->flags() & PlayerFlag_OnGround || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
 		return;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
@@ -252,7 +252,7 @@ void Misc::fastPlant(UserCmd *cmd) noexcept
 	if (plantAnywhere->getInt())
 		return;
 
-	if (!localPlayer || !localPlayer->isAlive() || (localPlayer->inBombZone() && localPlayer->flags() & Entity::FL_ONGROUND))
+	if (!localPlayer || !localPlayer->isAlive() || (localPlayer->inBombZone() && localPlayer->flags() & PlayerFlag_OnGround))
 		return;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
@@ -280,7 +280,7 @@ void Misc::fastStop(UserCmd *cmd) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER || !(localPlayer->flags() & 1) || cmd->buttons & UserCmd::IN_JUMP)
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder || !(localPlayer->flags() & 1) || cmd->buttons & UserCmd::IN_JUMP)
 		return;
 
 	if (cmd->buttons & (UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT | UserCmd::IN_FORWARD | UserCmd::IN_BACK))
@@ -414,12 +414,12 @@ void Misc::bunnyHop(UserCmd *cmd) noexcept
 	if (!localPlayer)
 		return;
 
-	static auto wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
+	static auto wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
 
-	if (config->movement.bunnyHop && !(localPlayer->flags() & Entity::FL_ONGROUND) && localPlayer->moveType() != MoveType::LADDER && !wasLastTimeOnGround)
+	if (config->movement.bunnyHop && !(localPlayer->flags() & PlayerFlag_OnGround) && localPlayer->moveType() != MoveType::Ladder && !wasLastTimeOnGround)
 		cmd->buttons &= ~UserCmd::IN_JUMP;
 
-	wasLastTimeOnGround = localPlayer->flags() & Entity::FL_ONGROUND;
+	wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
 }
 
 void Misc::fakeBan(bool set) noexcept
@@ -709,7 +709,7 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 	if (!config->movement.autoStrafe)
 		return;
 
-	if (!localPlayer || localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
+	if (!localPlayer || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
 		return;
 
 	static bool lastHeldJump = cmd->buttons & UserCmd::IN_JUMP;
@@ -759,7 +759,7 @@ void Misc::removeCrouchCooldown(UserCmd *cmd) noexcept
 
 void Misc::moonwalk(UserCmd *cmd) noexcept
 {
-	if (!localPlayer || localPlayer->moveType() == MoveType::LADDER)
+	if (!localPlayer || localPlayer->moveType() == MoveType::Ladder)
 		return;
 
 	cmd->buttons &= ~(UserCmd::IN_FORWARD | UserCmd::IN_BACK | UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT);
@@ -1113,7 +1113,7 @@ void Misc::useSpam(UserCmd *cmd) noexcept
 	if (plantAnywhere->getInt())
 		return;
 
-	if (localPlayer->inBombZone() && localPlayer->flags() & Entity::FL_ONGROUND)
+	if (localPlayer->inBombZone() && localPlayer->flags() & PlayerFlag_OnGround)
 		return;
 
 	if (cmd->buttons & UserCmd::IN_USE)

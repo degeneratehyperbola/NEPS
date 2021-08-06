@@ -85,7 +85,7 @@ bool Entity::visibleTo(Entity *other) noexcept
 	if (!setupBones(boneMatrices, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 		return false;
 
-	for (const int boxNum : {Hitbox::Belly, Hitbox::LeftForearm, Hitbox::RightForearm})
+	for (const int boxNum : {Hitbox_Belly, Hitbox_LeftForearm, Hitbox_RightForearm})
 	{
 		const auto hitbox = set->getHitbox(boxNum);
 		if (hitbox && targetEntity->canSee(this, boneMatrices[hitbox->bone].origin()))

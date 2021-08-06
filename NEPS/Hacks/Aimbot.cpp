@@ -108,7 +108,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 
 		const Record *backtrackRecord = nullptr;
 		const auto doScope = cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
-		const auto doStop = cfg.autoStop && localPlayer->flags() & Entity::FL_ONGROUND && localPlayer->moveType() != MoveType::NOCLIP && localPlayer->moveType() != MoveType::LADDER;
+		const auto doStop = cfg.autoStop && localPlayer->flags() & PlayerFlag_OnGround && localPlayer->moveType() != MoveType::Noclip && localPlayer->moveType() != MoveType::Ladder;
 		const auto doBacktrack = config->backtrack.enabled && enemy;
 		if (doScope || doBacktrack || doStop)
 		{
@@ -166,11 +166,11 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 
 		for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
 		{
-			if (hitboxIdx == Hitbox::LeftHand ||
-				hitboxIdx == Hitbox::RightHand ||
-				hitboxIdx == Hitbox::Neck ||
-				hitboxIdx == Hitbox::LowerChest ||
-				hitboxIdx == Hitbox::Belly)
+			if (hitboxIdx == Hitbox_LeftHand ||
+				hitboxIdx == Hitbox_RightHand ||
+				hitboxIdx == Hitbox_Neck ||
+				hitboxIdx == Hitbox_LowerChest ||
+				hitboxIdx == Hitbox_Belly)
 				continue;
 
 			const auto hitbox = *hitboxSet->getHitbox(hitboxIdx);
@@ -181,7 +181,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 			{
 				switch (hitboxIdx)
 				{
-				case Hitbox::Head:
+				case Hitbox_Head:
 				{
 					const float r = hitbox.capsuleRadius * cfg.multipointScale;
 					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
@@ -203,7 +203,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 					points.emplace_back(max + axis * r);
 					break;
 				}
-				case Hitbox::UpperChest:
+				case Hitbox_UpperChest:
 				{
 					const float r = hitbox.capsuleRadius * cfg.multipointScale;
 					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
@@ -225,7 +225,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 					points.emplace_back(min - axis);
 					break;
 				}
-				case Hitbox::Thorax:
+				case Hitbox_Thorax:
 				{
 					const float r = hitbox.capsuleRadius * cfg.multipointScale;
 					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
@@ -240,7 +240,7 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 					points.emplace_back(min - axis);
 					break;
 				}
-				case Hitbox::Pelvis:
+				case Hitbox_Pelvis:
 				{
 					const float r = hitbox.capsuleRadius * cfg.multipointScale;
 					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
@@ -262,8 +262,8 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 					points.emplace_back(min - axis);
 					break;
 				}
-				case Hitbox::LeftFoot:
-				case Hitbox::RightFoot:
+				case Hitbox_LeftFoot:
+				case Hitbox_RightFoot:
 					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
 					break;
 				default:
@@ -274,12 +274,12 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 			{
 				switch (hitboxIdx)
 				{
-				case Hitbox::LeftFoot:
-				case Hitbox::RightFoot:
-				case Hitbox::Head:
-				case Hitbox::UpperChest:
-				case Hitbox::Thorax:
-				case Hitbox::Pelvis:
+				case Hitbox_LeftFoot:
+				case Hitbox_RightFoot:
+				case Hitbox_Head:
+				case Hitbox_UpperChest:
+				case Hitbox_Thorax:
+				case Hitbox_Pelvis:
 					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
 					break;
 				default:

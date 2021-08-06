@@ -442,7 +442,7 @@ void PlayerData::update(Entity *entity) noexcept
 	hasBomb = entity->hasC4();
 	isVip = entity->isVip();
 	hasDefuser = entity->hasDefuser();
-	ducking = entity->flags() & Entity::FL_DUCKING;
+	ducking = entity->flags() & PlayerFlag_Crouched;
 
 	{
 		const Vector start = entity->getEyePosition();

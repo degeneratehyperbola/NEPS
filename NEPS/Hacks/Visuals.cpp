@@ -710,9 +710,9 @@ void Visuals::flashlight(FrameStage stage) noexcept
 		return;
 
 	if (static Helpers::KeyBindState flag; flag[config->visuals.flashlight] && stage == FrameStage::RENDER_START)
-		localPlayer->effectFlags() |= 4;
+		localPlayer->effectFlags() |= EffectFlag_Flashlight;
 	else
-		localPlayer->effectFlags() &= ~4;
+		localPlayer->effectFlags() &= ~EffectFlag_Flashlight;
 }
 
 void Visuals::playerBounds(ImDrawList *drawList) noexcept

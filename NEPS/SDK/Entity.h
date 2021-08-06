@@ -31,9 +31,64 @@ struct VarMap;
 
 enum class MoveType
 {
-    NOCLIP = 8,
-    LADDER = 9
+    Noclip = 8,
+    Ladder = 9
 };
+
+enum PlayerFlag
+{
+	PlayerFlag_OnGround = 1 << 0, // At rest / on the ground
+	PlayerFlag_Crouched = 1 << 1, // Player is fully crouched
+	PlayerFlag_WaterJump = 1 << 2, // Player jumping out of water
+	PlayerFlag_OnTrain = 1 << 3, // Player is controlling a train, so movement commands should be ignored on client during prediction
+	PlayerFlag_InRain = 1 << 4, // Indicates the entity is standing in rain
+	PlayerFlag_Frozen = 1 << 5, // Player is frozen for 3rd person camera
+	PlayerFlag_AtControls = 1 << 6, // Player can't move, but keeps key inputs for controlling another entity
+	PlayerFlag_Client = 1 << 7, // Is a player
+	PlayerFlag_FakeClient = 1 << 8, // Fake client, simulated server side; don't send network messages to them. NON-PLAYER SPECIFIC (i.e. not used by GameMovement or the client.dll) - can still be applied to players, though
+	PlayerFlag_InWater = 1 << 9, // In water
+	PlayerFlag_Fly = 1 << 10, // Changes the SV_Movestep() behavior to not need to be on ground
+	PlayerFlag_Swim = 1 << 11, // Changes the SV_Movestep() behavior to not need to be on ground (but stay in water)
+	PlayerFlag_Conveyor = 1 << 12,
+	PlayerFlag_NPC = 1 << 13,
+	PlayerFlag_GodMode = 1 << 14,
+	PlayerFlag_NoTarget = 1 << 15,
+	PlayerFlag_AimTarget = 1 << 16, // Set if the crosshair needs to aim onto the entity
+	PlayerFlag_PartialGround = 1 << 17, // Not all corners are valid
+	PlayerFlag_StaticProp = 1 << 18, // Eetsa static prop!
+	PlayerFlag_Graphed = 1 << 19, // Worldgraph has this ent listed as something that blocks a connection
+	PlayerFlag_Grenade = 1 << 20,
+	PlayerFlag_StepMovement = 1 << 21, // Changes the SV_Movestep() behavior to not do any processing
+	PlayerFlag_NoTouch = 1 << 22, // Doesn't generate touch functions, generates Untouch() for anything it was touching when this flag was set
+	PlayerFlag_BaseVelocity = 1 << 23, // Base velocity has been applied this frame (used to convert base velocity into momentum)
+	PlayerFlag_WorldBrush = 1 << 24, // Not moveable/removeable brush entity (really part of the world, but represented as an entity for transparency or something)
+	PlayerFlag_NPCSpecific = 1 << 25, // This is an object that NPCs should see. Missiles, for example
+	PlayerFlag_KillMe = 1 << 26, // This entity is marked for death -- will be freed by game DLL
+	PlayerFlag_OnFire = 1 << 27, // You know...
+	PlayerFlag_Dissolving = 1 << 28, // We're dissolving!
+	PlayerFlag_TransitionRagdoll = 1 << 29, // In the process of turning into a client side ragdoll
+	PlayerFlag_NotBlockableByPlayer = 1 << 30 // Pusher that can't be blocked by the player
+};
+
+enum EffectFlag
+{
+	EffectFlag_BoneMerge = 1 << 0, // Performs bone merge on client side
+	EffectFlag_BrightLight = 1 << 1, // Dlight centered at entity origin
+	EffectFlag_Flashlight = 1 << 2, // Player flashlight
+	EffectFlag_NoInterp = 1 << 3, // Don't interpolate the next frame
+	EffectFlag_NoShadow = 1 << 4, // Don't cast shadow
+	EffectFlag_NoDraw = 1 << 5, // Don't draw entity
+	EffectFlag_NoRecieveShadow = 1 << 6, // Don't receive shadow
+	EffectFlag_BoneMergeFastCull = 1 << 7, // For use with EffectFlag_BoneMerge
+	EffectFlag_ItemBlink = 1 << 8, // Blink an item so that the player notices it
+	EffectFlag_ParentAnimates = 1 << 9, // Always assume that the parent entity is animating
+	EffectFlag_FastReflection = 1 << 10, // Marks an entity for reflection rendering when using $reflectonlymarkedentities material variable
+	EffectFlag_NoShadowDepth = 1 << 11, // Indicates this entity does not render into any shadow depthmap
+	EffectFlag_NoShadowDepthCanche = 1 << 12, // Indicates this entity cannot be cached in shadow depthmap and should render every frame
+	EffectFlag_NoFlashlight = 1 << 13,
+	EffectFlag_NoCSM = 1 << 14 // Indicates this entity does not render into the cascade shadow depthmap
+};
+
 
 enum class ObsMode
 {
@@ -105,45 +160,9 @@ public:
 		return getAbsOrigin() + viewOffset();
 	}
 
-	
-	enum PlayerFlags
-	{
-		FL_ONGROUND = 1 << 0, // At rest / on the ground
-		FL_DUCKING = 1 << 1, // Player flag - player is fully crouched
-		FL_WATERJUMP = 1 << 2, // Player jumping out of water
-		FL_ONTRAIN = 1 << 3, // Player is controlling a train, so movement commands should be ignored on client during prediction
-		FL_INRAIN = 1 << 4, // Indicates the entity is standing in rain
-		FL_FROZEN = 1 << 5, // Player is frozen for 3rd person camera
-		FL_ATCONTROLS = 1 << 6, // Player can't move, but keeps key inputs for controlling another entity
-		FL_CLIENT = 1 << 7, // Is a player
-		FL_FAKECLIENT = 1 << 8, // Fake client, simulated server side; don't send network messages to them. NON-PLAYER SPECIFIC (i.e. not used by GameMovement or the client.dll) - can still be applied to players, though
-		FL_INWATER = 1 << 9, // In water
-		FL_FLY = 1 << 10, // Changes the SV_Movestep() behavior to not need to be on ground
-		FL_SWIM = 1 << 11, // Changes the SV_Movestep() behavior to not need to be on ground (but stay in water)
-		FL_CONVEYOR = 1 << 12,
-		FL_NPC = 1 << 13,
-		FL_GODMODE = 1 << 14,
-		FL_NOTARGET = 1 << 15,
-		FL_AIMTARGET = 1 << 16, // Set if the crosshair needs to aim onto the entity
-		FL_PARTIALGROUND = 1 << 17, // Not all corners are valid
-		FL_STATICPROP = 1 << 18, // Eetsa static prop!
-		FL_GRAPHED = 1 << 19, // Worldgraph has this ent listed as something that blocks a connection
-		FL_GRENADE = 1 << 20,
-		FL_STEPMOVEMENT = 1 << 21, // Changes the SV_Movestep() behavior to not do any processing
-		FL_DONTTOUCH = 1 << 22, // Doesn't generate touch functions, generates Untouch() for anything it was touching when this flag was set
-		FL_BASEVELOCITY = 1 << 23, // Base velocity has been applied this frame (used to convert base velocity into momentum)
-		FL_WORLDBRUSH = 1 << 24, // Not moveable/removeable brush entity (really part of the world, but represented as an entity for transparency or something)
-		FL_OBJECT = 1 << 25, // Terrible name. This is an object that NPCs should see. Missiles, for example
-		FL_KILLME = 1 << 26, // This entity is marked for death -- will be freed by game DLL
-		FL_ONFIRE = 1 << 27, // You know...
-		FL_DISSOLVING = 1 << 28, // We're dissolving!
-		FL_TRANSRAGDOLL = 1 << 29, // In the process of turning into a client side ragdoll
-		FL_UNBLOCKABLE_BY_PLAYER = 1 << 30 // Pusher that can't be blocked by the player
-	};
-
 	enum AnimLayerIndices
 	{
-		ANIMATION_LAYER_AIMMATRIX,
+		ANIMATION_LAYER_AIMMATRIX = 0,
 		ANIMATION_LAYER_WEAPON_ACTION,
 		ANIMATION_LAYER_WEAPON_ACTION_RECROUCH,
 		ANIMATION_LAYER_ADJUST,
@@ -175,7 +194,7 @@ public:
 
 	enum PoseParameterIndeces
 	{
-		POSE_PARAM_STRAFE_YAW,
+		POSE_PARAM_STRAFE_YAW = 0,
 		POSE_PARAM_STAND,
 		POSE_PARAM_LEAN_YAW,
 		POSE_PARAM_SPEED,
@@ -239,19 +258,18 @@ public:
 		if (config->misc.fixBoneMatrix && this == localPlayer.get())
 		{
 			int *render = reinterpret_cast<int *>(this + 0x274);
-			int *shouldSkipFrame = reinterpret_cast<int *>(this + 0xA68);
 			int backupRender = *render;
 			int backupEffects = effectFlags();
-			int backupShouldSkipFrame = *shouldSkipFrame;
+			int backupShouldSkipFrame = shouldSkipFrame();
 			Vector absOrigin = getAbsOrigin();
 			*render = 0;
-			*shouldSkipFrame = 0;
-			effectFlags() |= 8;
+			shouldSkipFrame() = 0;
+			effectFlags() |= EffectFlag_NoInterp;
 			memory->setAbsOrigin(this, origin());
 			auto result = VirtualMethod::call<bool, 13>(this + 4, out, maxBones, boneMask, currentTime);
 			memory->setAbsOrigin(this, absOrigin);
 			*render = backupRender;
-			*shouldSkipFrame = backupShouldSkipFrame;
+			shouldSkipFrame() = backupShouldSkipFrame;
 			effectFlags() = backupEffects;
 			return result;
 		}
@@ -363,6 +381,11 @@ public:
 	int &effectFlags() noexcept
 	{
 		return *reinterpret_cast<int *>(this + 0xF0);
+	}
+
+	int &shouldSkipFrame() noexcept
+	{
+		return *reinterpret_cast<int *>(this + 0xA68);
 	}
 
 	NETVAR(clientAnimations, "CBaseAnimating", "m_bClientSideAnimation", bool)

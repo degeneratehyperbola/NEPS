@@ -208,31 +208,31 @@ int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trac
 	{
 		switch (hitbox)
 		{
-		case Hitbox::Head:
+		case Hitbox_Head:
 			return HitGroup::Head;
-		case Hitbox::Neck:
-		case Hitbox::UpperChest:
-		case Hitbox::LowerChest:
-		case Hitbox::Thorax:
+		case Hitbox_Neck:
+		case Hitbox_UpperChest:
+		case Hitbox_LowerChest:
+		case Hitbox_Thorax:
 			return HitGroup::Chest;
-		case Hitbox::Belly:
-		case Hitbox::Pelvis:
+		case Hitbox_Belly:
+		case Hitbox_Pelvis:
 			return HitGroup::Stomach;
-		case Hitbox::LeftThigh:
-		case Hitbox::LeftCalf:
-		case Hitbox::LeftFoot:
+		case Hitbox_LeftThigh:
+		case Hitbox_LeftCalf:
+		case Hitbox_LeftFoot:
 			return HitGroup::LeftLeg;
-		case Hitbox::RightThigh:
-		case Hitbox::RightCalf:
-		case Hitbox::RightFoot:
+		case Hitbox_RightThigh:
+		case Hitbox_RightCalf:
+		case Hitbox_RightFoot:
 			return HitGroup::RightLeg;
-		case Hitbox::LeftUpperArm:
-		case Hitbox::LeftForearm:
-		case Hitbox::LeftHand:
+		case Hitbox_LeftUpperArm:
+		case Hitbox_LeftForearm:
+		case Hitbox_LeftHand:
 			return HitGroup::LeftArm;
-		case Hitbox::RightUpperArm:
-		case Hitbox::RightForearm:
-		case Hitbox::RightHand:
+		case Hitbox_RightUpperArm:
+		case Hitbox_RightForearm:
+		case Hitbox_RightHand:
 			return HitGroup::RightArm;
 		}
 
@@ -563,16 +563,16 @@ float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept
 {
 	switch (i)
 	{
-	case Hitbox::LeftFoot:
-	case Hitbox::RightFoot:
+	case Hitbox_LeftFoot:
+	case Hitbox_RightFoot:
 		return 4.30f;
-	case Hitbox::Thorax:
+	case Hitbox_Thorax:
 		return 7.89f;
-	case Hitbox::UpperChest:
+	case Hitbox_UpperChest:
 		return 6.75f;
-	case Hitbox::Pelvis:
+	case Hitbox_Pelvis:
 		return 6.08f;
-	case Hitbox::Head:
+	case Hitbox_Head:
 		return 4.17f;
 	}
 
@@ -584,8 +584,8 @@ bool Helpers::animDataAuthenticity(Entity *animatable) noexcept
 	if (!animatable->isPlayer())
 		return true;
 
-	if (animatable->moveType() == MoveType::LADDER) return true;
-	if (animatable->moveType() == MoveType::NOCLIP) return true;
+	if (animatable->moveType() == MoveType::Ladder) return true;
+	if (animatable->moveType() == MoveType::Noclip) return true;
 	if (animatable->isBot()) return true;
 	const float simulationTime = animatable->simulationTime();
 	const auto remoteActiveWeapon = animatable->getActiveWeapon();
