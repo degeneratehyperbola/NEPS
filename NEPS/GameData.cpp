@@ -262,10 +262,9 @@ void LocalPlayerData::update() noexcept
 	handle = localPlayer->handle();
 	flashDuration = localPlayer->flashDuration();
 
-	eyePosition = localPlayer->getEyePosition();
-	aimPunch = localPlayer->getEyePosition() + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000.0f;
-	aimPunchAngle = localPlayer->getAimPunch();
-
+	eyePosition = Vector{};
+	aimPunch = Vector{};
+	inaccuracy = Vector{};
 	reloading = false;
 	shooting = false;
 	drawingScope = true;
@@ -278,9 +277,12 @@ void LocalPlayerData::update() noexcept
 
 		origin = obs->getAbsOrigin();
 		velocity = obs->velocity();
+		eyePosition = obs->getEyePosition();
+		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + obs->getAimPunch()) * 1000;
 
 		if (const auto activeWeapon = obs->getActiveWeapon())
 		{
+			inaccuracy = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + Vector{Helpers::radiansToDegrees(activeWeapon->getInaccuracy() + activeWeapon->getSpread()), 0.0f, 0.0f}) * 1000;
 			shooting = obs->shotsFired() > 1;
 			reloading = activeWeapon->isInReload();
 			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), obs->nextAttack());
@@ -298,9 +300,12 @@ void LocalPlayerData::update() noexcept
 	{
 		origin = localPlayer->getAbsOrigin();
 		velocity = localPlayer->velocity();
+		eyePosition = localPlayer->getEyePosition();
+		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000;
 
 		if (const auto activeWeapon = localPlayer->getActiveWeapon())
 		{
+			inaccuracy = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + Vector{Helpers::radiansToDegrees(activeWeapon->getInaccuracy() + activeWeapon->getSpread()), 0.0f, 0.0f}) * 1000;
 			shooting = localPlayer->shotsFired() > 1;
 			reloading = activeWeapon->isInReload();
 			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), localPlayer->nextAttack());

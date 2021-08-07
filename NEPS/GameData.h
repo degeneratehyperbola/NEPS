@@ -67,18 +67,18 @@ struct LocalPlayerData
 
 	bool exists;
 	bool alive;
-	bool reloading;
 	bool shooting;
+	bool reloading;
+	float nextAttack;
 	bool drawingScope;
 	bool drawingCrosshair;
-	float nextAttack;
 	int fov;
 	int handle;
 	float flashDuration;
 	int observerTargetHandle;
 	Vector eyePosition;
 	Vector aimPunch;
-	Vector aimPunchAngle;
+	Vector inaccuracy;
 	Vector origin;
 	Vector velocity;
 	Vector colMaxs, colMins;

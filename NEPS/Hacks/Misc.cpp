@@ -207,7 +207,7 @@ void Misc::overlayCrosshair(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 	const auto &local = GameData::local();
 
-	if (!local.exists || !local.alive || local.drawingCrosshair || local.drawingScope)
+	if (!local.exists || local.drawingCrosshair || local.drawingScope)
 		return;
 
 	drawCrosshair(drawList, ImGui::GetIO().DisplaySize / 2, Helpers::calculateColor(config->visuals.overlayCrosshair), config->visuals.overlayCrosshairType);
@@ -218,18 +218,46 @@ void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 	if (!config->visuals.recoilCrosshairType)
 		return;
 
-	if (!localPlayer || !localPlayer->isAlive())
+	GameData::Lock lock;
+	const auto &local = GameData::local();
+	
+	if (!local.exists)
+		return;
+
+	if (ImVec2 recoil; Helpers::worldToScreen(local.aimPunch, recoil, false))
+	{
+		const auto &pos = ImGui::GetIO().DisplaySize;
+		Helpers::setAlphaFactor(std::clamp(std::sqrtf(ImLengthSqr((recoil - pos / 2) / pos)) * 100, 0.0f, 1.0f));
+		drawCrosshair(drawList, recoil, Helpers::calculateColor(config->visuals.recoilCrosshair), config->visuals.recoilCrosshairType);
+		Helpers::setAlphaFactor(1);
+	}
+}
+
+void Misc::visualizeInaccuracy(ImDrawList *drawList) noexcept
+{
+	if (!config->visuals.inaccuracyCircle.enabled)
 		return;
 
 	GameData::Lock lock;
-	const auto aimPunch = GameData::local().aimPunch;
+	const auto &local = GameData::local();
 
-	auto col = config->visuals.recoilCrosshair;
-	col.color[3] *= std::clamp(GameData::local().aimPunchAngle.length2D() * 10.0f, 0.0f, 1.0f);
+	if (!local.exists || !local.inaccuracy.notNull())
+		return;
 
-	if (ImVec2 pos; Helpers::worldToScreen(aimPunch, pos))
+	if (ImVec2 edge; Helpers::worldToScreen(local.inaccuracy, edge))
 	{
-		drawCrosshair(drawList, pos, Helpers::calculateColor(col), config->visuals.recoilCrosshairType);
+		const auto &pos = ImGui::GetIO().DisplaySize;
+		const auto radius = std::sqrtf(ImLengthSqr(edge - pos / 2));
+		const auto inaccuracy = std::sqrtf(ImLengthSqr((edge - pos / 2) / pos)) * 200;
+		const auto color = Helpers::calculateColor(config->visuals.inaccuracyCircle);
+		char text[9];
+		std::sprintf(text, "%.6f%%", inaccuracy);
+		drawList->AddText(edge, color, text);
+		if (radius)
+		{
+			drawList->AddCircleFilled(pos / 2, radius, color);
+			drawList->AddCircle(pos / 2, radius, color | IM_COL32_A_MASK);
+		}
 	}
 }
 
@@ -1148,7 +1176,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	if (!config->misc.indicators)
 		return;
 
-	ImGui::SetNextWindowPos(ImVec2{0.0f, 50.0f}, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos({0, 50}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{200.0f, FLT_MAX});
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 	ImGui::Begin("Indicators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
@@ -1304,7 +1332,7 @@ void Misc::purchaseList(GameEvent *event) noexcept
 		if (config->misc.purchaseList.noTitleBar)
 			windowFlags |= ImGuiWindowFlags_NoTitleBar;
 
-		ImGui::SetNextWindowSize({200.0f, 200.0f}, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize({200, 200}, ImGuiCond_FirstUseEver);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 		ImGui::Begin("Purchases", nullptr, windowFlags);
 		ImGui::PopStyleVar();
@@ -1386,7 +1414,7 @@ void Misc::teamDamageList(GameEvent *event)
 		if (config->griefing.teamDamageList.noTitleBar)
 			windowFlags |= ImGuiWindowFlags_NoTitleBar;
 
-		ImGui::SetNextWindowSize({200.0f, 200.0f}, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize({200, 200}, ImGuiCond_FirstUseEver);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 		ImGui::Begin("Team damage list", nullptr, windowFlags);
 		ImGui::PopStyleVar();
@@ -1593,7 +1621,7 @@ void Misc::watermark() noexcept
 	if (!config->misc.watermark.enabled)
 		return;
 
-	ImGui::SetNextWindowSizeConstraints({150.0f, 0.0f}, {FLT_MAX, FLT_MAX});
+	ImGui::SetNextWindowSizeConstraints({150, 0}, {FLT_MAX, FLT_MAX});
 	ImGui::SetNextWindowBgAlpha(0.4f);
 	ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
 
@@ -1631,10 +1659,10 @@ void Misc::watermark() noexcept
 		ImGui::EndPopup();
 	}
 
-	constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms"};
+	constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms", "weave", "legendware", "spirthack", "mutinty"};
 
 	std::ostringstream watermark;
-	watermark << "NEPS > ";
+	watermark << "NEPS is better than ";
 	watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % otherOnes.size()];
 	ImGui::TextUnformatted(watermark.str().c_str());
 

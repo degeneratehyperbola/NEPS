@@ -538,11 +538,12 @@ static void from_json(const json &j, Config::Visuals &v)
 	read<value_t::object>(j, "Inferno hull", v.molotovHull);
 	read<value_t::object>(j, "Smoke hull", v.smokeHull);
 	read<value_t::object>(j, "Player bounds", v.playerBounds);
-	read<value_t::object>(j, "Player velocity", v.playerVel);
-	read<value_t::object>(j, "Noscope crosshair", v.overlayCrosshair);
+	read<value_t::object>(j, "Player velocity", v.playerVelocity);
 	read(j, "Noscope crosshair type", v.overlayCrosshairType);
-	read<value_t::object>(j, "Recoil crosshair", v.recoilCrosshair);
+	read<value_t::object>(j, "Noscope crosshair", v.overlayCrosshair);
 	read(j, "Recoil crosshair type", v.recoilCrosshairType);
+	read<value_t::object>(j, "Recoil crosshair", v.recoilCrosshair);
+	read<value_t::object>(j, "Inaccuracy circle", v.inaccuracyCircle);
 	read(j, "Force crosshair", v.forceCrosshair);
 }
 
@@ -951,7 +952,7 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Scoped only", scopedOnly);
 	WRITE("Ignore flash", ignoreFlash);
 	WRITE("Ignore smoke", ignoreSmoke);
-	WRITE("Auto shot", autoShot);
+	WRITE("Auto shot", autoShoot);
 	WRITE("Auto scope", autoScope);
 	WRITE("Auto stop", autoStop);
 	WRITE("Distance", distance);
@@ -1305,11 +1306,12 @@ static void to_json(json &j, const Config::Visuals &o)
 	WRITE("Inferno hull", molotovHull);
 	WRITE("Smoke hull", smokeHull);
 	WRITE("Player bounds", playerBounds);
-	WRITE("Player velocity", playerVel);
-	WRITE("Noscope crosshair", overlayCrosshair);
+	WRITE("Player velocity", playerVelocity);
 	WRITE("Noscope crosshair type", overlayCrosshairType);
-	WRITE("Recoil crosshair", recoilCrosshair);
+	WRITE("Noscope crosshair", overlayCrosshair);
 	WRITE("Recoil crosshair type", recoilCrosshairType);
+	WRITE("Recoil crosshair", recoilCrosshair);
+	WRITE("Inaccuracy circle", inaccuracyCircle);
 	WRITE("Force crosshair", forceCrosshair);
 }
 

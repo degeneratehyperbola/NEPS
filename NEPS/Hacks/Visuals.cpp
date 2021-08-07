@@ -43,7 +43,7 @@ void Visuals::playerModel(FrameStage stage) noexcept
 
 	constexpr auto getModel = [](Team team) constexpr noexcept -> const char *
 	{
-		constexpr std::array models{
+		constexpr std::array models = {
 			//"models/player/custom_player/legacy/anime/astolfo/astolfo_v1.mdl", // Proof that all cheaters are femboys
 			"models/player/custom_player/legacy/ctm_fbi_variantb.mdl",
 			"models/player/custom_player/legacy/ctm_fbi_variantf.mdl",
@@ -749,7 +749,7 @@ void Visuals::playerBounds(ImDrawList *drawList) noexcept
 
 void Visuals::playerVelocity(ImDrawList *drawList) noexcept
 {
-	if (!config->visuals.playerVel.enabled)
+	if (!config->visuals.playerVelocity.enabled)
 		return;
 
 	GameData::Lock lock;
@@ -768,7 +768,7 @@ void Visuals::playerVelocity(ImDrawList *drawList) noexcept
 
 	if (draw)
 	{
-		const auto color = Helpers::calculateColor(config->visuals.playerVel);
-		drawList->AddLine(pos, dir, color, config->visuals.playerVel.thickness);
+		const auto color = Helpers::calculateColor(config->visuals.playerVelocity);
+		drawList->AddLine(pos, dir, color, config->visuals.playerVelocity.thickness);
 	}
 }

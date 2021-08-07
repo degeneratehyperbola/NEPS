@@ -194,6 +194,7 @@ public:
 		Color4 overlayCrosshair;
 		int overlayCrosshairType = 0;
 		Color4 recoilCrosshair;
+		Color4Toggle inaccuracyCircle = {1.0f, 1.0f, 1.0f, 0.25f};
 		int recoilCrosshairType = 0;
 		int forceCrosshair = 0;
 
@@ -233,8 +234,8 @@ public:
 
 		Color4ToggleThickness molotovHull = {1.0f, 0.5f, 0.0f, 0.3f};
 		Color4ToggleThickness smokeHull = {0.5f, 0.5f, 0.5f, 0.3f};
-		Color4ToggleThickness playerBounds = {1.0f, 1.0f, 1.0f, 1.0f};
-		Color4ToggleThickness playerVel = {1.0f, 1.0f, 1.0f, 1.0f};
+		Color4ToggleThickness playerBounds;
+		Color4ToggleThickness playerVelocity;
 
 		struct ColorCorrection
 		{

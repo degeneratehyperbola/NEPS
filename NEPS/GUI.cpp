@@ -1751,10 +1751,13 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::Combo("Recoil crosshair", &config->visuals.recoilCrosshairType, "None\0Circle dot\0Dot\0Cross\0Empty cross\0");
 	ImGui::PopItemWidth();
 
+	ImGuiCustom::colorPicker("Inaccuracy circle", config->visuals.inaccuracyCircle);
 	ImGuiCustom::colorPicker("Molotov radius", config->visuals.molotovHull);
+	ImGui::SameLine(130);
 	ImGuiCustom::colorPicker("Smoke radius", config->visuals.smokeHull);
 	ImGuiCustom::colorPicker("Player bounds", config->visuals.playerBounds);
-	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVel);
+	//ImGui::SameLine(130);
+	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVelocity);
 
 	constexpr auto beamPopup = [](const char *id, Config::Visuals::Beams &config) noexcept
 	{

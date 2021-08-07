@@ -598,7 +598,7 @@ static void renderPlayerEsp(const PlayerData &playerData, const Player &playerCo
 	drawLineOfSight(playerConfig.lineOfSight, playerData);
 	drawOffscreen(playerConfig.offscreen, playerData);
 
-	Helpers::setAlphaFactor(1.0f);
+	Helpers::setAlphaFactor(1);
 	return;
 }
 
