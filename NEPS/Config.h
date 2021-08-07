@@ -44,7 +44,7 @@ public:
 		bool scopedOnly = true;
 		bool ignoreFlash = false;
 		bool ignoreSmoke = false;
-		bool autoShot = false;
+		bool autoShoot = false;
 		bool autoScope = false;
 		bool autoStop = false;
 		bool multipoint = false;

@@ -654,7 +654,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Scoped only", &config->aimbot[currentWeapon].scopedOnly);
 		ImGui::Checkbox("Ignore flash", &config->aimbot[currentWeapon].ignoreFlash);
 		ImGui::Checkbox("Ignore smoke", &config->aimbot[currentWeapon].ignoreSmoke);
-		ImGui::Checkbox("Auto shot", &config->aimbot[currentWeapon].autoShot);
+		ImGui::Checkbox("Auto shoot", &config->aimbot[currentWeapon].autoShoot);
 		ImGui::Checkbox("Auto scope", &config->aimbot[currentWeapon].autoScope);
 		ImGui::Checkbox("Auto stop", &config->aimbot[currentWeapon].autoStop);
 
