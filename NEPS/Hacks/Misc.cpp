@@ -51,9 +51,6 @@ void Misc::edgeJump(UserCmd *cmd) noexcept
 
 void Misc::slowwalk(UserCmd *cmd) noexcept
 {
-	if (static Helpers::KeyBindState flag; !flag[config->exploits.slowwalk])
-		return;
-
 	if (!localPlayer || !localPlayer->isAlive() || ~localPlayer->flags() & PlayerFlag_OnGround || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
 		return;
 

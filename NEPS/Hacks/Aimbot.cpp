@@ -1,5 +1,5 @@
 #include "Aimbot.h"
-#include "Animations.h"
+#include "Misc.h"
 #include "Backtrack.h"
 
 #include "../Config.h"
@@ -103,14 +103,8 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
 			continue;
 
-		if (!cfg.hitGroup)
-			continue;
-
 		const Record *backtrackRecord = nullptr;
-		const auto doScope = cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle();
-		const auto doStop = cfg.autoStop && localPlayer->flags() & PlayerFlag_OnGround && localPlayer->moveType() != MoveType::Noclip && localPlayer->moveType() != MoveType::Ladder;
-		const auto doBacktrack = config->backtrack.enabled && enemy;
-		if (doScope || doBacktrack || doStop)
+		if (config->backtrack.enabled || cfg.autoStop || cfg.autoScope)
 		{
 			Trace trace;
 			auto origin = bufferBones[8].origin();
@@ -119,45 +113,18 @@ static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) 
 
 			if (canHit && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
 			{
-				if (doScope)
+				if (cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle())
 					cmd->buttons |= UserCmd::IN_ATTACK2;
 
-				if (doStop)
-				{
-					const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 4;
-
-					if (cmd->forwardmove && cmd->sidemove)
-					{
-						const float maxSpeedRoot = maxSpeed * static_cast<float>(M_SQRT1_2);
-						cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
-						cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
-					} else if (cmd->forwardmove)
-					{
-						cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeed : maxSpeed;
-					} else if (cmd->sidemove)
-					{
-						cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeed : maxSpeed;
-					}
-				}
+				if (cfg.autoStop)
+					Misc::slowwalk(cmd);
 			}
 
-			if (doBacktrack)
+			if (config->backtrack.enabled && enemy && goesThroughWall)
 			{
-				auto bestDistance = origin.distTo(localPlayerEyePosition);
-
-				const auto records = Backtrack::getRecords(entity->index());
-				for (const auto &record : records)
-				{
-					if (!Backtrack::valid(record.simulationTime))
-						continue;
-
-					const auto distance = record.matrix[8].origin().distTo(localPlayerEyePosition);
-					if (goesThroughWall && distance < bestDistance)
-					{
-						bestDistance = distance;
-						backtrackRecord = &record;
-					}
-				}
+				const auto &records = Backtrack::getRecords(entity->index());
+				if (const auto it = std::find_if(records.begin(), records.end(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.end())
+					backtrackRecord = &(*it);
 			}
 
 			if (backtrackRecord)
@@ -425,7 +392,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
     if (!cfg.ignoreFlash && localPlayer->isFlashed())
         return;
 
-    if ((cmd->buttons & UserCmd::IN_ATTACK || cfg.autoShot || cfg.aimlock)) {
+    if ((cmd->buttons & UserCmd::IN_ATTACK || cfg.autoShoot || cfg.aimlock)) {
 
 		if (cfg.scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !cfg.autoScope)
 			return;
@@ -472,7 +439,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					interfaces->engine->setViewAngles(cmd->viewangles);
 			}
 
-			if (cfg.autoShot && activeWeapon->nextPrimaryAttack() <= time)
+			if (cfg.autoShoot && activeWeapon->nextPrimaryAttack() <= time)
 				cmd->buttons |= UserCmd::IN_ATTACK;
 
 			if (clamped)
