@@ -127,6 +127,9 @@ namespace Helpers
 	float approachAngleDeg(float target, float value, float speed) noexcept;
 	float approachAngleRad(float target, float value, float speed) noexcept;
 
+    float normalizeDeg(float a) noexcept;
+    float normalizeRad(float a) noexcept;
+
 	void feetYaw(AnimState *state, float pursue, float &hold, float &current) noexcept;
 
 	float approachValSmooth(float target, float value, float fraction);

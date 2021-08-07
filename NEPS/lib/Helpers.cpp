@@ -378,7 +378,7 @@ float Helpers::angleDiffDeg(float a1, float a2) noexcept
 {
 	float delta;
 
-	delta = std::remainder(a1 - a2, 360.0f);
+	delta = normalizeDeg(a1 - a2);
 	if (a1 > a2)
 	{
 		if (delta >= 180)
@@ -395,7 +395,7 @@ float Helpers::angleDiffRad(float a1, float a2) noexcept
 {
 	float delta;
 
-	delta = std::remainder(a1 - a2, PI * 2);
+	delta = normalizeRad(a1 - a2);
 	if (a1 > a2)
 	{
 		if (delta >= PI)
@@ -410,8 +410,8 @@ float Helpers::angleDiffRad(float a1, float a2) noexcept
 
 float Helpers::approachAngleDeg(float target, float value, float speed) noexcept
 {
-	target = std::remainder(target, 360.0f);
-	value = std::remainder(value, 360.0f);
+	target = normalizeDeg(target);
+	value = normalizeDeg(value);
 
 	float delta = target - value;
 
@@ -436,8 +436,8 @@ float Helpers::approachAngleDeg(float target, float value, float speed) noexcept
 
 float Helpers::approachAngleRad(float target, float value, float speed) noexcept
 {
-	target = std::remainder(target, PI * 2);
-	value = std::remainder(value, PI * 2);
+	target = normalizeRad(target);
+	value = normalizeRad(value);
 
 	float delta = target - value;
 
@@ -458,6 +458,16 @@ float Helpers::approachAngleRad(float target, float value, float speed) noexcept
 		value = target;
 
 	return value;
+}
+
+float Helpers::normalizeDeg(float a) noexcept
+{
+	return std::isfinite(a) ? std::remainder(a, 360.0f) : 0.0f;
+}
+
+float Helpers::normalizeRad(float a) noexcept
+{
+	return std::isfinite(a) ? std::remainder(a, PI * 2) : 0.0f;
 }
 
 void Helpers::feetYaw(AnimState *state, float pursue, float &hold, float &current) noexcept
