@@ -36,6 +36,8 @@ public:
 
 	struct Aimbot
 	{
+		static Aimbot &getRelevantConfig() noexcept;
+
 		KeyBind bind;
 		bool aimlock = false;
 		bool silent = false;
@@ -68,6 +70,8 @@ public:
 
 	struct Triggerbot
 	{
+		static Triggerbot &getRelevantConfig() noexcept;
+
 		KeyBind bind;
 		bool friendlyFire = false;
 		bool visibleOnly = true;
@@ -93,6 +97,8 @@ public:
 
 	struct AntiAim
 	{
+		static AntiAim &getRelevantConfig() noexcept;
+
 		bool pitch = false;
 		float pitchAngle = 0.0f;
 		bool yaw = false;

@@ -40,22 +40,6 @@ static void microMovement(UserCmd *cmd) noexcept
 	}
 }
 
-static const Config::AntiAim &getCurrentConfig()
-{
-	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
-
-	if (localPlayer->flags() & PlayerFlag_OnGround)
-	{
-		if (localPlayer->velocity().length2D() < 5.0f)
-			return config->antiAim[categories[0]];
-		else if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk])
-			return config->antiAim[categories[1]];
-		else
-			return config->antiAim[categories[2]];
-	} else
-		return config->antiAim[categories[3]];
-}
-
 void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
 	if (!canAntiAim(cmd)) return;
@@ -64,7 +48,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (!networkChannel)
 		return;
 
-	const auto &cfg = getCurrentConfig();
+	const auto &cfg = Config::AntiAim::getRelevantConfig();
 	const auto time = memory->globalVars->serverTime();
 
 	if (static Helpers::KeyBindState flag; config->exploits.fakeDuckPackets && flag[config->exploits.fakeDuck])
@@ -199,7 +183,7 @@ bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 	if (!canAntiAim(cmd))
 		return false;
 
-	const auto &cfg = getCurrentConfig();
+	const auto &cfg = Config::AntiAim::getRelevantConfig();
 
 	if (cfg.fakeUp && !Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
 	{

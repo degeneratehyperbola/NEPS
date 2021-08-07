@@ -12,6 +12,9 @@
 #include "lib/Helpers.hpp"
 #include "Gui.h"
 
+#include "SDK/LocalPlayer.h"
+#include "SDK/Entity.h"
+
 #ifdef _WIN32
 int CALLBACK fontCallback(const LOGFONTW *lpelfe, const TEXTMETRICW *, DWORD, LPARAM lParam)
 {
@@ -1560,4 +1563,48 @@ bool Config::loadScheduledFonts() noexcept
 	}
 	scheduledFonts.clear();
 	return result;
+}
+
+Config::Aimbot &Config::Aimbot::getRelevantConfig() noexcept
+{
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+
+	auto weaponIndex = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
+	if (!config->aimbot[weaponIndex].bind.keyMode)
+		weaponIndex = getWeaponClass(activeWeapon->itemDefinitionIndex2());
+
+	if (!config->aimbot[weaponIndex].bind.keyMode)
+		weaponIndex = 0;
+
+	return config->aimbot[weaponIndex];
+}
+
+Config::Triggerbot &Config::Triggerbot::getRelevantConfig() noexcept
+{
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+
+	auto weaponIndex = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
+	if (!config->triggerbot[weaponIndex].bind.keyMode)
+		weaponIndex = getWeaponClass(activeWeapon->itemDefinitionIndex2());
+
+	if (!config->triggerbot[weaponIndex].bind.keyMode)
+		weaponIndex = 0;
+
+	return config->triggerbot[weaponIndex];
+}
+
+Config::AntiAim &Config::AntiAim::getRelevantConfig() noexcept
+{
+	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
+
+	if (localPlayer->flags() & PlayerFlag_OnGround)
+	{
+		if (localPlayer->velocity().length2D() < 5.0f)
+			return config->antiAim[categories[0]];
+		else if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk])
+			return config->antiAim[categories[1]];
+		else
+			return config->antiAim[categories[2]];
+	} else
+		return config->antiAim[categories[3]];
 }

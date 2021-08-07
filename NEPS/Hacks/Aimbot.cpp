@@ -64,14 +64,16 @@ void Aimbot::resetMissCounter() noexcept
 	hits = 0;
 }
 
-static __forceinline void chooseTarget(const Config::Aimbot &cfg, UserCmd *cmd) noexcept
+static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 {
+	const auto &cfg = Config::Aimbot::getRelevantConfig();
+
 	targetAngle = Vector{};
 	targetHandle = 0;
 	targetRecord = nullptr;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
-	if (!activeWeapon || !activeWeapon->clip())
+	if (!activeWeapon)
 		return;
 
 	const auto weaponData = activeWeapon->getWeaponData();
@@ -374,18 +376,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
 		return;
 
-	auto weaponIndex = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
-	if (!weaponIndex)
-		return;
-
-	auto weaponClass = getWeaponClass(activeWeapon->itemDefinitionIndex2());
-	if (!config->aimbot[weaponIndex].bind.keyMode)
-		weaponIndex = weaponClass;
-
-	if (!config->aimbot[weaponIndex].bind.keyMode)
-		weaponIndex = 0;
-
-	const auto &cfg = config->aimbot[weaponIndex];
+	const auto &cfg = Config::Aimbot::getRelevantConfig();
 
 	const auto weaponData = activeWeapon->getWeaponData();
 	if (!weaponData)
@@ -412,7 +403,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		if (prevTargetHandle != targetHandle)
 			resetMissCounter();
 
-		chooseTarget(cfg, cmd);
+		chooseTarget(cmd);
 
 		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
 		if (target && targetAngle.notNull())
