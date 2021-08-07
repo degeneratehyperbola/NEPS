@@ -23,6 +23,16 @@ static Vector targetAngle;
 static int targetHandle;
 static const Record *targetRecord;
 
+int Aimbot::getTargetHandle() noexcept
+{
+	return targetHandle;
+}
+
+const Record *Aimbot::getTargetRecord() noexcept
+{
+	return targetRecord;
+}
+
 static int shots = 0;
 static int hits = 0;
 
@@ -453,14 +463,4 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 		prevTargetHandle = targetHandle;
 	}
-}
-
-int Aimbot::getTargetHandle() noexcept
-{
-	return targetHandle;
-}
-
-const Record *Aimbot::getTargetRecord() noexcept
-{
-	return targetRecord;
 }
