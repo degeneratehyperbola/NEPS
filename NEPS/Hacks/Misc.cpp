@@ -66,8 +66,18 @@ void Misc::slowwalk(UserCmd *cmd) noexcept
 		return;
 
 	const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 3;
+	const auto velocity = localPlayer->velocity();
 
-	if (cmd->forwardmove && cmd->sidemove)
+	if (const auto speed = velocity.length2D(); speed > maxSpeed + 15.0f)
+	{
+		float direction = velocity.toAngle2D();
+		direction = cmd->viewangles.y - direction;
+
+		const auto negatedDirection = Vector::fromAngle2D(direction) * -450;
+		cmd->forwardmove = negatedDirection.x;
+		cmd->sidemove = negatedDirection.y;
+	}
+	else if (cmd->forwardmove && cmd->sidemove)
 	{
 		const float maxSpeedRoot = maxSpeed * static_cast<float>(M_SQRT1_2);
 		cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
@@ -294,7 +304,7 @@ void Misc::fastStop(UserCmd *cmd) noexcept
 	float direction = velocity.toAngle2D();
 	direction = cmd->viewangles.y - direction;
 
-	const auto negatedDirection = Vector::fromAngle2D(direction) * -speed;
+	const auto negatedDirection = Vector::fromAngle2D(direction) * -450;
 	cmd->forwardmove = negatedDirection.x;
 	cmd->sidemove = negatedDirection.y;
 }
@@ -1147,7 +1157,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	const auto networkChannel = interfaces->engine->getNetworkChannel();
 	if (networkChannel)
 	{
-		ImGui::TextUnformatted("Choke");
+		ImGui::TextUnformatted("Choked packets");
 		ImGuiCustom::progressBarFullWidth(static_cast<float>(networkChannel->chokedPackets) / 16);
 	}
 
