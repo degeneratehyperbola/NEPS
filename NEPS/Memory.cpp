@@ -72,6 +72,7 @@ Memory::Memory() noexcept
 	demoOrHLTV = findPattern("client", "\x84\xC0\x75\x09\x38\x05");
 	money = findPattern("client", "\x84\xC0\x75\x0C\x5B");
 	demoFileEndReached = findPattern("client", "\x8B\xC8\x85\xC9\x74\x1F\x80\x79\x10");
+	audioSourceCache = relativeToAbsolute<uintptr_t>(findPattern("engine", "\xB8????\xC7\x05????????\xC7\x05????\x00\x00\x00\x00") + 1);
 	plantedC4s = *reinterpret_cast<decltype(plantedC4s) *>(findPattern("client", "\x7E\x2C\x8B\x15") + 4);
 	gameRules = *reinterpret_cast<Entity ***>(findPattern("client", "\x8B\xEC\x8B\x0D????\x85\xC9\x74\x07") + 4);
 	createState = *reinterpret_cast<decltype(createState)>(findPattern("client", "\x55\x8B\xEC\x56\x8B\xF1\xB9????\xC7\x46"));
@@ -79,7 +80,8 @@ Memory::Memory() noexcept
 	invalidateBoneCache = *reinterpret_cast<decltype(invalidateBoneCache)>(findPattern("client", "\x80\x3D?????\x74\x16\xA1????\x48\xC7\x81"));
 	viewRenderBeams = *reinterpret_cast<ViewRenderBeams **>(findPattern("client", "\xB9????\xA1????\xFF\x10\xA1????\xB9" + 1));
 	relayCluster = *(std::string**)(findPattern("steamnetworkingsockets", "\xB8????\xB9????\x0F\x43") + 1);
-
+	
+	_updatePrecachedSounds = relativeToAbsolute<decltype(_updatePrecachedSounds)>(findPattern("engine", "\x85\xC0\x75?\x8B\xCB\xE8????") + 7);
 	_setOrAddAttributeValueByName = relativeToAbsolute<decltype(_setOrAddAttributeValueByName)>(findPattern("client", "\xE8????\x8B\x8D????\x85\xC9\x74\x10") + 1);
 
 	localPlayer.init(*reinterpret_cast<Entity ***>(findPattern("client", "\xA1????\x89\x45\xBC\x85\xC0") + 1));

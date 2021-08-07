@@ -2932,7 +2932,7 @@ void GUI::renderDebugWindow() noexcept
 			if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
 				soundprecache->addString(false, soundPath.c_str());
 
-			interfaces->engine->clientCmdUnrestricted("snd_updateaudiocache");
+			memory->updatePrecachedSounds();
 		}
 	}
 }
