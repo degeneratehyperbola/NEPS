@@ -141,8 +141,8 @@ struct Vector
 
 	Vector &normalize() noexcept
 	{
-		x = std::isfinite(x) ? std::remainder(x, 360.0f) : 0.0f;
-		y = std::isfinite(y) ? std::remainder(y, 360.0f) : 0.0f;
+		x = Helpers::normalizeDeg(x);
+		y = Helpers::normalizeDeg(y);
 		z = 0.0f;
 		return *this;
 	}
