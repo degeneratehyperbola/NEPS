@@ -2416,7 +2416,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
 	ImGui::Checkbox("Fix bone matrix", &config->misc.fixBoneMatrix);
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
-	ImGui::Checkbox("Sync client animations", &config->misc.fixAnimation);
+	ImGui::Checkbox("Fix local animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
 	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
 	//ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);

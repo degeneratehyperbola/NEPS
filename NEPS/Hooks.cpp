@@ -317,7 +317,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 	case FrameStage::NET_UPDATE_END:
 		break;
 	case FrameStage::RENDER_START:
-		Animations::animationFix(previousCmd, previousSendPacket);
+		Animations::fixAnimation(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::forceRelayCluster();

@@ -63,7 +63,7 @@ bool Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 	return matrixUpdated;
 }
 
-bool Animations::animationFix(const UserCmd &cmd, bool sendPacket) noexcept
+bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	bool matrixUpdated = false;
 
