@@ -582,9 +582,9 @@ static void renderPlayerEsp(const PlayerData &playerData, const Player &playerCo
 
 	if (playerData.dormant)
 	{
-		const float factor = std::clamp(1.0f - (memory->globalVars->realtime - playerData.becameDormant) * 0.25f, 0.0f, 1.0f);
+		const float factor = 1.0f - (memory->globalVars->realtime - playerData.becameDormant) * 0.25f;
 
-		if (!factor) return;
+		if (factor <= 0.0f) return;
 
 		Helpers::setAlphaFactor(factor);
 	}

@@ -308,7 +308,7 @@ void Helpers::setAlphaFactor(float factor) noexcept
 unsigned int Helpers::calculateColor(Color4 color) noexcept
 {
 	color.color[3] *= (255.0f - GameData::local().flashDuration) / 255.0f;
-	color.color[3] *= alphaFactor;
+	color.color[3] *= std::clamp(alphaFactor, 0.0f, 1.0f);
 	auto &&[r, g, b, a] = color.rainbow ? rainbowColor(color.rainbowSpeed, color.color[3]) : color.color;
 	return ImGui::ColorConvertFloat4ToU32({r, g, b, a});
 }
@@ -322,14 +322,14 @@ unsigned int Helpers::calculateColor(Color3 color) noexcept
 unsigned int Helpers::calculateColor(int r, int g, int b, int a) noexcept
 {
 	a -= static_cast<int>(a * GameData::local().flashDuration / 255.0f);
-	a = static_cast<int>(a * alphaFactor);
+	a = static_cast<int>(a * std::clamp(alphaFactor, 0.0f, 1.0f));
 	return IM_COL32(r, g, b, a);
 }
 
 unsigned int Helpers::calculateColor(float r, float g, float b, float a) noexcept
 {
 	a -= a * GameData::local().flashDuration / 255.0f;
-	a *= alphaFactor;
+	a *= std::clamp(alphaFactor, 0.0f, 1.0f);
 	return ImGui::ColorConvertFloat4ToU32({r, g, b, a});
 }
 

@@ -224,7 +224,7 @@ void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 	if (ImVec2 recoil; Helpers::worldToScreen(local.aimPunch, recoil, false))
 	{
 		const auto &pos = ImGui::GetIO().DisplaySize;
-		Helpers::setAlphaFactor(std::clamp(std::sqrtf(ImLengthSqr((recoil - pos / 2) / pos)) * 100, 0.0f, 1.0f));
+		Helpers::setAlphaFactor(std::sqrtf(ImLengthSqr((recoil - pos / 2) / pos)) * 100);
 		drawCrosshair(drawList, recoil, Helpers::calculateColor(config->visuals.recoilCrosshair), config->visuals.recoilCrosshairType);
 		Helpers::setAlphaFactor(1);
 	}
