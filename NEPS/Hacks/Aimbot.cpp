@@ -66,6 +66,7 @@ void Aimbot::resetMissCounter() noexcept
 
 void Aimbot::predictPeek(UserCmd *cmd) noexcept
 {
+
 	if (!localPlayer)
 		return;
 
@@ -84,6 +85,9 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		return;
 
 	const auto &cfg = Config::Aimbot::getRelevantConfig();
+	
+	if (!cfg.autoStop && !cfg.autoScope)
+		return;
 
 	if (!cfg.betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
 		return;
@@ -103,21 +107,18 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		if (!cfg.friendlyFire && !enemy)
 			continue;
 
-		if (cfg.autoStop || cfg.autoScope)
+		Trace trace;
+		auto origin = entity->getBonePosition(8) + entity->velocity() * predictionFraction;
+		int damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire);
+		const auto goesThroughWall = trace.startPos != predictedEyePosition;
+
+		if (damage > 0 && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
 		{
-			Trace trace;
-			auto origin = entity->getBonePosition(8) + entity->velocity() * predictionFraction;
-			int damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire);
-			const auto goesThroughWall = trace.startPos != predictedEyePosition;
+			if (cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle())
+				cmd->buttons |= UserCmd::IN_ATTACK2;
 
-			if (damage > 0 && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
-			{
-				if (cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle())
-					cmd->buttons |= UserCmd::IN_ATTACK2;
-
-				if (cfg.autoStop)
-					Misc::slowwalk(cmd);
-			}
+			if (cfg.autoStop)
+				Misc::slowwalk(cmd);
 		}
 	}
 }
