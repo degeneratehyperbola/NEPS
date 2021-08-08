@@ -78,6 +78,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	static auto backupAbsYaw = state->feetYaw;
 
 	localPlayer->animationLayers()[Entity::ANIMATION_LAYER_LEAN].weight = FLT_EPSILON;
+	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 
 	memory->updateState(state, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
 
@@ -159,13 +160,17 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 		} else
 			side = -1;
 	} else
-		side = (rand() & 1) * 2 - 1;
+	{
+		std::srand(memory->globalVars->serverTime());
+		side = (std::rand() & 1) * 2 - 1;
+	}
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
 	if (side)
 		state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + 60.0f * side);
 
+	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	animatable->updateClientSideAnimation();
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, animatable->simulationTime());
 }
