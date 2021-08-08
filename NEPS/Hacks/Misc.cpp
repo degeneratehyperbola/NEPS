@@ -1618,7 +1618,7 @@ void Misc::watermark() noexcept
 	if (!config->misc.watermark.enabled)
 		return;
 
-	ImGui::SetNextWindowSizeConstraints({150, 0}, {FLT_MAX, FLT_MAX});
+	ImGui::SetNextWindowSizeConstraints({160, 0}, {FLT_MAX, FLT_MAX});
 	ImGui::SetNextWindowBgAlpha(0.4f);
 	ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
 
@@ -1659,7 +1659,7 @@ void Misc::watermark() noexcept
 	constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms", "weave", "legendware", "spirthack", "mutinty"};
 
 	std::ostringstream watermark;
-	watermark << "NEPS is better than ";
+	watermark << "NEPS is more than ";
 	watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % otherOnes.size()];
 	ImGui::TextUnformatted(watermark.str().c_str());
 
