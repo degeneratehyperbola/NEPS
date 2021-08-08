@@ -182,11 +182,8 @@ Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &desti
 	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
-int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitbox) noexcept
+int Helpers::findDamage(const Vector &destination, const Vector &source, Entity *attacker, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitbox) noexcept
 {
-	if (!attacker)
-		return -1;
-
 	const auto activeWeapon = attacker->getActiveWeapon();
 	if (!activeWeapon)
 		return -1;
@@ -197,7 +194,7 @@ int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trac
 
 	float damage = static_cast<float>(weaponData->damage);
 
-	Vector start = attacker->getEyePosition();
+	Vector start = source;
 	Vector direction = destination - start;
 	float traveled = direction.length();
 	direction /= traveled;
@@ -288,6 +285,11 @@ int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trac
 	}
 
 	return -1;
+}
+
+int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitBox) noexcept
+{
+	return findDamage(destination, attacker->getEyePosition(), attacker, trace, allowFriendlyFire, ghost, ghostHitBox);
 }
 
 float Helpers::findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept

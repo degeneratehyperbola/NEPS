@@ -12,5 +12,6 @@ namespace Aimbot
 	const Record *getTargetRecord() noexcept;
 	void missCounter(GameEvent *event) noexcept;
 	void resetMissCounter() noexcept;
+    void predictPeek(UserCmd *cmd) noexcept;
     void run(UserCmd *cmd) noexcept;
 }

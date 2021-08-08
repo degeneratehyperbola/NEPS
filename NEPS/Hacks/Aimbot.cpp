@@ -64,6 +64,64 @@ void Aimbot::resetMissCounter() noexcept
 	hits = 0;
 }
 
+void Aimbot::predictPeek(UserCmd *cmd) noexcept
+{
+	if (!localPlayer)
+		return;
+
+	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
+		return;
+
+	const auto time = memory->globalVars->serverTime();
+	if (localPlayer->nextAttack() > time || !localPlayer->isAlive() || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
+		return;
+
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+	if (!activeWeapon || !activeWeapon->clip())
+		return;
+
+	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
+		return;
+
+	const auto &cfg = Config::Aimbot::getRelevantConfig();
+
+	if (!cfg.betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
+		return;
+
+	constexpr auto predictionFraction = 0.07f;
+
+	const auto predictedEyePosition = localPlayer->getEyePosition() + localPlayer->velocity() * predictionFraction;
+
+	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
+	{
+		auto entity = interfaces->entityList->getEntity(i);
+
+		if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || entity->gunGameImmunity())
+			continue;
+
+		const auto enemy = localPlayer->isOtherEnemy(entity);
+		if (!cfg.friendlyFire && !enemy)
+			continue;
+
+		if (cfg.autoStop || cfg.autoScope)
+		{
+			Trace trace;
+			auto origin = entity->getBonePosition(8) + entity->velocity() * predictionFraction;
+			int damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire);
+			const auto goesThroughWall = trace.startPos != predictedEyePosition;
+
+			if (damage > 0 && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
+			{
+				if (cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle())
+					cmd->buttons |= UserCmd::IN_ATTACK2;
+
+				if (cfg.autoStop)
+					Misc::slowwalk(cmd);
+			}
+		}
+	}
+}
+
 static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 {
 	const auto &cfg = Config::Aimbot::getRelevantConfig();
@@ -116,23 +174,14 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 			continue;
 
 		const Record *backtrackRecord = nullptr;
-		if (config->backtrack.enabled || cfg.autoStop || cfg.autoScope)
+		if (config->backtrack.enabled)
 		{
 			Trace trace;
 			auto origin = bufferBones[8].origin();
-			bool canHit = Helpers::findDamage(origin, localPlayer.get(), trace, cfg.friendlyFire);
+			int damage = Helpers::findDamage(origin, localPlayer.get(), trace, cfg.friendlyFire);
 			const auto goesThroughWall = trace.startPos != localPlayerEyePosition;
 
-			if (canHit && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
-			{
-				if (cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle())
-					cmd->buttons |= UserCmd::IN_ATTACK2;
-
-				if (cfg.autoStop)
-					Misc::slowwalk(cmd);
-			}
-
-			if (config->backtrack.enabled && enemy && goesThroughWall)
+			if (config->backtrack.enabled && enemy && damage < (goesThroughWall ? minDamageAutoWall : minDamage))
 			{
 				const auto &records = Backtrack::getRecords(entity->index());
 				if (const auto it = std::find_if(records.begin(), records.end(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.end())
