@@ -1659,7 +1659,7 @@ void Misc::watermark() noexcept
 	constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms", "weave", "legendware", "spirthack", "mutinty"};
 
 	std::ostringstream watermark;
-	watermark << "NEPS is more than ";
+	watermark << "NEPS > ";
 	watermark << otherOnes[static_cast<int>(memory->globalVars->realtime) % otherOnes.size()];
 	ImGui::TextUnformatted(watermark.str().c_str());
 
