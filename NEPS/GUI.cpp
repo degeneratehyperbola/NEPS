@@ -689,12 +689,10 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 		if (ImGui::BeginPopup("##override_popup"))
 		{
-			ImGui::PushItemWidth(95.0f);
-			ImGui::InputInt("Min damage override", &config->aimbot[currentWeapon].minDamageOverride);
+			ImGui::SliderInt("##mindmg", &config->aimbot[currentWeapon].minDamageOverride, 0, 100, "Min damage %d");
 			config->aimbot[currentWeapon].minDamageOverride = std::max(config->aimbot[currentWeapon].minDamageOverride, 0);
-			ImGui::InputInt("Damage auto-wall override", &config->aimbot[currentWeapon].minDamageAutoWallOverride);
+			ImGui::SliderInt("##mindmg_aw", &config->aimbot[currentWeapon].minDamageAutoWallOverride, 0, 100, "Min damage auto-wall %d");
 			config->aimbot[currentWeapon].minDamageAutoWallOverride = std::max(config->aimbot[currentWeapon].minDamageAutoWallOverride, 0);
-			ImGui::PopItemWidth();
 			ImGui::EndPopup();
 		}
 
