@@ -108,8 +108,11 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 			continue;
 
 		Trace trace;
+		Record predictedGhost;
+		predictedGhost.hasHelmet = entity->hasHelmet();
+		predictedGhost.armor = entity->armor();
 		auto origin = entity->getBonePosition(8) + entity->velocity() * predictionFraction;
-		int damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire);
+		int damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head);
 		const auto goesThroughWall = trace.startPos != predictedEyePosition;
 
 		if (damage > 0 && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))

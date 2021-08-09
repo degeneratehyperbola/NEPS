@@ -287,9 +287,9 @@ int Helpers::findDamage(const Vector &destination, const Vector &source, Entity 
 	return -1;
 }
 
-int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitBox) noexcept
+int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitbox) noexcept
 {
-	return findDamage(destination, attacker->getEyePosition(), attacker, trace, allowFriendlyFire, ghost, ghostHitBox);
+	return findDamage(destination, attacker->getEyePosition(), attacker, trace, allowFriendlyFire, ghost, ghostHitbox);
 }
 
 float Helpers::findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept
