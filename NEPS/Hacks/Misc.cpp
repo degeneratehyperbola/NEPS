@@ -223,8 +223,8 @@ void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 
 	if (ImVec2 recoil; Helpers::worldToScreen(local.aimPunch, recoil, false))
 	{
-		const auto &pos = ImGui::GetIO().DisplaySize;
-		Helpers::setAlphaFactor(std::sqrtf(ImLengthSqr((recoil - pos / 2) / pos)) * 100);
+		const auto &displaySize = ImGui::GetIO().DisplaySize;
+		Helpers::setAlphaFactor(std::sqrtf(ImLengthSqr((recoil - displaySize / 2) / displaySize)) * 100);
 		drawCrosshair(drawList, recoil, Helpers::calculateColor(config->visuals.recoilCrosshair), config->visuals.recoilCrosshairType);
 		Helpers::setAlphaFactor(1);
 	}
@@ -243,19 +243,19 @@ void Misc::visualizeInaccuracy(ImDrawList *drawList) noexcept
 
 	if (ImVec2 edge; Helpers::worldToScreen(local.inaccuracy, edge))
 	{
-		const auto &pos = ImGui::GetIO().DisplaySize;
+		const auto &displaySize = ImGui::GetIO().DisplaySize;
 
-		if (edge.x > pos.x || edge.y > pos.y)
+		if (edge.x > displaySize.x || edge.y > displaySize.y)
 			return;
 
-		const auto radius = std::sqrtf(ImLengthSqr(edge - pos / 2));
-		const auto inaccuracy = std::sqrtf(ImLengthSqr((edge - pos / 2) / pos)) * 200;
+		const auto radius = std::sqrtf(ImLengthSqr(edge - displaySize / 2));
+		const auto inaccuracy = std::sqrtf(ImLengthSqr((edge - displaySize / 2) / displaySize)) * 200;
 		const auto color = Helpers::calculateColor(config->visuals.inaccuracyCircle);
 		char text[9];
 		std::sprintf(text, "%.6f%%", inaccuracy);
 		drawList->AddText(edge, color, text);
-		drawList->AddCircleFilled(pos / 2, radius, color);
-		drawList->AddCircle(pos / 2, radius, color | IM_COL32_A_MASK);
+		drawList->AddCircleFilled(displaySize / 2, radius, color);
+		drawList->AddCircle(displaySize / 2, radius, color | IM_COL32_A_MASK);
 	}
 }
 

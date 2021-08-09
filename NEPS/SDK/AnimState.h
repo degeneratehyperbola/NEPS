@@ -54,19 +54,19 @@ struct AnimState
 	PAD(28)
 	float horizontalSpeed;
 	float verticalSpeed;
-	float speedNormalized; // From 0 to 1
-	float feetSpeedForwardsOrSideWays; // From 0 to 2. 1 when walking, 2+ when running, 0.653 when crouch walking
-	float feetSpeedUnknownForwardsOrSideways; // From 0 to 3
+	float speedAsPortionOfRunSpeed;
+	float speedAsPortionOfWalkSpeed;
+	float speedAsPortionOfCrouchWalkSpeed;
 	float timeSinceStartedMoving;
 	float timeSinceStoppedMoving;
 	bool onGround;
-	bool inHitGroundAnimation;
+	bool landing;
 	PAD(14)
-	float headHeightFromHittingGroundAnimation; // From 0 to 1, 1 when standing
+	float landAnimationMultiplier;
 	float stopToFullRunningFraction; // From 0 to 1, doesn't change when walking or crouching, only running
-	PAD(4)
-	float unknownFraction; // Affected while jumping and running, or when just jumping, 0 to 1
-	PAD(522)
+	PAD(8)
+	bool onLadder;
+	PAD(521)
 	Vector velocitySubtract;
 	float standingHeadHeight;
 };

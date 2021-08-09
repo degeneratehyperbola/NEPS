@@ -324,17 +324,16 @@ public:
 
 	float getMaxDesyncAngle() noexcept
 	{
-		const auto animState = getAnimState();
-
-		if (!animState)
+		const auto state = getAnimState();
+		if (!state)
 			return 0.0f;
 
-		float yawModifier = (animState->stopToFullRunningFraction * -0.3f - 0.2f) * std::clamp(animState->feetSpeedForwardsOrSideWays, 0.0f, 1.0f) + 1.0f;
+		float yawModifier = (state->stopToFullRunningFraction * -0.3f - 0.2f) * std::clamp(state->speedAsPortionOfWalkSpeed, 0.0f, 1.0f) + 1.0f;
 
-		if (animState->duckAmount > 0.0f)
-			yawModifier += (animState->duckAmount * std::clamp(animState->feetSpeedUnknownForwardsOrSideways, 0.0f, 1.0f) * (0.5f - yawModifier));
+		if (state->duckAmount > 0.0f)
+			yawModifier += (state->duckAmount * std::clamp(state->speedAsPortionOfCrouchWalkSpeed, 0.0f, 1.0f) * (0.5f - yawModifier));
 
-		return animState->velocitySubtract.y * yawModifier;
+		return state->velocitySubtract.y * yawModifier;
 	}
 
 	bool isInReload() noexcept
