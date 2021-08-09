@@ -577,7 +577,7 @@ void Visuals::bulletBeams(GameEvent *event)
 	info.life = cfg->life;
 	info.width = cfg->width;
 	info.endWidth = cfg->width;
-	info.fadeLength = 100.0f;
+	info.fadeLength = 30.0f;
 	info.speed = 0.2f;
 	info.startFrame = 0;
 	info.frameRate = 60.0f;
