@@ -113,7 +113,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			const auto end = start + fwd * 100.0f;
 
 			Trace trace;
-			interfaces->engineTrace->traceRay({start, end}, CONTENTS_SOLID | CONTENTS_WINDOW, localPlayer.get(), trace);
+			interfaces->engineTrace->traceRay({start, end}, CONTENTS_SOLID | CONTENTS_WINDOW, nullptr, trace);
 
 			if (trace.fraction != 1.0f)
 				active[i] = true;
