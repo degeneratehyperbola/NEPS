@@ -244,17 +244,18 @@ void Misc::visualizeInaccuracy(ImDrawList *drawList) noexcept
 	if (ImVec2 edge; Helpers::worldToScreen(local.inaccuracy, edge))
 	{
 		const auto &pos = ImGui::GetIO().DisplaySize;
+
+		if (edge.x > pos.x || edge.y > pos.y)
+			return;
+
 		const auto radius = std::sqrtf(ImLengthSqr(edge - pos / 2));
 		const auto inaccuracy = std::sqrtf(ImLengthSqr((edge - pos / 2) / pos)) * 200;
 		const auto color = Helpers::calculateColor(config->visuals.inaccuracyCircle);
 		char text[9];
 		std::sprintf(text, "%.6f%%", inaccuracy);
 		drawList->AddText(edge, color, text);
-		if (radius)
-		{
-			drawList->AddCircleFilled(pos / 2, radius, color);
-			drawList->AddCircle(pos / 2, radius, color | IM_COL32_A_MASK);
-		}
+		drawList->AddCircleFilled(pos / 2, radius, color);
+		drawList->AddCircle(pos / 2, radius, color | IM_COL32_A_MASK);
 	}
 }
 
