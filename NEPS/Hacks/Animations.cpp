@@ -161,7 +161,7 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 			side = -1;
 	} else
 	{
-		std::srand(memory->globalVars->serverTime());
+		std::srand(static_cast<unsigned int>(memory->globalVars->serverTime()));
 		side = (std::rand() & 1) * 2 - 1;
 	}
 
