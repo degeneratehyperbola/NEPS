@@ -12,7 +12,7 @@
 #include "Interfaces.h"
 #include "Hacks/Misc.h"
 
-#ifdef _DEBUG_NEPS
+#ifdef NEPS_DEBUG
 #include "GameData.h"
 #include "resource.h"
 #include "Hacks/Animations.h"
@@ -31,7 +31,7 @@
 #include "SDK/NetworkStringTable.h"
 #include "SDK/PlayerResource.h"
 #include "SDK/Surface.h"
-#endif // _DEBUG_NEPS
+#endif // NEPS_DEBUG
 #include "SDK/Engine.h"
 
 constexpr auto windowFlags = ImGuiWindowFlags_NoResize
@@ -92,11 +92,11 @@ static void drawColorPalette() noexcept
 
 void GUI::render() noexcept
 {
-	#ifdef _DEBUG_NEPS
+	#ifdef NEPS_DEBUG
 	static Texture debugNotice = {IDB_PNG2, "PNG"};
 	if (debugNotice.get())
 		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
-	#endif // _DEBUG_NEPS
+	#endif // NEPS_DEBUG
 
 	ImGui::GetIO().FontGlobalScale = config->style.scaling;
 
@@ -143,10 +143,10 @@ void GUI::render() noexcept
 
 	drawColorPalette();
 
-	#ifdef _DEBUG_NEPS
+	#ifdef NEPS_DEBUG
 	renderDebugWindow();
 	ImGui::ShowDemoWindow();
-	#endif // _DEBUG_NEPS
+	#endif // NEPS_DEBUG
 }
 
 void GUI::updateColors() const noexcept
@@ -271,12 +271,12 @@ void GUI::renderContextMenu() noexcept
 	if (ImGui::MenuItem("Demo UI"))
 		interfaces->engine->clientCmdUnrestricted("demoui");
 
-	#ifdef _DEBUG_NEPS
+	#ifdef NEPS_DEBUG
 	if (ImGui::MenuItem("Fog UI"))
 		interfaces->engine->clientCmdUnrestricted("fogui");
 	if (ImGui::MenuItem("Loaded textures"))
 		interfaces->cvar->findVar("mat_texture_list")->setValue(true);
-	#endif // _DEBUG_NEPS
+	#endif // NEPS_DEBUG
 
 	if (ImGui::MenuItem("Unload"))
 		hooks->uninstall();
@@ -1974,10 +1974,10 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		{
 			if (ImGui::Selectable(SkinChanger::weapon_names[i].name, i == itemIndex))
 				itemIndex = i;
-			#ifdef _DEBUG_NEPS
+			#ifdef NEPS_DEBUG
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Item #%i", SkinChanger::weapon_names[i].definition_index);
-			#endif // _DEBUG_NEPS
+			#endif // NEPS_DEBUG
 		}
 		ImGui::EndListBox();
 	}
@@ -2055,10 +2055,10 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 							selected_entry.paint_kit_vector_index = i;
 						if (selected && lastItemIndex != itemIndex)
 							ImGui::SetScrollHereY();
-						#ifdef _DEBUG_NEPS
+						#ifdef NEPS_DEBUG
 						if (ImGui::IsItemHovered())
 							ImGui::SetTooltip("Paint kit #%i", kits[i].id);
-						#endif // _DEBUG_NEPS
+						#endif // NEPS_DEBUG
 						ImGui::PopStyleColor();
 						ImGui::PopID();
 					}
@@ -2151,10 +2151,10 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 							selected_sticker.kit_vector_index = i;
 						if (selected && (lastItemIndex != itemIndex || lastSelectedStickerSlot != selectedStickerSlot))
 							ImGui::SetScrollHereY();
-						#ifdef _DEBUG_NEPS
+						#ifdef NEPS_DEBUG
 						if (ImGui::IsItemHovered())
 							ImGui::SetTooltip("Sticker #%i", kits[i].id);
-						#endif // _DEBUG_NEPS
+						#endif // NEPS_DEBUG
 						ImGui::PopStyleColor();
 						ImGui::PopID();
 					}
@@ -2667,7 +2667,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 		ImGui::End();
 }
 
-#ifdef _DEBUG_NEPS
+#ifdef NEPS_DEBUG
 void GUI::renderDebugWindow() noexcept
 {
 	ImGui::Columns(3, nullptr, false);
@@ -2961,4 +2961,4 @@ void GUI::renderDebugWindow() noexcept
 		}
 	}
 }
-#endif // _DEBUG_NEPS
+#endif // NEPS_DEBUG

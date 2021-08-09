@@ -22,9 +22,9 @@ BOOL APIENTRY DllEntryPoint(HMODULE moduleHandle, DWORD reason, LPVOID reserved)
 
 	if ((reason & SIGNATURE_MASK) == DLL_PROCESS_ATTACH)
 	{
-		#if defined SIGNATURE_ENABLE && !defined _DEBUG_NEPS
+		#if defined SIGNATURE_ENABLE && !defined NEPS_DEBUG
 		if ((reason & ~SIGNATURE_MASK) == SIGNATURE)
-		#endif // _DEBUG_NEPS
+		#endif // NEPS_DEBUG
 		{
 			std::setlocale(LC_CTYPE, ".utf8");
 			hooks = std::make_unique<Hooks>(moduleHandle);
