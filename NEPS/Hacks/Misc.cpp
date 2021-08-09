@@ -679,9 +679,6 @@ void Misc::tweakPlayerAnim(FrameStage stage) noexcept
 {
 	if (stage == FrameStage::RENDER_START)
 	{
-		if (!localPlayer)
-			return;
-
 		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp && !config->misc.desyncResolver)
 			return;
 
