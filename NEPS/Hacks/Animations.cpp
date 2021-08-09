@@ -16,7 +16,7 @@ void Animations::releaseState() noexcept
 		delete desyncedState;
 }
 
-void Animations::copyLerpedBones(Matrix3x4 *out) noexcept
+void Animations::copyDesyncedBones(Matrix3x4 *out) noexcept
 {
 	if (out) std::copy(desyncedBones.begin(), desyncedBones.end(), out);
 }
@@ -26,6 +26,9 @@ bool Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 	assert(desyncedState);
 
 	bool matrixUpdated = false;
+
+	if (!desyncedState)
+		return matrixUpdated;
 
 	if (!localPlayer) return matrixUpdated;
 
@@ -39,15 +42,15 @@ bool Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 
 	if (sendPacket)
 	{
-		const auto backupPoseParam = localPlayer->poseParam();
+		const auto backupPoseParams = localPlayer->poseParams();
 		const auto backupAbsYaw = localPlayer->getAbsAngle().y;
 
 		memory->updateState(desyncedState, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
 		memory->invalidateBoneCache(localPlayer.get());
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, desyncedState->feetYaw, 0.0f});
 
-		localPlayer->animationLayers()[Entity::ANIMATION_LAYER_LEAN].weight = FLT_EPSILON;
-
+		localPlayer->animationLayers()[AnimLayer_Lean].weight = FLT_EPSILON;
+		
 		matrixUpdated = localPlayer->setupBones(desyncedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 		if (const auto &origin = localPlayer->getRenderOrigin(); matrixUpdated)
@@ -56,7 +59,7 @@ bool Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 				desyncedBones[i].setOrigin(desyncedBones[i].origin() - origin);
 			}
 
-		localPlayer->poseParam() = backupPoseParam;
+		localPlayer->poseParams() = backupPoseParams;
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, backupAbsYaw, 0.0f});
 	}
 
@@ -73,32 +76,34 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 		return matrixUpdated;
 
 	auto state = localPlayer->getAnimState();
+	if (!state)
+		return matrixUpdated;
 
-	static auto backupPoseParam = localPlayer->poseParam();
+	static auto backupPoseParams = localPlayer->poseParams();
 	static auto backupAbsYaw = state->feetYaw;
 
-	localPlayer->animationLayers()[Entity::ANIMATION_LAYER_LEAN].weight = FLT_EPSILON;
+	localPlayer->animationLayers()[AnimLayer_Lean].weight = FLT_EPSILON;
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 
 	memory->updateState(state, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
 
 	matrixUpdated = localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
-
+	
 	if (sendPacket)
 	{
-		backupPoseParam = localPlayer->poseParam();
+		backupPoseParams = localPlayer->poseParams();
 		backupAbsYaw = state->feetYaw;
 	}
 
 	memory->setAbsAngle(localPlayer.get(), Vector{0.0f, backupAbsYaw, 0.0f});
-	localPlayer->poseParam() = backupPoseParam;
+	localPlayer->poseParams() = backupPoseParams;
 
 	return matrixUpdated;
 }
 
 struct ResolverData
 {
-	std::array<AnimLayer, MAX_ANIM_LAYERS> previousLayers;
+	std::array<AnimLayer, AnimLayer_Count> previousLayers;
 	float previousFeetYaw = 0.0f;
 	float nextLbyUpdate = 0.0f;
 };
@@ -128,30 +133,30 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 	state->feetYaw = animatable->eyeAngles().y - 60.0f;
 	animatable->updateClientSideAnimation();
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, animatable->simulationTime());
-	layerMovePlaybackRates[0] = layers[Entity::ANIMATION_LAYER_MOVEMENT_MOVE].playbackRate;
+	layerMovePlaybackRates[0] = layers[AnimLayer_MovementMove].playbackRate;
 
 	state->feetYaw = animatable->eyeAngles().y;
 	animatable->updateClientSideAnimation();
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, animatable->simulationTime());
-	layerMovePlaybackRates[1] = layers[Entity::ANIMATION_LAYER_MOVEMENT_MOVE].playbackRate;
+	layerMovePlaybackRates[1] = layers[AnimLayer_MovementMove].playbackRate;
 	
 	state->feetYaw = animatable->eyeAngles().y + 60.0f;
 	animatable->updateClientSideAnimation();
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, animatable->simulationTime());
-	layerMovePlaybackRates[2] = layers[Entity::ANIMATION_LAYER_MOVEMENT_MOVE].playbackRate;
+	layerMovePlaybackRates[2] = layers[AnimLayer_MovementMove].playbackRate;
 
 	state->feetYaw = backupFeetYaw;
 
 	signed char side = 0;
-	if ((animatable->velocity().length2D() < 0.1f || state->timeSinceStartedMoving < 0.22f) && !layers[Entity::ANIMATION_LAYER_ADJUST].weight && !layers[Entity::ANIMATION_LAYER_ADJUST].cycle && !layers[Entity::ANIMATION_LAYER_MOVEMENT_MOVE].weight)
+	if ((animatable->velocity().length2D() < 0.1f || state->timeSinceStartedMoving < 0.22f) && !layers[AnimLayer_Adjust].weight && !layers[AnimLayer_Adjust].cycle && !layers[AnimLayer_MovementMove].weight)
 	{
 		const auto delta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw);
 		side = delta <= 0.0f ? 1 : -1;
-	} else if (!static_cast<int>(layers[Entity::ANIMATION_LAYER_LEAN].weight * 1000.0f) && static_cast<int>(layers[Entity::ANIMATION_LAYER_MOVEMENT_MOVE].weight * 1000.0f) == static_cast<int>(resolverData.previousLayers[Entity::ANIMATION_LAYER_MOVEMENT_MOVE].weight * 1000.0f))
+	} else if (!static_cast<int>(layers[AnimLayer_Lean].weight * 1000.0f) && static_cast<int>(layers[AnimLayer_MovementMove].weight * 1000.0f) == static_cast<int>(resolverData.previousLayers[AnimLayer_MovementMove].weight * 1000.0f))
 	{
-		const auto negative = std::fabsf(layers[Entity::ANIMATION_LAYER_MOVEMENT_MOVE].playbackRate - layerMovePlaybackRates[0]);
-		const auto zero = std::fabsf(layers[Entity::ANIMATION_LAYER_MOVEMENT_MOVE].playbackRate - layerMovePlaybackRates[1]);
-		const auto positive = std::fabsf(layers[Entity::ANIMATION_LAYER_MOVEMENT_MOVE].playbackRate - layerMovePlaybackRates[2]);
+		const auto negative = std::fabsf(layers[AnimLayer_MovementMove].playbackRate - layerMovePlaybackRates[0]);
+		const auto zero = std::fabsf(layers[AnimLayer_MovementMove].playbackRate - layerMovePlaybackRates[1]);
+		const auto positive = std::fabsf(layers[AnimLayer_MovementMove].playbackRate - layerMovePlaybackRates[2]);
 
 		if (zero < positive || negative <= positive || positive * 1000.f)
 		{

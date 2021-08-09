@@ -6,6 +6,48 @@
 
 class Entity;
 
+enum PoseParamIndeces
+{
+	PoseParam_StrafeYaw = 0,
+	PoseParam_Stand,
+	PoseParam_LeanYaw,
+	PoseParam_Speed,
+	PoseParam_LadderYaw,
+	PoseParam_LadderSpeed,
+	PoseParam_JumpFall,
+	PoseParam_MoveYaw,
+	PoseParam_MoveBlendCrouch,
+	PoseParam_MoveBlendWalk,
+	PoseParam_MoveBlendRun,
+	PoseParam_BodyYaw,
+	PoseParam_BodyPitch,
+	PoseParam_AimBlendStandIdle,
+	PoseParam_AimBlendStandWalk,
+	PoseParam_AimBlendStandRun,
+	PoseParam_AimBlendCrouchIdle,
+	PoseParam_AimBlendCrouchWalk,
+	PoseParam_DeathYaw,
+	PoseParam_Count = 24
+};
+
+enum AnimLayerIndices
+{
+	AnimLayer_AimMatrix = 0,
+	AnimLayer_WeaponAction,
+	AnimLayer_WeaponActionReCrouch,
+	AnimLayer_Adjust,
+	AnimLayer_MovementJumpOrFall,
+	AnimLayer_MovementLandOrClimb,
+	AnimLayer_MovementMove,
+	AnimLayer_MovementStrafeChange,
+	AnimLayer_WholeBody,
+	AnimLayer_Flashed,
+	AnimLayer_Flinch,
+	AnimLayer_AliveLoop,
+	AnimLayer_Lean,
+	AnimLayer_Count
+};
+
 struct AnimLayer
 {
 	bool clientBlend;
@@ -38,7 +80,7 @@ struct AnimState
 	float feetYaw; // Lower body yaw or LBY
 	float lastFeetYaw;
 	float currentTorsoYaw;
-	float unknownVelocityLean; // Changes when moving/jumping/hitting ground
+	float velocityLean;
 	float leanAmount;
 	PAD(4)
 	float feetCycle; // From 0 to 1
@@ -63,7 +105,7 @@ struct AnimState
 	bool landing;
 	PAD(14)
 	float landAnimationMultiplier;
-	float stopToFullRunningFraction; // From 0 to 1, doesn't change when walking or crouching, only running
+	float stopToFullRunningFraction;
 	PAD(8)
 	bool onLadder;
 	PAD(521)

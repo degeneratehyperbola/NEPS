@@ -27,8 +27,6 @@ struct VarMap;
 #define PLAYER_HEIGHT 72.0f
 #define PLAYER_HEIGHT_CROUCH 54.0f
 
-#define MAX_ANIM_LAYERS 15
-
 enum class MoveType
 {
     Noclip = 8,
@@ -164,24 +162,6 @@ public:
 		return getAbsOrigin() + viewOffset();
 	}
 
-	enum AnimLayerIndices
-	{
-		ANIMATION_LAYER_AIMMATRIX = 0,
-		ANIMATION_LAYER_WEAPON_ACTION,
-		ANIMATION_LAYER_WEAPON_ACTION_RECROUCH,
-		ANIMATION_LAYER_ADJUST,
-		ANIMATION_LAYER_MOVEMENT_JUMP_OR_FALL,
-		ANIMATION_LAYER_MOVEMENT_LAND_OR_CLIMB,
-		ANIMATION_LAYER_MOVEMENT_MOVE,
-		ANIMATION_LAYER_MOVEMENT_STRAFECHANGE,
-		ANIMATION_LAYER_WHOLE_BODY,
-		ANIMATION_LAYER_FLASHED,
-		ANIMATION_LAYER_FLINCH,
-		ANIMATION_LAYER_ALIVELOOP,
-		ANIMATION_LAYER_LEAN,
-		ANIMATION_LAYER_COUNT
-	};
-
 	int getAnimationLayerCount() noexcept
 	{
 		return *reinterpret_cast<int *>((uintptr_t)this + 0x298C);
@@ -196,36 +176,9 @@ public:
 		return *reinterpret_cast<AnimState **>((uintptr_t)this + 0x3914);
 	}
 
-	enum PoseParameterIndeces
+	std::array<float, PoseParam_Count> &poseParams() noexcept
 	{
-		POSE_PARAM_STRAFE_YAW = 0,
-		POSE_PARAM_STAND,
-		POSE_PARAM_LEAN_YAW,
-		POSE_PARAM_SPEED,
-		POSE_PARAM_LADDER_YAW,
-		POSE_PARAM_LADDER_SPEED,
-		POSE_PARAM_JUMP_FALL,
-		POSE_PARAM_MOVE_YAW,
-		POSE_PARAM_MOVE_BLEND_CROUCH,
-		POSE_PARAM_MOVE_BLEND_WALK,
-		POSE_PARAM_MOVE_BLEND_RUN,
-		POSE_PARAM_BODY_YAW,
-		POSE_PARAM_BODY_PITCH,
-		POSE_PARAM_AIM_BLEND_STAND_IDLE,
-		POSE_PARAM_AIM_BLEND_STAND_WALK,
-		POSE_PARAM_AIM_BLEND_STAND_RUN,
-		POSE_PARAM_AIM_BLEND_COURCH_IDLE,
-		POSE_PARAM_AIM_BLEND_CROUCH_WALK,
-		POSE_PARAM_DEATH_YAW
-	};
-
-	std::array<float, 24> &poseParam() noexcept
-	{
-		return *reinterpret_cast<std::array<float, 24> *>((uintptr_t)this + netvars->operator[](fnv::hash("CBaseAnimating->m_flPoseParameter")));
-	}
-	float &poseParam(int index) noexcept
-	{
-		return reinterpret_cast<std::array<float, 24> *>((uintptr_t)this + netvars->operator[](fnv::hash("CBaseAnimating->m_flPoseParameter")))->operator[](index);
+		return *reinterpret_cast<std::array<float, PoseParam_Count> *>((uintptr_t)this + netvars->operator[](fnv::hash("CBaseAnimating->m_flPoseParameter")));
 	}
 
 	float spawnTime() noexcept
