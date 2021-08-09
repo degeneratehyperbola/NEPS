@@ -182,7 +182,7 @@ Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &desti
 	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
-int Helpers::findDamage(const Vector &destination, const Vector &source, Entity *attacker, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitbox) noexcept
+int Helpers::findDamage(const Vector &destination, const Vector &source, Entity *attacker, Entity *filter, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitbox) noexcept
 {
 	const auto activeWeapon = attacker->getActiveWeapon();
 	if (!activeWeapon)
@@ -247,7 +247,7 @@ int Helpers::findDamage(const Vector &destination, const Vector &source, Entity 
 
 	while (damage >= 1.0f && calcDepth)
 	{
-		interfaces->engineTrace->traceRay({start, destination}, MASK_SHOT, attacker, trace);
+		interfaces->engineTrace->traceRay({start, destination}, MASK_SHOT, filter, trace);
 
 		if (trace.fraction == 1.0f)
 		{
@@ -260,7 +260,7 @@ int Helpers::findDamage(const Vector &destination, const Vector &source, Entity 
 			return static_cast<int>(damage);
 		}
 
-		if (!ghost && trace.hitGroup > HitGroup::Generic && trace.hitGroup <= HitGroup::RightLeg)
+		if (trace.hitGroup > HitGroup::Generic && trace.hitGroup <= HitGroup::RightLeg)
 		{
 			if (!trace.entity || !trace.entity->isPlayer())
 				break;
@@ -287,9 +287,14 @@ int Helpers::findDamage(const Vector &destination, const Vector &source, Entity 
 	return -1;
 }
 
+int Helpers::findDamage(const Vector &destination, const Vector &source, Entity *attacker, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitbox) noexcept
+{
+	return findDamage(destination, source, attacker, attacker, trace, allowFriendlyFire, ghost, ghostHitbox);
+}
+
 int Helpers::findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitbox) noexcept
 {
-	return findDamage(destination, attacker->getEyePosition(), attacker, trace, allowFriendlyFire, ghost, ghostHitbox);
+	return findDamage(destination, attacker->getEyePosition(), attacker, attacker, trace, allowFriendlyFire, ghost, ghostHitbox);
 }
 
 float Helpers::findHitchance(float inaccuracy, float spread, float targetRadius, float distance) noexcept

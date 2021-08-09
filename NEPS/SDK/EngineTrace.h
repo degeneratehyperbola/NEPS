@@ -111,7 +111,7 @@ class Entity;
 struct TraceFilter
 {
 	TraceFilter(const Entity *entity) : skip{entity} {}
-	virtual bool shouldHitEntity(Entity *entity, int) { return entity != skip; }
+	virtual bool shouldHitEntity(Entity *entity, int) { return skip ? entity != skip : false; }
 	virtual int getTraceType() const { return 0; }
 	const void *skip;
 };
