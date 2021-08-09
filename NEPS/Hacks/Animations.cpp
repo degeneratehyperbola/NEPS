@@ -167,8 +167,7 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
-	if (side)
-		state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + 60.0f * side);
+	state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + 60.0f * side);
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	animatable->updateClientSideAnimation();

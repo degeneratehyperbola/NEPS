@@ -45,7 +45,7 @@ struct AnimState
 	float feetYawRate; // From 0 to 1
 	PAD(4)
 	float duckAmount;
-	float landingDuckAdditiveSomething;
+	float landingDuckAdditiveAmount;
 	PAD(4)
 	Vector origin;
 	Vector lastOrigin;
