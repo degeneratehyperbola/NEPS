@@ -52,6 +52,7 @@ void Backtrack::update(FrameStage stage) noexcept
 				continue;
 
 			Record record;
+			record.ownerIdx = entity->index();
 			record.origin = entity->getAbsOrigin();
 			record.simulationTime = entity->simulationTime();
 

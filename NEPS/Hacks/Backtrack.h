@@ -12,6 +12,7 @@ struct UserCmd;
 
 struct Record
 {
+	int ownerIdx;
 	Vector origin;
 	float simulationTime;
 	bool important;
