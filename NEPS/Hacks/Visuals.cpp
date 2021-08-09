@@ -525,8 +525,6 @@ void Visuals::bulletBeams(GameEvent *event)
 
 	if (!player) return;
 
-	Vector pos = {event->getFloat("x"), event->getFloat("y"), event->getFloat("z")};
-
 	constexpr std::array beamSprites = {
 		"sprites/physbeam.vmt",
 		"sprites/white.vmt",
@@ -545,12 +543,34 @@ void Visuals::bulletBeams(GameEvent *event)
 	if (!cfg || !cfg->enabled || static_cast<std::size_t>(cfg->sprite) >= beamSprites.size())
 		return;
 
+	const auto activeWeapon = player->getActiveWeapon();
+	if (!activeWeapon)
+		return;
+
 	if (const auto modelprecache = interfaces->networkStringTableContainer->findTable("modelprecache"))
 		modelprecache->addString(false, beamSprites[cfg->sprite]);
 
-	const float distance = player->getEyePosition().distTo(pos);
-
 	BeamInfo info;
+
+	if (!player->shouldDraw())
+	{
+		const auto viewModel = interfaces->entityList->getEntityFromHandle(player->viewModel());
+		if (!viewModel)
+			return;
+
+		if (!viewModel->getAttachment(activeWeapon->getMuzzleAttachmentIndex1stPerson(viewModel), info.start))
+			return;
+	} else
+	{
+		const auto worldModel = interfaces->entityList->getEntityFromHandle(activeWeapon->weaponWorldModel());
+		if (!worldModel)
+			return;
+
+		if (!worldModel->getAttachment(activeWeapon->getMuzzleAttachmentIndex3rdPerson(), info.start))
+			return;
+	}
+
+	info.end = {event->getFloat("x"), event->getFloat("y"), event->getFloat("z")};
 	info.type = TE_BEAMPOINTS;
 	info.modelName = beamSprites[cfg->sprite];
 	info.haloScale = 0.0f;
@@ -567,8 +587,6 @@ void Visuals::bulletBeams(GameEvent *event)
 	info.brightness = cfg->color[3] * 255.0f;
 	info.segments = -1;
 	info.renderable = true;
-	info.end = pos;
-	info.start = player->getEyePosition();
 	info.flags = FBEAM_SHADEIN;
 	info.amplitude = 0.0f;
 	switch (cfg->type)
@@ -577,7 +595,7 @@ void Visuals::bulletBeams(GameEvent *event)
 		info.flags |= FBEAM_ONLYNOISEONCE;
 		break;
 	case cfg->Type::Noise:
-		info.amplitude = cfg->amplitude * 200.0f / distance;
+		info.amplitude = cfg->amplitude * 200.0f / info.start.distTo(info.end);
 		break;
 	case cfg->Type::Spiral:
 		info.flags |= FBEAM_SINENOISE;
