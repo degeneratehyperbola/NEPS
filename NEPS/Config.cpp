@@ -421,7 +421,7 @@ static void from_json(const json &j, Config::Chams::Material &m)
 	read(j, "Blinking", m.blinking);
 	read(j, "Wireframe", m.wireframe);
 	read(j, "Cover", m.cover);
-	read(j, "Ignore-Z", m.ignorez);
+	read(j, "Ignore-Z", m.ignoreZ);
 	read(j, "Material", m.material);
 }
 
@@ -1032,7 +1032,7 @@ static void to_json(json &j, const Config::Chams::Material &o)
 	WRITE("Blinking", blinking);
 	WRITE("Wireframe", wireframe);
 	WRITE("Cover", cover);
-	WRITE("Ignore-Z", ignorez);
+	WRITE("Ignore-Z", ignoreZ);
 	WRITE("Material", material);
 }
 

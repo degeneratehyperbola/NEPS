@@ -244,7 +244,7 @@ void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int 
 {
 	for (const auto &cham : chams)
 	{
-		if (!cham.enabled || !cham.ignorez)
+		if (!cham.enabled || !cham.ignoreZ)
 			continue;
 
 		const auto material = dispatchMaterial(cham.material);
@@ -301,7 +301,7 @@ void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int 
 
 	for (const auto &cham : chams)
 	{
-		if (!cham.enabled || cham.ignorez)
+		if (!cham.enabled || cham.ignoreZ)
 			continue;
 
 		const auto material = dispatchMaterial(cham.material);

@@ -131,7 +131,7 @@ public:
 			bool blinking = false;
 			bool wireframe = false;
 			bool cover = false;
-			bool ignorez = false;
+			bool ignoreZ = false;
 			int material = 0;
 		};
 		std::array<Material, 7> materials;
@@ -338,7 +338,7 @@ public:
 			KeyBind target;
 			float trajectoryFac = 1.0f;
 			float distanceFac = 2.0f;
-			Color4ToggleThickness visualize = {0.0f, 0.5f, 1.0f, 1.0f};
+			Color4ToggleThickness visualize = {1.0f, 0.5f, 0.0f, 1.0f};
 		} blockbot;
 
 		struct Reportbot

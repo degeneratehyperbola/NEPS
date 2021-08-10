@@ -1238,33 +1238,33 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 	}
 
 	static int currentCategory = 0;
-	static int material = 1;
+	static int layer = 1;
 
 	ImGui::PushItemWidth(110);
 	if (ImGui::Combo("##category", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Backtrack\0Local player\0Desync\0Weapon\0Sleeves\0Hands\0World weapons\0C4\0Defuse kits\0Ragdolls\0Props\0"))
-		material = 1;
+		layer = 1;
 
 	ImGui::SameLine();
 
-	if (material <= 1)
+	if (layer <= 1)
 		ImGuiCustom::arrowButtonDisabled("##left", ImGuiDir_Left);
 	else if (ImGui::ArrowButton("##left", ImGuiDir_Left))
-		--material;
+		--layer;
 
 	ImGui::SameLine();
-	ImGui::Text("%d", material);
+	ImGui::Text("%d", layer);
 
-	constexpr std::array categories{"Allies", "Enemies", "Planting", "Defusing", "Backtrack", "Local player", "Desync", "Weapons", "Sleeves", "Hands", "World weapons", "C4", "Defusers", "Ragdolls", "Props"};
+	constexpr std::array categories = {"Allies", "Enemies", "Planting", "Defusing", "Backtrack", "Local player", "Desync", "Weapons", "Sleeves", "Hands", "World weapons", "C4", "Defusers", "Ragdolls", "Props"};
 
 	ImGui::SameLine();
 
-	if (material >= int(config->chams[categories[currentCategory]].materials.size()))
+	if (layer >= int(config->chams[categories[currentCategory]].materials.size()))
 		ImGuiCustom::arrowButtonDisabled("##right", ImGuiDir_Right);
 	else if (ImGui::ArrowButton("##right", ImGuiDir_Right))
-		++material;
+		++layer;
 
 	ImGui::SameLine();
-	auto &chams{config->chams[categories[currentCategory]].materials[material - 1]};
+	auto &chams{config->chams[categories[currentCategory]].materials[layer - 1]};
 	ImGui::Checkbox("Enabled", &chams.enabled);
 	ImGui::Separator();
 
@@ -1279,7 +1279,7 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Blinking", &chams.blinking);
 	ImGui::Checkbox("Wireframe", &chams.wireframe);
 	ImGui::SameLine(spacing);
-	ImGui::Checkbox("Ignore-Z", &chams.ignorez);
+	ImGui::Checkbox("Ignore-Z", &chams.ignoreZ);
 
 	if (currentCategory == 6)
 		if (ImGui::Button("Fix desync chams", {-1, 25}))
@@ -2935,13 +2935,6 @@ void GUI::renderDebugWindow() noexcept
 
 				ImGui::EndTable();
 			}
-
-			const auto &matrix = GameData::toScreenMatrix().m;
-			ImGui::TextUnformatted("View-projection matrix");
-			ImGui::Text("%.3f %.3f %.3f %.3f", matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]);
-			ImGui::Text("%.3f %.3f %.3f %.3f", matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]);
-			ImGui::Text("%.3f %.3f %.3f %.3f", matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]);
-			ImGui::Text("%.3f %.3f %.3f %.3f", matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][3]);
 		}
 
 		static std::string soundPath;
