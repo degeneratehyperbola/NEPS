@@ -665,3 +665,20 @@ bool Helpers::lbyUpdate(Entity *animatable, float &nextUpdate) noexcept
 
 	return false;
 }
+
+void Helpers::drawTriangleFromCenter(const ImVec2 &pos, ImU32 color, ImDrawList *drawList) noexcept
+{
+	const auto l = std::sqrtf(ImLengthSqr(pos));
+	if (!l) return;
+	const auto posNormalized = pos / l;
+	const auto center = ImGui::GetIO().DisplaySize / 2 + pos;
+
+	const ImVec2 trianglePoints[] = {
+		center + ImVec2{0.4f * posNormalized.y, -0.4f * posNormalized.x} * 30,
+		center + ImVec2{1.0f * posNormalized.x, 1.0f * posNormalized.y} * 30,
+		center + ImVec2{-0.4f * posNormalized.y, 0.4f * posNormalized.x} * 30
+	};
+
+	drawList->AddConvexPolyFilled(trianglePoints, 3, color);
+	drawList->AddPolyline(trianglePoints, 3, color | IM_COL32_A_MASK, ImDrawFlags_Closed, 1.0f);
+}

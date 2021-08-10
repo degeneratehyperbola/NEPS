@@ -15,7 +15,6 @@ class Entity;
 struct SurfaceData;
 struct Trace;
 struct Vector;
-struct ImVec2;
 struct WeaponInfo;
 struct Color4;
 struct AnimState;
@@ -163,4 +162,6 @@ namespace Helpers
 	std::size_t getDefaultFontSize() noexcept;
 
 	bool lbyUpdate(Entity *animatable, float &nextUpdate) noexcept;
+
+	void drawTriangleFromCenter(const ImVec2 &pos, ImU32 color, ImDrawList *drawList) noexcept;
 }
