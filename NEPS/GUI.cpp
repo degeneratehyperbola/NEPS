@@ -799,16 +799,14 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Look at enemies", &currentConfig.lookAtEnemies);
 		ImGui::Checkbox("Auto direction", &currentConfig.autoDirection);
 		ImGui::SameLine();
-		if (currentConfig.autoDirection)
-			ImGuiCustom::arrowButtonDisabled("yaw_directions", ImGuiDir_Right);
-		else if (ImGui::ArrowButton("yaw_directions", ImGuiDir_Right))
+		if (ImGui::ArrowButton("yaw_directions", ImGuiDir_Right))
 			ImGui::OpenPopup("##yaw_dir");
 
 		if (ImGui::BeginPopup("##yaw_dir"))
 		{
-			ImGuiCustom::keyBind("Right", &currentConfig.rightKey);
-			ImGuiCustom::keyBind("Back", &currentConfig.backKey);
-			ImGuiCustom::keyBind("Left", &currentConfig.leftKey);
+			ImGuiCustom::keyBind("Manual right", &currentConfig.rightKey);
+			ImGuiCustom::keyBind("Manual back", &currentConfig.backKey);
+			ImGuiCustom::keyBind("Manual left", &currentConfig.leftKey);
 			ImGuiCustom::colorPicker("Visualize", currentConfig.visualizeDirection);
 			ImGui::EndPopup();
 		}
