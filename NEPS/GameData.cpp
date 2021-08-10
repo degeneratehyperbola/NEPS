@@ -280,7 +280,7 @@ void LocalPlayerData::update() noexcept
 		eyePosition = obs->getEyePosition();
 		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + obs->getAimPunch()) * 1000;
 
-		if (const auto activeWeapon = obs->getActiveWeapon())
+		if (const auto activeWeapon = obs->getActiveWeapon(); activeWeapon && obs->isAlive())
 		{
 			inaccuracy = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + Vector{Helpers::radiansToDegrees(activeWeapon->getInaccuracy() + activeWeapon->getSpread()), 0.0f, 0.0f}) * 1000;
 			shooting = obs->shotsFired() > 1;
@@ -303,7 +303,7 @@ void LocalPlayerData::update() noexcept
 		eyePosition = localPlayer->getEyePosition();
 		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000;
 
-		if (const auto activeWeapon = localPlayer->getActiveWeapon())
+		if (const auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && localPlayer->isAlive())
 		{
 			inaccuracy = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + Vector{Helpers::radiansToDegrees(activeWeapon->getInaccuracy() + activeWeapon->getSpread()), 0.0f, 0.0f}) * 1000;
 			shooting = localPlayer->shotsFired() > 1;
