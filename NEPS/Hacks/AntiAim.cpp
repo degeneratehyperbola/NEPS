@@ -242,8 +242,8 @@ void AntiAim::visualize(ImDrawList *drawList) noexcept
 	if (cfg.visualizeSide.enabled)
 	{
 		if (flip)
-			Helpers::drawTriangleFromCenter({-100, 0}, Helpers::calculateColor(cfg.visualizeSide), drawList);
-		else
 			Helpers::drawTriangleFromCenter({100, 0}, Helpers::calculateColor(cfg.visualizeSide), drawList);
+		else
+			Helpers::drawTriangleFromCenter({-100, 0}, Helpers::calculateColor(cfg.visualizeSide), drawList);
 	}
 }
