@@ -752,7 +752,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
 	static std::size_t currentCategory;
 
-	if (ImGui::BeginListBox("##list", {70, 110}))
+	if (ImGui::BeginListBox("##list", {70, 120}))
 	{
 		for (std::size_t i = 0; i < categories.size(); ++i)
 		{
@@ -796,10 +796,26 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SetNextItemWidth(-1);
 			ImGui::SliderFloat("##pitch_sl", &currentConfig.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
 		}
-		ImGui::Checkbox("Hide head", &currentConfig.hideHead);
+		ImGui::Checkbox("Look at enemies", &currentConfig.lookAtEnemies);
+		ImGui::Checkbox("Auto direction", &currentConfig.autoDirection);
+		ImGui::SameLine();
+		if (currentConfig.autoDirection)
+			ImGuiCustom::arrowButtonDisabled("yaw_directions", ImGuiDir_Right);
+		else if (ImGui::ArrowButton("yaw_directions", ImGuiDir_Right))
+			ImGui::OpenPopup("##yaw_dir");
+
+		if (ImGui::BeginPopup("##yaw_dir"))
+		{
+			ImGuiCustom::keyBind("Right", &currentConfig.rightKey);
+			ImGuiCustom::keyBind("Back", &currentConfig.backKey);
+			ImGuiCustom::keyBind("Left", &currentConfig.leftKey);
+			ImGuiCustom::colorPicker("Visualize", currentConfig.visualizeDirection);
+			ImGui::EndPopup();
+		}
+
 		ImGui::Checkbox("Desync", &currentConfig.desync);
 		ImGui::SameLine();
-		if (ImGui::ArrowButton("Desync advanced", ImGuiDir_Right))
+		if (ImGui::ArrowButton("desync_advanced", ImGuiDir_Right))
 			ImGui::OpenPopup("##desync");
 
 		if (ImGui::BeginPopup("##desync"))
@@ -807,6 +823,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SetNextItemWidth(100);
 			ImGui::Combo("Desync type", &currentConfig.desyncType, "Micro movement\0Opposite\0Interchanged\0Fake desync\0Sway\0");
 			ImGuiCustom::keyBind("Flip key", &currentConfig.flipKey);
+			ImGuiCustom::colorPicker("Visualize", currentConfig.visualizeSide);
 
 			ImGui::Separator();
 

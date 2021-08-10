@@ -40,6 +40,9 @@ static void microMovement(UserCmd *cmd) noexcept
 	}
 }
 
+static signed char dir = 0;
+static bool flip = true;
+
 void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
 	if (!canAntiAim(cmd)) return;
@@ -72,7 +75,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	if (cfg.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = cfg.pitchAngle;
 
-	if (cfg.hideHead && cmd->viewangles.y == currentViewAngles.y)
+	if (cfg.lookAtEnemies && cmd->viewangles.y == currentViewAngles.y)
 	{
 		Entity *bestTarget = nullptr;
 		auto bestFov = 255.0f;
@@ -100,8 +103,10 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		}
 
 		cmd->viewangles.y += bestAngle;
+	}
 
-		bestAngle = 0.0f;
+	if (cfg.autoDirection)
+	{
 		constexpr std::array positions = {-30.0f, 0.0f, 30.0f};
 		std::array active = {false, false, false};
 		const auto fwd = Vector::fromAngle2D(cmd->viewangles.y);
@@ -120,20 +125,30 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		}
 
 		if (active[0] && active[1] && !active[2])
-			bestAngle = -90.0f;
+			dir = -1;
 		else if (!active[0] && active[1] && active[2])
-			bestAngle = 90.0f;
+			dir = 1;
+		else
+			dir = 0;
+	} else
+	{
+		if (cfg.rightKey && GetAsyncKeyState(cfg.rightKey) & 1)
+			dir = -1;
 
-		cmd->viewangles.y += bestAngle;
+		if (cfg.backKey && GetAsyncKeyState(cfg.backKey) & 1)
+			dir = 0;
+
+		if (cfg.leftKey && GetAsyncKeyState(cfg.leftKey) & 1)
+			dir = 1;
 	}
+
+	cmd->viewangles.y += 90.0f * dir;
 
 	static float nextLbyUpdate;
 	const bool lbyUpdate = Helpers::lbyUpdate(localPlayer.get(), nextLbyUpdate);
 
 	if (cfg.desync)
 	{
-		static bool flip = true;
-
 		float a = 0.0f;
 		float b = 0.0f;
 		switch (cfg.desyncType)
@@ -193,4 +208,42 @@ bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 	}
 
 	return false;
+}
+
+void AntiAim::visualize(ImDrawList *drawList) noexcept
+{
+	if (!localPlayer)
+		return;
+
+	if (!localPlayer->isAlive())
+		return;
+
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
+		return;
+
+	const auto &cfg = Config::AntiAim::getRelevantConfig();
+
+	if (cfg.visualizeDirection.enabled)
+	{
+		switch (dir)
+		{
+		case -1:
+			Helpers::drawTriangleFromCenter({-200, 0}, Helpers::calculateColor(cfg.visualizeDirection), drawList);
+			break;
+		case 0:
+			Helpers::drawTriangleFromCenter({0, 100}, Helpers::calculateColor(cfg.visualizeDirection), drawList);
+			break;
+		case 1:
+			Helpers::drawTriangleFromCenter({200, 0}, Helpers::calculateColor(cfg.visualizeDirection), drawList);
+			break;
+		}
+	}
+
+	if (cfg.visualizeSide.enabled)
+	{
+		if (flip)
+			Helpers::drawTriangleFromCenter({-100, 0}, Helpers::calculateColor(cfg.visualizeSide), drawList);
+		else
+			Helpers::drawTriangleFromCenter({100, 0}, Helpers::calculateColor(cfg.visualizeSide), drawList);
+	}
 }

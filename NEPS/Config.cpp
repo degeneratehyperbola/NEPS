@@ -393,11 +393,17 @@ static void from_json(const json &j, Config::AntiAim &a)
 	read(j, "Pitch angle", a.pitchAngle);
 	read(j, "Yaw", a.yaw);
 	read(j, "Yaw angle", a.yawAngle);
-	read(j, "Look at enemies", a.hideHead);
+	read(j, "Look at enemies", a.lookAtEnemies);
+	read(j, "Auto direction", a.autoDirection);
+	read(j, "Right key", a.rightKey);
+	read(j, "Back key", a.backKey);
+	read(j, "Left key", a.leftKey);
+	read<value_t::object>(j, "Visualize direction", a.visualizeDirection);
 	read(j, "Desync", a.desync);
 	read(j, "Desync type", a.desyncType);
 	read(j, "Fake up", a.fakeUp);
 	read(j, "Flip key", a.flipKey);
+	read<value_t::object>(j, "Visualize side", a.visualizeSide);
 	read<value_t::object>(j, "Choke", a.choke);
 	read(j, "Choked packets", a.chokedPackets);
 }
@@ -1004,11 +1010,17 @@ static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &du
 	WRITE("Pitch angle", pitchAngle);
 	WRITE("Yaw", yaw);
 	WRITE("Yaw angle", yawAngle);
-	WRITE("Look at enemies", hideHead);
+	WRITE("Look at enemies", lookAtEnemies);
+	WRITE("Auto direction", autoDirection);
+	WRITE("Right key", rightKey);
+	WRITE("Back key", backKey);
+	WRITE("Left key", leftKey);
+	WRITE("Visualize direction", visualizeDirection);
 	WRITE("Desync", desync);
 	WRITE("Desync type", desyncType);
 	WRITE("Fake up", fakeUp);
 	WRITE("Flip key", flipKey);
+	WRITE("Visualize side", visualizeSide);
 	WRITE("Choke", choke);
 	WRITE("Choked packets", chokedPackets);
 }
