@@ -271,7 +271,7 @@ void LocalPlayerData::update() noexcept
 	drawingCrosshair = true;
 
 	const auto obsMode = localPlayer->getObserverMode();
-	if (const auto obs = localPlayer->getObserverTarget(); obs && obsMode != ObsMode::Roaming && obsMode != ObsMode::Deathcam)
+	if (const auto obs = localPlayer->getObserverTarget(); obs && (obsMode == ObsMode::InEye || obsMode == ObsMode::Chase))
 	{
 		observerTargetHandle = obs->handle();
 
