@@ -530,7 +530,6 @@ static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerDa
 
 	const auto yaw = Helpers::degreesToRadians(interfaces->engine->getViewAngles().y);
 	const auto color = Helpers::calculateColor(config);
-	const auto color2 = Helpers::calculateColor(config.color[0], config.color[1], config.color[2], 1.0f);
 
 	const auto positionDiff = GameData::local().origin - playerData.origin;
 
@@ -540,16 +539,8 @@ static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerDa
 	const auto l = std::sqrtf(ImLengthSqr(pos));
 	if (!l) return;
 	pos /= l;
-	const auto center = ImGui::GetIO().DisplaySize / 2 + pos * 300;
 
-	const ImVec2 trianglePoints[] = {
-		center + ImVec2{0.4f * pos.y, -0.4f * pos.x} * 30,
-		center + ImVec2{1.0f * pos.x, 1.0f * pos.y} * 30,
-		center + ImVec2{-0.4f * pos.y, 0.4f * pos.x} * 30
-	};
-	
-	drawList->AddConvexPolyFilled(trianglePoints, 3, color);
-	drawList->AddPolyline(trianglePoints, 3, color2, ImDrawFlags_Closed, 1.0f);
+	Helpers::drawTriangleFromCenter(pos * 300, color, drawList);
 }
 
 static void drawLineOfSight(const Color4ToggleThickness &config, const PlayerData &playerData)
