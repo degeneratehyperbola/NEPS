@@ -170,10 +170,7 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 		} else
 			side = -1;
 	} else
-	{
-		std::srand(static_cast<unsigned int>(memory->globalVars->serverTime()));
-		side = (std::rand() & 1) * 2 - 1;
-	}
+		side = resolverData.misses % 3 - 1;
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
