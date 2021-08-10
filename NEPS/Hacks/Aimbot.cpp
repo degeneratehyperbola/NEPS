@@ -64,6 +64,11 @@ void Aimbot::resetMissCounter() noexcept
 	hits = 0;
 }
 
+int Aimbot::getMisses() noexcept
+{
+    return shots - hits;
+}
+
 void Aimbot::predictPeek(UserCmd *cmd) noexcept
 {
 

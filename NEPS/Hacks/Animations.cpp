@@ -1,5 +1,6 @@
 #include <array>
 
+#include "Aimbot.h"
 #include "Animations.h"
 #include "Memory.h"
 
@@ -104,8 +105,9 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 struct ResolverData
 {
 	std::array<AnimLayer, AnimLayer_Count> previousLayers;
-	float previousFeetYaw = 0.0f;
-	float nextLbyUpdate = 0.0f;
+	float previousFeetYaw;
+	float nextLbyUpdate;
+	unsigned int misses;
 };
 
 static std::array<ResolverData, 65> playerResolverData;
@@ -122,6 +124,9 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 	auto &resolverData = playerResolverData[animatable->index()];
 	const auto lbyUpdate = Helpers::lbyUpdate(animatable, resolverData.nextLbyUpdate);
 	const auto layers = animatable->animationLayers();
+
+	if (animatable->handle() == Aimbot::getTargetHandle())
+		resolverData.misses = Aimbot::getMisses();
 
 	state->feetYaw = resolverData.previousFeetYaw;
 	animatable->updateClientSideAnimation();
