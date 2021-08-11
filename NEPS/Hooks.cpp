@@ -188,6 +188,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::fastStop(cmd);
 	Misc::autoStrafe(cmd);
 	Misc::bunnyHop(cmd);
+	Misc::prepareRevolver(cmd);
 	Aimbot::predictPeek(cmd);
 	if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk]) Misc::slowwalk(cmd);
 
@@ -202,7 +203,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	AntiAim::run(cmd, currentViewAngles, sendPacket);
 
-	Misc::prepareRevolver(cmd); // Bruh, I know...
 
 	auto viewAnglesDelta = cmd->viewangles - previousViewAngles;
 	viewAnglesDelta.normalize();
