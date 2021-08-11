@@ -78,7 +78,6 @@ public:
 	uintptr_t listLeaves;
 	int *dispatchSound;
 	int *checkFileCRC;
-	std::add_pointer_t<bool __cdecl(float, float, float, float, float, float, Trace &)> traceToExit;
 	ViewRender *viewRender;
 	uintptr_t drawScreenEffectMaterial;
 	std::add_pointer_t<bool __stdcall(const char *, const char *)> submitReport;
