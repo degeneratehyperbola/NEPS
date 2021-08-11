@@ -169,7 +169,15 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 				side = 1;
 		} else
 			side = -1;
-	} else
+	} else if (animatable->velocity().length2D() < 0.1f || state->timeSinceStartedMoving < 0.22f)
+	{
+		const auto delta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw);
+		if (delta > 35.0f)
+			side = -1;
+		else if (delta < -35.0f)
+			side = 1;
+	}
+	else
 		side = resolverData.misses % 3 - 1;
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
