@@ -157,12 +157,12 @@ struct Vector
 		return std::sqrt(x * x + y * y);
 	}
 
-	constexpr auto squareLength() const noexcept
+	constexpr auto lengthSquared() const noexcept
 	{
 		return x * x + y * y + z * z;
 	}
 
-	constexpr auto squareLength2D() const noexcept
+	constexpr auto lengthSquared2D() const noexcept
 	{
 		return x * x + y * y;
 	}
@@ -194,6 +194,11 @@ struct Vector
 	auto distTo(const Vector &v) const noexcept
 	{
 		return (*this - v).length();
+	}
+
+	auto distToSquared(const Vector &v) const noexcept
+	{
+		return (*this - v).lengthSquared();
 	}
 
 	auto toAngle() const noexcept
