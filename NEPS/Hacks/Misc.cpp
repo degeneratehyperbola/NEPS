@@ -696,7 +696,7 @@ void Misc::tweakPlayerAnim(FrameStage stage) noexcept
 
 			if (config->misc.desyncResolver)
 			{
-				Animations::resolveLBY(entity);
+				Animations::resolve(entity);
 			}
 
 			if (auto varMap = entity->getVarMap(); varMap && config->misc.disableInterp)
