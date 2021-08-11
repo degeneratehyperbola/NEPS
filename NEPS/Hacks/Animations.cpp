@@ -17,7 +17,7 @@ void Animations::releaseState() noexcept
 		delete desyncedState;
 }
 
-void Animations::copyDesyncedBones(Matrix3x4 *out) noexcept
+void Animations::getDesyncedBones(Matrix3x4 *out) noexcept
 {
 	if (out) std::copy(desyncedBones.begin(), desyncedBones.end(), out);
 }
