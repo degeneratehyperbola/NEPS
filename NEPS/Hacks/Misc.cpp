@@ -695,9 +695,7 @@ void Misc::tweakPlayerAnim(FrameStage stage) noexcept
 			}
 
 			if (config->misc.desyncResolver)
-			{
 				Animations::resolve(entity);
-			}
 
 			if (auto varMap = entity->getVarMap(); varMap && config->misc.disableInterp)
 				for (int j = 0; j < varMap->entries.size; j++)
@@ -1016,10 +1014,8 @@ void Misc::preserveKillfeed(bool roundStart) noexcept
 
 static int blockTargetHandle = 0;
 
-void Misc::blockBot(UserCmd *cmd) noexcept
+void Misc::blockBot(UserCmd *cmd, const Vector &currentViewAngles) noexcept
 {
-	if (!config->griefing.blockbot.bind.keyMode) return;
-
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
@@ -1033,7 +1029,7 @@ void Misc::blockBot(UserCmd *cmd) noexcept
 			if (!entity || !entity->isPlayer() || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive())
 				continue;
 
-			const auto angle = Helpers::calculateRelativeAngle(localPlayer->getEyePosition(), entity->getEyePosition(), cmd->viewangles);
+			const auto angle = Helpers::calculateRelativeAngle(localPlayer->getEyePosition(), entity->getEyePosition(), currentViewAngles);
 			const auto fov = std::hypot(angle.x, angle.y);
 
 			if (fov < best)

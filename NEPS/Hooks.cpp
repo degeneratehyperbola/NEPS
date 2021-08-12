@@ -198,11 +198,10 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Backtrack::run(cmd);
 	Triggerbot::run(cmd);
 	Misc::edgeJump(cmd);
-	Misc::blockBot(cmd);
+	Misc::blockBot(cmd, currentViewAngles);
 	Misc::fastPlant(cmd);
 
 	AntiAim::run(cmd, currentViewAngles, sendPacket);
-
 
 	auto viewAnglesDelta = cmd->viewangles - previousViewAngles;
 	viewAnglesDelta.normalize();

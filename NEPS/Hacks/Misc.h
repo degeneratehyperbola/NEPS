@@ -4,6 +4,7 @@ enum class FrameStage;
 class GameEvent;
 struct ImDrawList;
 struct UserCmd;
+struct Vector;
 
 namespace Misc
 {
@@ -12,7 +13,7 @@ namespace Misc
 	void updateClanTag() noexcept;
 	void overlayCrosshair(ImDrawList *drawlist) noexcept;
 	void recoilCrosshair(ImDrawList *drawList) noexcept;
-    void visualizeInaccuracy(ImDrawList *drawList) noexcept;
+	void visualizeInaccuracy(ImDrawList *drawList) noexcept;
 	void prepareRevolver(UserCmd *) noexcept;
 	void fastPlant(UserCmd *) noexcept;
 	void fastStop(UserCmd *) noexcept;
@@ -37,11 +38,11 @@ namespace Misc
 	void moonwalk(UserCmd *cmd) noexcept;
 	void playHitSound(GameEvent &event) noexcept;
 	void playKillSound(GameEvent &event) noexcept;
-    void playDeathSound(GameEvent &event) noexcept;
+	void playDeathSound(GameEvent &event) noexcept;
 	void runReportbot() noexcept;
 	void resetReportbot() noexcept;
 	void preserveKillfeed(bool roundStart = false) noexcept;
-	void blockBot(UserCmd *cmd) noexcept;
+	void blockBot(UserCmd *cmd, const Vector &) noexcept;
 	void visualizeBlockBot(ImDrawList *drawList) noexcept;
 	void useSpam(UserCmd *cmd) noexcept;
 	void indicators(ImDrawList *drawList) noexcept;
