@@ -134,7 +134,6 @@ void Animations::resolve(Entity *animatable) noexcept
 		return;
 
 	auto &resolverData = playerResolverData[animatable->index()];
-	const auto simulationTime = animatable->simulationTime();
 	const auto lbyUpdate = Helpers::lbyUpdate(animatable, resolverData.nextLbyUpdate);
 	const auto layers = animatable->animationLayers();
 
@@ -144,6 +143,7 @@ void Animations::resolve(Entity *animatable) noexcept
 	fixVelocity(animatable, resolverData.previousOrigin);
 	if (animatable->simulationTime() != animatable->oldSimulationTime())
 		resolverData.previousOrigin = animatable->origin();
+
 	state->feetYaw = resolverData.previousFeetYaw;
 	animatable->updateClientSideAnimation();
 	resolverData.previousFeetYaw = state->feetYaw;
@@ -153,17 +153,17 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	state->feetYaw = animatable->eyeAngles().y - 60.0f;
 	animatable->updateClientSideAnimation();
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, simulationTime);
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
 	layerMovePlaybackRates[0] = layers[AnimLayer_MovementMove].playbackRate;
 
 	state->feetYaw = animatable->eyeAngles().y;
 	animatable->updateClientSideAnimation();
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, simulationTime);
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
 	layerMovePlaybackRates[1] = layers[AnimLayer_MovementMove].playbackRate;
 	
 	state->feetYaw = animatable->eyeAngles().y + 60.0f;
 	animatable->updateClientSideAnimation();
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, simulationTime);
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
 	layerMovePlaybackRates[2] = layers[AnimLayer_MovementMove].playbackRate;
 
 	state->feetYaw = backupFeetYaw;
@@ -202,5 +202,5 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	animatable->updateClientSideAnimation();
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, simulationTime);
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 }
