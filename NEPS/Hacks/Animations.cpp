@@ -105,12 +105,24 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 struct ResolverData
 {
 	std::array<AnimLayer, AnimLayer_Count> previousLayers;
+	Vector previousOrigin;
 	float previousFeetYaw;
 	float nextLbyUpdate;
 	int misses;
 };
 
 static std::array<ResolverData, 65> playerResolverData;
+
+static __forceinline void fixVelocity(Entity *animatable, const Vector &previousOrigin) noexcept
+{
+	if (!previousOrigin.notNull())
+		return;
+
+	const auto timeDelta = std::fmaxf(memory->globalVars->intervalPerTick, animatable->simulationTime() - animatable->oldSimulationTime());
+	const auto originDelta = animatable->origin() - previousOrigin;
+
+	animatable->velocity() = originDelta * (1.0f / timeDelta);
+}
 
 void Animations::resolve(Entity *animatable) noexcept
 {
@@ -129,6 +141,9 @@ void Animations::resolve(Entity *animatable) noexcept
 	if (animatable->handle() == Aimbot::getTargetHandle())
 		resolverData.misses = Aimbot::getMisses();
 
+	fixVelocity(animatable, resolverData.previousOrigin);
+	if (animatable->simulationTime() != animatable->oldSimulationTime())
+		resolverData.previousOrigin = animatable->origin();
 	state->feetYaw = resolverData.previousFeetYaw;
 	animatable->updateClientSideAnimation();
 	resolverData.previousFeetYaw = state->feetYaw;
