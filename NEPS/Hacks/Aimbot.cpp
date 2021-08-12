@@ -71,7 +71,6 @@ int Aimbot::getMisses() noexcept
 
 void Aimbot::predictPeek(UserCmd *cmd) noexcept
 {
-
 	if (!localPlayer)
 		return;
 

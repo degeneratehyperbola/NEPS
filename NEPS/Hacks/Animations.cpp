@@ -199,8 +199,10 @@ void Animations::resolve(Entity *animatable) noexcept
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
 	state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f) * side);
-
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
+	state->feetCycle = layers[AnimLayer_MovementMove].cycle;
+	state->feetYawRate = layers[AnimLayer_MovementMove].weight;
+
 	animatable->updateClientSideAnimation();
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 }
