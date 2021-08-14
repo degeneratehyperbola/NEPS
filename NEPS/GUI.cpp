@@ -1761,6 +1761,11 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::SliderInt("", &config->visuals.inverseRagdollGravityValue, -2400, 2400, "Ragdoll gravity value: %d");
 		ImGui::PopID();
 		ImGui::PopItemWidth();
+
+		ImGui::PushItemWidth(230.0f);
+		ImGui::InputFloat("", &config->visuals.ragdollTimescaleValue, 0, 10, "%.2f");
+		ImGui::PopItemWidth();
+
 		ImGui::EndPopup();
 	}
 
