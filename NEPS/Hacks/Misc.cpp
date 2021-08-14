@@ -489,8 +489,7 @@ void Misc::changeConVarsTick() noexcept
 	static auto jigglebonesVar = interfaces->cvar->findVar("r_jiggle_bones");
 	jigglebonesVar->setValue(false);
 	static auto ragdollGravity = interfaces->cvar->findVar("cl_ragdoll_gravity");
-	ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? -600 : 600);
-	if (config->visuals.inverseRagdollGravityCustomize)
+	if (config->visuals.inverseRagdollGravity)
 		ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? config->visuals.inverseRagdollGravityValue : 600);
 	else
 		ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? -600 : 600);
