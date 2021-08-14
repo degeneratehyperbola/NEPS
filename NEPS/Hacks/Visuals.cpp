@@ -790,3 +790,13 @@ void Visuals::playerVelocity(ImDrawList *drawList) noexcept
 		drawList->AddLine(pos, dir, color, config->visuals.playerVelocity.thickness);
 	}
 }
+
+void Visuals::physicsTimescale() noexcept {
+
+	static ConVar* cl_phys_timescale = interfaces->cvar->findVar("cl_phys_timescale");
+
+	if (config->visuals.inverseRagdollGravity)
+		cl_phys_timescale->setValue(config->visuals.ragdollTimescaleValue);
+	else
+		cl_phys_timescale->setValue(1);
+};
