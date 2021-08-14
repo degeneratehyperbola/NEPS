@@ -1750,6 +1750,17 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Disable post-processing", &config->visuals.disablePostProcessing);
 	ImGui::Checkbox("Inverse ragdoll gravity", &config->visuals.inverseRagdollGravity);
+	if (config->visuals.inverseRagdollGravity) {
+		ImGui::SameLine();
+		ImGui::Checkbox("Custom Value", &config->visuals.inverseRagdollGravityCustomize);
+		if (config->visuals.inverseRagdollGravityCustomize) {
+			ImGui::PushItemWidth(230.0f);
+			ImGui::PushID(0);
+			ImGui::SliderInt("", &config->visuals.inverseRagdollGravityValue, -2400, 2400, "Ragdoll gravity value: %d");
+			ImGui::PopID();
+			ImGui::PopItemWidth();
+		};
+	};
 
 	constexpr auto spacing = 120;
 	ImGui::Checkbox("No fog", &config->visuals.noFog);

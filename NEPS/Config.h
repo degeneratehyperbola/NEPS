@@ -158,6 +158,8 @@ public:
 	{
 		bool disablePostProcessing = false;
 		bool inverseRagdollGravity = false;
+		bool inverseRagdollGravityCustomize = false ;
+		int inverseRagdollGravityValue = -600;
 		bool noFog = false;
 		bool no3dSky = false;
 		bool noAimPunch = false;

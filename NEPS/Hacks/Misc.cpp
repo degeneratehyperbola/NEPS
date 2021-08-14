@@ -490,6 +490,10 @@ void Misc::changeConVarsTick() noexcept
 	jigglebonesVar->setValue(false);
 	static auto ragdollGravity = interfaces->cvar->findVar("cl_ragdoll_gravity");
 	ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? -600 : 600);
+	if (config->visuals.inverseRagdollGravityCustomize)
+		ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? config->visuals.inverseRagdollGravityValue : 600);
+	else
+		ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? -600 : 600);
 }
 
 static void oppositeHandKnife(FrameStage stage) noexcept
