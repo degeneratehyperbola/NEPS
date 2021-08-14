@@ -159,7 +159,7 @@ public:
 		bool disablePostProcessing = false;
 		bool inverseRagdollGravity = false;
 		int inverseRagdollGravityValue = -600;
-		float ragdollTimescaleValue = 1.0f;
+		float ragdollTimescaleValue = 4.25f;
 		bool noFog = false;
 		bool no3dSky = false;
 		bool noAimPunch = false;

@@ -1763,7 +1763,9 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::PopItemWidth();
 
 		ImGui::PushItemWidth(230.0f);
-		ImGui::InputFloat("", &config->visuals.ragdollTimescaleValue, 0, 10, "%.2f");
+		ImGui::PushID(1);
+		ImGui::SliderFloat ("", &config->visuals.ragdollTimescaleValue, 0.3f, 5.0f, "Ragdoll timescale %.2f");
+		ImGui::PopID();
 		ImGui::PopItemWidth();
 
 		ImGui::EndPopup();
