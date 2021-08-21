@@ -5,7 +5,7 @@
 #include "Vector.h"
 #include "VirtualMethod.h"
 
-#pragma region TraceMask
+#pragma region MasksSurface
 
 // Nower bits are stronger, and will eat weaker brushes completely
 #define	CONTENTS_EMPTY 0 // No contents
@@ -30,8 +30,8 @@
 // CONTENTS_OPAQUE + SURF_NODRAW count as CONTENTS_OPAQUE (shadow-casting toolsblocklight textures)
 #define CONTENTS_BLOCKLIGHT 0x400
 
-#define CONTENTS_TEAM1 0x800 // per team contents used to differentiate collisions 
-#define CONTENTS_TEAM2 0x1000 // between players and objects on different teams
+#define CONTENTS_TEAM1 0x800 // Per team contents used to differentiate collisions 
+#define CONTENTS_TEAM2 0x1000 // Between players and objects on different teams
 
 // Ignore CONTENTS_OPAQUE on surfaces that have SURF_NODRAW
 #define CONTENTS_IGNORE_NODRAW_OPAQUE 0x2000
@@ -60,6 +60,37 @@
 #define	CONTENTS_TRANSLUCENT 0x10000000 // Auto set if any surface has trans
 #define	CONTENTS_LADDER 0x20000000
 #define CONTENTS_HITBOX 0x40000000 // Use accurate hitboxes on trace
+
+// Everything that is normally solid
+#define	MASK_SOLID (CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_WINDOW | CONTENTS_MONSTER | CONTENTS_GRATE)
+// everything that blocks lighting
+#define	MASK_OPAQUE	(CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_OPAQUE)
+// everything that blocks lighting, but with monsters added.
+#define MASK_OPAQUE_AND_NPCS (MASK_OPAQUE | CONTENTS_MONSTER)
+// Bullets see these as solid
+#define	MASK_SHOT (CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_MONSTER | CONTENTS_WINDOW | CONTENTS_DEBRIS | CONTENTS_HITBOX)
+// Non-raycasted weapons see this as solid (includes grates)
+#define MASK_SHOT_HULL (CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_MONSTER | CONTENTS_WINDOW | CONTENTS_DEBRIS | CONTENTS_GRATE)
+
+#define	SURF_LIGHT 0x1 // Value will hold the light strength
+#define	SURF_SKY2D 0x2 // Don't draw, indicates we should skylight + draw 2d sky but not draw the 3D skybox
+#define	SURF_SKY 0x4 // Don't draw, but add to skybox
+#define	SURF_WARP 0x8 // Turbulent water warp
+#define	SURF_TRANS 0x10
+#define SURF_NOPORTAL 0x20 // The surface can not have a portal placed on it
+#define	SURF_TRIGGER 0x40 // This is an xbox hack to work around elimination of trigger surfaces, which breaks occluders
+#define	SURF_NODRAW 0x80 // Don't bother referencing the texture
+
+#define	SURF_HINT 0x100 // Make a primary bsp splitter
+
+#define	SURF_SKIP 0x200 // Completely ignore, allowing non-closed brushes
+#define SURF_NOLIGHT 0x400	// Don't calculate light
+#define SURF_BUMPLIGHT 0x800 // Calculate three lightmaps for the surface for bumpmapping
+#define SURF_NOSHADOWS 0x1000 // Don't receive shadows
+#define SURF_NODECALS 0x2000 // Don't receive decals
+#define SURF_NOPAINT SURF_NODECALS // The surface can not have paint placed on it
+#define SURF_NOCHOP 0x4000 // Don't subdivide patches on this surface 
+#define SURF_HITBOX 0x8000 // Surface is part of a hitbox
 
 #pragma endregion
 
