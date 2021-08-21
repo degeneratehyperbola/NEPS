@@ -163,13 +163,14 @@ struct Trace
 {
 	Vector startPos;
 	Vector endPos;
-	PAD(20)
+	Vector planeNormal;
+	PAD(8)
 	float fraction;
 	int contents;
 	unsigned short dispFlags;
 	bool allSolid;
 	bool startSolid;
-	PAD(4)
+	float fractionLeftSolid;
 	struct Surface
 	{
 		const char *name;
