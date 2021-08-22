@@ -2803,7 +2803,7 @@ void GUI::renderDebugWindow() noexcept
 		if (entity && entity->isPlayer())
 		{
 			if (ImGui::Button("Resolve selected", {-1, 0}))
-				Animations::resolveLBY(entity); 
+				Animations::resolve(entity); 
 
 			if (Helpers::animDataAuthenticity(entity))
 				ImGui::TextUnformatted("Animations authentic");

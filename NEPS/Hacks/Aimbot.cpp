@@ -71,7 +71,6 @@ int Aimbot::getMisses() noexcept
 
 void Aimbot::predictPeek(UserCmd *cmd) noexcept
 {
-
 	if (!localPlayer)
 		return;
 
@@ -190,11 +189,17 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 			int damage = Helpers::findDamage(origin, localPlayer.get(), trace, cfg.friendlyFire);
 			const auto goesThroughWall = trace.startPos != localPlayerEyePosition;
 
-			if (config->backtrack.enabled && enemy && damage < (goesThroughWall ? minDamageAutoWall : minDamage))
+			if (config->backtrack.enabled && enemy)
 			{
 				const auto &records = Backtrack::getRecords(entity->index());
-				if (const auto it = std::find_if(records.begin(), records.end(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.end())
-					backtrackRecord = &(*it);
+
+				if (!Helpers::animDataAuthenticity(entity))
+					if (const auto it = std::find_if(records.begin(), records.end(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime) && record.important; }); it != records.end())
+						backtrackRecord = &(*it);
+
+				if (!backtrackRecord && goesThroughWall)
+					if (const auto it = std::find_if(records.begin(), records.end(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.end())
+						backtrackRecord = &(*it);
 			}
 
 			if (backtrackRecord)

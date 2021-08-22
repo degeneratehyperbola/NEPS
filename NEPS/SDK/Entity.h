@@ -87,7 +87,6 @@ enum EffectFlag
 	EffectFlag_NoCSM = 1 << 14 // Indicates this entity does not render into the cascade shadow depthmap
 };
 
-
 enum class ObsMode
 {
     None = 0,

@@ -171,7 +171,7 @@ float Helpers::handleBulletPenetration(SurfaceData *enterSurfaceData, const Trac
 			penetrationModifier = 2.0f;
 	}
 
-	damage -= 11.25f / penetration / penetrationModifier + damage * damageModifier + (exitTrace.endPos - enterTrace.endPos).squareLength() / 24.0f / penetrationModifier;
+	damage -= 11.25f / penetration / penetrationModifier + damage * damageModifier + (exitTrace.endPos - enterTrace.endPos).lengthSquared() / 24.0f / penetrationModifier;
 
 	result = exitTrace.endPos;
 	return damage;

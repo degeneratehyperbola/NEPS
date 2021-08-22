@@ -16,18 +16,6 @@
 
 static std::array<std::deque<Record>, 65> records;
 
-struct Cvars {
-    ConVar* updateRateVar;
-    ConVar* maxUpdateRateVar;
-    ConVar* interpVar;
-    ConVar* interpRatioVar;
-    ConVar* minInterpRatioVar;
-    ConVar* maxInterpRatioVar;
-    ConVar* maxUnlagVar;
-};
-
-static Cvars cvars;
-
 void Backtrack::update(FrameStage stage) noexcept
 {
 	if (stage == FrameStage::RENDER_START)
@@ -53,7 +41,7 @@ void Backtrack::update(FrameStage stage) noexcept
 
 			Record record;
 			record.ownerIdx = entity->index();
-			record.origin = entity->getAbsOrigin();
+			record.origin = entity->origin();
 			record.simulationTime = entity->simulationTime();
 
 			record.hasHelmet = entity->hasHelmet();
@@ -61,7 +49,7 @@ void Backtrack::update(FrameStage stage) noexcept
 
 			record.important = Helpers::animDataAuthenticity(entity);
 
-			entity->setupBones(record.matrix, 256, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
+			entity->setupBones(record.matrix, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 			records[i].push_front(record);
 
@@ -85,19 +73,18 @@ void Backtrack::run(UserCmd *cmd) noexcept
 	if (!localPlayer)
 		return;
 
-	auto localPlayerEyePosition = localPlayer->getEyePosition();
-	const auto aimPunch = localPlayer->getAimPunch();
-
 	Entity *bestTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle());
 	const Record *bestRecord = nullptr;
-	auto bestFov = 255.0f;
-	Vector bestTargetHeadOrigin = Vector{};
 
 	if (bestTarget)
-	{
 		bestRecord = Aimbot::getTargetRecord();
-	} else
+	else
 	{
+		auto localPlayerEyePosition = localPlayer->getEyePosition();
+		const auto aimPunch = localPlayer->getAimPunch();
+
+		auto bestFov = 255.0f;
+		Vector bestTargetHeadOrigin;
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 		{
 			auto entity = interfaces->entityList->getEntity(i);
@@ -149,6 +136,15 @@ void Backtrack::run(UserCmd *cmd) noexcept
 
 		memory->setAbsOrigin(bestTarget, bestRecord->origin);
 		cmd->tickCount = Helpers::timeToTicks(fractionedTime + getLerp());
+	} else if (bestTarget)
+	{
+		const float remainder = std::fmodf(getLerp(), memory->globalVars->intervalPerTick);
+		float fractionedTime = bestTarget->simulationTime();
+		if (remainder > 0.0f)
+			fractionedTime += memory->globalVars->intervalPerTick - remainder;
+
+		memory->setAbsOrigin(bestTarget, bestTarget->origin());
+		cmd->tickCount = Helpers::timeToTicks(fractionedTime + getLerp());
 	}
 }
 
@@ -159,8 +155,15 @@ const std::deque<Record> &Backtrack::getRecords(std::size_t index) noexcept
 
 float Backtrack::getLerp() noexcept
 {
-	auto ratio = std::clamp(cvars.interpRatioVar->getFloat(), cvars.minInterpRatioVar->getFloat(), cvars.maxInterpRatioVar->getFloat());
-	return (std::max)(cvars.interpVar->getFloat(), (ratio / ((cvars.maxUpdateRateVar) ? cvars.maxUpdateRateVar->getFloat() : cvars.updateRateVar->getFloat())));
+	static auto updateRateVar = interfaces->cvar->findVar("cl_updaterate");
+	static auto maxUpdateRateVar = interfaces->cvar->findVar("sv_maxupdaterate");
+	static auto interpVar = interfaces->cvar->findVar("cl_interp");
+	static auto interpRatioVar = interfaces->cvar->findVar("cl_interp_ratio");
+	static auto minInterpRatioVar = interfaces->cvar->findVar("sv_client_min_interp_ratio");
+	static auto maxInterpRatioVar = interfaces->cvar->findVar("sv_client_max_interp_ratio");
+
+	auto ratio = std::clamp(interpRatioVar->getFloat(), minInterpRatioVar->getFloat(), maxInterpRatioVar->getFloat());
+	return std::max(interpVar->getFloat(), (ratio / (maxUpdateRateVar ? maxUpdateRateVar->getFloat() : updateRateVar->getFloat())));
 }
 
 bool Backtrack::valid(float simTime) noexcept
@@ -169,17 +172,8 @@ bool Backtrack::valid(float simTime) noexcept
 	if (!networkChannel)
 		return false;
 
-	auto delta = std::clamp(networkChannel->getLatency(0) + networkChannel->getLatency(1) + getLerp(), 0.0f, cvars.maxUnlagVar->getFloat()) - (memory->globalVars->serverTime() - simTime);
-	return std::abs(delta) <= 0.2f;
-}
+	static auto maxUnlagVar = interfaces->cvar->findVar("sv_maxunlag");
 
-void Backtrack::init() noexcept
-{
-	cvars.updateRateVar = interfaces->cvar->findVar("cl_updaterate");
-	cvars.maxUpdateRateVar = interfaces->cvar->findVar("sv_maxupdaterate");
-	cvars.interpVar = interfaces->cvar->findVar("cl_interp");
-	cvars.interpRatioVar = interfaces->cvar->findVar("cl_interp_ratio");
-	cvars.minInterpRatioVar = interfaces->cvar->findVar("sv_client_min_interp_ratio");
-	cvars.maxInterpRatioVar = interfaces->cvar->findVar("sv_client_max_interp_ratio");
-	cvars.maxUnlagVar = interfaces->cvar->findVar("sv_maxunlag");
+	auto delta = std::clamp(networkChannel->getLatency(0) + networkChannel->getLatency(1) + getLerp(), 0.0f, maxUnlagVar->getFloat()) - (memory->globalVars->serverTime() - simTime);
+	return std::abs(delta) <= 0.2f;
 }

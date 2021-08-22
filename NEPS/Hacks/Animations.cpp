@@ -17,7 +17,7 @@ void Animations::releaseState() noexcept
 		delete desyncedState;
 }
 
-void Animations::copyDesyncedBones(Matrix3x4 *out) noexcept
+void Animations::getDesyncedBones(Matrix3x4 *out) noexcept
 {
 	if (out) std::copy(desyncedBones.begin(), desyncedBones.end(), out);
 }
@@ -105,14 +105,26 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 struct ResolverData
 {
 	std::array<AnimLayer, AnimLayer_Count> previousLayers;
+	Vector previousOrigin;
 	float previousFeetYaw;
 	float nextLbyUpdate;
-	unsigned int misses;
+	int misses;
 };
 
 static std::array<ResolverData, 65> playerResolverData;
 
-void Animations::resolveLBY(Entity *animatable) noexcept
+static __forceinline void fixVelocity(Entity *animatable, const Vector &previousOrigin) noexcept
+{
+	if (!previousOrigin.notNull())
+		return;
+
+	const auto timeDelta = std::fmaxf(memory->globalVars->intervalPerTick, animatable->simulationTime() - animatable->oldSimulationTime());
+	const auto originDelta = animatable->origin() - previousOrigin;
+
+	animatable->velocity() = originDelta * (1.0f / timeDelta);
+}
+
+void Animations::resolve(Entity *animatable) noexcept
 {
 	if (Helpers::animDataAuthenticity(animatable))
 		return;
@@ -128,6 +140,10 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 	if (animatable->handle() == Aimbot::getTargetHandle())
 		resolverData.misses = Aimbot::getMisses();
 
+	fixVelocity(animatable, resolverData.previousOrigin);
+	if (animatable->simulationTime() != animatable->oldSimulationTime())
+		resolverData.previousOrigin = animatable->origin();
+
 	state->feetYaw = resolverData.previousFeetYaw;
 	animatable->updateClientSideAnimation();
 	resolverData.previousFeetYaw = state->feetYaw;
@@ -137,17 +153,17 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 
 	state->feetYaw = animatable->eyeAngles().y - 60.0f;
 	animatable->updateClientSideAnimation();
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, animatable->simulationTime());
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
 	layerMovePlaybackRates[0] = layers[AnimLayer_MovementMove].playbackRate;
 
 	state->feetYaw = animatable->eyeAngles().y;
 	animatable->updateClientSideAnimation();
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, animatable->simulationTime());
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
 	layerMovePlaybackRates[1] = layers[AnimLayer_MovementMove].playbackRate;
 	
 	state->feetYaw = animatable->eyeAngles().y + 60.0f;
 	animatable->updateClientSideAnimation();
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, animatable->simulationTime());
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
 	layerMovePlaybackRates[2] = layers[AnimLayer_MovementMove].playbackRate;
 
 	state->feetYaw = backupFeetYaw;
@@ -169,14 +185,24 @@ void Animations::resolveLBY(Entity *animatable) noexcept
 				side = 1;
 		} else
 			side = -1;
-	} else
+	} else if (animatable->velocity().length2D() < 0.1f || state->timeSinceStartedMoving < 0.22f)
+	{
+		const auto delta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw);
+		if (delta > 35.0f)
+			side = -1;
+		else if (delta < -35.0f)
+			side = 1;
+	}
+	else
 		side = resolverData.misses % 3 - 1;
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
-	state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + 60.0f * side);
-
+	state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f) * side);
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
+	state->feetCycle = layers[AnimLayer_MovementMove].cycle;
+	state->feetYawRate = layers[AnimLayer_MovementMove].weight;
+
 	animatable->updateClientSideAnimation();
-	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, animatable->simulationTime());
+	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 }

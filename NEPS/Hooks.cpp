@@ -188,6 +188,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::fastStop(cmd);
 	Misc::autoStrafe(cmd);
 	Misc::bunnyHop(cmd);
+	Misc::prepareRevolver(cmd);
 	Aimbot::predictPeek(cmd);
 	if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk]) Misc::slowwalk(cmd);
 
@@ -197,12 +198,10 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Backtrack::run(cmd);
 	Triggerbot::run(cmd);
 	Misc::edgeJump(cmd);
-	Misc::blockBot(cmd);
+	Misc::blockBot(cmd, currentViewAngles);
 	Misc::fastPlant(cmd);
 
 	AntiAim::run(cmd, currentViewAngles, sendPacket);
-
-	Misc::prepareRevolver(cmd); // Bruh, I know...
 
 	auto viewAnglesDelta = cmd->viewangles - previousViewAngles;
 	viewAnglesDelta.normalize();
@@ -298,8 +297,6 @@ static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool 
 
 static void __stdcall frameStageNotify(FrameStage stage) noexcept
 {
-	[[maybe_unused]] static bool backtrackInit = (Backtrack::init(), false);
-
 	if (interfaces->engine->isConnected() && !interfaces->engine->isInGame())
 		Misc::changeName(true, nullptr, 0.0f);
 

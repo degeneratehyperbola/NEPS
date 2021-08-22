@@ -75,6 +75,7 @@ In order to compile NEPS you will need:
 # Acknowledgments
 - [Daniel Krupiński](https://github.com/danielkrupinski) for [Osiris](https://github.com/danielkrupinski/Osiris) - an amazing fundament for a CS:GO cheat
 - [omar (ocornut)](https://github.com/ocornut) and [contributors](https://github.com/ocornut/imgui/graphs/contributors) for THE solution when it comes to in-game overlays - [ImGui](https://github.com/ocornut/imgui)
+- [Zer0Mem0ry](https://github.com/Zer0Mem0ry) for a simple [manual map injector](https://github.com/Zer0Mem0ry/ManualMap)
 
 # License
 ### See:
