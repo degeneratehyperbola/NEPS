@@ -73,19 +73,18 @@ void Backtrack::run(UserCmd *cmd) noexcept
 	if (!localPlayer)
 		return;
 
-	auto localPlayerEyePosition = localPlayer->getEyePosition();
-	const auto aimPunch = localPlayer->getAimPunch();
-
 	Entity *bestTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle());
 	const Record *bestRecord = nullptr;
-	auto bestFov = 255.0f;
-	Vector bestTargetHeadOrigin = Vector{};
 
 	if (bestTarget)
-	{
 		bestRecord = Aimbot::getTargetRecord();
-	} else
+	else
 	{
+		auto localPlayerEyePosition = localPlayer->getEyePosition();
+		const auto aimPunch = localPlayer->getAimPunch();
+
+		auto bestFov = 255.0f;
+		Vector bestTargetHeadOrigin;
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 		{
 			auto entity = interfaces->entityList->getEntity(i);
