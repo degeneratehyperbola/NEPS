@@ -136,6 +136,15 @@ void Backtrack::run(UserCmd *cmd) noexcept
 
 		memory->setAbsOrigin(bestTarget, bestRecord->origin);
 		cmd->tickCount = Helpers::timeToTicks(fractionedTime + getLerp());
+	} else if (bestTarget)
+	{
+		const float remainder = std::fmodf(getLerp(), memory->globalVars->intervalPerTick);
+		float fractionedTime = bestTarget->simulationTime();
+		if (remainder > 0.0f)
+			fractionedTime += memory->globalVars->intervalPerTick - remainder;
+
+		memory->setAbsOrigin(bestTarget, bestTarget->origin());
+		cmd->tickCount = Helpers::timeToTicks(fractionedTime + getLerp());
 	}
 }
 
