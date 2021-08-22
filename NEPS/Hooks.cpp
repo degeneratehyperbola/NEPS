@@ -296,8 +296,6 @@ static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool 
 
 static void __stdcall frameStageNotify(FrameStage stage) noexcept
 {
-	[[maybe_unused]] static bool backtrackInit = (Backtrack::init(), false);
-
 	if (interfaces->engine->isConnected() && !interfaces->engine->isInGame())
 		Misc::changeName(true, nullptr, 0.0f);
 

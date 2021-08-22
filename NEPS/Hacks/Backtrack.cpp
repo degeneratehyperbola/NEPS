@@ -16,18 +16,6 @@
 
 static std::array<std::deque<Record>, 65> records;
 
-struct Cvars {
-    ConVar* updateRateVar;
-    ConVar* maxUpdateRateVar;
-    ConVar* interpVar;
-    ConVar* interpRatioVar;
-    ConVar* minInterpRatioVar;
-    ConVar* maxInterpRatioVar;
-    ConVar* maxUnlagVar;
-};
-
-static Cvars cvars;
-
 void Backtrack::update(FrameStage stage) noexcept
 {
 	if (stage == FrameStage::RENDER_START)
@@ -159,8 +147,15 @@ const std::deque<Record> &Backtrack::getRecords(std::size_t index) noexcept
 
 float Backtrack::getLerp() noexcept
 {
-	auto ratio = std::clamp(cvars.interpRatioVar->getFloat(), cvars.minInterpRatioVar->getFloat(), cvars.maxInterpRatioVar->getFloat());
-	return (std::max)(cvars.interpVar->getFloat(), (ratio / ((cvars.maxUpdateRateVar) ? cvars.maxUpdateRateVar->getFloat() : cvars.updateRateVar->getFloat())));
+	static auto updateRateVar = interfaces->cvar->findVar("cl_updaterate");
+	static auto maxUpdateRateVar = interfaces->cvar->findVar("sv_maxupdaterate");
+	static auto interpVar = interfaces->cvar->findVar("cl_interp");
+	static auto interpRatioVar = interfaces->cvar->findVar("cl_interp_ratio");
+	static auto minInterpRatioVar = interfaces->cvar->findVar("sv_client_min_interp_ratio");
+	static auto maxInterpRatioVar = interfaces->cvar->findVar("sv_client_max_interp_ratio");
+
+	auto ratio = std::clamp(interpRatioVar->getFloat(), minInterpRatioVar->getFloat(), maxInterpRatioVar->getFloat());
+	return std::max(interpVar->getFloat(), (ratio / (maxUpdateRateVar ? maxUpdateRateVar->getFloat() : updateRateVar->getFloat())));
 }
 
 bool Backtrack::valid(float simTime) noexcept
@@ -169,17 +164,8 @@ bool Backtrack::valid(float simTime) noexcept
 	if (!networkChannel)
 		return false;
 
-	auto delta = std::clamp(networkChannel->getLatency(0) + networkChannel->getLatency(1) + getLerp(), 0.0f, cvars.maxUnlagVar->getFloat()) - (memory->globalVars->serverTime() - simTime);
-	return std::abs(delta) <= 0.2f;
-}
+	static auto maxUnlagVar = interfaces->cvar->findVar("sv_maxunlag");
 
-void Backtrack::init() noexcept
-{
-	cvars.updateRateVar = interfaces->cvar->findVar("cl_updaterate");
-	cvars.maxUpdateRateVar = interfaces->cvar->findVar("sv_maxupdaterate");
-	cvars.interpVar = interfaces->cvar->findVar("cl_interp");
-	cvars.interpRatioVar = interfaces->cvar->findVar("cl_interp_ratio");
-	cvars.minInterpRatioVar = interfaces->cvar->findVar("sv_client_min_interp_ratio");
-	cvars.maxInterpRatioVar = interfaces->cvar->findVar("sv_client_max_interp_ratio");
-	cvars.maxUnlagVar = interfaces->cvar->findVar("sv_maxunlag");
+	auto delta = std::clamp(networkChannel->getLatency(0) + networkChannel->getLatency(1) + getLerp(), 0.0f, maxUnlagVar->getFloat()) - (memory->globalVars->serverTime() - simTime);
+	return std::abs(delta) <= 0.2f;
 }
