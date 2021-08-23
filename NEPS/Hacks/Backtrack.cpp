@@ -41,7 +41,7 @@ void Backtrack::update(FrameStage stage) noexcept
 
 			Record record;
 			record.ownerIdx = entity->index();
-			record.origin = entity->origin();
+			record.origin = entity->getAbsOrigin();
 			record.simulationTime = entity->simulationTime();
 
 			record.hasHelmet = entity->hasHelmet();
@@ -143,7 +143,6 @@ void Backtrack::run(UserCmd *cmd) noexcept
 		if (remainder > 0.0f)
 			fractionedTime += memory->globalVars->intervalPerTick - remainder;
 
-		memory->setAbsOrigin(bestTarget, bestTarget->origin());
 		cmd->tickCount = Helpers::timeToTicks(fractionedTime + getLerp());
 	}
 }

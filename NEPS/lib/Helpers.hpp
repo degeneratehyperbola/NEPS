@@ -46,7 +46,6 @@ namespace Helpers
 
 	Vector calculateRelativeAngle(const Vector &source, const Vector &destination, const Vector &viewAngles) noexcept;
 
-
 	float handleBulletPenetration(SurfaceData *enterSurfaceData, const Trace &enterTrace, const Vector &direction, Vector &result, float penetration, float damage) noexcept;
 
 	int findDamage(const Vector &destination, const Vector &source, Entity *attacker, Entity *filter, Trace &trace, bool allowFriendlyFire = false, const Record *ghost = nullptr, int ghostHitbox = -1) noexcept;
