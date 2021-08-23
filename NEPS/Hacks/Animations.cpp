@@ -2,6 +2,7 @@
 
 #include "Aimbot.h"
 #include "Animations.h"
+#include "Backtrack.h"
 #include "Memory.h"
 
 #include "../SDK/Entity.h"
@@ -102,6 +103,27 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
+static __forceinline void fixVelocity(Entity *animatable, const Vector &previousOrigin) noexcept
+{
+	if (!previousOrigin.notNull())
+		return;
+
+	const auto timeDelta = std::fmaxf(memory->globalVars->intervalPerTick, animatable->simulationTime() - animatable->oldSimulationTime());
+	const auto originDelta = animatable->getAbsOrigin() - previousOrigin;
+
+	animatable->velocity() = originDelta * (1.0f / timeDelta);
+}
+
+static __forceinline void fixOrigin(Entity *animatable, const Vector &previousOrigin) noexcept
+{
+	const float remainder = std::fmodf(Backtrack::getLerp(), memory->globalVars->intervalPerTick);
+	float fraction = (memory->globalVars->intervalPerTick - remainder) / memory->globalVars->intervalPerTick;
+
+	const auto newOrigin = previousOrigin + (animatable->getAbsOrigin() - previousOrigin) * fraction;
+
+	memory->setAbsOrigin(animatable, newOrigin);
+}
+
 struct ResolverData
 {
 	std::array<AnimLayer, AnimLayer_Count> previousLayers;
@@ -112,17 +134,6 @@ struct ResolverData
 };
 
 static std::array<ResolverData, 65> playerResolverData;
-
-static __forceinline void fixVelocity(Entity *animatable, const Vector &previousOrigin) noexcept
-{
-	if (!previousOrigin.notNull())
-		return;
-
-	const auto timeDelta = std::fmaxf(memory->globalVars->intervalPerTick, animatable->simulationTime() - animatable->oldSimulationTime());
-	const auto originDelta = animatable->origin() - previousOrigin;
-
-	animatable->velocity() = originDelta * (1.0f / timeDelta);
-}
 
 void Animations::resolve(Entity *animatable) noexcept
 {
@@ -140,9 +151,11 @@ void Animations::resolve(Entity *animatable) noexcept
 	if (animatable->handle() == Aimbot::getTargetHandle())
 		resolverData.misses = Aimbot::getMisses();
 
-	fixVelocity(animatable, resolverData.previousOrigin);
-	if (animatable->simulationTime() != animatable->oldSimulationTime())
-		resolverData.previousOrigin = animatable->origin();
+	fixVelocity(animatable, resolverData.previousOrigin.notNull() ? resolverData.previousOrigin : animatable->getAbsOrigin());
+	fixOrigin(animatable, resolverData.previousOrigin.notNull() ? resolverData.previousOrigin : animatable->getAbsOrigin());
+
+	if (!std::abs(Helpers::timeToTicks(animatable->simulationTime() - animatable->oldSimulationTime())))
+		resolverData.previousOrigin = animatable->getAbsOrigin();
 
 	state->feetYaw = resolverData.previousFeetYaw;
 	animatable->updateClientSideAnimation();
