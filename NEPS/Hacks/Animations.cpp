@@ -148,10 +148,11 @@ void Animations::resolve(Entity *animatable) noexcept
 	animatable->updateClientSideAnimation();
 	resolverData.previousFeetYaw = state->feetYaw;
 
+	const auto desyncLby = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
 	const auto backupFeetYaw = state->feetYaw;
 	std::array<float, 3U> layerMovePlaybackRates;
 
-	state->feetYaw = animatable->eyeAngles().y - 60.0f;
+	state->feetYaw = animatable->eyeAngles().y - desyncLby;
 	animatable->updateClientSideAnimation();
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
 	layerMovePlaybackRates[0] = layers[AnimLayer_MovementMove].playbackRate;
@@ -161,7 +162,7 @@ void Animations::resolve(Entity *animatable) noexcept
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
 	layerMovePlaybackRates[1] = layers[AnimLayer_MovementMove].playbackRate;
 	
-	state->feetYaw = animatable->eyeAngles().y + 60.0f;
+	state->feetYaw = animatable->eyeAngles().y + desyncLby;
 	animatable->updateClientSideAnimation();
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
 	layerMovePlaybackRates[2] = layers[AnimLayer_MovementMove].playbackRate;
@@ -198,7 +199,7 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
-	state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f) * side);
+	state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + desyncLby * side);
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->feetCycle = layers[AnimLayer_MovementMove].cycle;
 	state->feetYawRate = layers[AnimLayer_MovementMove].weight;
