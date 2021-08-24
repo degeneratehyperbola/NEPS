@@ -103,7 +103,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
-static __forceinline void fixVelocity(Entity *animatable, const Vector &previousOrigin) noexcept
+static __forceinline void correctVelocity(Entity *animatable, const Vector &previousOrigin) noexcept
 {
 	if (!previousOrigin.notNull())
 		return;
@@ -114,7 +114,7 @@ static __forceinline void fixVelocity(Entity *animatable, const Vector &previous
 	animatable->velocity() = originDelta * (1.0f / timeDelta);
 }
 
-static __forceinline void fixOrigin(Entity *animatable, const Vector &previousOrigin) noexcept
+static __forceinline void correctOrigin(Entity *animatable, const Vector &previousOrigin) noexcept
 {
 	const float remainder = std::fmodf(Backtrack::getLerp(), memory->globalVars->intervalPerTick);
 	float fraction = (memory->globalVars->intervalPerTick - remainder) / memory->globalVars->intervalPerTick;
@@ -151,12 +151,14 @@ void Animations::resolve(Entity *animatable) noexcept
 	if (animatable->handle() == Aimbot::getTargetHandle())
 		resolverData.misses = Aimbot::getMisses();
 
-	fixVelocity(animatable, resolverData.previousOrigin.notNull() ? resolverData.previousOrigin : animatable->getAbsOrigin());
-	fixOrigin(animatable, resolverData.previousOrigin.notNull() ? resolverData.previousOrigin : animatable->getAbsOrigin());
 
 	if (!std::abs(Helpers::timeToTicks(animatable->simulationTime() - animatable->oldSimulationTime())))
 		resolverData.previousOrigin = animatable->getAbsOrigin();
+	if (config->misc.resolveOrigin)
+		correctOrigin(animatable, resolverData.previousOriginBeforeChange.notNull() ? resolverData.previousOriginBeforeChange : animatable->getAbsOrigin());
 
+	if (config->misc.resolveVelocity)
+		correctVelocity(animatable, resolverData.previousOriginBeforeChange.notNull() ? resolverData.previousOriginBeforeChange : animatable->getAbsOrigin());
 	state->feetYaw = resolverData.previousFeetYaw;
 	animatable->updateClientSideAnimation();
 	resolverData.previousFeetYaw = state->feetYaw;

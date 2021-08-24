@@ -2452,7 +2452,18 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fix local animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
 	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
-	//ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
+	ImGui::SameLine();
+
+	if (ImGui::ArrowButton("resolver", ImGuiDir_Right))
+		ImGui::OpenPopup("##resolver");
+
+	if (ImGui::BeginPopup("##resolver"))
+	{
+		ImGui::Checkbox("Re-interpolate origin", &config->misc.resolveOrigin);
+		ImGui::Checkbox("Correct velocity", &config->misc.resolveVelocity);
+		ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
+		ImGui::EndPopup();
+	}
 
 	ImGui::NextColumn();
 
