@@ -1164,7 +1164,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 	if (!local.exists || !local.alive)
 		return;
 
-	if (!config->misc.indicators)
+	if (!config->misc.indicators.enabled)
 		return;
 
 	ImGui::SetNextWindowPos({0, 50}, ImGuiCond_FirstUseEver);
@@ -1193,7 +1193,7 @@ void Misc::indicators(ImDrawList *drawList) noexcept
 
 void Misc::drawBombTimer() noexcept
 {
-	if (!config->misc.bombTimer)
+	if (!config->misc.bombTimer.enabled)
 		return;
 
 	if (!interfaces->engine->isConnected())
@@ -1424,157 +1424,156 @@ void Misc::teamDamageList(GameEvent *event)
 	}
 }
 
-#ifdef LEGACY_WATERMARK
-void Misc::spectatorList() noexcept
-{
-	if (!config->misc.spectatorList.enabled)
-		return;
+//void Misc::spectatorList() noexcept
+//{
+//	if (!config->misc.spectatorList.enabled)
+//		return;
+//
+//	if (!localPlayer || !localPlayer->isAlive())
+//		return;
+//
+//	interfaces->surface->setTextFont(Surface::font);
+//
+//	const auto [width, height] = interfaces->surface->getScreenSize();
+//
+//	auto textPositionY = static_cast<int>(0.5f * height);
+//
+//	for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i)
+//	{
+//		const auto entity = interfaces->entityList->getEntity(i);
+//		if (!entity || entity->isDormant() || entity->isAlive() || entity->getObserverTarget() != localPlayer.get())
+//			continue;
+//
+//		PlayerInfo playerInfo;
+//
+//		if (!interfaces->engine->getPlayerInfo(i, playerInfo))
+//			continue;
+//
+//		if (wchar_t name[128]; MultiByteToWideChar(CP_UTF8, 0, playerInfo.name, -1, name, 128))
+//		{
+//			const auto [textWidth, textHeight] = interfaces->surface->getTextSize(Surface::font, name);
+//
+//			interfaces->surface->setTextColor(0, 0, 0, 100);
+//
+//			interfaces->surface->setTextPosition(width - textWidth - 5, textPositionY + 2);
+//			interfaces->surface->printText(name);
+//			interfaces->surface->setTextPosition(width - textWidth - 6, textPositionY + 1);
+//			interfaces->surface->printText(name);
+//
+//			if (config->misc.spectatorList.rainbow)
+//				interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed));
+//			else
+//				interfaces->surface->setTextColor(config->misc.spectatorList.color);
+//
+//			interfaces->surface->setTextPosition(width - textWidth - 7, textPositionY);
+//			interfaces->surface->printText(name);
+//
+//			textPositionY += textHeight;
+//		}
+//	}
+//
+//	const auto title = L"Spectators";
+//
+//	const auto [titleWidth, titleHeight] = interfaces->surface->getTextSize(Surface::font, title);
+//	textPositionY = static_cast<int>(0.5f * height);
+//
+//	interfaces->surface->setDrawColor(0, 0, 0, 127);
+//
+//	interfaces->surface->drawFilledRect(width - titleWidth - 15, textPositionY - titleHeight - 12, width, textPositionY);
+//
+//	if (config->misc.spectatorList.rainbow)
+//		interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed), 255);
+//	else
+//		interfaces->surface->setDrawColor(static_cast<int>(config->misc.spectatorList.color[0] * 255), static_cast<int>(config->misc.spectatorList.color[1] * 255), static_cast<int>(config->misc.spectatorList.color[2] * 255), 255);
+//
+//	interfaces->surface->drawOutlinedRect(width - titleWidth - 15, textPositionY - titleHeight - 12, width, textPositionY);
+//
+//	interfaces->surface->setTextColor(0, 0, 0, 100);
+//
+//	interfaces->surface->setTextPosition(width - titleWidth - 5, textPositionY - titleHeight - 5);
+//	interfaces->surface->printText(title);
+//
+//	interfaces->surface->setTextPosition(width - titleWidth - 6, textPositionY - titleHeight - 6);
+//	interfaces->surface->printText(title);
+//
+//	if (config->misc.spectatorList.rainbow)
+//		interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed));
+//	else
+//		interfaces->surface->setTextColor(config->misc.spectatorList.color);
+//
+//	interfaces->surface->setTextPosition(width - titleWidth - 7, textPositionY - titleHeight - 7);
+//	interfaces->surface->printText(title);
+//}
+//
+//void Misc::watermark() noexcept
+//{
+//	if (config->misc.watermark.enabled)
+//	{
+//		interfaces->surface->setTextFont(Surface::font);
+//
+//		const auto watermark = L"Welcome to NEPS.PP";
+//
+//		static auto frameRate = 1.0f;
+//		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
+//		const auto [screenWidth, screenHeight] = interfaces->surface->getScreenSize();
+//		std::wstring fps{std::to_wstring(static_cast<int>(1 / frameRate)) + L" fps"};
+//		const auto [fpsWidth, fpsHeight] = interfaces->surface->getTextSize(Surface::font, fps.c_str());
+//
+//		float latency = 0.0f;
+//		if (auto networkChannel = interfaces->engine->getNetworkChannel(); networkChannel && networkChannel->getLatency(0) > 0.0f)
+//			latency = networkChannel->getLatency(0);
+//
+//		std::wstring ping{L"Ping: " + std::to_wstring(static_cast<int>(latency * 1000)) + L" ms"};
+//		const auto [pingWidth, pingHeight] = interfaces->surface->getTextSize(Surface::font, ping.c_str());
+//
+//		const auto [waterWidth, waterHeight] = interfaces->surface->getTextSize(Surface::font, watermark);
+//
+//		interfaces->surface->setTextColor(0, 0, 0, 100);
+//		interfaces->surface->setDrawColor(0, 0, 0, 127);
+//
+//		interfaces->surface->drawFilledRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
+//
+//		interfaces->surface->setTextPosition(screenWidth - pingWidth - 5, fpsHeight + 6);
+//		interfaces->surface->printText(ping.c_str());
+//		interfaces->surface->setTextPosition(screenWidth - pingWidth - 6, fpsHeight + 7);
+//		interfaces->surface->printText(ping.c_str());
+//
+//		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 5, 6);
+//		interfaces->surface->printText(fps.c_str());
+//		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 6, 7);
+//		interfaces->surface->printText(fps.c_str());
+//
+//		interfaces->surface->drawFilledRect(0, 0, waterWidth + 14, waterHeight + 11);
+//
+//		interfaces->surface->setTextPosition(5, 6);
+//		interfaces->surface->printText(watermark);
+//		interfaces->surface->setTextPosition(6, 7);
+//		interfaces->surface->printText(watermark);
+//
+//		if (config->misc.watermark.rainbow)
+//			interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.watermark.rainbowSpeed));
+//		else
+//			interfaces->surface->setTextColor(config->misc.watermark.color);
+//
+//		interfaces->surface->setTextPosition(screenWidth - pingWidth - 7, fpsHeight + 5);
+//		interfaces->surface->printText(ping.c_str());
+//
+//		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 7, 5);
+//		interfaces->surface->printText(fps.c_str());
+//
+//		interfaces->surface->setTextPosition(7, 5);
+//		interfaces->surface->printText(watermark);
+//
+//		if (config->misc.watermark.rainbow)
+//			interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.watermark.rainbowSpeed));
+//		else
+//			interfaces->surface->setDrawColor(static_cast<int>(config->misc.watermark.color[0] * 255), static_cast<int>(config->misc.watermark.color[1] * 255), static_cast<int>(config->misc.watermark.color[2] * 255), 255);
+//
+//		interfaces->surface->drawOutlinedRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
+//		interfaces->surface->drawOutlinedRect(0, 0, waterWidth + 14, waterHeight + 11);
+//	}
+//}
 
-	if (!localPlayer || !localPlayer->isAlive())
-		return;
-
-	interfaces->surface->setTextFont(Surface::font);
-
-	const auto [width, height] = interfaces->surface->getScreenSize();
-
-	auto textPositionY = static_cast<int>(0.5f * height);
-
-	for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i)
-	{
-		const auto entity = interfaces->entityList->getEntity(i);
-		if (!entity || entity->isDormant() || entity->isAlive() || entity->getObserverTarget() != localPlayer.get())
-			continue;
-
-		PlayerInfo playerInfo;
-
-		if (!interfaces->engine->getPlayerInfo(i, playerInfo))
-			continue;
-
-		if (wchar_t name[128]; MultiByteToWideChar(CP_UTF8, 0, playerInfo.name, -1, name, 128))
-		{
-			const auto [textWidth, textHeight] = interfaces->surface->getTextSize(Surface::font, name);
-
-			interfaces->surface->setTextColor(0, 0, 0, 100);
-
-			interfaces->surface->setTextPosition(width - textWidth - 5, textPositionY + 2);
-			interfaces->surface->printText(name);
-			interfaces->surface->setTextPosition(width - textWidth - 6, textPositionY + 1);
-			interfaces->surface->printText(name);
-
-			if (config->misc.spectatorList.rainbow)
-				interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed));
-			else
-				interfaces->surface->setTextColor(config->misc.spectatorList.color);
-
-			interfaces->surface->setTextPosition(width - textWidth - 7, textPositionY);
-			interfaces->surface->printText(name);
-
-			textPositionY += textHeight;
-		}
-	}
-
-	const auto title = L"Spectators";
-
-	const auto [titleWidth, titleHeight] = interfaces->surface->getTextSize(Surface::font, title);
-	textPositionY = static_cast<int>(0.5f * height);
-
-	interfaces->surface->setDrawColor(0, 0, 0, 127);
-
-	interfaces->surface->drawFilledRect(width - titleWidth - 15, textPositionY - titleHeight - 12, width, textPositionY);
-
-	if (config->misc.spectatorList.rainbow)
-		interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed), 255);
-	else
-		interfaces->surface->setDrawColor(static_cast<int>(config->misc.spectatorList.color[0] * 255), static_cast<int>(config->misc.spectatorList.color[1] * 255), static_cast<int>(config->misc.spectatorList.color[2] * 255), 255);
-
-	interfaces->surface->drawOutlinedRect(width - titleWidth - 15, textPositionY - titleHeight - 12, width, textPositionY);
-
-	interfaces->surface->setTextColor(0, 0, 0, 100);
-
-	interfaces->surface->setTextPosition(width - titleWidth - 5, textPositionY - titleHeight - 5);
-	interfaces->surface->printText(title);
-
-	interfaces->surface->setTextPosition(width - titleWidth - 6, textPositionY - titleHeight - 6);
-	interfaces->surface->printText(title);
-
-	if (config->misc.spectatorList.rainbow)
-		interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.spectatorList.rainbowSpeed));
-	else
-		interfaces->surface->setTextColor(config->misc.spectatorList.color);
-
-	interfaces->surface->setTextPosition(width - titleWidth - 7, textPositionY - titleHeight - 7);
-	interfaces->surface->printText(title);
-}
-
-void Misc::watermark() noexcept
-{
-	if (config->misc.watermark.enabled)
-	{
-		interfaces->surface->setTextFont(Surface::font);
-
-		const auto watermark = L"Welcome to NEPS.PP";
-
-		static auto frameRate = 1.0f;
-		frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
-		const auto [screenWidth, screenHeight] = interfaces->surface->getScreenSize();
-		std::wstring fps{std::to_wstring(static_cast<int>(1 / frameRate)) + L" fps"};
-		const auto [fpsWidth, fpsHeight] = interfaces->surface->getTextSize(Surface::font, fps.c_str());
-
-		float latency = 0.0f;
-		if (auto networkChannel = interfaces->engine->getNetworkChannel(); networkChannel && networkChannel->getLatency(0) > 0.0f)
-			latency = networkChannel->getLatency(0);
-
-		std::wstring ping{L"Ping: " + std::to_wstring(static_cast<int>(latency * 1000)) + L" ms"};
-		const auto [pingWidth, pingHeight] = interfaces->surface->getTextSize(Surface::font, ping.c_str());
-
-		const auto [waterWidth, waterHeight] = interfaces->surface->getTextSize(Surface::font, watermark);
-
-		interfaces->surface->setTextColor(0, 0, 0, 100);
-		interfaces->surface->setDrawColor(0, 0, 0, 127);
-
-		interfaces->surface->drawFilledRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
-
-		interfaces->surface->setTextPosition(screenWidth - pingWidth - 5, fpsHeight + 6);
-		interfaces->surface->printText(ping.c_str());
-		interfaces->surface->setTextPosition(screenWidth - pingWidth - 6, fpsHeight + 7);
-		interfaces->surface->printText(ping.c_str());
-
-		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 5, 6);
-		interfaces->surface->printText(fps.c_str());
-		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 6, 7);
-		interfaces->surface->printText(fps.c_str());
-
-		interfaces->surface->drawFilledRect(0, 0, waterWidth + 14, waterHeight + 11);
-
-		interfaces->surface->setTextPosition(5, 6);
-		interfaces->surface->printText(watermark);
-		interfaces->surface->setTextPosition(6, 7);
-		interfaces->surface->printText(watermark);
-
-		if (config->misc.watermark.rainbow)
-			interfaces->surface->setTextColor(Helpers::rainbowColor(config->misc.watermark.rainbowSpeed));
-		else
-			interfaces->surface->setTextColor(config->misc.watermark.color);
-
-		interfaces->surface->setTextPosition(screenWidth - pingWidth - 7, fpsHeight + 5);
-		interfaces->surface->printText(ping.c_str());
-
-		interfaces->surface->setTextPosition(screenWidth - fpsWidth - 7, 5);
-		interfaces->surface->printText(fps.c_str());
-
-		interfaces->surface->setTextPosition(7, 5);
-		interfaces->surface->printText(watermark);
-
-		if (config->misc.watermark.rainbow)
-			interfaces->surface->setDrawColor(Helpers::rainbowColor(config->misc.watermark.rainbowSpeed));
-		else
-			interfaces->surface->setDrawColor(static_cast<int>(config->misc.watermark.color[0] * 255), static_cast<int>(config->misc.watermark.color[1] * 255), static_cast<int>(config->misc.watermark.color[2] * 255), 255);
-
-		interfaces->surface->drawOutlinedRect(screenWidth - std::max(pingWidth, fpsWidth) - 14, 0, screenWidth, fpsHeight + pingHeight + 12);
-		interfaces->surface->drawOutlinedRect(0, 0, waterWidth + 14, waterHeight + 11);
-	}
-}
-#else // LEGACY_WATERMARK
 void Misc::spectatorList() noexcept
 {
 	if (!config->misc.spectatorList.enabled)
@@ -1616,7 +1615,7 @@ void Misc::watermark() noexcept
 	ImGui::SetNextWindowBgAlpha(0.4f);
 	ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
 
-	int &pos = config->misc.watermarkPos;
+	int &pos = config->misc.watermark.position;
 
 	switch (pos)
 	{
@@ -1693,7 +1692,6 @@ void Misc::watermark() noexcept
 	ImGui::End();
 
 }
-#endif // !LEGACY_WATERMARK
 
 void Misc::voteRevealer(GameEvent &event) noexcept
 {

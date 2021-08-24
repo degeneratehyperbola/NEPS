@@ -391,13 +391,6 @@ public:
 			bool onlyHeadshots = false;
 		} preserveKillfeed;
 
-		Color3Toggle spectatorList;
-		Color3Toggle watermark;
-		int watermarkPos = 1;
-		KeyBind prepareRevolver;
-		int quickHealthshotKey = 0;
-		float maxAngleDelta = 255.0f;
-
 		struct PurchaseList
 		{
 			bool enabled = false;
@@ -413,6 +406,31 @@ public:
 			int mode = Details;
 		} purchaseList;
 
+		struct BombTimer
+		{
+			bool enabled = false;
+		} bombTimer;
+
+		struct Indicators
+		{
+			bool enabled = false;
+		} indicators;
+
+		struct SpectatorList
+		{
+			bool enabled = false;
+		} spectatorList;
+
+		struct Watermark
+		{
+			bool enabled = false;
+			int position = 1;
+		} watermark;
+
+		KeyBind prepareRevolver;
+		int quickHealthshotKey = 0;
+		float maxAngleDelta = 255.0f;
+
 		bool revealRanks = false;
 		bool revealMoney = false;
 		bool revealSuspect = false;
@@ -420,9 +438,7 @@ public:
 		bool quickReload = false;
 		bool fastPlant = false;
 		bool fixTabletSignal = false;
-		bool bombTimer = false;
 		bool nadePredict = false;
-		bool indicators = false;
 		int forceRelayCluster = 0;
 	} misc;
 

@@ -2493,15 +2493,10 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
-	ImGui::Checkbox("Bomb timer", &config->misc.bombTimer);
-	ImGui::Checkbox("Indicators", &config->misc.indicators);
-	#ifdef LEGACY_WATERMARK
-	ImGuiCustom::colorPicker("Spectator list", config->misc.spectatorList);
-	ImGuiCustom::colorPicker("Watermark", config->misc.watermark);
-	#else
+	ImGui::Checkbox("Bomb timer", &config->misc.bombTimer.enabled);
+	ImGui::Checkbox("Indicators", &config->misc.indicators.enabled);
 	ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
 	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);
-	#endif // LEGACY_WATERMARK
 
 	ImGui::Columns(1);
 

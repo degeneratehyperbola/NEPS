@@ -641,16 +641,31 @@ static void from_json(const json &j, Config::Misc::PurchaseList &pl)
 	read(j, "Mode", pl.mode);
 }
 
-static void from_json(const json &j, Config::Griefing::TeamDamageList &tdl)
-{
-	read(j, "Enabled", tdl.enabled);
-	read(j, "No Title Bar", tdl.noTitleBar);
-}
-
 static void from_json(const json &j, Config::Misc::PreserveKillfeed &o)
 {
 	read(j, "Enabled", o.enabled);
 	read(j, "Only Headshots", o.onlyHeadshots);
+}
+
+static void from_json(const json &j, Config::Misc::Watermark &w)
+{
+	read(j, "Enabled", w.enabled);
+	read(j, "Position", w.position);
+}
+
+static void from_json(const json &j, Config::Misc::BombTimer &bt)
+{
+	read(j, "Enabled", bt.enabled);
+}
+
+static void from_json(const json &j, Config::Misc::Indicators &i)
+{
+	read(j, "Enabled", i.enabled);
+}
+
+static void from_json(const json &j, Config::Misc::SpectatorList &sl)
+{
+	read(j, "Enabled", sl.enabled);
 }
 
 static void from_json(const json &j, Config::Misc &m)
@@ -659,9 +674,6 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Auto pistol", m.autoPistol);
 	read(j, "Auto reload", m.autoReload);
 	read(j, "Auto accept", m.autoAccept);
-	read<value_t::object>(j, "Spectator list", m.spectatorList);
-	read<value_t::object>(j, "Watermark", m.watermark);
-	read(j, "Watermark pos", m.watermarkPos);
 	read(j, "Fix animation LOD", m.fixAnimationLOD);
 	read(j, "Fix bone matrix", m.fixBoneMatrix);
 	read(j, "Fix movement", m.fixMovement);
@@ -672,8 +684,6 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Unlock invertory", m.unlockInvertory);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
 	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
-	read<value_t::object>(j, "Purchase list", m.purchaseList);
-	read<value_t::object>(j, "Preserve killfeed", m.preserveKillfeed);
 	read(j, "Quick healthshot key", m.quickHealthshotKey);
 	read(j, "Radar hack", m.radarHack);
 	read(j, "Reveal ranks", m.revealRanks);
@@ -682,11 +692,15 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fast plant", m.fastPlant);
 	read(j, "Quick reload", m.quickReload);
 	read(j, "Fix tablet signal", m.fixTabletSignal);
-	read(j, "Aimstep", m.maxAngleDelta);
-	read(j, "Bomb timer", m.bombTimer);
 	read(j, "Grenade predict", m.nadePredict);
-	read(j, "Indicators", m.indicators);
 	read(j, "Force relay cluster", m.forceRelayCluster);
+	read(j, "Aimstep", m.maxAngleDelta);
+	read<value_t::object>(j, "Preserve killfeed", m.preserveKillfeed);
+	read<value_t::object>(j, "Purchase list", m.purchaseList);
+	read<value_t::object>(j, "Spectator list", m.spectatorList);
+	read<value_t::object>(j, "Bomb timer", m.bombTimer);
+	read<value_t::object>(j, "Watermark", m.watermark);
+	read<value_t::object>(j, "Indicators", m.indicators);
 }
 
 static void from_json(const json &j, Config::Exploits &e)
@@ -718,6 +732,12 @@ static void from_json(const json &j, Config::Griefing &g)
 	read(j, "Vote reveal", g.revealVotes);
 	read(j, "Spam use", g.spamUse);
 	read<value_t::object>(j, "Team damage list", g.teamDamageList);
+}
+
+static void from_json(const json &j, Config::Griefing::TeamDamageList &tdl)
+{
+	read(j, "Enabled", tdl.enabled);
+	read(j, "No Title Bar", tdl.noTitleBar);
 }
 
 static void from_json(const json &j, Config::Griefing::Reportbot &r)
@@ -1099,31 +1119,41 @@ static void to_json(json &j, const Config::Misc::PurchaseList &o, const Config::
 	WRITE("Mode", mode);
 }
 
-static void to_json(json &j, const Config::Griefing::TeamDamageList &o, const  Config::Griefing::TeamDamageList &dummy = {})
-{
-	WRITE("Enabled", enabled);
-	WRITE("No Title Bar", noTitleBar);
-}
-
 static void to_json(json &j, const Config::Misc::PreserveKillfeed &o, const Config::Misc::PreserveKillfeed &dummy = {})
 {
 	WRITE("Enabled", enabled);
 	WRITE("Only Headshots", onlyHeadshots);
 }
 
+static void to_json(json &j, const Config::Misc::Watermark &o, const Config::Misc::Watermark &dummy = {})
+{
+	WRITE("Enabled", enabled);
+	WRITE("Position", position);
+}
+
+static void to_json(json &j, const Config::Misc::BombTimer &o, const Config::Misc::BombTimer &dummy = {})
+{
+	WRITE("Enabled", enabled);
+}
+
+static void to_json(json &j, const Config::Misc::Indicators &o, const Config::Misc::Indicators &dummy = {})
+{
+	WRITE("Enabled", enabled);
+}
+
+static void to_json(json &j, const Config::Misc::SpectatorList &o, const Config::Misc::SpectatorList &dummy = {})
+{
+	WRITE("Enabled", enabled);
+}
+
 static void to_json(json &j, const Config::Misc &o)
 {
 	const Config::Misc dummy = {};
 
-	WRITE("Bomb timer", bombTimer);
-	WRITE("Grenade predict", nadePredict);
 	WRITE("Menu key", menuKey);
 	WRITE("Auto pistol", autoPistol);
 	WRITE("Auto reload", autoReload);
 	WRITE("Auto accept", autoAccept);
-	WRITE("Spectator list", spectatorList);
-	WRITE("Watermark", watermark);
-	WRITE("Watermark pos", watermarkPos);
 	WRITE("Fix animation LOD", fixAnimationLOD);
 	WRITE("Fix bone matrix", fixBoneMatrix);
 	WRITE("Fix movement", fixMovement);
@@ -1135,8 +1165,6 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Disable HUD blur", disablePanoramablur);
 	WRITE("Prepare revolver", prepareRevolver);
 	WRITE("Quick healthshot key", quickHealthshotKey);
-	WRITE("Purchase list", purchaseList);
-	WRITE("Preserve killfeed", preserveKillfeed);
 	WRITE("Reveal ranks", revealRanks);
 	WRITE("Reveal money", revealMoney);
 	WRITE("Reveal suspect", revealSuspect);
@@ -1144,9 +1172,15 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fast plant", fastPlant);
 	WRITE("Quick reload", quickReload);
 	WRITE("Fix tablet signal", fixTabletSignal);
-	WRITE("Aimstep", maxAngleDelta);
-	WRITE("Indicators", indicators);
+	WRITE("Grenade predict", nadePredict);
 	WRITE("Force relay cluster", forceRelayCluster);
+	WRITE("Aimstep", maxAngleDelta);
+	WRITE("Preserve killfeed", preserveKillfeed);
+	WRITE("Purchase list", purchaseList);
+	WRITE("Spectator list", spectatorList);
+	WRITE("Bomb timer", bombTimer);
+	WRITE("Watermark", watermark);
+	WRITE("Indicators", indicators);
 }
 
 static void to_json(json &j, const Config::Exploits &o)
@@ -1161,6 +1195,12 @@ static void to_json(json &j, const Config::Exploits &o)
 	WRITE("Slowwalk", slowwalk);
 	WRITE("Doubletap", doubletap);
 	WRITE("Bypass sv_pure", bypassPure);
+}
+
+static void to_json(json &j, const Config::Griefing::TeamDamageList &o, const  Config::Griefing::TeamDamageList &dummy = {})
+{
+	WRITE("Enabled", enabled);
+	WRITE("No Title Bar", noTitleBar);
 }
 
 static void to_json(json &j, const Config::Griefing::Reportbot &o, const Config::Griefing::Reportbot &dummy = {})
