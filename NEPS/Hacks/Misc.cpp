@@ -1660,11 +1660,11 @@ void Misc::watermark() noexcept
 	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 	ImGui::Text("%.0ffps", 1.0f / frameRate);
 
-	if (interfaces->engine->isConnected())
-	{
-		GameData::Lock lock;
-		const auto session = GameData::session();
+	GameData::Lock lock;
+	const auto session = GameData::session();
 
+	if (session.connected)
+	{
 		ImGui::SameLine(55.0f);
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 		ImGui::SameLine();

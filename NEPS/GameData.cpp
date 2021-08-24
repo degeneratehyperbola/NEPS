@@ -715,9 +715,11 @@ void SessionData::update() noexcept
 	const auto networkChannel = interfaces->engine->getNetworkChannel();
 	if (networkChannel)
 	{
+		connected = true;
 		address = networkChannel->getAddress();
 		latency = static_cast<int>(networkChannel->getLatency(0) * 1000);
-	}
+	} else
+		connected = false;
 
 	tickrate = static_cast<int>(1 / memory->globalVars->intervalPerTick);
 	levelName = interfaces->engine->getLevelName();

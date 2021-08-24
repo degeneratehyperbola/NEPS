@@ -218,6 +218,7 @@ struct SessionData
 {
 	void update() noexcept;
 
+	bool connected;
 	std::string levelName;
 	std::string address;
 	int latency;
