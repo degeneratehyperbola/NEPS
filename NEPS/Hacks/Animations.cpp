@@ -164,7 +164,7 @@ void Animations::resolve(Entity *animatable) noexcept
 	animatable->updateClientSideAnimation();
 	resolverData.previousFeetYaw = state->feetYaw;
 
-	if (!Helpers::animDataAuthenticity(animatable))
+	if (!Helpers::animDataAuthenticity(animatable) && config->misc.resolveLby)
 	{
 		const auto maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
 		const auto backupFeetYaw = state->feetYaw;
