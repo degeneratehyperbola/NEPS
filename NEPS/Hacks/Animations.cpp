@@ -81,6 +81,8 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	if (!state)
 		return matrixUpdated;
 
+	localPlayer->clientAnimations() = true;
+
 	while (state->lastClientSideAnimationUpdateFramecount >= memory->globalVars->framecount)
 		state->lastClientSideAnimationUpdateFramecount -= 1;
 
@@ -163,6 +165,8 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	resolverData.previousOrigin = animatable->getAbsOrigin();
 
+	animatable->clientAnimations() = true;
+
 	while (state->lastClientSideAnimationUpdateFramecount >= memory->globalVars->framecount)
 		state->lastClientSideAnimationUpdateFramecount -= 1;
 
@@ -230,6 +234,8 @@ void Animations::resolve(Entity *animatable) noexcept
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
 	layers[AnimLayer_Lean].weight = FLT_EPSILON;
+
 	animatable->updateClientSideAnimation();
+	animatable->clientAnimations() = false;
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 }
