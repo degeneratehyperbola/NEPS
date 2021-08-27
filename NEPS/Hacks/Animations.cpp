@@ -81,6 +81,9 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	if (!state)
 		return matrixUpdated;
 
+	while (state->lastClientSideAnimationUpdateFramecount >= memory->globalVars->framecount)
+		state->lastClientSideAnimationUpdateFramecount -= 1;
+
 	static auto backupPoseParams = localPlayer->poseParams();
 	static auto backupAbsYaw = state->feetYaw;
 
@@ -159,6 +162,9 @@ void Animations::resolve(Entity *animatable) noexcept
 		correctVelocity(animatable, resolverData.previousOriginBeforeChange.notNull() ? resolverData.previousOriginBeforeChange : animatable->getAbsOrigin());
 
 	resolverData.previousOrigin = animatable->getAbsOrigin();
+
+	while (state->lastClientSideAnimationUpdateFramecount >= memory->globalVars->framecount)
+		state->lastClientSideAnimationUpdateFramecount -= 1;
 
 	state->feetYaw = resolverData.previousFeetYaw;
 	animatable->updateClientSideAnimation();
