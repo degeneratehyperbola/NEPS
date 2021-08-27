@@ -229,6 +229,7 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
+	layers[AnimLayer_Lean].weight = FLT_EPSILON;
 	animatable->updateClientSideAnimation();
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 }
