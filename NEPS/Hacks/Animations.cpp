@@ -214,7 +214,6 @@ void Animations::resolve(Entity *animatable) noexcept
 		{
 			const auto delta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw);
 			side = delta <= 0.0f ? 1 : -1;
-		} else if (!static_cast<int>(layers[AnimLayer_Lean].weight * 1000.0f) && static_cast<int>(layers[AnimLayer_MovementMove].weight * 1000.0f) == static_cast<int>(resolverData.previousLayers[AnimLayer_MovementMove].weight * 1000.0f))
 		} else if (notMove && layers[AnimLayer_MovementMove].weight > 0.9f && layers[AnimLayer_MovementMove].cycle > 0.9f)
 		{
 			const auto delta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
@@ -222,6 +221,7 @@ void Animations::resolve(Entity *animatable) noexcept
 				side = 1;
 			else if (delta < -35.0f)
 				side = -1;
+		} else if (!notMove && !static_cast<int>(layers[AnimLayer_Lean].weight * 1000.0f) && static_cast<int>(layers[AnimLayer_MovementMove].weight * 1000.0f) == static_cast<int>(resolverData.previousLayers[AnimLayer_MovementMove].weight * 1000.0f))
 		{
 			const auto negative = std::fabsf(layers[AnimLayer_MovementMove].playbackRate - layerMovePlaybackRates[0]);
 			const auto zero = std::fabsf(layers[AnimLayer_MovementMove].playbackRate - layerMovePlaybackRates[1]);
