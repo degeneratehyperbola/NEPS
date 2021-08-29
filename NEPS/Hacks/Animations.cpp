@@ -199,7 +199,16 @@ void Animations::resolve(Entity *animatable) noexcept
 
 		const bool notMove = animatable->velocity().length2D() < 0.1f || state->timeSinceStartedMoving < 0.22f;
 		signed char side = 0;
-		float desyncAmount = maxDesync / (resolverData.misses % 3 + 1);
+		float desyncAmount = maxDesync;
+		switch (resolverData.misses % 3)
+		{
+		case 1:
+			desyncAmount = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
+			break;
+		case 2:
+			desyncAmount = maxDesync / 2;
+			break;
+		}
 		if (notMove && !layers[AnimLayer_Adjust].weight && !layers[AnimLayer_Adjust].cycle && !layers[AnimLayer_MovementMove].weight)
 		{
 			const auto delta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw);
