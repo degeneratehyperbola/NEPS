@@ -233,10 +233,6 @@ void Animations::resolve(Entity *animatable) noexcept
 					side = 1;
 			} else
 				side = -1;
-		} else if (notMove)
-		{
-			desyncAmount = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw);
-			side = lbyUpdate ? 1 : -1;
 		}
 		else
 			side = resolverData.misses % 3 - 1;
