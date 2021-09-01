@@ -5,9 +5,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Headers\curl">
-      <UniqueIdentifier>{ce2f8a98-e71d-46ee-bbb2-9fb839c4a732}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -18,38 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="version.hpp">
+    <ClInclude Include="Version.hpp">
       <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\curl.h">
-      <Filter>Headers\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\curlver.h">
-      <Filter>Headers\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\easy.h">
-      <Filter>Headers\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\mprintf.h">
-      <Filter>Headers\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\multi.h">
-      <Filter>Headers\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\options.h">
-      <Filter>Headers\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\stdcheaders.h">
-      <Filter>Headers\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\system.h">
-      <Filter>Headers\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\typecheck-gcc.h">
-      <Filter>Headers\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="curl\urlapi.h">
-      <Filter>Headers\curl</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Headers</Filter>
@@ -61,7 +28,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="loadermain.cpp">
+    <ClCompile Include="LoaderMain.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
