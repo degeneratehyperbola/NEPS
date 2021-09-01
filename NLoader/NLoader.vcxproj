@@ -99,21 +99,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="loadermain.cpp" />
+    <ClCompile Include="LoaderMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="curl\curl.h" />
-    <ClInclude Include="curl\curlver.h" />
-    <ClInclude Include="curl\easy.h" />
-    <ClInclude Include="curl\mprintf.h" />
-    <ClInclude Include="curl\multi.h" />
-    <ClInclude Include="curl\options.h" />
-    <ClInclude Include="curl\stdcheaders.h" />
-    <ClInclude Include="curl\system.h" />
-    <ClInclude Include="curl\typecheck-gcc.h" />
-    <ClInclude Include="curl\urlapi.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="version.hpp" />
+    <ClInclude Include="Version.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NLoader.rc" />

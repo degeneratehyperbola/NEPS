@@ -33,14 +33,14 @@
     <Filter Include="lib\minhook">
       <UniqueIdentifier>{302469e3-80d8-4981-bcd5-90a007c3fdae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lib\minhook\hde">
+      <UniqueIdentifier>{1283b46a-494c-4350-a9af-58e4f52de758}</UniqueIdentifier>
+    </Filter>
     <Filter Include="lib\nlohmann">
       <UniqueIdentifier>{b2cedd5c-1abf-43b0-8e0b-07f66e4c2860}</UniqueIdentifier>
     </Filter>
     <Filter Include="lib\imgui">
       <UniqueIdentifier>{681ef785-dac7-476f-8fc9-ff69f3565cd5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lib\minhook\hde">
-      <UniqueIdentifier>{1283b46a-494c-4350-a9af-58e4f52de758}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
