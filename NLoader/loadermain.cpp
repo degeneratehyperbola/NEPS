@@ -167,7 +167,7 @@ DWORD __stdcall Stub()
 BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
 {
 	// Find CS:GO
-	DWORD ProcessID = FindPID(L"csgo.exe");
+	const DWORD ProcessID = FindPID(L"csgo.exe");
 
 	if (!ProcessID)
 	{
@@ -177,20 +177,20 @@ BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLin
 
 	LOADERDATA LoaderParams;
 
-	HMODULE hModule = GetModuleHandleA(NULL);
-	HRSRC hResource = FindResourceA(hModule, MAKEINTRESOURCEA(IDR_BIN1), "BIN");
-	HGLOBAL hResData = LoadResource(hModule, hResource);
-	PVOID Buffer = LockResource(hResData);
+	const HMODULE hModule = GetModuleHandleA(NULL);
+	const HRSRC hResource = FindResourceA(hModule, MAKEINTRESOURCEA(IDR_BIN1), "BIN");
+	const HGLOBAL hResData = LoadResource(hModule, hResource);
+	const PVOID Buffer = LockResource(hResData);
 
 	// Target DLL's DOS Header
-	PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)Buffer;
+	const PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)Buffer;
 	// Target DLL's NT Headers
-	PIMAGE_NT_HEADERS pNtHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)Buffer + pDosHeader->e_lfanew);
+	const PIMAGE_NT_HEADERS pNtHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)Buffer + pDosHeader->e_lfanew);
 
 	// Opening target process.
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ProcessID);
+	const HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ProcessID);
 	// Allocating memory for the DLL
-	PVOID ExecutableImage = VirtualAllocEx(hProcess, NULL, pNtHeaders->OptionalHeader.SizeOfImage,
+	const PVOID ExecutableImage = VirtualAllocEx(hProcess, NULL, pNtHeaders->OptionalHeader.SizeOfImage,
 		MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
 	// Copy the headers to target process
@@ -207,7 +207,7 @@ BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLin
 	}
 
 	// Allocate memory for the loader code.
-	PVOID LoaderMemory = VirtualAllocEx(hProcess, NULL, 4096, MEM_COMMIT | MEM_RESERVE,
+	const PVOID LoaderMemory = VirtualAllocEx(hProcess, NULL, 4096, MEM_COMMIT | MEM_RESERVE,
 		PAGE_EXECUTE_READWRITE);
 
 	LoaderParams.ImageBase = ExecutableImage;
@@ -228,7 +228,7 @@ BOOL APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLin
 	WriteProcessMemory(hProcess, (PVOID)((LOADERDATA *)LoaderMemory + 1), LibraryLoader,
 		(DWORD)Stub - (DWORD)LibraryLoader, NULL);
 	// Create a remote thread to execute the loader code
-	HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)((LOADERDATA *)LoaderMemory + 1),
+	const HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)((LOADERDATA *)LoaderMemory + 1),
 		LoaderMemory, 0, NULL);
 
 	// Wait for the loader to finish executing
