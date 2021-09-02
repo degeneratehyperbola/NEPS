@@ -108,6 +108,8 @@
     <ClCompile Include="..\shared_lib\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="..\shared_lib\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\shared_lib\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\shared_lib\stb\stb.cpp" />
+    <ClCompile Include="..\shared_lib\Texture\TextureDX9.cpp" />
     <ClCompile Include="LoaderMain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +122,8 @@
     <ClInclude Include="..\shared_lib\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\shared_lib\imgui\imstb_textedit.h" />
     <ClInclude Include="..\shared_lib\imgui\imstb_truetype.h" />
+    <ClInclude Include="..\shared_lib\stb\image.h" />
+    <ClInclude Include="..\shared_lib\Texture\TextureDX9.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Version.hpp" />
   </ItemGroup>

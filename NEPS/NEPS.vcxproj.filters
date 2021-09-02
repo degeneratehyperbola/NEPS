@@ -143,12 +143,6 @@
     <ClCompile Include="lib\minhook\hde\hde64.c">
       <Filter>lib\minhook\hde</Filter>
     </ClCompile>
-    <ClCompile Include="lib\Texture\TextureDX9.cpp">
-      <Filter>lib\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="lib\stb\stb.cpp">
-      <Filter>lib\stb</Filter>
-    </ClCompile>
     <ClCompile Include="..\shared_lib\imgui\imgui.cpp">
       <Filter>lib\imgui</Filter>
     </ClCompile>
@@ -172,6 +166,12 @@
     </ClCompile>
     <ClCompile Include="..\shared_lib\imgui\imgui_widgets.cpp">
       <Filter>lib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared_lib\Texture\TextureDX9.cpp">
+      <Filter>lib\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared_lib\stb\stb.cpp">
+      <Filter>lib\stb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -454,12 +454,6 @@
     <ClInclude Include="lib\nlohmann\json.hpp">
       <Filter>lib\nlohmann</Filter>
     </ClInclude>
-    <ClInclude Include="lib\Texture\TextureDX9.h">
-      <Filter>lib\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\stb\image.h">
-      <Filter>lib\stb</Filter>
-    </ClInclude>
     <ClInclude Include="res_defaultfont.h">
       <Filter>Headers</Filter>
     </ClInclude>
@@ -489,6 +483,12 @@
     </ClInclude>
     <ClInclude Include="..\shared_lib\imgui\imstb_truetype.h">
       <Filter>lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared_lib\Texture\TextureDX9.h">
+      <Filter>lib\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared_lib\stb\image.h">
+      <Filter>lib\stb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

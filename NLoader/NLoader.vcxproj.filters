@@ -19,6 +19,12 @@
     <Filter Include="lib\imgui">
       <UniqueIdentifier>{2893f2d2-5e4d-47e8-8ded-12b89b3e763c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lib\Texture">
+      <UniqueIdentifier>{83671d07-68b7-4ce2-918b-28ab0b579e14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\stb">
+      <UniqueIdentifier>{e85fca36-1636-452f-926c-ddf4948c776e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Version.hpp">
@@ -54,6 +60,12 @@
     <ClInclude Include="..\shared_lib\imgui\imstb_truetype.h">
       <Filter>lib\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared_lib\Texture\TextureDX9.h">
+      <Filter>lib\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared_lib\stb\image.h">
+      <Filter>lib\stb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NLoader.rc">
@@ -87,6 +99,12 @@
     </ClCompile>
     <ClCompile Include="..\shared_lib\imgui\imgui_widgets.cpp">
       <Filter>lib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared_lib\Texture\TextureDX9.cpp">
+      <Filter>lib\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared_lib\stb\stb.cpp">
+      <Filter>lib\stb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
