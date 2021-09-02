@@ -34,7 +34,7 @@
     <ClCompile Include="Hooks\VmtHook.cpp" />
     <ClCompile Include="Hooks\VmtSwap.cpp" />
     <ClCompile Include="lib\Helpers.cpp" />
-    <ClCompile Include="lib\ImguiCustom.cpp" />
+    <ClCompile Include="lib\ImGuiCustom.cpp" />
     <ClCompile Include="lib\imgui\imgui.cpp" />
     <ClCompile Include="lib\imgui\imgui_demo.cpp" />
     <ClCompile Include="lib\imgui\imgui_draw.cpp" />
@@ -82,7 +82,7 @@
     <ClInclude Include="Hooks\VmtSwap.h" />
     <ClInclude Include="lib\fnv.hpp" />
     <ClInclude Include="lib\Helpers.hpp" />
-    <ClInclude Include="lib\ImguiCustom.hpp" />
+    <ClInclude Include="lib\ImGuiCustom.hpp" />
     <ClInclude Include="lib\imgui\imconfig.h" />
     <ClInclude Include="lib\imgui\imgui.h" />
     <ClInclude Include="lib\imgui\imgui_impl_dx9.h" />
