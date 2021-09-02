@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "../lib/imgui/imgui.h"
+#include <shared_lib/imgui/imgui.h>
 
 #include "../SDK/WeaponId.h"
 

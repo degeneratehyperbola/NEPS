@@ -9,7 +9,7 @@
 #include "../SDK/GlobalVars.h"
 #include "../ConfigStructs.h"
 
-#include "imgui/imgui.h"
+#include <shared_lib/imgui/imgui.h>
 
 class Entity;
 struct SurfaceData;

@@ -11,6 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\shared_lib\imgui\imgui.cpp" />
+    <ClCompile Include="..\shared_lib\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\shared_lib\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\shared_lib\imgui\imgui_impl_dx9.cpp" />
+    <ClCompile Include="..\shared_lib\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\shared_lib\imgui\imgui_stdlib.cpp" />
+    <ClCompile Include="..\shared_lib\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\shared_lib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="EventListener.cpp" />
     <ClCompile Include="GameData.cpp" />
@@ -35,14 +43,6 @@
     <ClCompile Include="Hooks\VmtSwap.cpp" />
     <ClCompile Include="lib\Helpers.cpp" />
     <ClCompile Include="lib\ImGuiCustom.cpp" />
-    <ClCompile Include="lib\imgui\imgui.cpp" />
-    <ClCompile Include="lib\imgui\imgui_demo.cpp" />
-    <ClCompile Include="lib\imgui\imgui_draw.cpp" />
-    <ClCompile Include="lib\imgui\imgui_impl_dx9.cpp" />
-    <ClCompile Include="lib\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="lib\imgui\imgui_stdlib.cpp" />
-    <ClCompile Include="lib\imgui\imgui_tables.cpp" />
-    <ClCompile Include="lib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="lib\minhook\buffer.c" />
     <ClCompile Include="lib\minhook\hde\hde32.c" />
     <ClCompile Include="lib\minhook\hde\hde64.c" />
@@ -61,6 +61,15 @@
     <ClCompile Include="SDK\KeyValues.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\shared_lib\imgui\imconfig.h" />
+    <ClInclude Include="..\shared_lib\imgui\imgui.h" />
+    <ClInclude Include="..\shared_lib\imgui\imgui_impl_dx9.h" />
+    <ClInclude Include="..\shared_lib\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="..\shared_lib\imgui\imgui_internal.h" />
+    <ClInclude Include="..\shared_lib\imgui\imgui_stdlib.h" />
+    <ClInclude Include="..\shared_lib\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\shared_lib\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\shared_lib\imgui\imstb_truetype.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="ConfigStructs.h" />
     <ClInclude Include="EventListener.h" />
@@ -83,15 +92,6 @@
     <ClInclude Include="lib\fnv.hpp" />
     <ClInclude Include="lib\Helpers.hpp" />
     <ClInclude Include="lib\ImGuiCustom.hpp" />
-    <ClInclude Include="lib\imgui\imconfig.h" />
-    <ClInclude Include="lib\imgui\imgui.h" />
-    <ClInclude Include="lib\imgui\imgui_impl_dx9.h" />
-    <ClInclude Include="lib\imgui\imgui_impl_win32.h" />
-    <ClInclude Include="lib\imgui\imgui_internal.h" />
-    <ClInclude Include="lib\imgui\imgui_stdlib.h" />
-    <ClInclude Include="lib\imgui\imstb_rectpack.h" />
-    <ClInclude Include="lib\imgui\imstb_textedit.h" />
-    <ClInclude Include="lib\imgui\imstb_truetype.h" />
     <ClInclude Include="lib\minhook\buffer.h" />
     <ClInclude Include="lib\minhook\hde\hde32.h" />
     <ClInclude Include="lib\minhook\hde\hde64.h" />
@@ -253,8 +253,7 @@
       <ExceptionHandling>false</ExceptionHandling>
       <MinimalRebuild>false</MinimalRebuild>
       <CallingConvention>VectorCall</CallingConvention>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -297,8 +296,7 @@
       <ExceptionHandling>false</ExceptionHandling>
       <MinimalRebuild>false</MinimalRebuild>
       <CallingConvention>VectorCall</CallingConvention>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

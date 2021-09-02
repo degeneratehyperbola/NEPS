@@ -1,8 +1,8 @@
 #include "StreamProofESP.h"
 
-#include "../lib/imgui/imgui.h"
+#include <shared_lib/imgui/imgui.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "../lib/imgui/imgui_internal.h"
+#include <shared_lib/imgui/imgui_internal.h>
 
 #include "../Config.h"
 #include "../lib/fnv.hpp"

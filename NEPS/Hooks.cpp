@@ -1,8 +1,8 @@
 #include <functional>
 #include <intrin.h>
 
-#include "lib/imgui/imgui_impl_dx9.h"
-#include "lib/imgui/imgui_impl_win32.h"
+#include <shared_lib/imgui/imgui_impl_dx9.h>
+#include <shared_lib/imgui/imgui_impl_win32.h>
 
 #include "lib/minhook/minhook.h"
 
