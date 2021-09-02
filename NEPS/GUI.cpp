@@ -2,8 +2,8 @@
 #include <ShlObj.h>
 #include <shellapi.h>
 
-#include "lib/imgui/imgui.h"
-#include "lib/imgui/imgui_stdlib.h"
+#include <shared_lib/imgui/imgui.h>
+#include <shared_lib/imgui/imgui_stdlib.h>
 
 #include "lib/ImguiCustom.hpp"
 

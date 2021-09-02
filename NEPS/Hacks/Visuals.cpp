@@ -22,9 +22,9 @@
 #include "../lib/fnv.hpp"
 #include "../lib/Helpers.hpp"
 
-#include "../lib/imgui/imgui.h"
+#include <shared_lib/imgui/imgui.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "../lib/imgui/imgui_internal.h"
+#include <shared_lib/imgui/imgui_internal.h>
 
 #include <array>
 

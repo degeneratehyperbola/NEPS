@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "lib/imgui/imgui.h"
+#include <shared_lib/imgui/imgui.h>
 #include "Hacks/SkinChanger.h"
 #include "ConfigStructs.h"
 

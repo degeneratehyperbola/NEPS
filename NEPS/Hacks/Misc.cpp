@@ -29,7 +29,7 @@
 #include "../Interfaces.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "../lib/imgui/imgui_internal.h"
+#include <shared_lib/imgui/imgui_internal.h>
 #include "../lib/ImguiCustom.hpp"
 
 #include <numeric>

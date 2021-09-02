@@ -1,6 +1,6 @@
-#include "imgui/imgui.h"
+#include <shared_lib/imgui/imgui.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui/imgui_internal.h"
+#include <shared_lib/imgui/imgui_internal.h>
 
 #include "ImguiCustom.hpp"
 #include "../Interfaces.h"
