@@ -125,7 +125,7 @@
     <ClCompile Include="lib\Helpers.cpp">
       <Filter>lib</Filter>
     </ClCompile>
-    <ClCompile Include="lib\ImguiCustom.cpp">
+    <ClCompile Include="lib\ImGuiCustom.cpp">
       <Filter>lib</Filter>
     </ClCompile>
     <ClCompile Include="lib\minhook\buffer.c">
@@ -424,7 +424,7 @@
     <ClInclude Include="lib\Helpers.hpp">
       <Filter>lib</Filter>
     </ClInclude>
-    <ClInclude Include="lib\ImguiCustom.hpp">
+    <ClInclude Include="lib\ImGuiCustom.hpp">
       <Filter>lib</Filter>
     </ClInclude>
     <ClInclude Include="lib\minhook\buffer.h">

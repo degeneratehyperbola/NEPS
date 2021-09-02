@@ -3,12 +3,6 @@
 #include "../Config.h"
 #include "imgui/imgui.h"
 
-struct Color4;
-struct Color4Toggle;
-struct Color4ToggleRounding;
-struct Color4ToggleThickness;
-struct Color4ToggleThicknessRounding;
-
 namespace ImGuiCustom
 {
 	void colorPicker(const char *name, float color[3], float *alpha = nullptr, bool *rainbow = nullptr, float *rainbowSpeed = nullptr, bool *enable = nullptr, float *thickness = nullptr, float *rounding = nullptr, bool *border = nullptr) noexcept;
