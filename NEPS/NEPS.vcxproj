@@ -19,6 +19,8 @@
     <ClCompile Include="..\shared_lib\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="..\shared_lib\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\shared_lib\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\shared_lib\stb\stb.cpp" />
+    <ClCompile Include="..\shared_lib\Texture\TextureDX9.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="EventListener.cpp" />
     <ClCompile Include="GameData.cpp" />
@@ -48,8 +50,6 @@
     <ClCompile Include="lib\minhook\hde\hde64.c" />
     <ClCompile Include="lib\minhook\hook.c" />
     <ClCompile Include="lib\minhook\trampoline.c" />
-    <ClCompile Include="lib\stb\stb.cpp" />
-    <ClCompile Include="lib\Texture\TextureDX9.cpp" />
     <ClCompile Include="Netvars.cpp" />
     <ClCompile Include="Neps.cpp" />
     <ClCompile Include="GUI.cpp" />
@@ -70,6 +70,8 @@
     <ClInclude Include="..\shared_lib\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\shared_lib\imgui\imstb_textedit.h" />
     <ClInclude Include="..\shared_lib\imgui\imstb_truetype.h" />
+    <ClInclude Include="..\shared_lib\stb\image.h" />
+    <ClInclude Include="..\shared_lib\Texture\TextureDX9.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="ConfigStructs.h" />
     <ClInclude Include="EventListener.h" />
@@ -101,8 +103,6 @@
     <ClInclude Include="lib\minhook\minhook.h" />
     <ClInclude Include="lib\minhook\trampoline.h" />
     <ClInclude Include="lib\nlohmann\json.hpp" />
-    <ClInclude Include="lib\stb\image.h" />
-    <ClInclude Include="lib\Texture\TextureDX9.h" />
     <ClInclude Include="Netvars.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="res_defaultfont.h" />

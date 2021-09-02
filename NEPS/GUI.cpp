@@ -17,7 +17,7 @@
 #include "resource.h"
 #include "Hacks/Animations.h"
 
-#include "lib/Texture/TextureDX9.h"
+#include <shared_lib/Texture/TextureDX9.h>
 
 #include "SDK/Client.h"
 #include "SDK/ClientClass.h"
