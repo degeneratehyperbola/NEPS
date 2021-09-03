@@ -237,6 +237,7 @@ void Animations::resolve(Entity *animatable) noexcept
 	}
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
+	state->landingDuckAdditiveAmount = std::clamp(state->landingDuckAdditiveAmount, 0.0f, 1.0f);
 	state->feetCycle = layers[AnimLayer_MovementMove].cycle;
 	state->feetYawRate = layers[AnimLayer_MovementMove].weight;
 
