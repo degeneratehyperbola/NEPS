@@ -83,8 +83,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 
 	localPlayer->clientAnimations() = true;
 
-	while (state->lastClientSideAnimationUpdateFramecount >= memory->globalVars->framecount)
-		state->lastClientSideAnimationUpdateFramecount -= 1;
+	state->lastClientSideAnimationUpdateFramecount = std::min(state->lastClientSideAnimationUpdateFramecount, memory->globalVars->framecount - 1);
 
 	static auto backupPoseParams = localPlayer->poseParams();
 	static auto backupAbsYaw = state->feetYaw;
