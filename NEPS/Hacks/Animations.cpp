@@ -166,9 +166,6 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	animatable->clientAnimations() = true;
 
-	while (state->lastClientSideAnimationUpdateFramecount >= memory->globalVars->framecount)
-		state->lastClientSideAnimationUpdateFramecount -= 1;
-
 	state->feetYaw = resolverData.previousFeetYaw;
 	animatable->updateClientSideAnimation();
 	resolverData.previousFeetYaw = state->feetYaw;
