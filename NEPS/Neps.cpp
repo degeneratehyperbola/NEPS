@@ -1,7 +1,6 @@
 #include <clocale>
 #include "Hooks.h"
 
-// Last digit is always 0. Free byte for actual info
 #define SIGNATURE 0xEAC8FC70
 #define SIGNATURE_MASK 0x0000000F
 //#define SIGNATURE_ENABLE // Uncomment this to enable signature verification
