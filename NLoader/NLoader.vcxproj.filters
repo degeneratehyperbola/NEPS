@@ -66,6 +66,9 @@
     <ClInclude Include="..\shared_lib\stb\image.h">
       <Filter>lib\stb</Filter>
     </ClInclude>
+    <ClInclude Include="NLoader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NLoader.rc">
@@ -105,6 +108,9 @@
     </ClCompile>
     <ClCompile Include="..\shared_lib\stb\stb.cpp">
       <Filter>lib\stb</Filter>
+    </ClCompile>
+    <ClCompile Include="NLoader.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
