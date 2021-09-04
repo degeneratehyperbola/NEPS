@@ -26,7 +26,7 @@ An open source bloat-free CS:GO cheat for Windows, based on Osiris. You should p
 
 ## NEPS level of performance
 This cheat is optimized as far as I was able to keep it clean.
-As a proud owner of a 2013 thinkpad, I think I did a good job at making CS:GO experience with NEPS better than other options oon low-end.
+As a proud owner of a 2013 thinkpad, I think I did a good job at making CS:GO experience with NEPS better than other options on low-end.
 
 ## NEPS features
 - Aimbot: aim assistance
