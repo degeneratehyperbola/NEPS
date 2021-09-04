@@ -1,7 +1,7 @@
 #include <clocale>
 #include "Hooks.h"
 
-#define SIGNATURE 0xEAC8FC70
+#define SIGNATURE 0x7EFA32B4
 #define SIGNATURE_MASK 0x0000000F
 //#define SIGNATURE_ENABLE // Uncomment this to enable signature verification
 
@@ -22,7 +22,7 @@ BOOL APIENTRY DllEntryPoint(HMODULE moduleHandle, DWORD reason, LPVOID reserved)
 	if ((reason & SIGNATURE_MASK) == DLL_PROCESS_ATTACH)
 	{
 		#if defined SIGNATURE_ENABLE && !defined NEPS_DEBUG
-		if ((reason & ~SIGNATURE_MASK) == SIGNATURE)
+		if ((reason & ~SIGNATURE_MASK) == (SIGNATURE & ~SIGNATURE_MASK))
 		#endif // NEPS_DEBUG
 		{
 			std::setlocale(LC_CTYPE, ".utf8");
