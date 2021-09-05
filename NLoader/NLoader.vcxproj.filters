@@ -63,7 +63,7 @@
     <ClInclude Include="..\shared_lib\stb\image.h">
       <Filter>lib\stb</Filter>
     </ClInclude>
-    <ClInclude Include="lib\NLoader.hpp">
+    <ClInclude Include="lib\Helpers.hpp">
       <Filter>lib</Filter>
     </ClInclude>
   </ItemGroup>
@@ -106,7 +106,7 @@
     <ClCompile Include="..\shared_lib\stb\stb.cpp">
       <Filter>lib\stb</Filter>
     </ClCompile>
-    <ClCompile Include="lib\NLoader.cpp">
+    <ClCompile Include="lib\Helpers.cpp">
       <Filter>lib</Filter>
     </ClCompile>
   </ItemGroup>
