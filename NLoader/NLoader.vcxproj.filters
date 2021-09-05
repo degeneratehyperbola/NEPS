@@ -27,9 +27,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Version.hpp">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Headers</Filter>
     </ClInclude>
@@ -66,8 +63,8 @@
     <ClInclude Include="..\shared_lib\stb\image.h">
       <Filter>lib\stb</Filter>
     </ClInclude>
-    <ClInclude Include="NLoader.h">
-      <Filter>Headers</Filter>
+    <ClInclude Include="lib\NLoader.hpp">
+      <Filter>lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -109,8 +106,8 @@
     <ClCompile Include="..\shared_lib\stb\stb.cpp">
       <Filter>lib\stb</Filter>
     </ClCompile>
-    <ClCompile Include="NLoader.cpp">
-      <Filter>Source</Filter>
+    <ClCompile Include="lib\NLoader.cpp">
+      <Filter>lib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

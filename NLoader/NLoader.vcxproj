@@ -107,7 +107,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
@@ -120,6 +120,9 @@
       <ForceSymbolReferences>
       </ForceSymbolReferences>
       <AdditionalOptions>/EMITPOGOPHASEINFO %(AdditionalOptions)</AdditionalOptions>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <AdditionalDependencies>$(SolutionDir)shared_lib\LoadStream.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -152,6 +155,9 @@
       <ForceSymbolReferences>
       </ForceSymbolReferences>
       <AdditionalOptions>/EMITPOGOPHASEINFO %(AdditionalOptions)</AdditionalOptions>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <AdditionalDependencies>$(SolutionDir)shared_lib\LoadStream.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -197,8 +203,8 @@
     <ClCompile Include="..\shared_lib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\shared_lib\stb\stb.cpp" />
     <ClCompile Include="..\shared_lib\Texture\TextureDX9.cpp" />
+    <ClCompile Include="lib\NLoader.cpp" />
     <ClCompile Include="LoaderMain.cpp" />
-    <ClCompile Include="NLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared_lib\imgui\imconfig.h" />
@@ -212,18 +218,17 @@
     <ClInclude Include="..\shared_lib\imgui\imstb_truetype.h" />
     <ClInclude Include="..\shared_lib\stb\image.h" />
     <ClInclude Include="..\shared_lib\Texture\TextureDX9.h" />
-    <ClInclude Include="NLoader.h" />
+    <ClInclude Include="lib\NLoader.hpp" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Version.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NLoader.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Release\NEPS\NEPS.dll" />
+    <Image Include="Resources\icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\icon.ico" />
+    <None Include="..\Release\NEPS\NEPS.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
