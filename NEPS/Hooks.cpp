@@ -699,7 +699,6 @@ static DWORD WINAPI unload(HMODULE moduleHandle) noexcept
 {
 	Sleep(100);
 
-	Animations::releaseState();
 	interfaces->inputSystem->enableInput(true);
 	eventListener->remove();
 
@@ -719,6 +718,8 @@ void Hooks::uninstall() noexcept
 		MH_DisableHook(MH_ALL_HOOKS);
 		MH_Uninitialize();
 	}
+
+	Animations::releaseState();
 
 	bspQuery.restore();
 	panel.restore();
