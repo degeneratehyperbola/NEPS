@@ -39,6 +39,5 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR cmdLine
 		FreeResource(resource);
 	}
 
-
 	return TRUE;
 }
