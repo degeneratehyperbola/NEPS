@@ -1,10 +1,10 @@
-#include "NLoader.hpp"
+#include "Helpers.hpp"
 #include "../resource.h"
 
 #include <Windows.h>
 #include <TlHelp32.h>
 
-void *NLoader::loadFromResource(std::size_t *size) noexcept
+void *Helpers::loadFromResource(std::size_t *size) noexcept
 {
 	const HMODULE moduleHandle = GetModuleHandle(0);
 	const HRSRC resource = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_BIN1), L"BIN");
@@ -16,7 +16,7 @@ void *NLoader::loadFromResource(std::size_t *size) noexcept
 	return LoadResource(moduleHandle, resource);
 }
 
-unsigned long NLoader::findPid(const std::wstring &processName) noexcept
+unsigned long Helpers::findPid(const std::wstring &processName) noexcept
 {
 	PROCESSENTRY32 processInfo;
 	processInfo.dwSize = sizeof(processInfo);
@@ -43,4 +43,14 @@ unsigned long NLoader::findPid(const std::wstring &processName) noexcept
 
 	CloseHandle(processSnapshot);
 	return 0;
+}
+
+bool Helpers::fileInUse(const std::filesystem::path &path) noexcept
+{
+	HANDLE file = CreateFileW(path.wstring().c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if (file == INVALID_HANDLE_VALUE)
+		return true;
+
+	CloseHandle(file);
+	return false;
 }

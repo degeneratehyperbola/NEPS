@@ -1,4 +1,4 @@
-#include "lib/NLoader.hpp"
+#include "lib/Helpers.hpp"
 #include "resource.h"
 
 #include <Windows.h>
