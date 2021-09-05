@@ -27,8 +27,6 @@ public:
 
 	HWND getProcessWindow() noexcept { return window; }
 
-	HMODULE getProcessHandle() noexcept { return GetModuleHandleA(0); }
-
 	WNDPROC originalWndProc;
 	std::add_pointer_t<HRESULT __stdcall(IDirect3DDevice9 *, const RECT *, const RECT *, HWND, const RGNDATA *)> originalPresent;
 	std::add_pointer_t<HRESULT __stdcall(IDirect3DDevice9 *, D3DPRESENT_PARAMETERS *)> originalReset;
