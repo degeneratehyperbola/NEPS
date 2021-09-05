@@ -334,6 +334,8 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 
 			for (auto &point : points)
 			{
+				point = point + entity->velocity() * memory->globalVars->intervalPerTick;
+
 				const auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, point, cmd->viewangles + aimPunch);
 
 				const auto fov = std::hypot(angle.x, angle.y);
