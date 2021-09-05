@@ -16,6 +16,8 @@ void Animations::releaseState() noexcept
 {
 	if (desyncedState)
 		delete desyncedState;
+
+	localPlayer->clientAnimations() = true;
 }
 
 void Animations::getDesyncedBones(Matrix3x4 *out) noexcept
@@ -32,7 +34,7 @@ bool Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 	if (!desyncedState)
 		return matrixUpdated;
 
-	if (!localPlayer) return matrixUpdated;
+	if (!localPlayer || !localPlayer->isAlive()) return matrixUpdated;
 
 	if (!memory->input->isCameraInThirdPerson) return matrixUpdated;
 
@@ -56,10 +58,10 @@ bool Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 		matrixUpdated = localPlayer->setupBones(desyncedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 		if (const auto &origin = localPlayer->getRenderOrigin(); matrixUpdated)
+		{
 			for (int i = 0; i < MAX_STUDIO_BONES; i++)
-			{
 				desyncedBones[i].setOrigin(desyncedBones[i].origin() - origin);
-			}
+		}
 
 		localPlayer->poseParams() = backupPoseParams;
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, backupAbsYaw, 0.0f});
@@ -74,32 +76,57 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 
 	if (!localPlayer) return matrixUpdated;
 
-	if (!memory->input->isCameraInThirdPerson || !config->misc.fixAnimation)
+	if (!config->misc.fixAnimation)
 		return matrixUpdated;
+
+	if (!localPlayer->isAlive())
+	{
+		localPlayer->clientAnimations() = true;
+		return matrixUpdated;
+	}
+
+	if (!memory->input->isCameraInThirdPerson)
+	{
+		localPlayer->clientAnimations() = true;
+		localPlayer->updateClientSideAnimation();
+		localPlayer->clientAnimations() = false;
+		return matrixUpdated;
+	}
 
 	auto state = localPlayer->getAnimState();
 	if (!state)
 		return matrixUpdated;
 
-	localPlayer->clientAnimations() = true;
+	localPlayer->clientAnimations() = false;
 
 	state->lastClientSideAnimationUpdateFramecount = std::min(state->lastClientSideAnimationUpdateFramecount, memory->globalVars->framecount - 1);
 
 	static auto backupPoseParams = localPlayer->poseParams();
 	static auto backupAbsYaw = state->feetYaw;
 
-	localPlayer->animationLayers()[AnimLayer_Lean].weight = FLT_EPSILON;
-	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
+	static int previousTick = 0;
+	if (previousTick != memory->globalVars->tickCount)
+	{
+		previousTick = memory->globalVars->tickCount;
 
-	memory->updateState(state, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
+		localPlayer->clientAnimations() = true;
+		memory->updateState(state, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
+		localPlayer->updateClientSideAnimation();
+		localPlayer->clientAnimations() = false;
+
+		if (sendPacket)
+		{
+			backupPoseParams = localPlayer->poseParams();
+			backupAbsYaw = state->feetYaw;
+		}
+	}
+
+	localPlayer->animationLayers()[AnimLayer_Lean].weight = FLT_EPSILON;
 
 	matrixUpdated = localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
-	
-	if (sendPacket)
-	{
-		backupPoseParams = localPlayer->poseParams();
-		backupAbsYaw = state->feetYaw;
-	}
+
+	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
+	state->feetYawRate = 0.0f;
 
 	memory->setAbsAngle(localPlayer.get(), Vector{0.0f, backupAbsYaw, 0.0f});
 	localPlayer->poseParams() = backupPoseParams;
