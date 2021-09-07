@@ -207,33 +207,10 @@ void Animations::resolve(Entity *animatable) noexcept
 		resolverData.previousFeetYaw = state->feetYaw;
 
 		const auto maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
-		const auto backupFeetYaw = state->feetYaw;
-		std::array<float, 3U> layerMovePlaybackRates;
-
-		state->feetYaw = animatable->eyeAngles().y - maxDesync;
-		animatable->updateClientSideAnimation();
-		memory->invalidateBoneCache(animatable);
-		animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
-		layerMovePlaybackRates[0] = layers[AnimLayer_MovementMove].playbackRate;
-
-		state->feetYaw = animatable->eyeAngles().y;
-		animatable->updateClientSideAnimation();
-		memory->invalidateBoneCache(animatable);
-		animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
-		layerMovePlaybackRates[1] = layers[AnimLayer_MovementMove].playbackRate;
-	
-		state->feetYaw = animatable->eyeAngles().y + maxDesync;
-		animatable->updateClientSideAnimation();
-		memory->invalidateBoneCache(animatable);
-		animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime);
-		layerMovePlaybackRates[2] = layers[AnimLayer_MovementMove].playbackRate;
-
-		state->feetYaw = backupFeetYaw;
-
 		const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
-		const bool notMove = animatable->velocity().length2D() < 0.1f;
-		signed char side = 0;
-		float desyncAmount = std::fabsf(Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.lastCorrectFeetYaw));
+		const bool notMove = animatable->velocity().length2D() < 0.1f && std::fabsf(animatable->velocity().z) < 100.0f;
+
+		float desyncAmount = 0.0f;
 		switch (resolverData.misses % 3)
 		{
 		case 1:
@@ -242,35 +219,25 @@ void Animations::resolve(Entity *animatable) noexcept
 		case 2:
 			desyncAmount = maxDesync;
 			break;
-		case 3:
-			desyncAmount = lbyTargetDelta;
+		default:
+			desyncAmount = std::fminf(std::fabsf(Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.lastCorrectFeetYaw)), maxDesync);
 			break;
 		}
 
-		if (notMove && !layers[AnimLayer_Adjust].weight && !layers[AnimLayer_Adjust].cycle && !layers[AnimLayer_MovementMove].weight)
+		signed char side = 0;
+		switch (resolverData.misses % 3)
 		{
-			side = lbyTargetDelta <= 0.0f ? 1 : -1;
-		} else if (notMove && layers[AnimLayer_MovementMove].cycle > 0.9f && layers[AnimLayer_MovementMove].weight > 0.9f)
-		{
-			if (lbyTargetDelta > 35.0f)
-				side = 1;
-			else if (lbyTargetDelta < -35.0f)
-				side = -1;
-		} else if (!notMove && !static_cast<int>(layers[AnimLayer_Lean].weight * 1000.0f) && static_cast<int>(layers[AnimLayer_MovementMove].weight * 1000.0f) == static_cast<int>(resolverData.previousLayers[AnimLayer_MovementMove].weight * 1000.0f))
-		{
-			const auto negative = std::fabsf(layers[AnimLayer_MovementMove].playbackRate - layerMovePlaybackRates[0]);
-			const auto zero = std::fabsf(layers[AnimLayer_MovementMove].playbackRate - layerMovePlaybackRates[1]);
-			const auto positive = std::fabsf(layers[AnimLayer_MovementMove].playbackRate - layerMovePlaybackRates[2]);
-
-			if (zero < positive || negative <= positive || positive * 1000.f)
-			{
-				if (zero >= negative && positive > negative && !(negative * 1000.f))
-					side = 1;
-			} else
-				side = -1;
+		case 1:
+			side = -side;
+			break;
+		case 2:
+			side = 0;
+			break;
+		default:
+			if (notMove)
+				side = lbyTargetDelta > 0 ? -1 : 1;
+			break;
 		}
-		else
-			side = resolverData.misses % 3 - 1;
 
 		state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + desyncAmount * side);
 	}
@@ -283,7 +250,6 @@ void Animations::resolve(Entity *animatable) noexcept
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
 	animatable->updateClientSideAnimation();
-	memory->invalidateBoneCache(animatable);
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 	animatable->clientAnimations() = false;
