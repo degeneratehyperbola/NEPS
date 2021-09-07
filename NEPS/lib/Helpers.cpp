@@ -479,6 +479,9 @@ float Helpers::normalizeRad(float a) noexcept
 
 void Helpers::feetYaw(AnimState *state, float pursue, float &hold, float &current) noexcept
 {
+	if (!state)
+		return;
+
 	if (state->onGround)
 	{
 		static float realignTimer = 0.0f;
@@ -598,8 +601,11 @@ float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept
 
 bool Helpers::animDataAuthenticity(Entity *animatable) noexcept
 {
+	if (!animatable)
+		return false;
+
 	if (!animatable->isPlayer())
-		return true;
+		return false;
 
 	if (animatable->moveType() == MoveType::Ladder) return true;
 	if (animatable->moveType() == MoveType::Noclip) return true;
@@ -650,6 +656,9 @@ std::size_t Helpers::getDefaultFontSize() noexcept
 
 bool Helpers::lbyUpdate(Entity *animatable, float &nextUpdate) noexcept
 {
+	if (!animatable)
+		return false;
+
 	if (!animatable->isPlayer())
 		return false;
 
