@@ -2015,7 +2015,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 		return rarityColors[static_cast<size_t>(rarity) < rarityColors.size() ? rarity : 0];
 	};
 
-	constexpr auto passesFilter = [](const std::wstring &str, std::wstring filter)
+	constexpr auto passesFilter = [](const std::wstring &str, std::wstring filter) noexcept
 	{
 		constexpr auto delimiter = L" ";
 		wchar_t *_;
