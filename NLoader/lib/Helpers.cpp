@@ -6,8 +6,8 @@
 
 void *Helpers::loadFromResource(std::size_t *size) noexcept
 {
-	const HMODULE moduleHandle = GetModuleHandle(0);
-	const HRSRC resource = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_BIN1), L"BIN");
+	HMODULE moduleHandle = GetModuleHandle(0);
+	HRSRC resource = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_BIN1), L"BIN");
 	if (!resource) return nullptr;
 
 	if (size)
@@ -47,10 +47,61 @@ unsigned long Helpers::findPid(const std::wstring &processName) noexcept
 
 bool Helpers::fileInUse(const std::filesystem::path &path) noexcept
 {
-	HANDLE file = CreateFileW(path.wstring().c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	HANDLE file = CreateFileW(path.wstring().c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if (file == INVALID_HANDLE_VALUE)
 		return true;
 
 	CloseHandle(file);
 	return false;
+}
+
+bool Helpers::loadLibreryRemote(void *process, const std::filesystem::path &path, std::uintptr_t *moduleHandle) noexcept
+{
+	if (!process)
+		return false;
+
+	if (!path.has_filename())
+		return false;
+
+	HMODULE kernel32 = GetModuleHandle(L"kernel32");
+	if (!kernel32)
+		return false;
+
+	FARPROC loadLibrary = GetProcAddress(kernel32, "LoadLibraryW");
+	if (!loadLibrary)
+		return false;
+
+	wchar_t pathString[MAX_PATH];
+	wcscpy_s(pathString, path.wstring().c_str());
+
+	void *pathImage = VirtualAllocEx(process, nullptr, sizeof(pathString), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	if (!pathImage)
+		return false;
+
+	if (!WriteProcessMemory(process, pathImage, pathString, sizeof(pathString), nullptr))
+	{
+		VirtualFreeEx(process, pathImage, 0, MEM_RELEASE);
+		return false;
+	}
+
+	HANDLE thread = CreateRemoteThread(process, 0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(loadLibrary), pathImage, 0, nullptr);
+	if (!thread)
+	{
+		VirtualFreeEx(process, pathImage, 0, MEM_RELEASE);
+		return false;
+	}
+
+	WaitForSingleObject(thread, INFINITE);
+
+	if (moduleHandle)
+		GetExitCodeThread(thread, reinterpret_cast<LPDWORD>(moduleHandle));
+
+	CloseHandle(thread);
+
+	return true;
+}
+
+bool Helpers::bypassCsgoInject(void *csgoProcess) noexcept
+{
+	return true;
 }
