@@ -382,8 +382,6 @@ public:
 		bool disableModelOcclusion = true;
 		bool disableInterp = false;
 		bool desyncResolver = false;
-		bool resolveVelocity = false;
-		bool resolveOrigin = false;
 		bool resolveLby = false;
 		bool unlockInvertory = false;
 		bool disablePanoramablur = false;
