@@ -135,32 +135,9 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	return matrixUpdated;
 }
 
-static __forceinline void correctVelocity(Entity *animatable, const Vector &previousOrigin) noexcept
-{
-	if (!previousOrigin.notNull())
-		return;
-
-	const auto timeDelta = std::fmaxf(memory->globalVars->intervalPerTick, animatable->simulationTime() - animatable->oldSimulationTime());
-	const auto originDelta = animatable->getAbsOrigin() - previousOrigin;
-
-	animatable->velocity() = originDelta * (1.0f / timeDelta);
-}
-
-static __forceinline void correctOrigin(Entity *animatable, const Vector &previousOrigin) noexcept
-{
-	const float remainder = std::fmodf(Backtrack::getLerp(), memory->globalVars->intervalPerTick);
-	float fraction = (memory->globalVars->intervalPerTick - remainder) / memory->globalVars->intervalPerTick;
-
-	const auto newOrigin = previousOrigin + (animatable->getAbsOrigin() - previousOrigin) * fraction;
-
-	memory->setAbsOrigin(animatable, newOrigin);
-}
-
 struct ResolverData
 {
 	std::array<AnimLayer, AnimLayer_Count> previousLayers;
-	Vector previousOrigin;
-	Vector previousOriginBeforeChange;
 	float previousFeetYaw;
 	float lastCorrectFeetYaw;
 	float nextLbyUpdate;
@@ -176,22 +153,11 @@ void Animations::resolve(Entity *animatable) noexcept
 		return;
 
 	auto &resolverData = playerResolverData[animatable->index()];
-	const auto lbyUpdate = Helpers::lbyUpdate(animatable, resolverData.nextLbyUpdate);
+	const bool lbyUpdate = Helpers::lbyUpdate(animatable, resolverData.nextLbyUpdate);
 	const auto layers = animatable->animationLayers();
 
 	if (animatable->handle() == Aimbot::getTargetHandle())
 		resolverData.misses = Aimbot::getMisses();
-
-	if (resolverData.previousOrigin != animatable->getAbsOrigin())
-		resolverData.previousOriginBeforeChange = resolverData.previousOrigin;
-
-	if (config->misc.resolveOrigin)
-		correctOrigin(animatable, resolverData.previousOriginBeforeChange.notNull() ? resolverData.previousOriginBeforeChange : animatable->getAbsOrigin());
-
-	if (config->misc.resolveVelocity)
-		correctVelocity(animatable, resolverData.previousOriginBeforeChange.notNull() ? resolverData.previousOriginBeforeChange : animatable->getAbsOrigin());
-
-	resolverData.previousOrigin = animatable->getAbsOrigin();
 
 	state->lastClientSideAnimationUpdateFramecount = std::min(state->lastClientSideAnimationUpdateFramecount, memory->globalVars->framecount - 1);
 

@@ -2459,8 +2459,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 
 	if (ImGui::BeginPopup("##resolver"))
 	{
-		ImGui::Checkbox("Re-interpolate origin", &config->misc.resolveOrigin);
-		ImGui::Checkbox("Correct velocity", &config->misc.resolveVelocity);
 		ImGui::Checkbox("Resolve LBY", &config->misc.resolveLby);
 		ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
 		ImGui::EndPopup();
