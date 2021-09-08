@@ -145,7 +145,7 @@ namespace Helpers
 
 	bool animDataAuthenticity(Entity *animatable) noexcept;
 
-	template<typename T>
+	template <typename T>
 	constexpr std::vector<T> join(const std::vector<T> &first, const std::vector<T> &second) noexcept
 	{
 		std::vector<T> buffer;
