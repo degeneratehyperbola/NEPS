@@ -172,18 +172,18 @@ void Animations::resolve(Entity *animatable) noexcept
 		animatable->updateClientSideAnimation();
 		resolverData.previousFeetYaw = state->feetYaw;
 
-		const auto maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
+		const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
+		const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw);
 		const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
 		const bool notMove = animatable->velocity().length2D() < 0.1f && std::fabsf(animatable->velocity().z) < 100.0f;
 
 		float desyncAmount = 0.0f;
 		switch (resolverData.misses % 3)
 		{
-		case 1:
-			desyncAmount = maxDesync / 2;
-			break;
-		case 2:
-			desyncAmount = maxDesync;
+		case 3:
+		case 4:
+		case 5:
+			desyncAmount = lbyDelta < 35.0f ? std::fminf(35.0f, maxDesync) : maxDesync;
 			break;
 		default:
 			desyncAmount = std::fminf(std::fabsf(Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.lastCorrectFeetYaw)), maxDesync);
@@ -200,13 +200,15 @@ void Animations::resolve(Entity *animatable) noexcept
 			side = 0;
 			break;
 		default:
-			if (notMove)
-				side = lbyTargetDelta > 0 ? -1 : 1;
+			side = lbyTargetDelta > 0 ? -1 : 1;
 			break;
 		}
 
 		state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + desyncAmount * side);
 	}
+
+	layers[AnimLayer_Lean].weight = FLT_EPSILON;
+	memory->setAbsAngle(animatable, {0.0f, state->feetYaw, 0.0f});
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->landingDuckAdditiveAmount = std::clamp(state->landingDuckAdditiveAmount, 0.0f, 1.0f);
@@ -219,7 +221,4 @@ void Animations::resolve(Entity *animatable) noexcept
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 	animatable->clientAnimations() = false;
-
-	layers[AnimLayer_Lean].weight = FLT_EPSILON;
-	memory->setAbsAngle(animatable, {0.0f, state->feetYaw, 0.0f});
 }
