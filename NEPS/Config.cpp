@@ -681,7 +681,6 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
 	read(j, "Disable interpolation", m.disableInterp);
 	read(j, "Resolver", m.desyncResolver);
-	read(j, "Resolve velocity", m.resolveVelocity);
 	read(j, "Resolve LBY", m.resolveLby);
 	read(j, "Unlock invertory", m.unlockInvertory);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
