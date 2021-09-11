@@ -14,6 +14,7 @@
 class Entity;
 struct SurfaceData;
 struct Trace;
+struct TraceFilter;
 struct Vector;
 struct WeaponInfo;
 struct Color4;
@@ -48,7 +49,7 @@ namespace Helpers
 
 	float handleBulletPenetration(SurfaceData *enterSurfaceData, const Trace &enterTrace, const Vector &direction, Vector &result, float penetration, float damage) noexcept;
 
-	int findDamage(const Vector &destination, const Vector &source, Entity *attacker, Entity *filter, Trace &trace, bool allowFriendlyFire = false, const Record *ghost = nullptr, int ghostHitbox = -1) noexcept;
+	int findDamage(const Vector &destination, const Vector &source, Entity *attacker, TraceFilter filter, Trace &trace, bool allowFriendlyFire = false, const Record *ghost = nullptr, int ghostHitbox = -1) noexcept;
 	int findDamage(const Vector &destination, const Vector &source, Entity *attacker, Trace &trace, bool allowFriendlyFire = false, const Record *ghost = nullptr, int ghostHitbox = -1) noexcept;
 	int findDamage(const Vector &destination, Entity *attacker, Trace &trace, bool allowFriendlyFire = false, const Record *ghost = nullptr, int ghostHitbox = -1) noexcept;
 
