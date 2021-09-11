@@ -25,5 +25,5 @@ IMGUI_IMPL_API void     ImGui_ImplDX9_DestroyFontsTexture();
 IMGUI_IMPL_API bool     ImGui_ImplDX9_CreateDeviceObjects();
 IMGUI_IMPL_API void     ImGui_ImplDX9_InvalidateDeviceObjects();
 
-IMGUI_IMPL_API void*    ImGui_ImplDX9_CreateTextureRGBA8(int width, int height, const unsigned char* data);
+IMGUI_IMPL_API void*    ImGui_ImplDX9_CreateTextureRGBA8(unsigned int width, unsigned int height, const void* data);
 IMGUI_IMPL_API void     ImGui_ImplDX9_DestroyTexture(void* texture);

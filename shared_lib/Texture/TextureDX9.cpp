@@ -10,39 +10,79 @@ Texture::Texture(const char *path) noexcept
 {
 	if (!path) return;
 
-	int width, height;
-	auto data = stbi_load(path, &width, &height, nullptr, 4);
-	texture = reinterpret_cast<IDirect3DTexture9 *>(ImGui_ImplDX9_CreateTextureRGBA8(width, height, data));
+	stbi_set_flip_vertically_on_load_thread(false);
+	auto data = stbi_load(path, (int *)&w, (int *)&h, nullptr, 4);
+	textureData = reinterpret_cast<IDirect3DTexture9 *>(ImGui_ImplDX9_CreateTextureRGBA8(w, h, data));
 	stbi_image_free(data);
 }
 
-Texture::Texture(int resource, const char *type) noexcept
+Texture::Texture(int resource, const wchar_t *type) noexcept
 {
 	if (!resource || !type) return;
 
 	auto dllHandle = hooks->getDllHandle();
-	auto resourceHandle = FindResourceA(dllHandle, MAKEINTRESOURCEA(resource), type);
+	auto resourceHandle = FindResourceW(dllHandle, MAKEINTRESOURCEW(resource), type);
 	if (resourceHandle)
 	{
-		int width, height;
 		int resourceSize = SizeofResource(dllHandle, resourceHandle);
 		auto resourceData = LoadResource(dllHandle, resourceHandle);
-		void *buffer = LockResource(resourceData);
-		auto data = stbi_load_from_memory(reinterpret_cast<unsigned char *>(buffer), resourceSize, &width, &height, nullptr, 4);
-		texture = reinterpret_cast<IDirect3DTexture9 *>(ImGui_ImplDX9_CreateTextureRGBA8(width, height, data));
-		stbi_image_free(data);
-		FreeResource(resourceData);
+		if (resourceData)
+		{
+			void *buffer = LockResource(resourceData);
+			stbi_set_flip_vertically_on_load_thread(false);
+			auto data = stbi_load_from_memory(reinterpret_cast<unsigned char *>(buffer), resourceSize, (int *)&w, (int *)&h, nullptr, 4);
+			textureData = reinterpret_cast<IDirect3DTexture9 *>(ImGui_ImplDX9_CreateTextureRGBA8(w, h, data));
+			stbi_image_free(data);
+			FreeResource(resourceData);
+		}
 	}
 }
 
-Texture::Texture(int width, int height, const unsigned char *data) noexcept
+Texture::Texture(std::size_t size, const void *data) noexcept
 {
 	if (!data) return;
 
-	texture = reinterpret_cast<IDirect3DTexture9 *>(ImGui_ImplDX9_CreateTextureRGBA8(width, height, data));
+	stbi_set_flip_vertically_on_load_thread(false);
+	auto rawData = stbi_load_from_memory(reinterpret_cast<const unsigned char *>(data), size, (int *)&w, (int *)&h, nullptr, 4);
+	textureData = reinterpret_cast<IDirect3DTexture9 *>(ImGui_ImplDX9_CreateTextureRGBA8(w, h, rawData));
+	stbi_image_free(rawData);
+}
+
+Texture::Texture(unsigned int width, unsigned int height, const void *rawData) noexcept
+{
+	if (!rawData) return;
+
+	w = width, h = height;
+	textureData = reinterpret_cast<IDirect3DTexture9 *>(ImGui_ImplDX9_CreateTextureRGBA8(width, height, rawData));
+}
+
+void Texture::free() noexcept
+{
+	if (textureData)
+	{
+		textureData->Release();
+		textureData = nullptr;
+		w = 0U, h = 0U;
+	}
+}
+
+Texture &Texture::operator=(const Texture &other) noexcept
+{
+	free();
+	w = other.w, h = other.h;
+	textureData = other.textureData;
+	return *this;
+}
+
+Texture &Texture::operator=(Texture &&other) noexcept
+{
+	free();
+	w = other.w, h = other.h;
+	textureData = other.textureData;
+	return *this;
 }
 
 Texture::~Texture() noexcept
 {
-	if (texture) texture->Release();
+	free();
 }

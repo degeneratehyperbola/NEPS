@@ -324,7 +324,7 @@ void ImGui_ImplDX9_NewFrame()
 		ImGui_ImplDX9_CreateDeviceObjects();
 }
 
-void* ImGui_ImplDX9_CreateTextureRGBA8(int width, int height, const unsigned char* data)
+void* ImGui_ImplDX9_CreateTextureRGBA8(unsigned int width, unsigned int  height, const void* data)
 {
 	if (!data || !g_pd3dDevice)
 		return NULL;
