@@ -167,10 +167,7 @@ void Animations::resolve(Entity *animatable) noexcept
 		resolverData.previousTick = simulationTick;
 
 		const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
-		if (Helpers::animDataAuthenticity(animatable) || lbyUpdate)
-		{
-			resolverData.desyncAmount = std::fminf(std::fabsf(Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw)), maxDesync);
-		} else
+		if (!Helpers::animDataAuthenticity(animatable) && !lbyUpdate)
 		{
 			const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.previousFeetYaw);
 			const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
@@ -178,24 +175,22 @@ void Animations::resolve(Entity *animatable) noexcept
 
 			switch (resolverData.misses % 6)
 			{
-			case 2:
 			case 3:
-				resolverData.desyncAmount = lbyDelta < 35.0f ? std::fminf(35.0f, maxDesync) : maxDesync;
+			case 4:
+			case 5:
+				resolverData.desyncAmount = std::fminf(35.0f, maxDesync);
 				break;
 			default:
-				if (resolverData.desyncAmount < 10.0f)
-					resolverData.desyncAmount = lbyDelta < 35.0f ? std::fminf(35.0f, maxDesync) : maxDesync;
+				resolverData.desyncAmount = maxDesync;
 				break;
 			}
 
-			switch (resolverData.misses % 6)
+			switch (resolverData.misses % 3)
 			{
 			case 1:
-			case 3:
-				resolverData.desyncSide = lbyTargetDelta <= 0.0f ? -1 : 1;
+				resolverData.desyncSide = -resolverData.desyncSide;
 				break;
-			case 4:
-			case 5:
+			case 2:
 				resolverData.desyncSide = 0;
 				break;
 			default:
