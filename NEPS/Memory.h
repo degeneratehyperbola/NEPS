@@ -78,6 +78,7 @@ public:
 	uintptr_t listLeaves;
 	int *dispatchSound;
 	int *checkFileCRC;
+	int *doProceduralFootPlant;
 	ViewRender *viewRender;
 	uintptr_t drawScreenEffectMaterial;
 	std::add_pointer_t<bool __stdcall(const char *, const char *)> submitReport;

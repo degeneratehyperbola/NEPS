@@ -617,6 +617,14 @@ static bool __stdcall isConnected() noexcept
 	return hooks->engine.callOriginal<bool, 27>();
 }
 
+static void __fastcall doProceduralFootPlant(void *thisptr, void *edx, void *boneToWorld, void *leftFootChain, void *rightFootChain, void *bone) noexcept
+{
+	if (config->misc.disableIK)
+		return;
+
+	hooks->originalDoProceduralFootPlant(thisptr, nullptr, boneToWorld, leftFootChain, rightFootChain, bone);
+}
+
 Hooks::Hooks(HMODULE moduleHandle) noexcept
 {
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
@@ -689,6 +697,13 @@ void Hooks::install() noexcept
 		VirtualProtect(memory->checkFileCRC, 4, oldProtection, nullptr);
 	}
 
+	if (DWORD oldProtection; VirtualProtect(memory->doProceduralFootPlant, 4, PAGE_EXECUTE_READWRITE, &oldProtection))
+	{
+		originalDoProceduralFootPlant = decltype(originalDoProceduralFootPlant)(uintptr_t(memory->doProceduralFootPlant + 1) + *memory->doProceduralFootPlant);
+		*memory->doProceduralFootPlant = uintptr_t(doProceduralFootPlant) - uintptr_t(memory->doProceduralFootPlant + 1);
+		VirtualProtect(memory->doProceduralFootPlant, 4, oldProtection, nullptr);
+	}
+
 	if constexpr (std::is_same_v<HookType, MinHook>)
 		MH_EnableHook(MH_ALL_HOOKS);
 }
@@ -750,6 +765,12 @@ void Hooks::uninstall() noexcept
 	{
 		*memory->checkFileCRC = uintptr_t(originalCheckFileCRC) - uintptr_t(memory->checkFileCRC + 1);
 		VirtualProtect(memory->checkFileCRC, 4, oldProtection, nullptr);
+	}
+
+	if (DWORD oldProtection; VirtualProtect(memory->doProceduralFootPlant, 4, PAGE_EXECUTE_READWRITE, &oldProtection))
+	{
+		*memory->doProceduralFootPlant = uintptr_t(originalDoProceduralFootPlant) - uintptr_t(memory->doProceduralFootPlant + 1);
+		VirtualProtect(memory->doProceduralFootPlant, 4, oldProtection, nullptr);
 	}
 
 	if (HANDLE thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(unload), moduleHandle, 0, nullptr))
