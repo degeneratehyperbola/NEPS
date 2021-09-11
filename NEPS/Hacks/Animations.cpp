@@ -138,10 +138,13 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 struct ResolverData
 {
 	std::array<AnimLayer, AnimLayer_Count> previousLayers;
+	float desyncAmount;
+	signed char desyncSide;
+	float feetYaw;
 	float previousFeetYaw;
-	float lastCorrectFeetYaw;
 	float nextLbyUpdate;
 	int misses;
+	int previousTick;
 };
 
 static std::array<ResolverData, 65> playerResolverData;
@@ -163,57 +166,63 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	animatable->clientAnimations() = true;
 
-	if (Helpers::animDataAuthenticity(animatable) || lbyUpdate)
+	state->feetYaw = resolverData.previousFeetYaw;
+	animatable->updateClientSideAnimation();
+	resolverData.previousFeetYaw = state->feetYaw;
+
+	const auto simulationTick = Helpers::timeToTicks(animatable->simulationTime());
+	if (resolverData.previousTick != simulationTick)
 	{
-		resolverData.lastCorrectFeetYaw = state->feetYaw;
-	} else if (config->misc.resolveLby)
-	{
-		state->feetYaw = resolverData.previousFeetYaw;
-		animatable->updateClientSideAnimation();
-		resolverData.previousFeetYaw = state->feetYaw;
+		resolverData.previousTick = simulationTick;
 
 		const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
-		const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw);
-		const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
-		const bool notMove = animatable->velocity().length2D() < 0.1f && std::fabsf(animatable->velocity().z) < 100.0f;
-
-		float desyncAmount = 0.0f;
-		switch (resolverData.misses % 3)
+		if (Helpers::animDataAuthenticity(animatable) || lbyUpdate)
 		{
-		case 3:
-		case 4:
-		case 5:
-			desyncAmount = lbyDelta < 35.0f ? std::fminf(35.0f, maxDesync) : maxDesync;
-			break;
-		default:
-			desyncAmount = std::fminf(std::fabsf(Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.lastCorrectFeetYaw)), maxDesync);
-			break;
-		}
-
-		signed char side = 0;
-		switch (resolverData.misses % 3)
+			resolverData.desyncAmount = std::fminf(std::fabsf(Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw)), maxDesync);
+		} else if (config->misc.resolveLby)
 		{
-		case 1:
-			side = -side;
-			break;
-		case 2:
-			side = 0;
-			break;
-		default:
-			side = lbyTargetDelta > 0 ? -1 : 1;
-			break;
-		}
+			const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.previousFeetYaw);
+			const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
+			const bool notMove = animatable->velocity().length2D() < 0.1f && std::fabsf(animatable->velocity().z) < 100.0f;
 
-		state->feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + desyncAmount * side);
+			switch (resolverData.misses % 6)
+			{
+			case 2:
+			case 3:
+				resolverData.desyncAmount = lbyDelta < 35.0f ? std::fminf(35.0f, maxDesync) : maxDesync;
+				break;
+			default:
+				if (resolverData.desyncAmount < 10.0f)
+					resolverData.desyncAmount = lbyDelta < 35.0f ? std::fminf(35.0f, maxDesync) : maxDesync;
+				break;
+			}
+
+			switch (resolverData.misses % 6)
+			{
+			case 1:
+			case 3:
+				resolverData.desyncSide = lbyTargetDelta <= 0.0f ? -1 : 1;
+				break;
+			case 4:
+			case 5:
+				resolverData.desyncSide = 0;
+				break;
+			default:
+				resolverData.desyncSide = lbyTargetDelta > 0.0f ? -1 : 1;
+				break;
+			}
+
+			resolverData.feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + resolverData.desyncAmount * resolverData.desyncSide);
+		}
 	}
 
 	layers[AnimLayer_Lean].weight = FLT_EPSILON;
-	memory->setAbsAngle(animatable, {0.0f, state->feetYaw, 0.0f});
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->landingDuckAdditiveAmount = std::clamp(state->landingDuckAdditiveAmount, 0.0f, 1.0f);
 	state->feetCycle = layers[AnimLayer_MovementMove].cycle;
 	state->feetYawRate = layers[AnimLayer_MovementMove].weight;
+	state->feetYaw = resolverData.feetYaw;
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
