@@ -32,6 +32,7 @@ public:
 	std::add_pointer_t<HRESULT __stdcall(IDirect3DDevice9 *, D3DPRESENT_PARAMETERS *)> originalReset;
 	std::add_pointer_t<int __fastcall(SoundInfo &)> originalDispatchSound;
 	std::add_pointer_t<void __fastcall()> originalCheckFileCRC;
+	std::add_pointer_t<void __fastcall(void *, void *, void *, void *, void *, void *)> originalDoProceduralFootPlant;
 
 	HookType bspQuery;
 	HookType client;
