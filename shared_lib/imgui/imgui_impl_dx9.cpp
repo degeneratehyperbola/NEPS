@@ -351,7 +351,7 @@ void* ImGui_ImplDX9_CreateTextureRGBA8(unsigned int width, unsigned int  height,
 		temp_texture->Release();
 		return NULL;
 	}
-	for (int y = 0; y < height; ++y)
+	for (unsigned int y = 0; y < height; ++y)
 		memcpy((unsigned char *)tex_locked_rect.pBits + tex_locked_rect.Pitch * y, pixels + (width * 4) * y, (width * 4));
 	temp_texture->UnlockRect(0);
 
