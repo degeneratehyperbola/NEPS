@@ -151,15 +151,19 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 	bool doOverride = false;
 	{
 		static Helpers::KeyBindState flag;
-		doOverride = flag[cfg.damageOverride];
+		doOverride = flag[cfg.aimbotOverride.bind];
 	}
-	const auto minDamage = doOverride ? cfg.minDamageOverride : cfg.minDamage;
-	const auto minDamageAutoWall = doOverride ? cfg.minDamageAutoWallOverride : cfg.minDamageAutoWall;
+	const auto targeting = doOverride ? cfg.aimbotOverride.targeting : cfg.targeting;
+	const auto hitGroup = doOverride ? cfg.aimbotOverride.hitGroup : cfg.hitGroup;
+	const auto multipointScale = doOverride ? cfg.aimbotOverride.multipointScale : cfg.multipointScale;
 
-	auto bestFov = cfg.fov;
-	auto bestDistance = cfg.distance ? cfg.distance : INFINITY;
+	const auto minDamage = doOverride ? cfg.aimbotOverride.minDamage : cfg.minDamage;
+	const auto minDamageAutoWall = doOverride ? cfg.aimbotOverride.minDamageAutoWall : cfg.minDamageAutoWall;
+
+	auto bestFov = doOverride ? cfg.aimbotOverride.fov : cfg.fov;
+	auto bestDistance = doOverride ? (cfg.distance ? cfg.distance : INFINITY) : (cfg.aimbotOverride.distance ? cfg.aimbotOverride.distance : INFINITY);
 	auto bestDamage = 0;
-	auto bestHitchance = cfg.shotHitchance;
+	auto bestHitchance = doOverride ? cfg.aimbotOverride.hitchance : cfg.hitchance;
 
 	std::array<Matrix3x4, MAX_STUDIO_BONES> bufferBones;
 
@@ -225,7 +229,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				{
 				case Hitbox_Head:
 				{
-					const float r = hitbox.capsuleRadius * cfg.multipointScale;
+					const float r = hitbox.capsuleRadius * multipointScale;
 					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
 					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
 					Vector mid = (min + max) * 0.5f;
@@ -247,7 +251,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				}
 				case Hitbox_UpperChest:
 				{
-					const float r = hitbox.capsuleRadius * cfg.multipointScale;
+					const float r = hitbox.capsuleRadius * multipointScale;
 					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
 					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
 					Vector axis = max - min;
@@ -269,7 +273,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				}
 				case Hitbox_Thorax:
 				{
-					const float r = hitbox.capsuleRadius * cfg.multipointScale;
+					const float r = hitbox.capsuleRadius * multipointScale;
 					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
 					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
 					Vector mid = (min + max) * 0.5f;
@@ -284,7 +288,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				}
 				case Hitbox_Pelvis:
 				{
-					const float r = hitbox.capsuleRadius * cfg.multipointScale;
+					const float r = hitbox.capsuleRadius * multipointScale;
 					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
 					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
 					Vector axis = max - min;
@@ -354,7 +358,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				const auto damage = Helpers::findDamage(point, localPlayer.get(), trace, cfg.friendlyFire, backtrackRecord, hitboxIdx);
 				bool goesThroughWall = trace.startPos != localPlayerEyePosition;
 
-				if (~cfg.hitGroup & (1 << (trace.hitGroup - 1)))
+				if (~hitGroup & (1 << (trace.hitGroup - 1)))
 					continue;
 
 				if (cfg.visibleOnly && goesThroughWall) continue;
@@ -378,7 +382,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				if (!cfg.ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, point, 1))
 					continue;
 
-				switch (cfg.targeting)
+				switch (targeting)
 				{
 				case 0:
 					if (fov < bestFov)
@@ -448,9 +452,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		return;
 
 	if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;
-
-	if (!cfg.hitGroup)
-		return;
 
     if (!cfg.betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
         return;

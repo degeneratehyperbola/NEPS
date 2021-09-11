@@ -332,6 +332,19 @@ static void from_json(const json &j, ImVec2 &v)
 	read(j, "Y", v.y);
 }
 
+static void from_json(const json &j, Config::Aimbot::AimbotOverride &v)
+{
+	read<value_t::object>(j, "Bind", v.bind);
+	read(j, "Multipoint scale", v.multipointScale);
+	read(j, "Targeting", v.targeting);
+	read(j, "Hitgroup", v.hitGroup);
+	read(j, "Fov", v.fov);
+	read(j, "Distance", v.distance);
+	read(j, "Hitchance", v.hitchance);
+	read(j, "Min damage", v.minDamage);
+	read(j, "Min damage auto-wall", v.minDamageAutoWall);
+}
+
 static void from_json(const json &j, Config::Aimbot &a)
 {
 	read<value_t::object>(j, "Bind", a.bind);
@@ -347,19 +360,17 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Auto shot", a.autoShoot);
 	read(j, "Auto scope", a.autoScope);
 	read(j, "Auto stop", a.autoStop);
-	read(j, "Distance", a.distance);
-	read(j, "Fov", a.fov);
-	read(j, "Smooth start", a.quadratic);
-	read(j, "Linear speed", a.linear);
-	read(j, "Interpolation", a.interpolation);
-	read(j, "Hitgroup", a.hitGroup);
 	read(j, "Targeting", a.targeting);
-	read(j, "Hitchance", a.shotHitchance);
+	read(j, "Hitgroup", a.hitGroup);
+	read(j, "Fov", a.fov);
+	read(j, "Distance", a.distance);
+	read(j, "Hitchance", a.hitchance);
 	read(j, "Min damage", a.minDamage);
 	read(j, "Min damage auto-wall", a.minDamageAutoWall);
-	read<value_t::object>(j, "Override damage", a.damageOverride);
-	read(j, "Min damage override", a.minDamageOverride);
-	read(j, "Min damage auto-wall override", a.minDamageAutoWallOverride);
+	read(j, "Interpolation", a.interpolation);
+	read(j, "Smooth start", a.quadratic);
+	read(j, "Linear speed", a.linear);
+	read<value_t::object>(j, "Override", a.aimbotOverride);
 	read(j, "Between shots", a.betweenShots);
 }
 
@@ -970,6 +981,19 @@ static void to_json(json &j, const ImVec2 &o, const ImVec2 &dummy = {})
 	WRITE("Y", y);
 }
 
+static void to_json(json &j, const Config::Aimbot::AimbotOverride &o, const Config::Aimbot::AimbotOverride &dummy = {})
+{
+	WRITE("Bind", bind);
+	WRITE("Multipoint scale", multipointScale);
+	WRITE("Targeting", targeting);
+	WRITE("Hitgroup", hitGroup);
+	WRITE("Fov", fov);
+	WRITE("Distance", distance);
+	WRITE("Hitchance", hitchance);
+	WRITE("Min damage", minDamage);
+	WRITE("Min damage auto-wall", minDamageAutoWall);
+}
+
 static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dummy = {})
 {
 	WRITE("Bind", bind);
@@ -985,19 +1009,17 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Auto shot", autoShoot);
 	WRITE("Auto scope", autoScope);
 	WRITE("Auto stop", autoStop);
-	WRITE("Distance", distance);
-	WRITE("Fov", fov);
-	WRITE("Smooth start", quadratic);
-	WRITE("Linear speed", linear);
-	WRITE("Interpolation", interpolation);
-	WRITE("Hitgroup", hitGroup);
 	WRITE("Targeting", targeting);
-	WRITE("Hitchance", shotHitchance);
+	WRITE("Hitgroup", hitGroup);
+	WRITE("Fov", fov);
+	WRITE("Distance", distance);
+	WRITE("Hitchance", hitchance);
 	WRITE("Min damage", minDamage);
 	WRITE("Min damage auto-wall", minDamageAutoWall);
-	WRITE("Override damage", damageOverride);
-	WRITE("Min damage override", minDamageOverride);
-	WRITE("Min damage auto-wall override", minDamageAutoWallOverride);
+	WRITE("Interpolation", interpolation);
+	WRITE("Smooth start", quadratic);
+	WRITE("Linear speed", linear);
+	WRITE("Override", aimbotOverride);
 	WRITE("Between shots", betweenShots);
 }
 
