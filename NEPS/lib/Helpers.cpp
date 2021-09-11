@@ -1,18 +1,13 @@
 #include "Helpers.hpp"
 
 #include "../Hacks/Backtrack.h"
-
 #include "../GameData.h"
-#include "../res_defaultfont.h"
-
 #include "../SDK/EngineTrace.h"
 #include "../SDK/Entity.h"
 #include "../SDK/PhysicsSurfaceProps.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <shared_lib/imgui/imgui_internal.h>
-
-#include <cwctype>
 
 std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 {
@@ -77,6 +72,11 @@ std::array<float, 4U> Helpers::rainbowColor(float speed, float alpha) noexcept
 {
 	auto &&[r, g, b] = hsvToRgb(speed * memory->globalVars->realtime * 0.1f, 1.0f, 1.0f);
 	return {r, g, b, alpha};
+}
+
+Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &destination, const Vector &viewAngles) noexcept
+{
+	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
 static bool traceToExit(const Trace &enterTrace, const Vector &start, const Vector &direction, Vector &end, Trace &exitTrace)
@@ -175,11 +175,6 @@ float Helpers::handleBulletPenetration(SurfaceData *enterSurfaceData, const Trac
 
 	result = exitTrace.endPos;
 	return damage;
-}
-
-Vector Helpers::calculateRelativeAngle(const Vector &source, const Vector &destination, const Vector &viewAngles) noexcept
-{
-	return ((destination - source).toAngle() - viewAngles).normalize();
 }
 
 int Helpers::findDamage(const Vector &destination, const Vector &source, Entity *attacker, TraceFilter filter, Trace &trace, bool allowFriendlyFire, const Record *ghost, int ghostHitbox) noexcept
@@ -375,46 +370,6 @@ std::wstring Helpers::toWideString(const std::string &str) noexcept
 	return upperCase;
 }
 
-std::wstring Helpers::toUpper(std::wstring str) noexcept
-{
-	std::transform(str.begin(), str.end(), str.begin(), [](wchar_t w) { return std::towupper(w); });
-	return str;
-}
-
-float Helpers::angleDiffDeg(float a1, float a2) noexcept
-{
-	float delta;
-
-	delta = normalizeDeg(a1 - a2);
-	if (a1 > a2)
-	{
-		if (delta >= 180)
-			delta -= 360;
-	} else
-	{
-		if (delta <= -180)
-			delta += 360;
-	}
-	return delta;
-}
-
-float Helpers::angleDiffRad(float a1, float a2) noexcept
-{
-	float delta;
-
-	delta = normalizeRad(a1 - a2);
-	if (a1 > a2)
-	{
-		if (delta >= PI)
-			delta -= PI * 2;
-	} else
-	{
-		if (delta <= -PI)
-			delta += PI * 2;
-	}
-	return delta;
-}
-
 float Helpers::approachAngleDeg(float target, float value, float speed) noexcept
 {
 	target = normalizeDeg(target);
@@ -465,16 +420,6 @@ float Helpers::approachAngleRad(float target, float value, float speed) noexcept
 		value = target;
 
 	return value;
-}
-
-float Helpers::normalizeDeg(float a) noexcept
-{
-	return std::isfinite(a) ? std::remainder(a, 360.0f) : 0.0f;
-}
-
-float Helpers::normalizeRad(float a) noexcept
-{
-	return std::isfinite(a) ? std::remainder(a, PI * 2) : 0.0f;
 }
 
 void Helpers::feetYaw(AnimState *state, float pursue, float &hold, float &current) noexcept
@@ -570,15 +515,6 @@ bool Helpers::attacking(bool cmdAttack, bool cmdAttack2) noexcept
 	return false;
 }
 
-int Helpers::replace(std::string &str, const std::string &from, const std::string &to) noexcept
-{
-	size_t startPos = str.find(from);
-	if (startPos == std::string::npos)
-		return -1;
-	str.replace(startPos, from.length(), to);
-	return startPos;
-}
-
 float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept
 {
 	switch (i)
@@ -642,16 +578,6 @@ std::string Helpers::decode(std::string in) noexcept
 	}
 
 	return out;
-}
-
-const void *Helpers::getDefaultFontData() noexcept
-{
-	return reinterpret_cast<const void *>(_compressedFontData);
-}
-
-std::size_t Helpers::getDefaultFontSize() noexcept
-{
-	return _compressedFontSize;
 }
 
 bool Helpers::lbyUpdate(Entity *animatable, float &nextUpdate) noexcept

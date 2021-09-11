@@ -1,9 +1,11 @@
 #pragma once
 
 #include <array>
-#include <vector>
-#include <numbers>
+#include <algorithm>
 #include <cmath>
+#include <cwctype>
+#include <numbers>
+#include <vector>
 
 #include "../Memory.h"
 #include "../SDK/GlobalVars.h"
@@ -12,15 +14,15 @@
 #include <shared_lib/imgui/imgui.h>
 
 class Entity;
+struct AnimState;
+struct Color4;
+struct Record;
 struct SurfaceData;
+struct StudioBbox;
 struct Trace;
 struct TraceFilter;
 struct Vector;
 struct WeaponInfo;
-struct Color4;
-struct AnimState;
-struct StudioBbox;
-struct Record;
 
 #define PI std::numbers::pi_v<float>
 
@@ -38,6 +40,9 @@ namespace Helpers
 	};
 
 	constexpr auto timeToTicks = [](float time) noexcept { return static_cast<int>(0.5f + time / memory->globalVars->intervalPerTick); };
+
+	constexpr auto normalizeDeg = [](float a) noexcept { return std::isfinite(a) ? std::remainder(a, 360.0f) : 0.0f; };
+	constexpr auto normalizeRad = [](float a) noexcept { return std::isfinite(a) ? std::remainder(a, PI * 2) : 0.0f; };
 
 	std::array<float, 3U> rgbToHsv(float r, float g, float b) noexcept;
 	std::array<float, 3U> hsvToRgb(float h, float s, float v) noexcept;
@@ -60,7 +65,7 @@ namespace Helpers
 	unsigned int calculateColor(Color4 color) noexcept;
 	unsigned int calculateColor(Color3 color) noexcept;
 	unsigned int calculateColor(int r, int g, int b, int a) noexcept;
-    unsigned int calculateColor(float r, float g, float b, float a) noexcept;
+	unsigned int calculateColor(float r, float g, float b, float a) noexcept;
 
 	constexpr auto unitsToMeters(float units) noexcept
 	{
@@ -91,7 +96,11 @@ namespace Helpers
 	}
 
 	std::wstring toWideString(const std::string &str) noexcept;
-	std::wstring toUpper(std::wstring str) noexcept;
+	constexpr std::wstring toUpper(std::wstring str) noexcept
+	{
+		std::transform(str.begin(), str.end(), str.begin(), [](wchar_t w) { return std::towupper(w); });
+		return str;
+	}
 
 	struct KeyBindState
 	{
@@ -123,14 +132,42 @@ namespace Helpers
 		}
 	};
 
-	float angleDiffDeg(float, float) noexcept;
-	float angleDiffRad(float, float) noexcept;
+	constexpr float angleDiffDeg(float a1, float a2) noexcept
+	{
+		float delta;
+
+		delta = normalizeDeg(a1 - a2);
+		if (a1 > a2)
+		{
+			if (delta >= 180)
+				delta -= 360;
+		} else
+		{
+			if (delta <= -180)
+				delta += 360;
+		}
+		return delta;
+	}
+
+	constexpr float angleDiffRad(float a1, float a2) noexcept
+	{
+		float delta;
+
+		delta = normalizeRad(a1 - a2);
+		if (a1 > a2)
+		{
+			if (delta >= PI)
+				delta -= PI * 2;
+		} else
+		{
+			if (delta <= -PI)
+				delta += PI * 2;
+		}
+		return delta;
+	}
 
 	float approachAngleDeg(float target, float value, float speed) noexcept;
 	float approachAngleRad(float target, float value, float speed) noexcept;
-
-    float normalizeDeg(float a) noexcept;
-    float normalizeRad(float a) noexcept;
 
 	void feetYaw(AnimState *state, float pursue, float &hold, float &current) noexcept;
 
@@ -138,9 +175,16 @@ namespace Helpers
 
 	bool worldToScreen(const Vector &in, ImVec2 &out, bool floor = true) noexcept;
 
-    bool attacking(bool cmdAttack, bool cmdAttack2) noexcept;
+	bool attacking(bool cmdAttack, bool cmdAttack2) noexcept;
 
-	int replace(std::string &, const std::string &, const std::string &) noexcept;
+	constexpr int replace(std::string &str, const std::string &from, const std::string &to) noexcept
+	{
+		size_t startPos = str.find(from);
+		if (startPos == std::string::npos)
+			return -1;
+		str.replace(startPos, from.length(), to);
+		return startPos;
+	}
 
 	float approxRadius(const StudioBbox &hitbox, int i) noexcept;
 
@@ -157,9 +201,6 @@ namespace Helpers
 	}
 
 	std::string decode(std::string) noexcept;
-
-	const void *getDefaultFontData() noexcept;
-	std::size_t getDefaultFontSize() noexcept;
 
 	bool lbyUpdate(Entity *animatable, float &nextUpdate) noexcept;
 

@@ -6,11 +6,12 @@
 #include <shared_lib/imgui/imgui_stdlib.h>
 
 #include "lib/ImguiCustom.hpp"
-
 #include "GUI.h"
 #include "Hooks.h"
 #include "Interfaces.h"
 #include "Hacks/Misc.h"
+
+#include "res_defaultfont.h"
 
 #ifdef NEPS_DEBUG
 #include "GameData.h"
@@ -61,7 +62,7 @@ GUI::GUI() noexcept
 	if (cfg.Name[0] == '\0')
 		std::sprintf(cfg.Name, "NEPS N-Kana (default), %dpx", static_cast<int>(cfg.SizePixels));
 
-	font = io.Fonts->AddFontFromMemoryCompressedTTF(Helpers::getDefaultFontData(), Helpers::getDefaultFontSize(), cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
+	font = io.Fonts->AddFontFromMemoryCompressedTTF(_compressedFontData, _compressedFontSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
 }
 
 static void drawColorPalette() noexcept

@@ -139,7 +139,7 @@ struct Vector
 		return Vector{-x, -y, -z};
 	}
 
-	Vector &normalize() noexcept
+	constexpr Vector &normalize() noexcept
 	{
 		x = Helpers::normalizeDeg(x);
 		y = Helpers::normalizeDeg(y);
@@ -196,19 +196,19 @@ struct Vector
 		return (*this - v).length();
 	}
 
-	auto distToSquared(const Vector &v) const noexcept
+	constexpr auto distToSquared(const Vector &v) const noexcept
 	{
 		return (*this - v).lengthSquared();
 	}
 
-	auto toAngle() const noexcept
+	constexpr auto toAngle() const noexcept
 	{
 		return Vector{Helpers::radiansToDegrees(std::atan2f(-z, std::hypot(x, y))),
 					  Helpers::radiansToDegrees(std::atan2f(y, x)),
 					  0.0f};
 	}
 
-	auto toAngle2D() const noexcept
+	constexpr auto toAngle2D() const noexcept
 	{
 		return Helpers::radiansToDegrees(std::atan2f(y, x));
 	}
@@ -245,32 +245,32 @@ struct Vector
 					  0.0f};
 	}
 
-	static auto up() noexcept
+	constexpr static auto up() noexcept
 	{
 		return Vector{0.0f, 0.0f, 1.0f};
 	}
 
-	static auto down() noexcept
+	constexpr static auto down() noexcept
 	{
 		return Vector{0.0f, 0.0f, -1.0f};
 	}
 
-	static auto forward() noexcept
+	constexpr static auto forward() noexcept
 	{
 		return Vector{1.0f, 0.0f, 0.0f};
 	}
 
-	static auto back() noexcept
+	constexpr static auto back() noexcept
 	{
 		return Vector{-1.0f, 0.0f, 0.0f};
 	}
 
-	static auto left() noexcept
+	constexpr static auto left() noexcept
 	{
 		return Vector{0.0f, 1.0f, 0.0f};
 	}
 
-	static auto right() noexcept
+	constexpr static auto right() noexcept
 	{
 		return Vector{0.0f, -1.0f, 0.0f};
 	}
