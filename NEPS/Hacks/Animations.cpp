@@ -77,16 +77,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 
 	if (!localPlayer) return matrixUpdated;
 
-	if (!config->misc.fixAnimation)
-		return matrixUpdated;
-
-	if (!localPlayer->isAlive())
-	{
-		localPlayer->clientAnimations() = true;
-		return matrixUpdated;
-	}
-
-	if (!memory->input->isCameraInThirdPerson)
+	if (!config->misc.fixAnimation || !localPlayer->isAlive() || !memory->input->isCameraInThirdPerson)
 	{
 		localPlayer->clientAnimations() = true;
 		localPlayer->updateClientSideAnimation();
