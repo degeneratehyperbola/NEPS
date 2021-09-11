@@ -679,7 +679,7 @@ void Misc::tweakPlayerAnim(FrameStage stage) noexcept
 {
 	if (stage == FrameStage::RENDER_START)
 	{
-		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp && !config->misc.desyncResolver)
+		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp && !config->misc.resolveLby)
 			return;
 
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
@@ -694,7 +694,7 @@ void Misc::tweakPlayerAnim(FrameStage stage) noexcept
 				*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->framecount;
 			}
 
-			if (config->misc.desyncResolver)
+			if (config->misc.resolveLby)
 				Animations::resolve(entity);
 
 			if (auto varMap = entity->getVarMap(); varMap && config->misc.disableInterp)
