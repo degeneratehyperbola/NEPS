@@ -93,7 +93,7 @@ static void drawColorPalette() noexcept
 void GUI::render() noexcept
 {
 	#ifdef NEPS_DEBUG
-	static Texture debugNotice = {IDB_PNG2, "PNG"};
+	static Texture debugNotice = {IDB_PNG2, L"PNG"};
 	if (debugNotice.get())
 		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
 	#endif // NEPS_DEBUG
@@ -104,7 +104,7 @@ void GUI::render() noexcept
 		return;
 
 	// ?Que? I don't know why, but apparently 2048x2048 texture is too much for DX9 ¯\_(ツ)_/¯
-	//static Texture vignette = {IDB_PNG3, "PNG"};
+	//static Texture vignette = {IDB_PNG3, L"PNG"};
 	//if (vignette.get())
 	//	ImGui::GetBackgroundDrawList()->AddImage(vignette.get(), {0.0f, 0.0f}, ImGui::GetIO().DisplaySize);
 
