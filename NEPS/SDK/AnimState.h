@@ -106,7 +106,8 @@ struct AnimState
 	PAD(14)
 	float landAnimationMultiplier;
 	float stopToFullRunningFraction;
-	PAD(8)
+	PAD(4)
+	float inAirSmoothValue;
 	bool onLadder;
 	PAD(521)
 	Vector velocitySubtract;
