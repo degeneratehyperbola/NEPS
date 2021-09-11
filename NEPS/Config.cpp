@@ -680,7 +680,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fix animations", m.fixAnimation);
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
 	read(j, "Disable interpolation", m.disableInterp);
-	read(j, "Resolver", m.desyncResolver);
+	read(j, "Disable IK", m.disableIK);
 	read(j, "Resolve LBY", m.resolveLby);
 	read(j, "Unlock invertory", m.unlockInvertory);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
@@ -1161,7 +1161,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix animations", fixAnimation);
 	WRITE("Disable model occlusion", disableModelOcclusion);
 	WRITE("Disable interpolation", disableInterp);
-	WRITE("Resolver", desyncResolver);
+	WRITE("Disable IK", disableIK);
 	WRITE("Resolve LBY", resolveLby);
 	WRITE("Unlock invertory", unlockInvertory);
 	WRITE("Disable HUD blur", disablePanoramablur);

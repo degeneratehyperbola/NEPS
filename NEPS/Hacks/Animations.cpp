@@ -170,7 +170,7 @@ void Animations::resolve(Entity *animatable) noexcept
 		if (Helpers::animDataAuthenticity(animatable) || lbyUpdate)
 		{
 			resolverData.desyncAmount = std::fminf(std::fabsf(Helpers::angleDiffDeg(animatable->eyeAngles().y, state->feetYaw)), maxDesync);
-		} else if (config->misc.resolveLby)
+		} else
 		{
 			const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.previousFeetYaw);
 			const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());

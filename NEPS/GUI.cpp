@@ -2445,24 +2445,14 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
 	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
 
-	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
 	ImGui::Checkbox("Fix bone matrix", &config->misc.fixBoneMatrix);
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
 	ImGui::Checkbox("Fix local animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
-	ImGui::Checkbox("Desync resolver", &config->misc.desyncResolver);
-	ImGui::SameLine();
-
-	if (ImGui::ArrowButton("resolver", ImGuiDir_Right))
-		ImGui::OpenPopup("##resolver");
-
-	if (ImGui::BeginPopup("##resolver"))
-	{
-		ImGui::Checkbox("Resolve LBY", &config->misc.resolveLby);
-		ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
-		ImGui::EndPopup();
-	}
+	ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
+	ImGui::Checkbox("Disable IK", &config->misc.disableIK);
+	ImGui::Checkbox("Resolve LBY", &config->misc.resolveLby);
 
 	ImGui::NextColumn();
 
@@ -2473,6 +2463,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
 	ImGui::Checkbox("No panorama blur", &config->misc.disablePanoramablur);
+	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
 	ImGui::SetNextItemWidth(-1);
 	ImGui::SliderFloat("##angle_delta", &config->misc.maxAngleDelta, 0.0f, 255.0f, "Aimstep %.2fdeg");
 	ImGui::Checkbox("Preserve killfeed", &config->misc.preserveKillfeed.enabled);
