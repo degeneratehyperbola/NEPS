@@ -689,7 +689,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::PushItemWidth(-1);
 		ImGui::SliderFloat("##scale", &config->aimbot[currentWeapon].multipointScale, 0.5f, 1.0f, "Multipoint scale %.5f");
 		ImGui::SliderFloat("##fov", &config->aimbot[currentWeapon].fov, 0.0f, 255.0f, "FOV %.2fdeg", ImGuiSliderFlags_Logarithmic);
-		ImGui::SliderFloat("##hitchance", &config->aimbot[currentWeapon].shotHitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
+		ImGui::SliderFloat("##hitchance", &config->aimbot[currentWeapon].hitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
 		ImGui::SetNextItemWidth(90);
 		ImGui::InputFloat("Distance", &config->aimbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
 		config->aimbot[currentWeapon].distance = std::max(config->aimbot[currentWeapon].distance, 0.0f);
@@ -699,17 +699,28 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::SliderInt("##mindmg_aw", &config->aimbot[currentWeapon].minDamageAutoWall, 0, 100, "Min damage auto-wall %d");
 		config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
 
-		ImGuiCustom::keyBind("Override", config->aimbot[currentWeapon].damageOverride);
+		ImGuiCustom::keyBind("Override", config->aimbot[currentWeapon].aimbotOverride.bind);
 		ImGui::SameLine();
 		if (ImGui::ArrowButton("override_popup", ImGuiDir_Right))
 			ImGui::OpenPopup("##override_popup");
 
 		if (ImGui::BeginPopup("##override_popup"))
 		{
-			ImGui::SliderInt("##mindmg", &config->aimbot[currentWeapon].minDamageOverride, 0, 100, "Min damage %d");
-			config->aimbot[currentWeapon].minDamageOverride = std::max(config->aimbot[currentWeapon].minDamageOverride, 0);
-			ImGui::SliderInt("##mindmg_aw", &config->aimbot[currentWeapon].minDamageAutoWallOverride, 0, 100, "Min damage auto-wall %d");
-			config->aimbot[currentWeapon].minDamageAutoWallOverride = std::max(config->aimbot[currentWeapon].minDamageAutoWallOverride, 0);
+			ImGui::SetNextItemWidth(80);
+			ImGui::Combo("Targeting", &config->aimbot[currentWeapon].aimbotOverride.targeting, "FOV\0Damage\0Hitchance\0Distance\0");
+			ImGui::SetNextItemWidth(80);
+			ImGuiCustom::multiCombo("Hit group", config->aimbot[currentWeapon].aimbotOverride.hitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
+
+			ImGui::SliderFloat("##scale", &config->aimbot[currentWeapon].aimbotOverride.multipointScale, 0.5f, 1.0f, "Multipoint scale %.5f");
+			ImGui::SliderFloat("##fov", &config->aimbot[currentWeapon].aimbotOverride.fov, 0.0f, 255.0f, "FOV %.2fdeg", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##hitchance", &config->aimbot[currentWeapon].aimbotOverride.hitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
+			ImGui::SetNextItemWidth(90);
+			ImGui::InputFloat("Distance", &config->aimbot[currentWeapon].aimbotOverride.distance, 1.0f, 10.0f, "%.0fu");
+			config->aimbot[currentWeapon].distance = std::max(config->aimbot[currentWeapon].aimbotOverride.distance, 0.0f);
+			ImGui::SliderInt("##mindmg", &config->aimbot[currentWeapon].aimbotOverride.minDamage, 0, 100, "Min damage %d");
+			config->aimbot[currentWeapon].aimbotOverride.minDamage = std::max(config->aimbot[currentWeapon].aimbotOverride.minDamage, 0);
+			ImGui::SliderInt("##mindmg_aw", &config->aimbot[currentWeapon].aimbotOverride.minDamageAutoWall, 0, 100, "Min damage auto-wall %d");
+			config->aimbot[currentWeapon].aimbotOverride.minDamageAutoWall = std::max(config->aimbot[currentWeapon].aimbotOverride.minDamageAutoWall, 0);
 			ImGui::EndPopup();
 		}
 

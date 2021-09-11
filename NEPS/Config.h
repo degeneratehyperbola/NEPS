@@ -56,15 +56,24 @@ public:
 		float distance = 0.0f;
 		int minDamage = 0;
 		int minDamageAutoWall = 0;
-		KeyBind damageOverride;
-		int minDamageOverride = 0;
-		int minDamageAutoWallOverride = 0;
-		float shotHitchance = 0.0f;
+		float hitchance = 0.0f;
+		int hitGroup = 127;
 		int interpolation = 0;
 		float quadratic = 0.0f;
 		float linear = 255.0f;
-		int hitGroup = 127;
 		bool betweenShots = true;
+		struct AimbotOverride
+		{
+			KeyBind bind;
+			float multipointScale = 0.8f;
+			int targeting = 0;
+			float fov = 1.0f;
+			float distance = 0.0f;
+			int minDamage = 0;
+			int minDamageAutoWall = 0;
+			float hitchance = 0.0f;
+			int hitGroup = 127;
+		} aimbotOverride;
 	};
 	std::array<Aimbot, 40> aimbot;
 
