@@ -169,8 +169,6 @@ namespace Helpers
 	float approachAngleDeg(float target, float value, float speed) noexcept;
 	float approachAngleRad(float target, float value, float speed) noexcept;
 
-	void feetYaw(AnimState *state, float pursue, float &hold, float &current) noexcept;
-
 	float approachValSmooth(float target, float value, float fraction);
 
 	bool worldToScreen(const Vector &in, ImVec2 &out, bool floor = true) noexcept;

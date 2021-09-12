@@ -422,38 +422,6 @@ float Helpers::approachAngleRad(float target, float value, float speed) noexcept
 	return value;
 }
 
-void Helpers::feetYaw(AnimState *state, float pursue, float &hold, float &current) noexcept
-{
-	if (!state)
-		return;
-
-	if (state->onGround)
-	{
-		static float realignTimer = 0.0f;
-
-		if (state->horizontalSpeed > 0.1f)
-		{
-			const float deltaTime = std::max(0.0f, memory->globalVars->currenttime - state->lastClientSideAnimationUpdateTime);
-
-			current = approachAngleDeg(pursue, current, deltaTime * (30.0f + 20.0f * state->stopToFullRunningFraction));
-
-			realignTimer = memory->globalVars->currenttime + 0.22f;
-			hold = pursue;
-		} else
-		{
-			const float deltaTime = std::max(0.0f, memory->globalVars->currenttime - state->lastClientSideAnimationUpdateTime);
-
-			current = approachAngleDeg(hold, current, deltaTime * 100.0f);
-
-			if (memory->globalVars->currenttime > realignTimer && std::abs(angleDiffDeg(current, pursue)) > 35.0f)
-			{
-				realignTimer = memory->globalVars->currenttime + 1.1f;
-				hold = pursue;
-			}
-		}
-	}
-}
-
 float Helpers::approachValSmooth(float target, float value, float fraction)
 {
 	float delta = target - value;
