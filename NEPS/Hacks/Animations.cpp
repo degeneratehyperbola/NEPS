@@ -172,7 +172,11 @@ void Animations::resolve(Entity *animatable) noexcept
 			const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
 			const bool notMove = animatable->velocity().length2D() < 0.1f && std::fabsf(animatable->velocity().z) < 100.0f;
 
-			const std::array<float, 3U> positions = {-maxDesync, 0.0f, maxDesync};
+			std::array<float, 3U> positions = {-maxDesync, 0.0f, maxDesync};
+
+			if (lbyTargetDelta < 0.0f)
+				std::reverse(positions.begin(), positions.end());
+
 			std::vector<float> distances;
 			for (const auto &position : positions)
 				distances.emplace_back(std::fabsf(position - lbyDelta));
