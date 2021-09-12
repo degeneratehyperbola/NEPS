@@ -129,8 +129,6 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 struct ResolverData
 {
 	std::array<AnimLayer, AnimLayer_Count> previousLayers;
-	float desyncAmount;
-	signed char desyncSide;
 	float feetYaw;
 	float previousFeetYaw;
 	float nextLbyUpdate;
@@ -157,48 +155,31 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	animatable->clientAnimations() = true;
 
-	state->feetYaw = resolverData.previousFeetYaw;
-	animatable->updateClientSideAnimation();
-	resolverData.previousFeetYaw = state->feetYaw;
-
 	const auto simulationTick = Helpers::timeToTicks(animatable->simulationTime());
 	if (resolverData.previousTick != simulationTick)
 	{
 		resolverData.previousTick = simulationTick;
 
+		state->feetYaw = resolverData.previousFeetYaw;
+		animatable->updateClientSideAnimation();
+		resolverData.previousFeetYaw = state->feetYaw;
+
 		const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
+		const float lowDesync = std::fminf(35.0f, maxDesync);
 		if (!Helpers::animDataAuthenticity(animatable) && !lbyUpdate)
 		{
 			const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.previousFeetYaw);
 			const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
 			const bool notMove = animatable->velocity().length2D() < 0.1f && std::fabsf(animatable->velocity().z) < 100.0f;
 
-			switch (resolverData.misses % 6)
-			{
-			case 3:
-			case 4:
-			case 5:
-				resolverData.desyncAmount = std::fminf(35.0f, maxDesync);
-				break;
-			default:
-				resolverData.desyncAmount = maxDesync;
-				break;
-			}
+			const std::array<float, 3U> positions = {-maxDesync, 0.0f, maxDesync};
+			std::vector<float> distances;
+			for (const auto &position : positions)
+				distances.emplace_back(std::fabsf(position - lbyDelta));
 
-			switch (resolverData.misses % 3)
-			{
-			case 1:
-				resolverData.desyncSide = -resolverData.desyncSide;
-				break;
-			case 2:
-				resolverData.desyncSide = 0;
-				break;
-			default:
-				resolverData.desyncSide = lbyTargetDelta > 0.0f ? -1 : 1;
-				break;
-			}
+			const auto current = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
 
-			resolverData.feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + resolverData.desyncAmount * resolverData.desyncSide);
+			resolverData.feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + resolverData.misses + 1) % positions.size()]);
 		}
 	}
 
