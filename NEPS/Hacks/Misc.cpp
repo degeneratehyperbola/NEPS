@@ -500,7 +500,7 @@ static void oppositeHandKnife(FrameStage stage) noexcept
 	if (!localPlayer)
 		return;
 
-	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
 		return;
 
 	if (!config->visuals.oppositeHandKnife)
@@ -509,7 +509,7 @@ static void oppositeHandKnife(FrameStage stage) noexcept
 		return;
 	}
 
-	if (stage == FrameStage::RENDER_START)
+	if (stage == FrameStage::RenderStart)
 	{
 		if (const auto activeWeapon = localPlayer->getActiveWeapon())
 		{
@@ -524,7 +524,7 @@ static void oppositeHandKnife(FrameStage stage) noexcept
 
 static void camDist(FrameStage stage)
 {
-	if (stage == FrameStage::RENDER_START)
+	if (stage == FrameStage::RenderStart)
 	{
 		static auto distVar = interfaces->cvar->findVar("cam_idealdist");
 		static auto curDist = 0.0f;
@@ -541,19 +541,19 @@ void Misc::changeConVarsFrame(FrameStage stage)
 {
 	switch (stage)
 	{
-	case FrameStage::UNDEFINED:
+	case FrameStage::Undefined:
 		break;
-	case FrameStage::START:
+	case FrameStage::Start:
 		break;
-	case FrameStage::NET_UPDATE_START:
+	case FrameStage::NetUpdateStart:
 		break;
-	case FrameStage::NET_UPDATE_POSTDATAUPDATE_START:
+	case FrameStage::NetUpdatePostUpdateStart:
 		break;
-	case FrameStage::NET_UPDATE_POSTDATAUPDATE_END:
+	case FrameStage::NetUpdatePostUpdateEnd:
 		break;
-	case FrameStage::NET_UPDATE_END:
+	case FrameStage::NetUpdateEnd:
 		break;
-	case FrameStage::RENDER_START:
+	case FrameStage::RenderStart:
 		static auto blurVar = interfaces->cvar->findVar("@panorama_disable_blur");
 		blurVar->setValue(config->misc.disablePanoramablur);
 		static auto lagVar = interfaces->cvar->findVar("cam_ideallag");
@@ -582,7 +582,7 @@ void Misc::changeConVarsFrame(FrameStage stage)
 			shairVar->setValue(config->visuals.forceCrosshair == 1 && !local.drawingScope ? 3 : 0);
 		}
 		break;
-	case FrameStage::RENDER_END:
+	case FrameStage::RenderEnd:
 		static auto skyVar = interfaces->cvar->findVar("r_3dsky");
 		skyVar->setValue(!config->visuals.no3dSky);
 		static auto brightVar = interfaces->cvar->findVar("mat_force_tonemap_scale");
@@ -675,9 +675,9 @@ void Misc::antiAfkKick(UserCmd *cmd) noexcept
 		cmd->buttons |= 1 << 26;
 }
 
-void Misc::tweakPlayerAnim(FrameStage stage) noexcept
+void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
 {
-	if (stage == FrameStage::NET_UPDATE_POSTDATAUPDATE_START)
+	if (stage == FrameStage::NetUpdatePostUpdateStart)
 	{
 		if (!config->misc.resolveLby)
 			return;
@@ -693,7 +693,7 @@ void Misc::tweakPlayerAnim(FrameStage stage) noexcept
 		}
 	}
 
-	if (stage == FrameStage::RENDER_START)
+	if (stage == FrameStage::RenderStart)
 	{
 		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp)
 			return;

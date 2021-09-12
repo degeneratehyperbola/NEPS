@@ -371,7 +371,7 @@ void SkinChanger::run(FrameStage stage) noexcept
 	if (localPlayer)
 		localPlayerHandle = localPlayer->handle();
 
-	if (stage == FrameStage::NET_UPDATE_POSTDATAUPDATE_START)
+	if (stage == FrameStage::NetUpdatePostUpdateStart)
 	{
 		post_data_update_start(localPlayerHandle);
 		if (hudUpdateRequired && localPlayer && !localPlayer->isDormant())

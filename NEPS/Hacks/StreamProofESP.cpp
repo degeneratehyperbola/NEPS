@@ -224,34 +224,6 @@ static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
 	}
 }
 
-static ImVec2 renderText(float distance, float cullDistance, const Color4Border &textCfg, const char *text, const ImVec2 &pos, bool centered = true, bool adjustHeight = true) noexcept
-{
-	if (!textCfg.color[3])
-		return {};
-
-	if (cullDistance > 0 && distance > cullDistance)
-		return {};
-	else if (cullDistance < 0 && distance < -cullDistance)
-		return {};
-
-	const auto textSize = ImGui::CalcTextSize(text);
-
-	const auto horizontalOffset = centered ? textSize.x / 2 : 0.0f;
-	const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
-
-	const auto color = Helpers::calculateColor(textCfg);
-	if (textCfg.border)
-	{
-		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f}, color & IM_COL32_A_MASK, text);
-		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f}, color & IM_COL32_A_MASK, text);
-		drawList->AddText({pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset}, color & IM_COL32_A_MASK, text);
-		drawList->AddText({pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset}, color & IM_COL32_A_MASK, text);
-	}
-	drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset}, color, text);
-
-	return textSize;
-}
-
 static void drawSnapline(const Snapline &config, const ImVec2 &min, const ImVec2 &max) noexcept
 {
 	if (!config.enabled)
@@ -333,7 +305,7 @@ static void drawHealthBar(const ImVec2 &pos, float height, int health, const Col
 	}
 
 	if (text.enabled)
-		renderText(distance, cull, text, std::to_string(originalHealth).c_str(), pos + ImVec2{0.0f, (100 - health) / 100.0f * height}, true, false);
+		Helpers::drawText(drawList, distance, cull, text, std::to_string(originalHealth).c_str(), pos + ImVec2{0.0f, (100 - health) / 100.0f * height}, true, false);
 }
 
 static void renderPlayerBox(const PlayerData &playerData, const Player &config) noexcept
@@ -356,7 +328,7 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 
 	if (config.name.enabled)
 	{
-		const auto nameSize = renderText(playerData.distanceToLocal, config.textCullDistance, config.name, playerData.name.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.min.y});
+		const auto nameSize = Helpers::drawText(drawList, playerData.distanceToLocal, config.textCullDistance, config.name, playerData.name.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.min.y});
 		offsetMins.y -= nameSize.y;
 	}
 
@@ -380,7 +352,7 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 			flags << playerData.armor << "ap\n";
 
 		if (!flags.str().empty())
-			renderText(playerData.distanceToLocal, config.textCullDistance, config.flags, flags.str().c_str(), {bbox.max.x + 1.0f, bbox.min.y}, false, false);
+			Helpers::drawText(drawList, playerData.distanceToLocal, config.textCullDistance, config.flags, flags.str().c_str(), {bbox.max.x + 1.0f, bbox.min.y}, false, false);
 	}
 
 	if (config.flashDuration.enabled && playerData.flashDuration > 0.0f)
@@ -400,7 +372,7 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 
 	if (config.weapon.enabled && !playerData.activeWeapon.empty())
 	{
-		const auto weaponTextSize = renderText(playerData.distanceToLocal, config.textCullDistance, config.weapon, playerData.activeWeapon.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.max.y}, true, false);
+		const auto weaponTextSize = Helpers::drawText(drawList, playerData.distanceToLocal, config.textCullDistance, config.weapon, playerData.activeWeapon.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.max.y}, true, false);
 		offsetMaxs.y += weaponTextSize.y;
 	}
 
@@ -421,13 +393,13 @@ static void renderWeaponBox(const WeaponData &weaponData, const Weapon &config) 
 
 	if (config.name.enabled && !weaponData.displayName.empty())
 	{
-		renderText(weaponData.distanceToLocal, config.textCullDistance, config.name, weaponData.displayName.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.min.y});
+		Helpers::drawText(drawList, weaponData.distanceToLocal, config.textCullDistance, config.name, weaponData.displayName.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.min.y});
 	}
 
 	if (config.ammo.enabled && weaponData.clip != -1)
 	{
 		const auto text{std::to_string(weaponData.clip) + " / " + std::to_string(weaponData.reserveAmmo)};
-		renderText(weaponData.distanceToLocal, config.textCullDistance, config.ammo, text.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.max.y}, true, false);
+		Helpers::drawText(drawList, weaponData.distanceToLocal, config.textCullDistance, config.ammo, text.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.max.y}, true, false);
 	}
 }
 
@@ -444,7 +416,7 @@ static void renderEntityBox(const BaseData &entityData, const char *name, const 
 	FontPush font{config.font.name, entityData.distanceToLocal};
 
 	if (config.name.enabled)
-		renderText(entityData.distanceToLocal, config.textCullDistance, config.name, name, {(bbox.min.x + bbox.max.x) / 2, bbox.min.y - 5});
+		Helpers::drawText(drawList, entityData.distanceToLocal, config.textCullDistance, config.name, name, {(bbox.min.x + bbox.max.x) / 2, bbox.min.y - 5});
 }
 
 static void drawProjectileTrajectory(const Trail &config, const std::vector<std::pair<float, Vector>> &trajectory) noexcept
@@ -529,7 +501,6 @@ static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerDa
 		return;
 
 	const auto yaw = Helpers::degreesToRadians(interfaces->engine->getViewAngles().y);
-	const auto color = Helpers::calculateColor(config);
 
 	const auto positionDiff = GameData::local().origin - playerData.origin;
 
@@ -540,7 +511,7 @@ static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerDa
 	if (!l) return;
 	pos /= l;
 
-	Helpers::drawTriangleFromCenter(pos * 300, color, drawList);
+	Helpers::drawTriangleFromCenter(drawList, pos * 300, config);
 }
 
 static void drawLineOfSight(const Color4ToggleThickness &config, const PlayerData &playerData)

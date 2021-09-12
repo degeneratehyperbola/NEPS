@@ -569,12 +569,13 @@ bool Helpers::lbyUpdate(Entity *animatable, float &nextUpdate) noexcept
 	return false;
 }
 
-void Helpers::drawTriangleFromCenter(const ImVec2 &pos, ImU32 color, ImDrawList *drawList) noexcept
+void Helpers::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, const Color4 &colorCfg) noexcept
 {
 	const auto l = std::sqrtf(ImLengthSqr(pos));
 	if (!l) return;
 	const auto posNormalized = pos / l;
 	const auto center = ImGui::GetIO().DisplaySize / 2 + pos;
+	const auto color = Helpers::calculateColor(colorCfg);
 
 	const ImVec2 trianglePoints[] = {
 		center + ImVec2{0.4f * posNormalized.y, -0.4f * posNormalized.x} * 30,
@@ -584,4 +585,31 @@ void Helpers::drawTriangleFromCenter(const ImVec2 &pos, ImU32 color, ImDrawList 
 
 	drawList->AddConvexPolyFilled(trianglePoints, 3, color);
 	drawList->AddPolyline(trianglePoints, 3, color | IM_COL32_A_MASK, ImDrawFlags_Closed, 1.0f);
+}
+
+ImVec2 Helpers::drawText(ImDrawList *drawList, float distance, float cullDistance, const Color4Border &textCfg, const char *text, const ImVec2 &pos, bool centered, bool adjustHeight) noexcept
+{
+	if (!textCfg.color[3])
+		return {};
+
+	if (cullDistance > 0 && distance > cullDistance)
+		return {};
+	else if (cullDistance < 0 && distance < -cullDistance)
+		return {};
+
+	const auto textSize = ImGui::CalcTextSize(text);
+	const auto horizontalOffset = centered ? textSize.x / 2 : 0.0f;
+	const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
+	const auto color = Helpers::calculateColor(textCfg);
+
+	if (textCfg.border)
+	{
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f}, color & IM_COL32_A_MASK, text);
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f}, color & IM_COL32_A_MASK, text);
+		drawList->AddText({pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset}, color & IM_COL32_A_MASK, text);
+		drawList->AddText({pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset}, color & IM_COL32_A_MASK, text);
+	}
+	drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset}, color, text);
+
+	return textSize;
 }

@@ -303,26 +303,26 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 
 	switch (stage)
 	{
-	case FrameStage::UNDEFINED:
+	case FrameStage::Undefined:
 		break;
-	case FrameStage::START:
+	case FrameStage::Start:
 		GameData::update();
 		break;
-	case FrameStage::NET_UPDATE_START:
+	case FrameStage::NetUpdateStart:
 		break;
-	case FrameStage::NET_UPDATE_POSTDATAUPDATE_START:
+	case FrameStage::NetUpdatePostUpdateStart:
 		break;
-	case FrameStage::NET_UPDATE_POSTDATAUPDATE_END:
+	case FrameStage::NetUpdatePostUpdateEnd:
 		break;
-	case FrameStage::NET_UPDATE_END:
+	case FrameStage::NetUpdateEnd:
 		break;
-	case FrameStage::RENDER_START:
+	case FrameStage::RenderStart:
 		Animations::fixAnimation(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::forceRelayCluster();
 		break;
-	case FrameStage::RENDER_END:
+	case FrameStage::RenderEnd:
 		break;
 	}
 
@@ -337,7 +337,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Visuals::playerModel(stage);
 		Visuals::disablePostProcessing(stage);
 		Visuals::removeVisualRecoil(stage);
-		Misc::tweakPlayerAnim(stage);
+		Misc::tweakPlayerAnimations(stage);
 		Backtrack::update(stage);
 		SkinChanger::run(stage);
 	}

@@ -18,7 +18,7 @@ static std::array<std::deque<Record>, 65> records;
 
 void Backtrack::update(FrameStage stage) noexcept
 {
-	if (stage == FrameStage::RENDER_START)
+	if (stage == FrameStage::RenderStart)
 	{
 		if (!config->backtrack.enabled || !localPlayer || !localPlayer->isAlive())
 		{
