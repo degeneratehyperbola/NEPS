@@ -66,6 +66,9 @@
     <ClInclude Include="lib\Helpers.hpp">
       <Filter>lib</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared_lib\MemorySearch.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NLoader.rc">
