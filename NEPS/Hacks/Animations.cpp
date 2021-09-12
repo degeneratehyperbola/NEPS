@@ -52,7 +52,7 @@ bool Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 
 		memory->updateState(desyncedState, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
 		memory->invalidateBoneCache(localPlayer.get());
-		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, desyncedState->feetYaw, 0.0f});
+		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, desyncedState->goalFeetYaw, 0.0f});
 
 		localPlayer->animationLayers()[AnimLayer_Lean].weight = FLT_EPSILON;
 		
@@ -92,7 +92,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	localPlayer->clientAnimations() = false;
 
 	static auto backupPoseParams = localPlayer->poseParams();
-	static auto backupAbsYaw = state->feetYaw;
+	static auto backupAbsYaw = state->goalFeetYaw;
 
 	static int previousTick = 0;
 	if (previousTick != memory->globalVars->tickCount)
@@ -107,7 +107,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 		if (sendPacket)
 		{
 			backupPoseParams = localPlayer->poseParams();
-			backupAbsYaw = state->feetYaw;
+			backupAbsYaw = state->goalFeetYaw;
 		}
 	}
 
@@ -117,7 +117,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	matrixUpdated = localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
-	state->feetYawRate = 0.0f;
+	state->moveWeight = 0.0f;
 
 	memory->setAbsAngle(localPlayer.get(), Vector{0.0f, backupAbsYaw, 0.0f});
 	localPlayer->poseParams() = backupPoseParams;
@@ -189,8 +189,8 @@ void Animations::resolve(Entity *animatable) noexcept
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
 	state->landingDuckAdditiveAmount = std::clamp(state->landingDuckAdditiveAmount, 0.0f, 1.0f);
 	state->feetCycle = layers[AnimLayer_MovementMove].cycle;
-	state->feetYawRate = layers[AnimLayer_MovementMove].weight;
-	state->feetYaw = resolverData.feetYaw;
+	state->moveWeight = layers[AnimLayer_MovementMove].weight;
+	state->goalFeetYaw = resolverData.feetYaw;
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 

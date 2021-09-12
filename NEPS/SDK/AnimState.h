@@ -70,30 +70,29 @@ struct AnimState
 {
 	PAD(95)
 	Entity *entity;
-	void *activeWeapon;
-	void *lastActiveWeapon;
-	float lastClientSideAnimationUpdateTime;
-	int lastClientSideAnimationUpdateFramecount;
-	float eyePitch;
+	Entity *activeWeapon;
+	Entity *lastActiveWeapon;
+	float previousUpdateTime;
+	int previousUpdateFramecount;
+	float previousUpdateIncrement;
 	float eyeYaw;
-	float pitch;
-	float feetYaw; // Lower body yaw or LBY
-	float lastFeetYaw;
+	float eyePitch;
+	float goalFeetYaw;
+	float currentFeetYaw;
 	float currentTorsoYaw;
 	float velocityLean;
 	float leanAmount;
 	PAD(4)
-	float feetCycle; // From 0 to 1
-	float feetYawRate; // From 0 to 1
+	float feetCycle;
+	float moveWeight;
 	PAD(4)
 	float duckAmount;
 	float landingDuckAdditiveAmount;
 	PAD(4)
 	Vector origin;
-	Vector lastOrigin;
-	float velocityX;
-	float velocityY;
-	PAD(28)
+	Vector previousOrigin;
+	Vector velocity;
+	PAD(24)
 	float horizontalSpeed;
 	float verticalSpeed;
 	float speedAsPortionOfRunSpeed;
