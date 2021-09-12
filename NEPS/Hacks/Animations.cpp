@@ -91,8 +91,6 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 
 	localPlayer->clientAnimations() = false;
 
-	state->lastClientSideAnimationUpdateFramecount = std::min(state->lastClientSideAnimationUpdateFramecount, memory->globalVars->framecount - 1);
-
 	static auto backupPoseParams = localPlayer->poseParams();
 	static auto backupAbsYaw = state->feetYaw;
 
@@ -115,6 +113,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 
 	localPlayer->animationLayers()[AnimLayer_Lean].weight = FLT_EPSILON;
 
+	memory->invalidateBoneCache(localPlayer.get());
 	matrixUpdated = localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
@@ -150,8 +149,6 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	if (animatable->handle() == Aimbot::getTargetHandle())
 		resolverData.misses = Aimbot::getMisses();
-
-	state->lastClientSideAnimationUpdateFramecount = std::min(state->lastClientSideAnimationUpdateFramecount, memory->globalVars->framecount - 1);
 
 	animatable->clientAnimations() = true;
 
@@ -198,6 +195,7 @@ void Animations::resolve(Entity *animatable) noexcept
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
 	animatable->updateClientSideAnimation();
+	memory->invalidateBoneCache(animatable);
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 
 	animatable->clientAnimations() = false;
