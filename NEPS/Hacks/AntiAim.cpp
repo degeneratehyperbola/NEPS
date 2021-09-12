@@ -228,13 +228,13 @@ void AntiAim::visualize(ImDrawList *drawList) noexcept
 		switch (dir)
 		{
 		case -1:
-			Helpers::drawTriangleFromCenter({-200, 0}, Helpers::calculateColor(cfg.visualizeDirection), drawList);
+			Helpers::drawTriangleFromCenter(drawList, {-200, 0}, cfg.visualizeDirection);
 			break;
 		case 0:
-			Helpers::drawTriangleFromCenter({0, 100}, Helpers::calculateColor(cfg.visualizeDirection), drawList);
+			Helpers::drawTriangleFromCenter(drawList, {0, 100}, cfg.visualizeDirection);
 			break;
 		case 1:
-			Helpers::drawTriangleFromCenter({200, 0}, Helpers::calculateColor(cfg.visualizeDirection), drawList);
+			Helpers::drawTriangleFromCenter(drawList, {200, 0}, cfg.visualizeDirection);
 			break;
 		}
 	}
@@ -242,8 +242,8 @@ void AntiAim::visualize(ImDrawList *drawList) noexcept
 	if (cfg.visualizeSide.enabled)
 	{
 		if (flip)
-			Helpers::drawTriangleFromCenter({100, 0}, Helpers::calculateColor(cfg.visualizeSide), drawList);
+			Helpers::drawTriangleFromCenter(drawList, {100, 0}, cfg.visualizeSide);
 		else
-			Helpers::drawTriangleFromCenter({-100, 0}, Helpers::calculateColor(cfg.visualizeSide), drawList);
+			Helpers::drawTriangleFromCenter(drawList, {-100, 0}, cfg.visualizeSide);
 	}
 }

@@ -202,5 +202,6 @@ namespace Helpers
 
 	bool lbyUpdate(Entity *animatable, float &nextUpdate) noexcept;
 
-	void drawTriangleFromCenter(const ImVec2 &pos, ImU32 color, ImDrawList *drawList) noexcept;
+	void drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, const Color4 &colorCfg) noexcept;
+	ImVec2 drawText(ImDrawList *drawList, float distance, float cullDistance, const Color4Border &textCfg, const char *text, const ImVec2 &pos, bool centered = true, bool adjustHeight = true) noexcept;
 }

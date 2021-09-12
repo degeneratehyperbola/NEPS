@@ -30,7 +30,7 @@
 
 void Visuals::playerModel(FrameStage stage) noexcept
 {
-	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
 		return;
 
 	static int originalIdx = 0;
@@ -119,7 +119,7 @@ void Visuals::playerModel(FrameStage stage) noexcept
 
 	if (const auto model = getModel(localPlayer->team()))
 	{
-		if (stage == FrameStage::RENDER_START)
+		if (stage == FrameStage::RenderStart)
 		{
 			originalIdx = localPlayer->modelIndex();
 			if (const auto modelprecache = interfaces->networkStringTableContainer->findTable("modelprecache"))
@@ -131,7 +131,7 @@ void Visuals::playerModel(FrameStage stage) noexcept
 			}
 		}
 
-		const auto idx = stage == FrameStage::RENDER_END && originalIdx ? originalIdx : interfaces->modelInfo->getModelIndex(model);
+		const auto idx = stage == FrameStage::RenderEnd && originalIdx ? originalIdx : interfaces->modelInfo->getModelIndex(model);
 
 		localPlayer->setModelIndex(idx);
 
@@ -180,7 +180,7 @@ void Visuals::colorWorld() noexcept
 
 void Visuals::modifySmoke(FrameStage stage) noexcept
 {
-	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
 		return;
 
 	constexpr std::array smokeMaterials = {
@@ -195,15 +195,15 @@ void Visuals::modifySmoke(FrameStage stage) noexcept
 		const auto material = interfaces->materialSystem->findMaterial(mat);
 		if (material)
 		{
-			material->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.smoke == 1);
-			material->setMaterialVarFlag(MaterialVarFlag::WIREFRAME, stage == FrameStage::RENDER_START && config->visuals.smoke == 2);
+			material->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RenderStart && config->visuals.smoke == 1);
+			material->setMaterialVarFlag(MaterialVarFlag::WIREFRAME, stage == FrameStage::RenderStart && config->visuals.smoke == 2);
 		}
 	}
 }
 
 void Visuals::modifyFire(FrameStage stage) noexcept
 {
-	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
 		return;
 
 	constexpr std::array fireMaterials = {
@@ -219,8 +219,8 @@ void Visuals::modifyFire(FrameStage stage) noexcept
 		const auto material = interfaces->materialSystem->findMaterial(mat);
 		if (material)
 		{
-			material->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.inferno == 1);
-			material->setMaterialVarFlag(MaterialVarFlag::WIREFRAME, stage == FrameStage::RENDER_START && config->visuals.inferno == 2);
+			material->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RenderStart && config->visuals.inferno == 1);
+			material->setMaterialVarFlag(MaterialVarFlag::WIREFRAME, stage == FrameStage::RenderStart && config->visuals.inferno == 2);
 		}
 	}
 }
@@ -248,7 +248,7 @@ void Visuals::removeVisualRecoil(FrameStage stage) noexcept
     static Vector aimPunch;
     static Vector viewPunch;
 
-    if (stage == FrameStage::RENDER_START) {
+    if (stage == FrameStage::RenderStart) {
         aimPunch = localPlayer->aimPunchAngle();
         viewPunch = localPlayer->viewPunchAngle();
 
@@ -258,7 +258,7 @@ void Visuals::removeVisualRecoil(FrameStage stage) noexcept
         if (config->visuals.noViewPunch)
             localPlayer->viewPunchAngle() = Vector{ };
 
-    } else if (stage == FrameStage::RENDER_END) {
+    } else if (stage == FrameStage::RenderEnd) {
         localPlayer->aimPunchAngle() = aimPunch;
         localPlayer->viewPunchAngle() = viewPunch;
     }
@@ -266,16 +266,16 @@ void Visuals::removeVisualRecoil(FrameStage stage) noexcept
 
 void Visuals::removeBlur(FrameStage stage) noexcept
 {
-    if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+    if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
         return;
 
     static auto blur = interfaces->materialSystem->findMaterial("dev/scope_bluroverlay");
-    blur->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noBlur);
+    blur->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RenderStart && config->visuals.noBlur);
 }
 
 void Visuals::removeGrass(FrameStage stage) noexcept
 {
-    if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+    if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
         return;
 
 	constexpr auto getGrassMaterialName = []() noexcept -> const char *
@@ -293,7 +293,7 @@ void Visuals::removeGrass(FrameStage stage) noexcept
 	};
 
     if (const auto grassMaterialName = getGrassMaterialName())
-        interfaces->materialSystem->findMaterial(grassMaterialName)->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noGrass);
+        interfaces->materialSystem->findMaterial(grassMaterialName)->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RenderStart && config->visuals.noGrass);
 }
 
 #define DRAW_SCREEN_EFFECT(material) \
@@ -468,10 +468,10 @@ void Visuals::hitMarker(GameEvent *event, ImDrawList *drawList) noexcept
 
 void Visuals::disablePostProcessing(FrameStage stage) noexcept
 {
-    if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+    if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
         return;
 
-    *memory->disablePostProcessing = stage == FrameStage::RENDER_START && config->visuals.disablePostProcessing;
+    *memory->disablePostProcessing = stage == FrameStage::RenderStart && config->visuals.disablePostProcessing;
 }
 
 void Visuals::reduceFlashEffect() noexcept
@@ -499,10 +499,10 @@ bool Visuals::removeWeapons(const char* modelName) noexcept
 
 void Visuals::skybox(FrameStage stage) noexcept
 {
-    if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+    if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
         return;
 
-    if (const auto& skyboxes = Helpers::skyboxList; stage == FrameStage::RENDER_START && config->visuals.skybox > 0 && static_cast<std::size_t>(config->visuals.skybox) < skyboxes.size()) {
+    if (const auto& skyboxes = Helpers::skyboxList; stage == FrameStage::RenderStart && config->visuals.skybox > 0 && static_cast<std::size_t>(config->visuals.skybox) < skyboxes.size()) {
         memory->loadSky(skyboxes[config->visuals.skybox]);
     } else {
         static const auto skyNameVar = interfaces->cvar->findVar("sv_skyname");
@@ -721,13 +721,13 @@ void Visuals::drawSmokeHull(ImDrawList *drawList) noexcept
 
 void Visuals::flashlight(FrameStage stage) noexcept
 {
-	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
 		return;
 
 	if (!localPlayer)
 		return;
 
-	if (static Helpers::KeyBindState flag; flag[config->visuals.flashlight] && stage == FrameStage::RENDER_START)
+	if (static Helpers::KeyBindState flag; flag[config->visuals.flashlight] && stage == FrameStage::RenderStart)
 		localPlayer->effectFlags() |= EffectFlag_Flashlight;
 	else
 		localPlayer->effectFlags() &= ~EffectFlag_Flashlight;
