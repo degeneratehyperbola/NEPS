@@ -677,9 +677,25 @@ void Misc::antiAfkKick(UserCmd *cmd) noexcept
 
 void Misc::tweakPlayerAnim(FrameStage stage) noexcept
 {
+	if (stage == FrameStage::NET_UPDATE_POSTDATAUPDATE_START)
+	{
+		if (!config->misc.resolveLby)
+			return;
+
+		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
+		{
+			Entity *entity = interfaces->entityList->getEntity(i);
+
+			if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive()) continue;
+
+			if (config->misc.resolveLby)
+				Animations::resolve(entity);
+		}
+	}
+
 	if (stage == FrameStage::RENDER_START)
 	{
-		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp && !config->misc.resolveLby)
+		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp)
 			return;
 
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
@@ -693,9 +709,6 @@ void Misc::tweakPlayerAnim(FrameStage stage) noexcept
 				*reinterpret_cast<int *>(entity + 0xA28) = 0;
 				*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->framecount;
 			}
-
-			if (config->misc.resolveLby)
-				Animations::resolve(entity);
 
 			if (auto varMap = entity->getVarMap(); varMap && config->misc.disableInterp)
 				for (int j = 0; j < varMap->entries.size; j++)
