@@ -103,5 +103,19 @@ bool Helpers::loadLibreryRemote(void *process, const std::filesystem::path &path
 
 bool Helpers::bypassCsgoInject(void *csgoProcess) noexcept
 {
+	const auto ntdll = LoadLibraryW(L"ntdll");
+	if (!ntdll)
+		return false;
+
+	const auto ntOpenFile = GetProcAddress(ntdll, "NtOpenFile");
+	if (!ntOpenFile)
+		return false;
+
+	std::uint8_t originalBytes[5];
+	std::memcpy(originalBytes, ntOpenFile, sizeof(originalBytes));
+
+	if (!WriteProcessMemory(csgoProcess, ntOpenFile, originalBytes, sizeof(originalBytes), nullptr))
+		return false;
+
 	return true;
 }
