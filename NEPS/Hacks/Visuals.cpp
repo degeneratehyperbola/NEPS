@@ -788,5 +788,6 @@ void Visuals::playerVelocity(ImDrawList *drawList) noexcept
 	{
 		const auto color = Helpers::calculateColor(config->visuals.playerVelocity);
 		drawList->AddLine(pos, dir, color, config->visuals.playerVelocity.thickness);
+		Helpers::drawText(drawList, 0.0f, 0.0f, config->visuals.playerVelocity, std::to_string(static_cast<int>(local.velocity.length())).c_str(), dir);
 	}
 }

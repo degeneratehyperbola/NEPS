@@ -256,7 +256,7 @@ public:
 		Color4ToggleThickness molotovHull = {1.0f, 0.5f, 0.0f, 0.3f};
 		Color4ToggleThickness smokeHull = {0.5f, 0.5f, 0.5f, 0.3f};
 		Color4ToggleThickness playerBounds;
-		Color4ToggleThickness playerVelocity;
+		Color4BorderToggleThickness playerVelocity;
 
 		struct ColorCorrection
 		{
@@ -353,7 +353,7 @@ public:
 			KeyBind target;
 			float trajectoryFac = 1.0f;
 			float distanceFac = 2.0f;
-			Color4ToggleThickness visualize = {1.0f, 0.5f, 0.0f, 1.0f};
+			Color4BorderToggleThickness visualize = {1.0f, 0.5f, 0.0f, 1.0f};
 		} blockbot;
 
 		struct Reportbot
