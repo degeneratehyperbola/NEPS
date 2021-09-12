@@ -152,14 +152,14 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	animatable->clientAnimations() = true;
 
+	state->goalFeetYaw = resolverData.previousFeetYaw;
+	animatable->updateClientSideAnimation();
+	resolverData.previousFeetYaw = state->goalFeetYaw;
+
 	const auto simulationTick = Helpers::timeToTicks(animatable->simulationTime());
 	if (resolverData.previousTick != simulationTick)
 	{
 		resolverData.previousTick = simulationTick;
-
-		state->feetYaw = resolverData.previousFeetYaw;
-		animatable->updateClientSideAnimation();
-		resolverData.previousFeetYaw = state->feetYaw;
 
 		const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
 		const float lowDesync = std::fminf(35.0f, maxDesync);
