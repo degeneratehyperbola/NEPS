@@ -490,6 +490,9 @@
     <ClInclude Include="..\shared_lib\stb\image.h">
       <Filter>lib\stb</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared_lib\MemorySearch.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\logo.png">

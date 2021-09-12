@@ -70,6 +70,7 @@
     <ClInclude Include="..\shared_lib\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\shared_lib\imgui\imstb_textedit.h" />
     <ClInclude Include="..\shared_lib\imgui\imstb_truetype.h" />
+    <ClInclude Include="..\shared_lib\MemorySearch.hpp" />
     <ClInclude Include="..\shared_lib\stb\image.h" />
     <ClInclude Include="..\shared_lib\Texture\TextureDX9.h" />
     <ClInclude Include="Config.h" />
