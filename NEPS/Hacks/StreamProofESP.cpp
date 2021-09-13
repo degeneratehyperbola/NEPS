@@ -5,11 +5,12 @@
 #include <shared_lib/imgui/imgui_internal.h>
 
 #include "../Config.h"
-#include "../lib/fnv.hpp"
 #include "../GameData.h"
-#include "../lib/Helpers.hpp"
-#include "../Memory.h"
 #include "../Interfaces.h"
+#include "../Memory.h"
+#include "../lib/fnv.hpp"
+#include "../lib/ImGuiCustom.hpp"
+#include "../lib/Helpers.hpp"
 #include "../SDK/Engine.h"
 #include "../SDK/Entity.h"
 #include "../SDK/GlobalVars.h"
@@ -304,8 +305,12 @@ static void drawHealthBar(const ImVec2 &pos, float height, int health, const Col
 		drawList->AddRectFilled(min + ImVec2{0.0f, (100 - health) / 100.0f * height}, max, color);
 	}
 
+
 	if (text.enabled)
-		Helpers::drawText(drawList, distance, cull, text, std::to_string(originalHealth).c_str(), pos + ImVec2{0.0f, (100 - health) / 100.0f * height}, true, false);
+	{
+		const auto color = Helpers::calculateColor(text);
+		ImGuiCustom::drawText(drawList, distance, cull, color, color & IM_COL32_A_MASK, std::to_string(originalHealth).c_str(), pos + ImVec2{0.0f, (100 - health) / 100.0f * height}, true, false);
+	}
 }
 
 static void renderPlayerBox(const PlayerData &playerData, const Player &config) noexcept
@@ -328,7 +333,8 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 
 	if (config.name.enabled)
 	{
-		const auto nameSize = Helpers::drawText(drawList, playerData.distanceToLocal, config.textCullDistance, config.name, playerData.name.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.min.y});
+		const auto color = Helpers::calculateColor(config.name);
+		const auto nameSize = ImGuiCustom::drawText(drawList, playerData.distanceToLocal, config.textCullDistance, color, color & IM_COL32_A_MASK, playerData.name.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.min.y});
 		offsetMins.y -= nameSize.y;
 	}
 
@@ -352,7 +358,10 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 			flags << playerData.armor << "ap\n";
 
 		if (!flags.str().empty())
-			Helpers::drawText(drawList, playerData.distanceToLocal, config.textCullDistance, config.flags, flags.str().c_str(), {bbox.max.x + 1.0f, bbox.min.y}, false, false);
+		{
+			const auto color = Helpers::calculateColor(config.flags);
+			ImGuiCustom::drawText(drawList, playerData.distanceToLocal, config.textCullDistance, color, color & IM_COL32_A_MASK, flags.str().c_str(), {bbox.max.x + 1.0f, bbox.min.y}, false, false);
+		}
 	}
 
 	if (config.flashDuration.enabled && playerData.flashDuration > 0.0f)
@@ -372,7 +381,8 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 
 	if (config.weapon.enabled && !playerData.activeWeapon.empty())
 	{
-		const auto weaponTextSize = Helpers::drawText(drawList, playerData.distanceToLocal, config.textCullDistance, config.weapon, playerData.activeWeapon.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.max.y}, true, false);
+		const auto color = Helpers::calculateColor(config.weapon);
+		const auto weaponTextSize = ImGuiCustom::drawText(drawList, playerData.distanceToLocal, config.textCullDistance, color, color & IM_COL32_A_MASK, playerData.activeWeapon.c_str(), {(bbox.min.x + bbox.max.x) * 0.5f, bbox.max.y}, true, false);
 		offsetMaxs.y += weaponTextSize.y;
 	}
 
@@ -393,13 +403,15 @@ static void renderWeaponBox(const WeaponData &weaponData, const Weapon &config) 
 
 	if (config.name.enabled && !weaponData.displayName.empty())
 	{
-		Helpers::drawText(drawList, weaponData.distanceToLocal, config.textCullDistance, config.name, weaponData.displayName.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.min.y});
+		const auto color = Helpers::calculateColor(config.name);
+		ImGuiCustom::drawText(drawList, weaponData.distanceToLocal, config.textCullDistance, color, color & IM_COL32_A_MASK, weaponData.displayName.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.min.y});
 	}
 
 	if (config.ammo.enabled && weaponData.clip != -1)
 	{
+		const auto color = Helpers::calculateColor(config.ammo);
 		const auto text{std::to_string(weaponData.clip) + " / " + std::to_string(weaponData.reserveAmmo)};
-		Helpers::drawText(drawList, weaponData.distanceToLocal, config.textCullDistance, config.ammo, text.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.max.y}, true, false);
+		ImGuiCustom::drawText(drawList, weaponData.distanceToLocal, config.textCullDistance, color, color & IM_COL32_A_MASK, text.c_str(), {(bbox.min.x + bbox.max.x) / 2, bbox.max.y}, true, false);
 	}
 }
 
@@ -416,7 +428,10 @@ static void renderEntityBox(const BaseData &entityData, const char *name, const 
 	FontPush font{config.font.name, entityData.distanceToLocal};
 
 	if (config.name.enabled)
-		Helpers::drawText(drawList, entityData.distanceToLocal, config.textCullDistance, config.name, name, {(bbox.min.x + bbox.max.x) / 2, bbox.min.y - 5});
+	{
+		const auto color = Helpers::calculateColor(config.name);
+		ImGuiCustom::drawText(drawList, entityData.distanceToLocal, config.textCullDistance, color, color & IM_COL32_A_MASK, name, {(bbox.min.x + bbox.max.x) / 2, bbox.min.y - 5});
+	}
 }
 
 static void drawProjectileTrajectory(const Trail &config, const std::vector<std::pair<float, Vector>> &trajectory) noexcept
@@ -511,7 +526,8 @@ static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerDa
 	if (!l) return;
 	pos /= l;
 
-	Helpers::drawTriangleFromCenter(drawList, pos * 300, config);
+	const auto color = Helpers::calculateColor(config);
+	ImGuiCustom::drawTriangleFromCenter(drawList, pos * 300, color);
 }
 
 static void drawLineOfSight(const Color4ToggleThickness &config, const PlayerData &playerData)
