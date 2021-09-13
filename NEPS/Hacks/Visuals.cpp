@@ -21,6 +21,7 @@
 
 #include "../lib/fnv.hpp"
 #include "../lib/Helpers.hpp"
+#include "../lib/ImguiCustom.hpp"
 
 #include <shared_lib/imgui/imgui.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -788,6 +789,6 @@ void Visuals::playerVelocity(ImDrawList *drawList) noexcept
 	{
 		const auto color = Helpers::calculateColor(config->visuals.playerVelocity);
 		drawList->AddLine(pos, dir, color, config->visuals.playerVelocity.thickness);
-		Helpers::drawText(drawList, 0.0f, 0.0f, config->visuals.playerVelocity, std::to_string(static_cast<int>(local.velocity.length())).c_str(), dir);
+		ImGuiCustom::drawText(drawList, 0.0f, 0.0f, color, color & IM_COL32_A_MASK, std::to_string(static_cast<int>(local.velocity.length())).c_str(), dir);
 	}
 }

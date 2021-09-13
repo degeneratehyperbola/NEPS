@@ -4,6 +4,7 @@
 #include "../GameData.h"
 #include "../Memory.h"
 #include "../Interfaces.h"
+#include "../lib/ImguiCustom.hpp"
 #include "../SDK/Engine.h"
 #include "../SDK/EngineTrace.h"
 #include "../SDK/Entity.h"
@@ -225,25 +226,27 @@ void AntiAim::visualize(ImDrawList *drawList) noexcept
 
 	if (cfg.visualizeDirection.enabled)
 	{
+		const auto color = Helpers::calculateColor(cfg.visualizeDirection);
 		switch (dir)
 		{
 		case -1:
-			Helpers::drawTriangleFromCenter(drawList, {-200, 0}, cfg.visualizeDirection);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {-200, 0}, color);
 			break;
 		case 0:
-			Helpers::drawTriangleFromCenter(drawList, {0, 100}, cfg.visualizeDirection);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {0, 100}, color);
 			break;
 		case 1:
-			Helpers::drawTriangleFromCenter(drawList, {200, 0}, cfg.visualizeDirection);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {200, 0}, color);
 			break;
 		}
 	}
 
 	if (cfg.visualizeSide.enabled)
 	{
+		const auto color = Helpers::calculateColor(cfg.visualizeSide);
 		if (flip)
-			Helpers::drawTriangleFromCenter(drawList, {100, 0}, cfg.visualizeSide);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {100, 0}, color);
 		else
-			Helpers::drawTriangleFromCenter(drawList, {-100, 0}, cfg.visualizeSide);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {-100, 0}, color);
 	}
 }

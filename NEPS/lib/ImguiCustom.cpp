@@ -689,3 +689,45 @@ void ImGuiCustom::StyleColors5(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_NavWindowingDimBg] = {0.80f, 0.80f, 0.80f, 0.20f};
 	colors[ImGuiCol_ModalWindowDimBg] = {0.20f, 0.20f, 0.20f, 0.35f};
 }
+
+void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned int color) noexcept
+{
+	const auto l = std::sqrtf(ImLengthSqr(pos));
+	if (!l) return;
+	const auto posNormalized = pos / l;
+	const auto center = ImGui::GetIO().DisplaySize / 2 + pos;
+
+	const ImVec2 trianglePoints[] = {
+		center + ImVec2{0.4f * posNormalized.y, -0.4f * posNormalized.x} *30,
+		center + ImVec2{1.0f * posNormalized.x, 1.0f * posNormalized.y} *30,
+		center + ImVec2{-0.4f * posNormalized.y, 0.4f * posNormalized.x} *30
+	};
+
+	drawList->AddConvexPolyFilled(trianglePoints, 3, color);
+	drawList->AddPolyline(trianglePoints, 3, color | IM_COL32_A_MASK, ImDrawFlags_Closed, 1.0f);
+}
+
+ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, float distance, float cullDistance, unsigned int textColor, unsigned int borderColor, const char *text, const ImVec2 &pos, bool centered, bool adjustHeight) noexcept
+{
+	if (!(borderColor & IM_COL32_A_MASK) && !(textColor & IM_COL32_A_MASK))
+
+	if (cullDistance > 0 && distance > cullDistance)
+		return {};
+	else if (cullDistance < 0 && distance < -cullDistance)
+		return {};
+
+	const auto textSize = ImGui::CalcTextSize(text);
+	const auto horizontalOffset = centered ? textSize.x / 2 : 0.0f;
+	const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
+
+	if (borderColor & IM_COL32_A_MASK)
+	{
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f}, borderColor, text);
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f}, borderColor, text);
+		drawList->AddText({pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset}, borderColor, text);
+		drawList->AddText({pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset}, borderColor, text);
+	}
+	drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset}, textColor, text);
+
+	return textSize;
+}
