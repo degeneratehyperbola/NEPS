@@ -142,7 +142,6 @@ public:
 	VIRTUAL_METHOD(int, getWeaponSubType, 282, (), (this))
 	VIRTUAL_METHOD(ObsMode, getObserverMode, 294, (), (this))
 	VIRTUAL_METHOD(Entity *, getObserverTarget, 295, (), (this))
-	VIRTUAL_METHOD(Vector, getAimPunch, 346, (), (this))
 	VIRTUAL_METHOD(float, getSpread, 453, (), (this))
 	VIRTUAL_METHOD(WeaponType, getWeaponType, 455, (), (this))
 	VIRTUAL_METHOD(WeaponInfo *, getWeaponData, 461, (), (this))
@@ -159,6 +158,13 @@ public:
 	Vector getEyePosition() noexcept
 	{
 		return getAbsOrigin() + viewOffset();
+	}
+
+	Vector getAimPunch() noexcept
+	{
+		Vector v;
+		VirtualMethod::call<void, 346>(this, std::ref(v));
+		return v;
 	}
 
 	int getAnimationLayerCount() noexcept
