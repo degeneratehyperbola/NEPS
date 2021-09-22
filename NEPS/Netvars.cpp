@@ -10,7 +10,7 @@ static int random(int min, int max) noexcept
 	return rand() % (max - min + 1) + min;
 }
 
-static std::unordered_map<uint32_t, std::pair<RecvProxy, RecvProxy *>> proxies;
+static std::unordered_map<std::uint32_t, std::pair<RecvProxy, RecvProxy *>> proxies;
 
 static void __cdecl spottedHook(RecvProxyData &data, void *arg2, void *arg3) noexcept
 {
@@ -75,7 +75,7 @@ void Netvars::walkTable(const char *networkName, RecvTable *recvTable, const std
 
 		const auto hash = fnv::hashRuntime((networkName + std::string{"->"} + prop.name).c_str());
 
-		constexpr auto getHook = [](uint32_t hash) noexcept -> RecvProxy
+		constexpr auto getHook = [](std::uint32_t hash) noexcept -> RecvProxy
 		{
 			switch (hash)
 			{
@@ -88,9 +88,9 @@ void Netvars::walkTable(const char *networkName, RecvTable *recvTable, const std
 			}
 		};
 
-		offsets.emplace_back(hash, uint16_t(offset + prop.offset));
+		offsets.emplace_back(hash, offset + prop.offset);
 
-		constexpr auto hookProperty = [](uint32_t hash, RecvProxy &originalProxy, RecvProxy proxy) noexcept
+		constexpr auto hookProperty = [](std::uint32_t hash, RecvProxy &originalProxy, RecvProxy proxy) noexcept
 		{
 			if (originalProxy != proxy)
 			{
