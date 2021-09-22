@@ -9,24 +9,13 @@
 struct RecvProp;
 struct RecvTable;
 
-class Netvars
+struct Netvars
 {
-public:
 	Netvars() noexcept;
 
 	void restore() noexcept;
 
-	std::uint32_t operator[](const std::uint32_t hash) const noexcept
-	{
-		const auto it = std::lower_bound(offsets.begin(), offsets.end(), hash, [](const auto &p, auto hash) { return p.first < hash; });
-		if (it != offsets.end() && it->first == hash)
-			return it->second;
-		assert(false);
-		return 0;
-	}
-private:
-	void walkTable(const char *, RecvTable *, const std::size_t = 0) noexcept;
-	std::vector<std::pair<std::uint32_t, std::uint32_t>> offsets;
+	std::uint32_t operator[](const std::uint32_t hash) const noexcept;
 };
 
 inline std::unique_ptr<Netvars> netvars;
