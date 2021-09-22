@@ -197,6 +197,4 @@ void Animations::resolve(Entity *animatable) noexcept
 	animatable->updateClientSideAnimation();
 	memory->invalidateBoneCache(animatable);
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
-
-	animatable->clientAnimations() = false;
 }
