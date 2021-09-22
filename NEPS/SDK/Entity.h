@@ -188,7 +188,7 @@ public:
 
 	float spawnTime() noexcept
 	{
-		return *(float *)((uintptr_t)this + 0xA370);
+		return *(float *)((uintptr_t)this + 0x103C0);
 	}
 
 	auto isPistol() noexcept { return getWeaponType() == WeaponType::Pistol; }
