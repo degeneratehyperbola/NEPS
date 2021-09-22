@@ -326,6 +326,9 @@ BaseData::BaseData(Entity *entity) noexcept
 {
 	distanceToLocal = entity->getAbsOrigin().distTo(localPlayerData.origin);
 
+	obbMins = Vector{};
+	obbMaxs = Vector{};
+
 	if (entity->isPlayer())
 	{
 		const auto collideable = entity->getCollideable();
