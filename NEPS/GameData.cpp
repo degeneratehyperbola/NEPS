@@ -278,7 +278,7 @@ void LocalPlayerData::update() noexcept
 		origin = obs->getAbsOrigin();
 		velocity = obs->velocity();
 		eyePosition = obs->getEyePosition();
-		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + obs->aimPunchAngle()) * 1000;
+		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + obs->getAimPunch()) * 1000;
 
 		if (const auto activeWeapon = obs->getActiveWeapon(); activeWeapon && obs->isAlive())
 		{
@@ -301,7 +301,7 @@ void LocalPlayerData::update() noexcept
 		origin = localPlayer->getAbsOrigin();
 		velocity = localPlayer->velocity();
 		eyePosition = localPlayer->getEyePosition();
-		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->aimPunchAngle()) * 1000;
+		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000;
 
 		if (const auto activeWeapon = localPlayer->getActiveWeapon(); activeWeapon && localPlayer->isAlive())
 		{
