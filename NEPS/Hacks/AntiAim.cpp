@@ -68,7 +68,12 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		if (networkChannel->chokedPackets > (config->exploits.fakeDuckPackets / 2))
 			cmd->buttons |= UserCmd::IN_DUCK;
 	} else if (static Helpers::KeyBindState flag; flag[cfg.choke] && cfg.chokedPackets)
-		sendPacket = networkChannel->chokedPackets >= cfg.chokedPackets;
+	{
+		if (interfaces->engine->isVoiceRecording())
+			sendPacket = networkChannel->chokedPackets >= std::min(3, cfg.chokedPackets);
+		else
+			sendPacket = networkChannel->chokedPackets >= cfg.chokedPackets;
+	}
 
 	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
 		return;

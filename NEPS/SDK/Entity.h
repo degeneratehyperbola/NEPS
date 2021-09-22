@@ -134,7 +134,7 @@ public:
 	VIRTUAL_METHOD(const Vector &, getAbsOrigin, 10, (), (this))
 	VIRTUAL_METHOD(const Vector &, getAbsAngle, 11, (), (this))
 	VIRTUAL_METHOD(void, setModelIndex, 75, (int index), (this, index))
-	VIRTUAL_METHOD(bool, getAttachment, 83, (int index, Vector &origin), (this, index, std::ref(origin)))
+	VIRTUAL_METHOD(bool, getAttachment, 84, (int index, Vector &origin), (this, index, std::ref(origin)))
 	VIRTUAL_METHOD(int, health, 121, (), (this))
 	VIRTUAL_METHOD(bool, isAlive, 155, (), (this))
 	VIRTUAL_METHOD(bool, isPlayer, 157, (), (this))
