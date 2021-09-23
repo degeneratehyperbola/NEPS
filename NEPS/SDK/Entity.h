@@ -148,6 +148,7 @@ public:
 	VIRTUAL_METHOD(int, getMuzzleAttachmentIndex1stPerson, 468, (Entity *viewModel), (this, viewModel))
 	VIRTUAL_METHOD(int, getMuzzleAttachmentIndex3rdPerson, 469, (), (this))
 	VIRTUAL_METHOD(float, getInaccuracy, 483, (), (this))
+	VIRTUAL_METHOD(void, updateInaccuracyPenalty, 484, (), (this))
 	VIRTUAL_METHOD(void, updateClientSideAnimation, 224, (), (this))
 
 	Entity *getActiveWeapon() noexcept
