@@ -67,7 +67,7 @@ void Backtrack::run(UserCmd *cmd) noexcept
 	if (!config->backtrack.enabled)
 		return;
 
-	if (!(cmd->buttons & UserCmd::IN_ATTACK))
+	if (!(cmd->buttons & UserCmd::Button_Attack))
 		return;
 
 	if (!localPlayer)

@@ -21,7 +21,7 @@ static bool canAntiAim(UserCmd *cmd) noexcept
 	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
 		return false;
 
-	if (cmd->buttons & UserCmd::IN_USE || !localPlayer->isAlive())
+	if (cmd->buttons & UserCmd::Button_Use || !localPlayer->isAlive())
 		return false;
 
 	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
@@ -59,14 +59,14 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	{
 		sendPacket = networkChannel->chokedPackets >= config->exploits.fakeDuckPackets;
 
-		cmd->buttons |= UserCmd::IN_BULLRUSH;
-		cmd->buttons &= ~UserCmd::IN_DUCK;
+		cmd->buttons |= UserCmd::Button_Bullrush;
+		cmd->buttons &= ~UserCmd::Button_Duck;
 
 		if (networkChannel->chokedPackets < config->exploits.fakeDuckPackets / 2 || networkChannel->chokedPackets > config->exploits.fakeDuckPackets / 2 + 3)
-			cmd->buttons &= ~UserCmd::IN_ATTACK;
+			cmd->buttons &= ~UserCmd::Button_Attack;
 
 		if (networkChannel->chokedPackets > (config->exploits.fakeDuckPackets / 2))
-			cmd->buttons |= UserCmd::IN_DUCK;
+			cmd->buttons |= UserCmd::Button_Duck;
 	} else if (static Helpers::KeyBindState flag; flag[cfg.choke] && cfg.chokedPackets)
 	{
 		if (interfaces->engine->isVoiceRecording())
@@ -75,7 +75,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			sendPacket = networkChannel->chokedPackets >= cfg.chokedPackets;
 	}
 
-	if (Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
+	if (Helpers::attacking(cmd->buttons & UserCmd::Button_Attack, cmd->buttons & UserCmd::Button_Attack2))
 		return;
 
 	if (cfg.pitch && cmd->viewangles.x == currentViewAngles.x)
@@ -206,7 +206,7 @@ bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 
 	const auto &cfg = Config::AntiAim::getRelevantConfig();
 
-	if (cfg.fakeUp && !Helpers::attacking(cmd->buttons & UserCmd::IN_ATTACK, cmd->buttons & UserCmd::IN_ATTACK2))
+	if (cfg.fakeUp && !Helpers::attacking(cmd->buttons & UserCmd::Button_Attack, cmd->buttons & UserCmd::Button_Attack2))
 	{
 		cmd->viewangles.x = -540.0f;
 		cmd->forwardmove = -cmd->forwardmove;

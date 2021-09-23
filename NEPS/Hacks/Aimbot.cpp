@@ -122,7 +122,7 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		if (damage > 0 && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
 		{
 			if (cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle())
-				cmd->buttons |= UserCmd::IN_ATTACK2;
+				cmd->buttons |= UserCmd::Button_Attack2;
 
 			if (cfg.autoStop)
 				Misc::slowwalk(cmd);
@@ -459,7 +459,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
     if (!cfg.ignoreFlash && localPlayer->isFlashed())
         return;
 
-    if ((cmd->buttons & UserCmd::IN_ATTACK || cfg.autoShoot || cfg.aimlock)) {
+    if ((cmd->buttons & UserCmd::Button_Attack || cfg.autoShoot || cfg.aimlock)) {
 
 		if (cfg.scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !cfg.autoScope)
 			return;
@@ -507,11 +507,11 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			}
 
 			if (cfg.autoShoot && activeWeapon->nextPrimaryAttack() <= time)
-				cmd->buttons |= UserCmd::IN_ATTACK;
+				cmd->buttons |= UserCmd::Button_Attack;
 
 			if (clamped)
 			{
-				cmd->buttons &= ~UserCmd::IN_ATTACK;
+				cmd->buttons &= ~UserCmd::Button_Attack;
 				lastAngles = cmd->viewangles;
 			} else lastAngles = Vector{};
 

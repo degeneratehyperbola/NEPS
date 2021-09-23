@@ -148,7 +148,7 @@ public:
 	VIRTUAL_METHOD(int, getMuzzleAttachmentIndex1stPerson, 468, (Entity *viewModel), (this, viewModel))
 	VIRTUAL_METHOD(int, getMuzzleAttachmentIndex3rdPerson, 469, (), (this))
 	VIRTUAL_METHOD(float, getInaccuracy, 483, (), (this))
-	VIRTUAL_METHOD(void, updateClientSideAnimation, 223, (), (this))
+	VIRTUAL_METHOD(void, updateClientSideAnimation, 224, (), (this))
 
 	Entity *getActiveWeapon() noexcept
 	{
@@ -173,22 +173,12 @@ public:
 	}
 	AnimLayer *animationLayers() noexcept
 	{
-		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2980);
-	}
-
-	AnimState *getAnimState() noexcept
-	{
-		return *reinterpret_cast<AnimState **>((uintptr_t)this + 0x3914);
+		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2990);
 	}
 
 	std::array<float, PoseParam_Count> &poseParams() noexcept
 	{
 		return *reinterpret_cast<std::array<float, PoseParam_Count> *>((uintptr_t)this + netvars->operator[](fnv::hash("CBaseAnimating->m_flPoseParameter")));
-	}
-
-	float spawnTime() noexcept
-	{
-		return *(float *)((uintptr_t)this + 0x103C0);
 	}
 
 	auto isPistol() noexcept { return getWeaponType() == WeaponType::Pistol; }
@@ -282,7 +272,7 @@ public:
 
 	float getMaxDesyncAngle() noexcept
 	{
-		const auto state = getAnimState();
+		const auto state = animState();
 		if (!state)
 			return 0.0f;
 
@@ -292,11 +282,6 @@ public:
 			yawModifier += (state->duckAmount * std::clamp(state->speedAsPortionOfCrouchWalkSpeed, 0.0f, 1.0f) * (0.5f - yawModifier));
 
 		return state->velocitySubtract.y * yawModifier;
-	}
-
-	bool isInReload() noexcept
-	{
-		return *reinterpret_cast<bool*>(uintptr_t(&clip()) + 0x41);
 	}
 
 	auto getUserId() noexcept
@@ -386,7 +371,9 @@ public:
 
 	NETVAR(armor, "CCSPlayer", "m_ArmorValue", int)
 	NETVAR(eyeAngles, "CCSPlayer", "m_angEyeAngles", Vector)
+	NETVAR_OFFSET(animState, "CCSPlayer", "m_bIsScoped", -20, AnimState *)
 	NETVAR(isScoped, "CCSPlayer", "m_bIsScoped", bool)
+	NETVAR_OFFSET(spawnTime, "CCSPlayer", "m_iAddonBits", -4, float)
 	NETVAR(isDefusing, "CCSPlayer", "m_bIsDefusing", bool)
 	NETVAR_OFFSET(flashDuration, "CCSPlayer", "m_flFlashMaxAlpha", -8, float)
 	NETVAR(flashMaxAlpha, "CCSPlayer", "m_flFlashMaxAlpha", float)
@@ -405,6 +392,7 @@ public:
 	NETVAR(worldDroppedModelIndex, "CBaseCombatWeapon", "m_iWorldDroppedModelIndex", int)
 	NETVAR(weaponWorldModel, "CBaseCombatWeapon", "m_hWeaponWorldModel", int)
 	NETVAR(clip, "CBaseCombatWeapon", "m_iClip1", int)
+	NETVAR_OFFSET(isInReload, "CBaseCombatWeapon", "m_iClip1", 65, bool)
 	NETVAR(reserveAmmoCount, "CBaseCombatWeapon", "m_iPrimaryReserveAmmoCount", int)
 	NETVAR(nextPrimaryAttack, "CBaseCombatWeapon", "m_flNextPrimaryAttack", float)
 

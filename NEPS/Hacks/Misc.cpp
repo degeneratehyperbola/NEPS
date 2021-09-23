@@ -46,7 +46,7 @@ void Misc::edgeJump(UserCmd *cmd) noexcept
 		return;
 
 	if ((EnginePrediction::getFlags() & PlayerFlag_OnGround) && !(localPlayer->flags() & PlayerFlag_OnGround))
-		cmd->buttons |= UserCmd::IN_JUMP;
+		cmd->buttons |= UserCmd::Button_Jump;
 }
 
 void Misc::slowwalk(UserCmd *cmd) noexcept
@@ -271,7 +271,7 @@ void Misc::prepareRevolver(UserCmd *cmd) noexcept
 			if (!readyTime) readyTime = memory->globalVars->serverTime() + revolverPrepareTime;
 			auto ticksToReady = Helpers::timeToTicks(readyTime - memory->globalVars->serverTime() - interfaces->engine->getNetworkChannel()->getLatency(0));
 			if (ticksToReady > 0 && ticksToReady <= Helpers::timeToTicks(revolverPrepareTime))
-				cmd->buttons |= UserCmd::IN_ATTACK;
+				cmd->buttons |= UserCmd::Button_Attack;
 			else
 				readyTime = 0.0f;
 		}
@@ -295,7 +295,7 @@ void Misc::fastPlant(UserCmd *cmd) noexcept
 	if (!activeWeapon || !activeWeapon->isC4())
 		return;
 
-	cmd->buttons &= ~UserCmd::IN_ATTACK;
+	cmd->buttons &= ~UserCmd::Button_Attack;
 
 	constexpr auto doorRange = 200.0f;
 
@@ -305,7 +305,7 @@ void Misc::fastPlant(UserCmd *cmd) noexcept
 	interfaces->engineTrace->traceRay({startPos, endPos}, 0x46004009, localPlayer.get(), trace);
 
 	if (!trace.entity || trace.entity->getClientClass()->classId != ClassId::PropDoorRotating)
-		cmd->buttons &= ~UserCmd::IN_USE;
+		cmd->buttons &= ~UserCmd::Button_Use;
 }
 
 void Misc::fastStop(UserCmd *cmd) noexcept
@@ -316,10 +316,10 @@ void Misc::fastStop(UserCmd *cmd) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder || !(localPlayer->flags() & 1) || cmd->buttons & UserCmd::IN_JUMP)
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder || !(localPlayer->flags() & 1) || cmd->buttons & UserCmd::Button_Jump)
 		return;
 
-	if (cmd->buttons & (UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT | UserCmd::IN_FORWARD | UserCmd::IN_BACK))
+	if (cmd->buttons & (UserCmd::Button_MoveLeft | UserCmd::Button_MoveRight | UserCmd::Button_Forward | UserCmd::Button_Back))
 		return;
 
 	const auto velocity = localPlayer->velocity();
@@ -453,7 +453,7 @@ void Misc::bunnyHop(UserCmd *cmd) noexcept
 	static auto wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
 
 	if (config->movement.bunnyHop && !(localPlayer->flags() & PlayerFlag_OnGround) && localPlayer->moveType() != MoveType::Ladder && !wasLastTimeOnGround)
-		cmd->buttons &= ~UserCmd::IN_JUMP;
+		cmd->buttons &= ~UserCmd::Button_Jump;
 
 	wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
 }
@@ -607,7 +607,7 @@ void Misc::quickHealthshot(UserCmd *cmd) noexcept
 	if (auto activeWeapon{localPlayer->getActiveWeapon()}; activeWeapon && inProgress)
 	{
 		if (activeWeapon->getClientClass()->classId == ClassId::Healthshot && localPlayer->nextAttack() <= memory->globalVars->serverTime() && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime())
-			cmd->buttons |= UserCmd::IN_ATTACK;
+			cmd->buttons |= UserCmd::Button_Attack;
 		else
 		{
 			for (auto weaponHandle : localPlayer->weapons())
@@ -725,9 +725,9 @@ void Misc::autoPistol(UserCmd *cmd) noexcept
 		if (activeWeapon && !activeWeapon->isC4() && activeWeapon->nextPrimaryAttack() > memory->globalVars->serverTime() && !activeWeapon->isGrenade())
 		{
 			if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
-				cmd->buttons &= ~UserCmd::IN_ATTACK2;
+				cmd->buttons &= ~UserCmd::Button_Attack2;
 			else
-				cmd->buttons &= ~UserCmd::IN_ATTACK;
+				cmd->buttons &= ~UserCmd::Button_Attack;
 		}
 	}
 }
@@ -738,13 +738,13 @@ void Misc::autoReload(UserCmd *cmd) noexcept
 	{
 		const auto activeWeapon = localPlayer->getActiveWeapon();
 		if (activeWeapon && getWeaponIndex(activeWeapon->itemDefinitionIndex2()) && !activeWeapon->clip())
-			cmd->buttons &= ~(UserCmd::IN_ATTACK | UserCmd::IN_ATTACK2);
+			cmd->buttons &= ~(UserCmd::Button_Attack | UserCmd::Button_Attack2);
 	}
 }
 
 void Misc::revealRanks(UserCmd *cmd) noexcept
 {
-	if (config->misc.revealRanks && cmd->buttons & UserCmd::IN_SCORE)
+	if (config->misc.revealRanks && cmd->buttons & UserCmd::Button_Score)
 		interfaces->client->dispatchUserMessage(50, 0, 0, nullptr);
 }
 
@@ -756,8 +756,8 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 	if (!localPlayer || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
 		return;
 
-	static bool lastHeldJump = cmd->buttons & UserCmd::IN_JUMP;
-	if (~cmd->buttons & UserCmd::IN_JUMP && !lastHeldJump)
+	static bool lastHeldJump = cmd->buttons & UserCmd::Button_Jump;
+	if (~cmd->buttons & UserCmd::Button_Jump && !lastHeldJump)
 		return;
 
 	const float speed = localPlayer->velocity().length2D();
@@ -792,13 +792,13 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 		cmd->sidemove = -std::sinf(moveDir) * 450.0f;
 	}
 
-	lastHeldJump = cmd->buttons & UserCmd::IN_JUMP;
+	lastHeldJump = cmd->buttons & UserCmd::Button_Jump;
 }
 
 void Misc::removeCrouchCooldown(UserCmd *cmd) noexcept
 {
 	if (config->exploits.fastDuck)
-		cmd->buttons |= UserCmd::IN_BULLRUSH;
+		cmd->buttons |= UserCmd::Button_Bullrush;
 }
 
 void Misc::moonwalk(UserCmd *cmd) noexcept
@@ -806,19 +806,19 @@ void Misc::moonwalk(UserCmd *cmd) noexcept
 	if (!localPlayer || localPlayer->moveType() == MoveType::Ladder)
 		return;
 
-	cmd->buttons &= ~(UserCmd::IN_FORWARD | UserCmd::IN_BACK | UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT);
+	cmd->buttons &= ~(UserCmd::Button_Forward | UserCmd::Button_Back | UserCmd::Button_MoveLeft | UserCmd::Button_MoveRight);
 	if (cmd->forwardmove > 0.0f)
-		cmd->buttons |= UserCmd::IN_FORWARD;
+		cmd->buttons |= UserCmd::Button_Forward;
 	else if (cmd->forwardmove < 0.0f)
-		cmd->buttons |= UserCmd::IN_BACK;
+		cmd->buttons |= UserCmd::Button_Back;
 	if (cmd->sidemove > 0.0f)
-		cmd->buttons |= UserCmd::IN_MOVERIGHT;
+		cmd->buttons |= UserCmd::Button_MoveRight;
 	else if (cmd->sidemove < 0.0f)
-		cmd->buttons |= UserCmd::IN_MOVELEFT;
+		cmd->buttons |= UserCmd::Button_MoveLeft;
 
 	if (config->exploits.moonwalk)
 	{
-		cmd->buttons ^= UserCmd::IN_FORWARD | UserCmd::IN_BACK | UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT;
+		cmd->buttons ^= UserCmd::Button_Forward | UserCmd::Button_Back | UserCmd::Button_MoveLeft | UserCmd::Button_MoveRight;
 	}
 }
 
@@ -1159,13 +1159,13 @@ void Misc::useSpam(UserCmd *cmd) noexcept
 	if (localPlayer->inBombZone() && localPlayer->flags() & PlayerFlag_OnGround)
 		return;
 
-	if (cmd->buttons & UserCmd::IN_USE)
+	if (cmd->buttons & UserCmd::Button_Use)
 	{
 		static bool flag = false;
 		if (flag)
-			cmd->buttons |= UserCmd::IN_USE;
+			cmd->buttons |= UserCmd::Button_Use;
 		else
-			cmd->buttons &= ~UserCmd::IN_USE;
+			cmd->buttons &= ~UserCmd::Button_Use;
 		flag = !flag;
 	}
 }
