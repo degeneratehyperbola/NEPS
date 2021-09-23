@@ -7,17 +7,17 @@ struct UserCmd
 {
 	enum
 	{
-		IN_ATTACK = 1 << 0,
-		IN_JUMP = 1 << 1,
-		IN_DUCK = 1 << 2,
-		IN_FORWARD = 1 << 3,
-		IN_BACK = 1 << 4,
-		IN_USE = 1 << 5,
-		IN_MOVELEFT = 1 << 9,
-		IN_MOVERIGHT = 1 << 10,
-		IN_ATTACK2 = 1 << 11,
-		IN_SCORE = 1 << 16,
-		IN_BULLRUSH = 1 << 22
+		Button_Attack = 1 << 0,
+		Button_Jump = 1 << 1,
+		Button_Duck = 1 << 2,
+		Button_Forward = 1 << 3,
+		Button_Back = 1 << 4,
+		Button_Use = 1 << 5,
+		Button_MoveLeft = 1 << 9,
+		Button_MoveRight = 1 << 10,
+		Button_Attack2 = 1 << 11,
+		Button_Score = 1 << 16,
+		Button_Bullrush = 1 << 22
 	};
 	PAD(4)
 	int commandNumber;

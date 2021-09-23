@@ -45,7 +45,7 @@ void Triggerbot::run(UserCmd *cmd) noexcept
 
 	if (now - lastContact < cfg.burstTime)
 	{
-		cmd->buttons |= UserCmd::IN_ATTACK;
+		cmd->buttons |= UserCmd::Button_Attack;
 		return;
 	}
 	lastContact = 0.0f;
@@ -103,7 +103,7 @@ void Triggerbot::run(UserCmd *cmd) noexcept
 
 	if (damage >= minDamage)
 	{
-		cmd->buttons |= UserCmd::IN_ATTACK;
+		cmd->buttons |= UserCmd::Button_Attack;
 		lastTime = 0.0f;
 		lastContact = now;
 	}

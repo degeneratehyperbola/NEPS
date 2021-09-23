@@ -85,7 +85,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 		return matrixUpdated;
 	}
 
-	auto state = localPlayer->getAnimState();
+	auto state = localPlayer->animState();
 	if (!state)
 		return matrixUpdated;
 
@@ -139,7 +139,7 @@ static std::array<ResolverData, 65> playerResolverData;
 
 void Animations::resolve(Entity *animatable) noexcept
 {
-	auto state = animatable->getAnimState();
+	auto state = animatable->animState();
 	if (!state)
 		return;
 
