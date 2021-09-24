@@ -168,13 +168,13 @@ public:
 		return v;
 	}
 
-	int getAnimationLayerCount() noexcept
-	{
-		return *reinterpret_cast<int *>((uintptr_t)this + 0x298C);
-	}
 	AnimLayer *animationLayers() noexcept
 	{
 		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2990);
+	}
+	int getAnimationLayerCount() noexcept
+	{
+		return *reinterpret_cast<int *>((uintptr_t)this + 0x299C);
 	}
 
 	std::array<float, PoseParam_Count> &poseParams() noexcept
