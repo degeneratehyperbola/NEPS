@@ -51,7 +51,11 @@ END
 // BIN
 //
 
+#ifdef NEPS_DEBUG
+IDR_BIN1                BIN                     "..\\Debug\\NEPS\\NEPS.dll"
+#else
 IDR_BIN1                BIN                     "..\\Release\\NEPS\\NEPS.dll"
+#endif // NEPS_DEBUG
 
 
 /////////////////////////////////////////////////////////////////////////////
