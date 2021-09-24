@@ -118,9 +118,4 @@
       <Filter>Resources</Filter>
     </Image>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Release\NEPS\NEPS.dll">
-      <Filter>Resources</Filter>
-    </None>
-  </ItemGroup>
 </Project>
