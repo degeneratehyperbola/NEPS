@@ -370,6 +370,12 @@ std::wstring Helpers::toWideString(const std::string &str) noexcept
 	return upperCase;
 }
 
+std::wstring Helpers::toUpper(std::wstring str) noexcept
+{
+	std::transform(str.begin(), str.end(), str.begin(), [](wchar_t w) { return std::towupper(w); });
+	return str;
+}
+
 float Helpers::approachAngleDeg(float target, float value, float speed) noexcept
 {
 	target = normalizeDeg(target);
