@@ -486,8 +486,6 @@ void Misc::changeConVarsTick() noexcept
 	lerpVar->setValue(true);
 	static auto exrpVar = interfaces->cvar->findVar("cl_extrapolate");
 	exrpVar->setValue(false);
-	static auto jiggleBonesVar = interfaces->cvar->findVar("r_jiggle_bones");
-	jiggleBonesVar->setValue(false);
 	static auto ragdollGravity = interfaces->cvar->findVar("cl_ragdoll_gravity");
 	ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? -600 : 600);
 }
@@ -554,6 +552,10 @@ void Misc::changeConVarsFrame(FrameStage stage)
 	case FrameStage::NetUpdateEnd:
 		break;
 	case FrameStage::RenderStart:
+		static auto jiggleBonesVar = interfaces->cvar->findVar("r_jiggle_bones");
+		jiggleBonesVar->setValue(false);
+		static auto contactShadowsVar = interfaces->cvar->findVar("cl_foot_contact_shadows");
+		contactShadowsVar->setValue(false);
 		static auto blurVar = interfaces->cvar->findVar("@panorama_disable_blur");
 		blurVar->setValue(config->misc.disablePanoramablur);
 		static auto lagVar = interfaces->cvar->findVar("cam_ideallag");
