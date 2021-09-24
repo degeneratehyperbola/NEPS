@@ -458,15 +458,10 @@ void Misc::bunnyHop(UserCmd *cmd) noexcept
 	wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
 }
 
-void Misc::fakeBan(bool set) noexcept
+void Misc::fakeBan() noexcept
 {
-	static bool shouldSet = false;
-
-	if (set)
-		shouldSet = set;
-
-	if (shouldSet && interfaces->engine->isInGame() && changeName(false, std::string{"\x1\xB"}.append(std::string{static_cast<char>(config->griefing.banColor + 1)}).append(config->griefing.banText).append("\x1").c_str(), 5.0f))
-		shouldSet = false;
+	if (interfaces->engine->isInGame())
+		interfaces->engine->clientCmdUnrestricted(("playerchatwheel . \"Cheer! \xe2\x80\xa8" + std::string{static_cast<char>(config->griefing.banColor + 1)} + config->griefing.banText + "\"").c_str());
 }
 
 void Misc::changeConVarsTick() noexcept
