@@ -96,11 +96,7 @@ namespace Helpers
 	}
 
 	std::wstring toWideString(const std::string &str) noexcept;
-	constexpr std::wstring toUpper(std::wstring str) noexcept
-	{
-		std::transform(str.begin(), str.end(), str.begin(), [](wchar_t w) { return std::towupper(w); });
-		return str;
-	}
+	std::wstring toUpper(std::wstring str) noexcept;
 
 	struct KeyBindState
 	{
