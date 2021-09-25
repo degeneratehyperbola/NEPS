@@ -278,11 +278,12 @@ void LocalPlayerData::update() noexcept
 		origin = obs->getAbsOrigin();
 		velocity = obs->velocity();
 		eyePosition = obs->getEyePosition();
-		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + obs->getAimPunch()) * 1000;
+		// Calling Entity::getAimPunch() not on the local player sometimes causes crashing
+		//aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + obs->getAimPunch()) * 1000;
 
 		if (const auto activeWeapon = obs->getActiveWeapon(); activeWeapon && obs->isAlive())
 		{
-			inaccuracy = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + Vector{Helpers::radiansToDegrees(activeWeapon->getInaccuracy() + activeWeapon->getSpread()), 0.0f, 0.0f}) * 1000;
+			//inaccuracy = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + Vector{Helpers::radiansToDegrees(activeWeapon->getInaccuracy() + activeWeapon->getSpread()), 0.0f, 0.0f}) * 1000;
 			shooting = obs->shotsFired() > 1;
 			reloading = activeWeapon->isInReload();
 			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), obs->nextAttack());
