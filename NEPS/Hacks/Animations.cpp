@@ -50,7 +50,7 @@ bool Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 		const auto backupPoseParams = localPlayer->poseParams();
 		const auto backupAbsYaw = localPlayer->getAbsAngle().y;
 
-		memory->updateState(desyncedState, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
+		memory->updateState(desyncedState, nullptr, 0.0f, cmd.viewangles.y, cmd.viewangles.x, nullptr);
 		memory->invalidateBoneCache(localPlayer.get());
 		memory->setAbsAngle(localPlayer.get(), Vector{0.0f, desyncedState->goalFeetYaw, 0.0f});
 
@@ -100,7 +100,7 @@ bool Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 		previousTick = memory->globalVars->tickCount;
 
 		localPlayer->clientAnimations() = true;
-		memory->updateState(state, NULL, NULL, cmd.viewangles.y, cmd.viewangles.x, NULL);
+		memory->updateState(state, nullptr, 0.0f, cmd.viewangles.y, cmd.viewangles.x, nullptr);
 		localPlayer->updateClientSideAnimation();
 		localPlayer->clientAnimations() = false;
 
