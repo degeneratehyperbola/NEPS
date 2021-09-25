@@ -218,7 +218,7 @@ void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 	const auto &local = GameData::local();
 	
-	if (!local.exists)
+	if (!local.exists || !local.alive)
 		return;
 
 	if (ImVec2 recoil; Helpers::worldToScreen(local.aimPunch, recoil, false))
@@ -238,7 +238,7 @@ void Misc::visualizeInaccuracy(ImDrawList *drawList) noexcept
 	GameData::Lock lock;
 	const auto &local = GameData::local();
 
-	if (!local.exists || !local.inaccuracy.notNull())
+	if (!local.exists || !local.alive || !local.inaccuracy.notNull())
 		return;
 
 	if (ImVec2 edge; Helpers::worldToScreen(local.inaccuracy, edge))
@@ -251,7 +251,7 @@ void Misc::visualizeInaccuracy(ImDrawList *drawList) noexcept
 
 		const auto inaccuracy = std::sqrtf(ImLengthSqr((edge - displaySize / 2) / displaySize)) * 200;
 		const auto color = Helpers::calculateColor(config->visuals.inaccuracyCircle);
-		char text[9];
+		char text[0xF];
 		std::sprintf(text, "%.6f%%", inaccuracy);
 		drawList->AddText(edge, color, text);
 		drawList->AddCircleFilled(displaySize / 2, radius, color);
