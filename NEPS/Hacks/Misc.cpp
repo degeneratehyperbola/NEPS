@@ -1661,7 +1661,7 @@ void Misc::watermark() noexcept
 	GameData::Lock lock;
 	const auto session = GameData::session();
 
-	if (session.connected)
+	if (session.connected && !session.levelName.empty())
 	{
 		ImGui::SameLine(55.0f);
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
