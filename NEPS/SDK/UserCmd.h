@@ -19,6 +19,7 @@ struct UserCmd
 		Button_Score = 1 << 16,
 		Button_Bullrush = 1 << 22
 	};
+
 	PAD(4)
 	int commandNumber;
 	int tickCount;
