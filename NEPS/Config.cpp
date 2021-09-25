@@ -1254,7 +1254,7 @@ static void to_json(json &j, const Config::Griefing &o)
 	const Config::Griefing dummy;
 
 	WRITE("Custom clantag", customClanTag);
-	WRITE("Clocktag", clocktag);
+	WRITE("Clock tag", clocktag);
 
 	if (o.clanTag[0])
 		j["Clantag"] = o.clanTag;
