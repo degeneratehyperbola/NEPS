@@ -115,9 +115,19 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		Record predictedGhost;
 		predictedGhost.hasHelmet = entity->hasHelmet();
 		predictedGhost.armor = entity->armor();
-		auto origin = entity->getBonePosition(8) + entity->velocity() * predictionFraction;
-		int damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head);
-		const auto goesThroughWall = trace.startPos != predictedEyePosition;
+
+		Vector origin = Vector{};
+		int damage = -1;
+		bool goesThroughWall = true;
+
+		// A subject to change
+		origin = entity->getBonePosition(8) + entity->velocity() * predictionFraction;
+		damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head);
+		goesThroughWall = goesThroughWall && trace.startPos != predictedEyePosition;
+
+		origin = entity->getBonePosition(0) + entity->velocity() * predictionFraction;
+		damage = std::max(damage, Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head));
+		goesThroughWall = goesThroughWall && trace.startPos != predictedEyePosition;
 
 		if (damage > 0 && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
 		{
