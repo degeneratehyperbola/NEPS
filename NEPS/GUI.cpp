@@ -2532,7 +2532,7 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 	ImGui::PushItemWidth(100);
 	//if (ImGui::Combo("Menu style", &config->style.menuStyle, "Classic\0One window\0"))
 	//    window = {};
-	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Frontier\0Eastern Sun\0Coca-Cola\0Twotap\0Cherry\0Custom\0"))
+	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Alwayslose\0Aimwhen\0Coca-Cola\0Twotap\0Cherry\0Custom\0"))
 		updateColors();
 	ImGui::PopItemWidth();
 	ImGui::SetNextItemWidth(90);
