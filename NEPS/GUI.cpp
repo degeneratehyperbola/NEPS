@@ -2535,8 +2535,8 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Frontier\0Eastern Sun\0Coca-Cola\0Twotap\0Cherry\0Custom\0"))
 		updateColors();
 	ImGui::PopItemWidth();
-	ImGui::SetNextItemWidth(-1);
-	ImGui::SliderFloat("##font_scale", &config->style.scaling, 0.2f, 4.0f, "Font scale %.1f");
+	ImGui::SetNextItemWidth(90);
+	ImGui::InputFloat("Font scale", &config->style.scaling, 0.1f, 1.0f, "%.2f");
 
 	if (config->style.menuColors == 6)
 	{
