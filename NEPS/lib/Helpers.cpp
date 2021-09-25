@@ -233,7 +233,7 @@ int Helpers::findDamage(const Vector &destination, const Vector &source, Entity 
 
 	constexpr auto calcDamage = [](const WeaponInfo *weaponData, bool hasHelmet, int armor, int hitGroup, float traveled, float &damage) noexcept
 	{
-		const auto m = std::strstr(weaponData->name, "Taser") ? 1.0f : HitGroup::getDamageMultiplier(hitGroup);
+		const auto m = std::strstr(weaponData->name, "Taser") ? 1.0f : HitGroup::getDamageMultiplier(hitGroup, weaponData->headshotMultiplier);
 		damage = m * damage * std::powf(weaponData->rangeModifier, traveled / 500.0f);
 
 		if (float armorRatio = weaponData->armorRatio / 2; HitGroup::isArmored(hitGroup, hasHelmet))

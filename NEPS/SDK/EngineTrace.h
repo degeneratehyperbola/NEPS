@@ -132,12 +132,12 @@ namespace HitGroup
 		Gear = 10
 	};
 
-	constexpr float getDamageMultiplier(int hitGroup) noexcept
+	constexpr float getDamageMultiplier(int hitGroup, float headshotMultiplier) noexcept
 	{
 		switch (hitGroup)
 		{
 		case Head:
-			return 4.0f;
+			return headshotMultiplier;
 		case Stomach:
 			return 1.25f;
 		case LeftLeg:
