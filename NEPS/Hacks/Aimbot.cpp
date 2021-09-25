@@ -338,15 +338,13 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 
 			for (auto &point : points)
 			{
-				const auto extrapolatedPoint = point + entity->velocity() * memory->globalVars->intervalPerTick;
-
-				const auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, extrapolatedPoint, cmd->viewangles + aimPunch);
+				const auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, point, cmd->viewangles + aimPunch);
 
 				const auto fov = std::hypot(angle.x, angle.y);
 				if (fov >= bestFov)
 					continue;
 
-				const auto distance = localPlayerEyePosition.distTo(extrapolatedPoint);
+				const auto distance = localPlayerEyePosition.distTo(point);
 				if (distance >= bestDistance || distance > weaponData->range)
 					continue;
 
