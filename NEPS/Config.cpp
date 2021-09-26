@@ -693,6 +693,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Disable interpolation", m.disableInterp);
 	read(j, "Disable IK", m.disableIK);
 	read(j, "Resolve LBY", m.resolveLby);
+	read(j, "Resolver Type", m.resolverType);
 	read(j, "Unlock invertory", m.unlockInvertory);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
 	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
@@ -1185,6 +1186,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Disable interpolation", disableInterp);
 	WRITE("Disable IK", disableIK);
 	WRITE("Resolve LBY", resolveLby);
+	WRITE("Resolver Type", resolverType);
 	WRITE("Unlock invertory", unlockInvertory);
 	WRITE("Disable HUD blur", disablePanoramablur);
 	WRITE("Prepare revolver", prepareRevolver);

@@ -9,6 +9,8 @@
 #include "../SDK/Input.h"
 #include "../SDK/UserCmd.h"
 
+#include "../Config.h"
+
 static AnimState *desyncedState = new AnimState{};
 static std::array<Matrix3x4, MAX_STUDIO_BONES> desyncedBones;
 
@@ -133,6 +135,8 @@ struct ResolverData
 	float nextLbyUpdate;
 	int misses;
 	int previousTick;
+	float goodEyeYaw;
+	float goodFeetYaw;
 };
 
 static std::array<ResolverData, 65> playerResolverData;
@@ -162,25 +166,35 @@ void Animations::resolve(Entity *animatable) noexcept
 		resolverData.previousTick = simulationTick;
 
 		const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
-		const float lowDesync = std::fminf(35.0f, maxDesync);
-		if (!Helpers::animDataAuthenticity(animatable) && !lbyUpdate)
+
+		if (!Helpers::animDataAuthenticity(animatable) && !lbyUpdate && resolverData.goodEyeYaw && config->misc.resolverType)
 		{
-			const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.previousFeetYaw);
-			const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
-			const bool notMove = animatable->velocity().length2D() < 0.1f && std::fabsf(animatable->velocity().z) < 100.0f;
-
-			std::array<float, 3U> positions = {-maxDesync, 0.0f, maxDesync};
-
-			if (lbyTargetDelta < 0.0f)
-				std::reverse(positions.begin(), positions.end());
-
-			std::vector<float> distances;
-			for (const auto &position : positions)
-				distances.emplace_back(std::fabsf(position - lbyDelta));
-
-			const auto current = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
-
-			resolverData.feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + resolverData.misses + 1) % positions.size()]);
+			float eyeDiff = Helpers::angleDiffDeg(state->eyeYaw, resolverData.goodEyeYaw);
+			float eyeDiff2 = Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.goodEyeYaw);
+			float bestAngle = std::fminf(std::fabsf(eyeDiff), maxDesync);
+			float bestAngle2 = std::fminf(std::fabsf(eyeDiff2), maxDesync);
+			int res = config->misc.resolverType;
+			switch (res) {
+			case 0:
+				resolverData.feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y - bestAngle);
+				break;
+			case 1:
+				resolverData.feetYaw = Helpers::normalizeDeg(bestAngle2);
+				break;
+			case 2:
+				resolverData.feetYaw = resolverData.goodFeetYaw;
+				break;
+			case 3:
+				resolverData.feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + bestAngle);
+				break;
+			case 4:
+				resolverData.feetYaw = Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.goodFeetYaw);
+				break;
+			}
+		}
+		else {
+			resolverData.goodEyeYaw = state->eyeYaw;
+			resolverData.goodFeetYaw = state->currentFeetYaw;
 		}
 	}
 
