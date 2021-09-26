@@ -346,15 +346,17 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 
 			const float radius = Helpers::approxRadius(hitbox, hitboxIdx);
 
-			for (auto &point : points)
+			for (const auto &point : points)
 			{
-				const auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, point, cmd->viewangles + aimPunch);
+				const auto extrapolatedPoint = point + entity->velocity() * memory->globalVars->intervalPerTick;
+
+				const auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, extrapolatedPoint, cmd->viewangles + aimPunch);
 
 				const auto fov = std::hypot(angle.x, angle.y);
 				if (fov >= bestFov)
 					continue;
 
-				const auto distance = localPlayerEyePosition.distTo(point);
+				const auto distance = localPlayerEyePosition.distTo(extrapolatedPoint);
 				if (distance >= bestDistance || distance > weaponData->range)
 					continue;
 
@@ -387,7 +389,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 						continue;
 				}
 
-				if (!cfg.ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, point, 1))
+				if (!cfg.ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, extrapolatedPoint, 1))
 					continue;
 
 				switch (targeting)
