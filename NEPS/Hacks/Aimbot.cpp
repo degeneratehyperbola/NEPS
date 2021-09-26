@@ -74,6 +74,9 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 	if (!localPlayer)
 		return;
 
+	if (!&config->misc.predict)
+		return;
+
 	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
 		return;
 

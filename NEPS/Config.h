@@ -392,6 +392,7 @@ public:
 		bool disableInterp = false;
 		bool disableIK = false;
 		bool resolveLby = false;
+		bool predict = false;
 		bool unlockInvertory = false;
 		bool disablePanoramablur = false;
 

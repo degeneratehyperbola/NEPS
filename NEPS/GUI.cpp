@@ -2465,6 +2465,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
 	ImGui::Checkbox("Disable IK", &config->misc.disableIK);
 	ImGui::Checkbox("Resolve LBY", &config->misc.resolveLby);
+	ImGui::Checkbox("Prediction", &config->misc.predict);
 
 	ImGui::NextColumn();
 
