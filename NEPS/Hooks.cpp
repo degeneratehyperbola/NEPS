@@ -116,10 +116,11 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
 
+	Misc::velocityGraph();
 	Misc::purchaseList();
 	Misc::teamDamageList();
 	Misc::drawBombTimer();
-	Misc::indicators(ImGui::GetBackgroundDrawList());
+	Misc::indicators();
 
 	#ifndef LEGACY_WATERMARK
 	Misc::spectatorList();

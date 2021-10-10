@@ -1154,7 +1154,7 @@ void Misc::useSpam(UserCmd *cmd) noexcept
 	}
 }
 
-void Misc::indicators(ImDrawList *drawList) noexcept
+void Misc::indicators() noexcept
 {
 	GameData::Lock lock;
 	const auto &local = GameData::local();
@@ -1688,6 +1688,11 @@ void Misc::watermark() noexcept
 		ImGui::TextUnformatted(session.address.c_str());
 	}
 	ImGui::End();
+
+}
+
+void Misc::velocityGraph() noexcept
+{
 
 }
 
