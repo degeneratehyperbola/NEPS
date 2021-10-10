@@ -372,6 +372,7 @@ public:
 	NETVAR(fovStart, "CBasePlayer", "m_iFOVStart", int)
 	NETVAR(defaultFov, "CBasePlayer", "m_iDefaultFOV", int)
 	NETVAR(flags, "CBasePlayer", "m_fFlags", int)
+	NETVAR(viewOffset, "CBasePlayer", "m_vecViewOffset[0]", Vector)
 	NETVAR(tickBase, "CBasePlayer", "m_nTickBase", int)
 	NETVAR(aimPunchAngle, "CBasePlayer", "m_aimPunchAngle", Vector)
 	NETVAR(viewPunchAngle, "CBasePlayer", "m_viewPunchAngle", Vector)
