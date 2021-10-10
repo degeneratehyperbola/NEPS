@@ -23,7 +23,7 @@
 #define ALL_VISIBLE_CONTENTS (LAST_VISIBLE_CONTENTS | (LAST_VISIBLE_CONTENTS-1))
 
 #define CONTENTS_TESTFOGVOLUME 0x100
-#define CONTENTS_UNUSED 0x200	
+#define CONTENTS_UNUSED 0x200
 
 // Unused
 // NOTE: If it's visible, grab from the top + update LAST_VISIBLE_CONTENTS if not visible, then grab from the bottom.
@@ -83,8 +83,8 @@
 
 #define	SURF_HINT 0x100 // Make a primary bsp splitter
 
-#define	SURF_SKIP 0x200 // Completely ignore, allowing non-closed brushes
-#define SURF_NOLIGHT 0x400	// Don't calculate light
+#define SURF_SKIP 0x200	// Completely ignore, allowing non-closed brushes
+#define SURF_NOLIGHT 0x400 // Don't calculate light
 #define SURF_BUMPLIGHT 0x800 // Calculate three lightmaps for the surface for bumpmapping
 #define SURF_NOSHADOWS 0x1000 // Don't receive shadows
 #define SURF_NODECALS 0x2000 // Don't receive decals
@@ -94,69 +94,75 @@
 
 #pragma endregion
 
-struct Ray {
-    Ray(const Vector& src, const Vector& dest) : start(src), delta(dest - src) { isSwept = delta.x || delta.y || delta.z; }
+struct Ray
+{
+	Ray(const Vector &src, const Vector &dest) : start(src), delta(dest - src) { isSwept = delta.x || delta.y || delta.z; }
 	Vector start;
 	INIT_PAD(4)
-    Vector delta;
+	Vector delta;
 	INIT_PAD(40)
-    bool isRay = true;
-    bool isSwept;
+	bool isRay = true;
+	bool isSwept;
 };
 
 class Entity;
 
-struct TraceFilter {
-    TraceFilter(const Entity* entity) : skip{ entity } { }
-    virtual bool shouldHitEntity(Entity* entity, int) { return entity != skip; }
-    virtual int getTraceType() const { return 0; }
-    const void* skip;
+struct TraceFilter
+{
+	TraceFilter(const Entity *entity) : skip{entity} {}
+	virtual bool shouldHitEntity(Entity *entity, int) { return entity != skip; }
+	virtual int getTraceType() const { return 0; }
+	const void *skip;
 };
 
-namespace HitGroup {
-    enum {
-        Invalid = -1,
-        Generic,
-        Head,
-        Chest,
-        Stomach,
-        LeftArm,
-        RightArm,
-        LeftLeg,
-        RightLeg,
-        Gear = 10
-    };
+namespace HitGroup
+{
+	enum
+	{
+		Invalid = -1,
+		Generic,
+		Head,
+		Chest,
+		Stomach,
+		LeftArm,
+		RightArm,
+		LeftLeg,
+		RightLeg,
+		Gear = 10
+	};
 
-    constexpr float getDamageMultiplier(int hitGroup) noexcept
-    {
-        switch (hitGroup) {
-        case Head:
-            return 4.0f;
-        case Stomach:
-            return 1.25f;
-        case LeftLeg:
-        case RightLeg:
-            return 0.75f;
-        default:
-            return 1.0f;
-        }
-    }
+	constexpr float getDamageMultiplier(int hitGroup, float headshotMultiplier) noexcept
+	{
+		switch (hitGroup)
+		{
+		case Head:
+			return headshotMultiplier;
+		case Stomach:
+			return 1.25f;
+		case LeftLeg:
+		case RightLeg:
+			return 0.75f;
+		default:
+			return 1.0f;
+		}
+	}
 
-    constexpr bool isArmored(int hitGroup, bool helmet) noexcept
-    {
-        switch (hitGroup) {
-        case Head:
-            return helmet;
+	constexpr bool isArmored(int hitGroup, bool helmet) noexcept
+	{
+		switch (hitGroup)
+		{
+		case Head:
+			return helmet;
 
-        case Chest:
-        case Stomach:
-        case LeftArm:
-        case RightArm:
-            return true;
-        default:
-            return false;
-        }
-    }
+		case Chest:
+		case Stomach:
+		case LeftArm:
+		case RightArm:
+			return true;
+		default:
+			return false;
+		}
+	}
 }
 
 struct Trace
