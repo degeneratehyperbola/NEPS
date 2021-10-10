@@ -171,7 +171,7 @@ namespace Helpers
 
 	bool attacking(bool cmdAttack, bool cmdAttack2) noexcept;
 
-	constexpr int replace(std::string &str, const std::string &from, const std::string &to) noexcept
+	inline int replace(std::string &str, const std::string &from, const std::string &to) noexcept
 	{
 		size_t startPos = str.find(from);
 		if (startPos == std::string::npos)
