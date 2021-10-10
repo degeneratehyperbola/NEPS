@@ -86,20 +86,30 @@ public:
 	VIRTUAL_METHOD(const Vector &, getAbsOrigin, 10, (), (this))
 	VIRTUAL_METHOD(const Vector &, getAbsAngle, 11, (), (this))
 	VIRTUAL_METHOD(void, setModelIndex, 75, (int index), (this, index))
-	VIRTUAL_METHOD(int, health, 121, (), (this))
-	VIRTUAL_METHOD(bool, isAlive, 155, (), (this))
-	VIRTUAL_METHOD(bool, isPlayer, 157, (), (this))
-	VIRTUAL_METHOD(bool, isWeapon, 165, (), (this))
-	VIRTUAL_METHOD(int, getWeaponSubType, 281, (), (this))
-	VIRTUAL_METHOD(Vector, getEyePosition, 284, (), (this))
-	VIRTUAL_METHOD(ObsMode, getObserverMode, 293, (), (this))
-	VIRTUAL_METHOD(Entity *, getObserverTarget, 294, (), (this))
-	VIRTUAL_METHOD(Vector, getAimPunch, 345, (), (this))
-	VIRTUAL_METHOD(float, getSpread, 452, (), (this))
-	VIRTUAL_METHOD(WeaponType, getWeaponType, 454, (), (this))
-	VIRTUAL_METHOD(WeaponInfo *, getWeaponData, 460, (), (this))
-	VIRTUAL_METHOD(float, getInaccuracy, 482, (), (this))
-	VIRTUAL_METHOD(void, updateClientSideAnimation, 223, (), (this))
+	VIRTUAL_METHOD(int, health, 122, (), (this))
+	VIRTUAL_METHOD(bool, isAlive, 156, (), (this))
+	VIRTUAL_METHOD(bool, isPlayer, 158, (), (this))
+	VIRTUAL_METHOD(bool, isWeapon, 166, (), (this))
+	VIRTUAL_METHOD(int, getWeaponSubType, 282, (), (this))
+	VIRTUAL_METHOD(ObsMode, getObserverMode, 294, (), (this))
+	VIRTUAL_METHOD(Entity *, getObserverTarget, 295, (), (this))
+	VIRTUAL_METHOD(float, getSpread, 453, (), (this))
+	VIRTUAL_METHOD(WeaponType, getWeaponType, 455, (), (this))
+	VIRTUAL_METHOD(WeaponInfo *, getWeaponData, 461, (), (this))
+	VIRTUAL_METHOD(float, getInaccuracy, 483, (), (this))
+	VIRTUAL_METHOD(void, updateClientSideAnimation, 224, (), (this))
+
+	Vector getEyePosition() noexcept
+	{
+		return getAbsOrigin() + viewOffset();
+	}
+
+	Vector getAimPunch() noexcept
+	{
+		Vector v;
+		VirtualMethod::call<void, 346>(this, std::ref(v));
+		return v;
+	}
 
 	Entity *getActiveWeapon() noexcept
 	{
@@ -143,20 +153,15 @@ public:
 
 	int getAnimationLayerCount() noexcept
 	{
-		return *reinterpret_cast<int *>((uintptr_t)this + 0x298C);
+		return *reinterpret_cast<int *>((uintptr_t)this + 0x299C);
 	}
 	AnimLayer *animationLayers() noexcept
 	{
-		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2980);
+		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2990);
 	}
 	AnimLayer *getAnimationLayer(int overlay) noexcept
 	{
 		return &(*reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2980))[overlay];
-	}
-
-	AnimState *getAnimState() noexcept
-	{
-		return *reinterpret_cast<AnimState **>((uintptr_t)this + 0x3914);
 	}
 
 	enum PoseParameter
@@ -189,11 +194,6 @@ public:
 	float &poseParam(int index) noexcept
 	{
 		return reinterpret_cast<std::array<float, 24> *>((uintptr_t)this + netvars->operator[](fnv::hash("CBaseAnimating->m_flPoseParameter")))->operator[](index);
-	}
-
-	float spawnTime() noexcept
-	{
-		return *(float *)((uintptr_t)this + 0xA370);
 	}
 
 	auto isPistol() noexcept { return getWeaponType() == WeaponType::Pistol; }
@@ -301,11 +301,6 @@ public:
 		return animState->velocitySubtract.y * yawModifier;
 	}
 
-	bool isInReload() noexcept
-	{
-		return *reinterpret_cast<bool*>(uintptr_t(&clip()) + 0x41);
-	}
-
 	auto getUserId() noexcept
 	{
 		if (PlayerInfo playerInfo; interfaces->engine->getPlayerInfo(index(), playerInfo))
@@ -387,7 +382,9 @@ public:
 
 	NETVAR(armor, "CCSPlayer", "m_ArmorValue", int)
 	NETVAR(eyeAngles, "CCSPlayer", "m_angEyeAngles", Vector)
+	NETVAR_OFFSET(getAnimState, "CCSPlayer", "m_bIsScoped", -20, AnimState *)
 	NETVAR(isScoped, "CCSPlayer", "m_bIsScoped", bool)
+	NETVAR_OFFSET(spawnTime, "CCSPlayer", "m_iAddonBits", -4, float)
 	NETVAR(isDefusing, "CCSPlayer", "m_bIsDefusing", bool)
 	NETVAR_OFFSET(flashDuration, "CCSPlayer", "m_flFlashMaxAlpha", -8, float)
 	NETVAR(flashMaxAlpha, "CCSPlayer", "m_flFlashMaxAlpha", float)
@@ -406,6 +403,7 @@ public:
 	NETVAR(worldDroppedModelIndex, "CBaseCombatWeapon", "m_iWorldDroppedModelIndex", int)
 	NETVAR(weaponWorldModel, "CBaseCombatWeapon", "m_hWeaponWorldModel", int)
 	NETVAR(clip, "CBaseCombatWeapon", "m_iClip1", int)
+	NETVAR_OFFSET(isInReload, "CBaseCombatWeapon", "m_iClip1", 65, bool)
 	NETVAR(reserveAmmoCount, "CBaseCombatWeapon", "m_iPrimaryReserveAmmoCount", int)
 	NETVAR(nextPrimaryAttack, "CBaseCombatWeapon", "m_flNextPrimaryAttack", float)
 
