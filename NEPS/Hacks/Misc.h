@@ -45,12 +45,13 @@ namespace Misc
 	void blockBot(UserCmd *cmd, const Vector &) noexcept;
 	void visualizeBlockBot(ImDrawList *drawList) noexcept;
 	void useSpam(UserCmd *cmd) noexcept;
-	void indicators(ImDrawList *drawList) noexcept;
+	void indicators() noexcept;
 	void drawBombTimer() noexcept;
 	void purchaseList(GameEvent *event = nullptr) noexcept;
 	void teamDamageList(GameEvent *event = nullptr);
 	void spectatorList() noexcept;
 	void watermark() noexcept;
+	void velocityGraph() noexcept;
 	void voteRevealer(GameEvent &event) noexcept;
 	void forceRelayCluster() noexcept;
 }
