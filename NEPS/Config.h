@@ -62,6 +62,8 @@ public:
 		float quadratic = 0.0f;
 		float linear = 255.0f;
 		bool betweenShots = true;
+		int firstShotDelay{ 0 };
+		int killDelay{ 0 };
 		struct AimbotOverride
 		{
 			KeyBind bind;

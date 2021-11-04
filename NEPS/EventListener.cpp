@@ -7,6 +7,7 @@
 #include "Hacks/Misc.h"
 #include "Hacks/SkinChanger.h"
 #include "Hacks/Visuals.h"
+#include "Hacks/Aimbot.h"
 #include "Interfaces.h"
 
 EventListener::EventListener() noexcept
@@ -56,6 +57,7 @@ void EventListener::fireGameEvent(GameEvent *event)
 		Misc::killMessage(*event);
 		Misc::playKillSound(*event);
 		Misc::playDeathSound(*event);
+		Aimbot::handleKill(*event);
 		break;
 	case fnv::hash("player_hurt"):
 		Misc::teamDamageList(event);

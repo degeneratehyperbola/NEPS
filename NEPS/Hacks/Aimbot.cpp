@@ -16,6 +16,7 @@
 #include "../SDK/ModelInfo.h"
 #include "../SDK/PhysicsSurfaceProps.h"
 #include "../SDK/WeaponData.h"
+#include "../SDK/GameEvent.h"
 
 #include "../lib/Helpers.hpp"
 
@@ -436,6 +437,18 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 	}
 }
 
+void Aimbot::handleKill(GameEvent& event) noexcept
+{
+	if (!localPlayer)
+		return;
+
+	if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
+		return;
+
+	lastKillTime = memory->globalVars->realtime;
+	return;
+}
+
 void Aimbot::run(UserCmd *cmd) noexcept
 {
 	if (!localPlayer)
@@ -450,6 +463,10 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
 	if (!activeWeapon || !activeWeapon->clip())
+		return;
+
+	const auto weaponIndex = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
+	if (!weaponIndex)
 		return;
 
 	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
@@ -468,6 +485,15 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
     if (!cfg.ignoreFlash && localPlayer->isFlashed())
         return;
+
+	const auto now = memory->globalVars->realtime;
+
+	if (lastKillTime + config->aimbot[weaponIndex].killDelay / 1000.0f > now)
+		return;
+
+	static auto pressedTime = 0.0f;
+	if (!(cmd->buttons & UserCmd::Button_Attack))
+		pressedTime = now;
 
     if ((cmd->buttons & UserCmd::Button_Attack || cfg.autoShoot || cfg.aimlock)) {
 
@@ -524,6 +550,9 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				cmd->buttons &= ~UserCmd::Button_Attack;
 				lastAngles = cmd->viewangles;
 			} else lastAngles = Vector{};
+
+			if (pressedTime + config->aimbot[weaponIndex].firstShotDelay / 1000.0f > now)
+				cmd->buttons ^= UserCmd::Button_Attack;
 
 			lastCommand = cmd->commandNumber;
 		}
