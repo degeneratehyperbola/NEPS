@@ -2997,11 +2997,3 @@ void GUI::renderDebugWindow() noexcept
 	}
 }
 #endif // NEPS_DEBUG
-set 限制解除 
-x1.00
->
-<
->>
-<<
-O
-x1.00
