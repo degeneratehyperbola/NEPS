@@ -67,7 +67,7 @@ GUI::GUI() noexcept
 		const std::filesystem::path path{ pathToFonts };
 		CoTaskMemFree(pathToFonts);
 
-		font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 15.0f, &cfg, Helpers::getFontGlyphRanges());
+		font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
 		if (!font) {
 			io.Fonts->AddFontDefault(&cfg);
 
@@ -76,7 +76,7 @@ GUI::GUI() noexcept
 			0x2605, 0x2605, // ★
 			0
 		};
-		io.Fonts->AddFontFromFileTTF((path / "seguisym.ttf").string().c_str(), 15.0f, &cfg, symbol);
+		io.Fonts->AddFontFromFileTTF((path / "seguisym.ttf").string().c_str(), 13.0f, &cfg, symbol);
 		cfg.MergeMode = false;
 		if (!font)
 		font = io.Fonts->AddFontFromMemoryCompressedTTF(_compressedFontData, _compressedFontSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
