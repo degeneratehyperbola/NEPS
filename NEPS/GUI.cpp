@@ -1,6 +1,7 @@
 #include <cwctype>
 #include <ShlObj.h>
 #include <shellapi.h>
+#include <windows.h>
 
 #include <shared_lib/imgui/imgui.h>
 #include <shared_lib/imgui/imgui_stdlib.h>
@@ -61,8 +62,27 @@ GUI::GUI() noexcept
 	cfg.GlyphOffset = {1.0f, -1.0f};
 	if (cfg.Name[0] == '\0')
 		std::sprintf(cfg.Name, "NEPS N-Kana (default), %dpx", static_cast<int>(cfg.SizePixels));
+	
+	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts))) {
+		const std::filesystem::path path{ pathToFonts };
+		CoTaskMemFree(pathToFonts);
 
-	font = io.Fonts->AddFontFromMemoryCompressedTTF(_compressedFontData, _compressedFontSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
+		font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 15.0f, &cfg, Helpers::getFontGlyphRanges());
+		if (!font) {
+			io.Fonts->AddFontDefault(&cfg);
+
+		cfg.MergeMode = true;
+		static constexpr ImWchar symbol[]{
+			0x2605, 0x2605, // ★
+			0
+		};
+		io.Fonts->AddFontFromFileTTF((path / "seguisym.ttf").string().c_str(), 15.0f, &cfg, symbol);
+		cfg.MergeMode = false;
+		if (!font)
+		font = io.Fonts->AddFontFromMemoryCompressedTTF(_compressedFontData, _compressedFontSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
+		}
+	}
+	
 }
 
 static void drawColorPalette() noexcept
