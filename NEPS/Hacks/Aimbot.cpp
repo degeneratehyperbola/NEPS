@@ -491,13 +491,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 	if (lastKillTime + config->aimbot[weaponIndex].killDelay / 1000.0f > now)
 		return;
 	
-	static auto pressedTime = 0.0f;
-	static bool pressedCond;
-
-	if (!(cmd->buttons & UserCmd::Button_Attack) && pressedTime + config->aimbot[weaponIndex].firstShotDelay / 1000.0f < now)
-		pressedCond = true;
-	else pressedCond = false;
-
     if ((cmd->buttons & UserCmd::Button_Attack || cfg.autoShoot || cfg.aimlock)) {
 
 		if (cfg.scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !cfg.autoScope)
@@ -554,11 +547,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				lastAngles = cmd->viewangles;
 			} else lastAngles = Vector{};
 			
-			if (pressedTime + config->aimbot[weaponIndex].firstShotDelay / 1000.0f < now and pressedCond== true)
-				cmd->buttons ^= UserCmd::Button_Attack;	
-				pressedCond = false;
-				pressedTime = now;
-				
 			lastCommand = cmd->commandNumber;
 		}
 

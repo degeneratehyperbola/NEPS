@@ -66,7 +66,6 @@ GUI::GUI() noexcept
 	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts))) {
 		const std::filesystem::path path{ pathToFonts };
 		CoTaskMemFree(pathToFonts);
-		
 		font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
 		if (!font) {
 			io.Fonts->AddFontDefault(&cfg);
