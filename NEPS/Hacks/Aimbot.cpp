@@ -490,10 +490,13 @@ void Aimbot::run(UserCmd *cmd) noexcept
 
 	if (lastKillTime + config->aimbot[weaponIndex].killDelay / 1000.0f > now)
 		return;
-
+	
 	static auto pressedTime = 0.0f;
-	if (!(cmd->buttons & UserCmd::Button_Attack))
-		pressedTime = now;
+	static bool pressedCond;
+
+	if (!(cmd->buttons & UserCmd::Button_Attack) && pressedTime + config->aimbot[weaponIndex].firstShotDelay / 1000.0f < now)
+		pressedCond = true;
+	else pressedCond = false;
 
     if ((cmd->buttons & UserCmd::Button_Attack || cfg.autoShoot || cfg.aimlock)) {
 
@@ -550,10 +553,12 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				cmd->buttons &= ~UserCmd::Button_Attack;
 				lastAngles = cmd->viewangles;
 			} else lastAngles = Vector{};
-
-			if (pressedTime + config->aimbot[weaponIndex].firstShotDelay / 1000.0f > now)
-				cmd->buttons ^= UserCmd::Button_Attack;
-
+			
+			if (pressedTime + config->aimbot[weaponIndex].firstShotDelay / 1000.0f < now and pressedCond== true)
+				cmd->buttons ^= UserCmd::Button_Attack;	
+				pressedCond = false;
+				pressedTime = now;
+				
 			lastCommand = cmd->commandNumber;
 		}
 

@@ -763,8 +763,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
-		ImGui::SliderInt("First shot delay", &config->aimbot[currentWeapon].firstShotDelay, 0, 250, "First shot delay %d ms");
-		ImGui::SliderInt("Kill delay", &config->aimbot[currentWeapon].killDelay, 0, 500, "Kill delay %d ms");
+		//ImGui::SliderInt("First shot delay", &config->aimbot[currentWeapon].firstShotDelay, 0, 1000, "First shot delay %d ms");
+		ImGui::SliderInt("Kill delay", &config->aimbot[currentWeapon].killDelay, 0, 2000, "Kill delay %d ms");
 	}
 
 	ImGui::EndChild();
