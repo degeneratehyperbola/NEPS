@@ -66,7 +66,7 @@ GUI::GUI() noexcept
 	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts))) {
 		const std::filesystem::path path{ pathToFonts };
 		CoTaskMemFree(pathToFonts);
-
+		
 		font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
 		if (!font) {
 			io.Fonts->AddFontDefault(&cfg);
@@ -763,6 +763,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
+		ImGui::SliderInt("First shot delay", &config->aimbot[currentWeapon].firstShotDelay, 0, 250, "First shot delay %d ms");
+		ImGui::SliderInt("Kill delay", &config->aimbot[currentWeapon].killDelay, 0, 500, "Kill delay %d ms");
 	}
 
 	ImGui::EndChild();
