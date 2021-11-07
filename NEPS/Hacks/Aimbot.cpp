@@ -96,9 +96,9 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 	if (!cfg.betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
 		return;
 
-	constexpr auto predictionFraction = 0.07f;
+	constexpr auto predictionFactor = 0.07f;
 
-	const auto predictedEyePosition = localPlayer->getEyePosition() + localPlayer->velocity() * predictionFraction;
+	const auto predictedEyePosition = localPlayer->getEyePosition() + localPlayer->velocity() * predictionFactor;
 
 	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 	{
@@ -121,11 +121,11 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		bool goesThroughWall = true;
 
 		// A subject to change
-		origin = entity->getBonePosition(8) + entity->velocity() * predictionFraction;
+		origin = entity->getBonePosition(8) + entity->velocity() * predictionFactor;
 		damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head);
 		goesThroughWall = goesThroughWall && trace.startPos != predictedEyePosition;
 
-		origin = entity->getBonePosition(0) + entity->velocity() * predictionFraction;
+		origin = entity->getBonePosition(0) + entity->velocity() * predictionFactor;
 		damage = std::max(damage, Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head));
 		goesThroughWall = goesThroughWall && trace.startPos != predictedEyePosition;
 
@@ -449,7 +449,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		return;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
-	if (!activeWeapon || !activeWeapon->clip())
+	if (!activeWeapon || !activeWeapon->clip() || activeWeapon->isKnife())
 		return;
 
 	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
