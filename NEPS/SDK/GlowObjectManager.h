@@ -53,8 +53,8 @@ struct GlowObjectManager
 			glowObjectDefinitions[index].entity = entity;
 			glowObjectDefinitions[index].fullBloomRender = false;
 			glowObjectDefinitions[index].fullBloomStencilTestValue = 0;
-			glowObjectDefinitions[index].splitScreenSlot = -1;
-			glowObjectDefinitions[index].nextFreeSlot = -2;
+			glowObjectDefinitions[index].splitScreenSlot = GlowObjectDefinition::END_OF_FREE_LIST;
+			glowObjectDefinitions[index].nextFreeSlot = GlowObjectDefinition::ENTRY_IN_USE;
 		}
 		return index;
 	}

@@ -37,7 +37,7 @@ void Glow::render() noexcept
 		case ClassId::SmokeGrenadeProjectile:
 		case ClassId::SnowballProjectile:
 		case ClassId::Hostage:
-		case ClassId::Ragdoll:
+		//case ClassId::Ragdoll:
 			if (!memory->glowObjectManager->hasGlowEffect(entity))
 			{
 				if (auto index{memory->glowObjectManager->registerGlowObject(entity)}; index != -1)
