@@ -779,6 +779,7 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Bunny hop", m.bunnyHop);
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
+	read<value_t::object>(j, "Jumpbug", m.jumpBug);
 	read(j, "Fast stop", m.fastStop);
 }
 
@@ -1279,6 +1280,7 @@ static void to_json(json &j, const Config::Movement &o)
 	WRITE("Bunny hop", bunnyHop);
 	WRITE("Auto strafe", autoStrafe);
 	WRITE("Edge jump", edgeJump);
+	WRITE("Jumpbug", jumpBug);
 	WRITE("Fast stop", fastStop);
 }
 

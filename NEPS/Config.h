@@ -375,6 +375,7 @@ public:
 		bool bunnyHop = false;
 		bool autoStrafe = false;
 		KeyBind edgeJump;
+		KeyBind jumpBug;
 		bool fastStop = false;
 	} movement;
 

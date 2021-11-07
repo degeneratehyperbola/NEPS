@@ -9,6 +9,7 @@ struct Vector;
 namespace Misc
 {
 	void edgeJump(UserCmd *cmd) noexcept;
+	void jumpBug(UserCmd* cmd) noexcept;
 	void slowwalk(UserCmd *cmd) noexcept;
 	void updateClanTag() noexcept;
 	void overlayCrosshair(ImDrawList *drawlist) noexcept;
