@@ -402,6 +402,7 @@ static void from_json(const json &j, Config::Backtrack &b)
 
 static void from_json(const json &j, Config::AntiAim &a)
 {
+	read<value_t::object>(j, "Enabled", a.enabled);
 	read(j, "Pitch", a.pitch);
 	read(j, "Pitch angle", a.pitchAngle);
 	read(j, "Yaw", a.yaw);
@@ -779,6 +780,7 @@ static void from_json(const json &j, Config::Griefing::Blockbot &b)
 static void from_json(const json &j, Config::Movement &m)
 {
 	read(j, "Bunny hop", m.bunnyHop);
+	read(j, "Bunny Chance", m.bunnyChance);
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
 	read(j, "Fast stop", m.fastStop);
@@ -1053,6 +1055,7 @@ static void to_json(json &j, const Config::Backtrack &o, const Config::Backtrack
 
 static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &dummy = {})
 {
+	WRITE("Enabled", enabled);
 	WRITE("Pitch", pitch);
 	WRITE("Pitch angle", pitchAngle);
 	WRITE("Yaw", yaw);
@@ -1281,6 +1284,7 @@ static void to_json(json &j, const Config::Movement &o)
 	const Config::Movement dummy;
 
 	WRITE("Bunny hop", bunnyHop);
+	WRITE("Bunny Chance", bunnyChance);
 	WRITE("Auto strafe", autoStrafe);
 	WRITE("Edge jump", edgeJump);
 	WRITE("Fast stop", fastStop);

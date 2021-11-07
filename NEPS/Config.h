@@ -110,6 +110,7 @@ public:
 	{
 		static AntiAim &getRelevantConfig() noexcept;
 
+		KeyBind enabled;
 		bool pitch = false;
 		float pitchAngle = 0.0f;
 		bool yaw = false;
@@ -375,6 +376,7 @@ public:
 	struct Movement
 	{
 		bool bunnyHop = false;
+		float bunnyChance = 100.0f;
 		bool autoStrafe = false;
 		KeyBind edgeJump;
 		bool fastStop = false;

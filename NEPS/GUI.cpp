@@ -387,7 +387,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 	static int currentWeapon = 0;
 
-	if (ImGui::BeginListBox("##category", {140, 260}))
+	if (ImGui::BeginListBox("##category", {140, 290}))
 	{
 		constexpr std::array categories = {"All", "Pistols", "Heavy", "SMG", "Rifles", "Zeus x27"};
 
@@ -784,7 +784,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
 	static std::size_t currentCategory;
 
-	if (ImGui::BeginListBox("##list", {70, 120}))
+	if (ImGui::BeginListBox("##list", {70, 150}))
 	{
 		for (std::size_t i = 0; i < categories.size(); ++i)
 		{
@@ -817,6 +817,8 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 	{
 		auto &currentConfig = config->antiAim[categories[currentCategory]];
 
+		ImGuiCustom::keyBind("Enabled", currentConfig.enabled);
+		ImGui::Separator();
 		ImGui::Checkbox("##yaw", &currentConfig.yaw);
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(-1);
@@ -2444,6 +2446,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	}
 
 	ImGui::Checkbox("Bunnyhop", &config->movement.bunnyHop);
+	ImGui::SliderFloat("##bunnychance", &config->movement.bunnyChance, 0.0f, 100.0f, "Bunny Chance %.0f%%");
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);

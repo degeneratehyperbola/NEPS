@@ -48,12 +48,17 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 {
 	if (!canAntiAim(cmd)) return;
 
+	
+
 	const auto networkChannel = interfaces->engine->getNetworkChannel();
 	if (!networkChannel)
 		return;
 
 	const auto &cfg = Config::AntiAim::getRelevantConfig();
 	const auto time = memory->globalVars->serverTime();
+
+	if (static Helpers::KeyBindState flag; !flag[cfg.enabled])
+		return;
 
 	if (static Helpers::KeyBindState flag; config->exploits.fakeDuckPackets && flag[config->exploits.fakeDuck])
 	{
