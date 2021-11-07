@@ -1221,7 +1221,7 @@ void GUI::renderGlowWindow(bool contentOnly) noexcept
 
 	ImGui::PushItemWidth(100);
 
-	ImGui::Combo("##category", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Local player\0Weapons\0C4\0Planted C4\0Chickens\0Defuse kits\0Projectiles\0Hostages\0Ragdolls\0");
+	ImGui::Combo("##category", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Local player\0Weapons\0C4\0Planted C4\0Chickens\0Defuse kits\0Projectiles\0Hostages\0");
 	static int currentItem{0};
 	if (currentCategory <= 3)
 	{

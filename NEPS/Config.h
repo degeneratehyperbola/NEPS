@@ -135,7 +135,7 @@ public:
 		int style = 0;
 		bool full = false;
 	};
-	std::array<Glow, 21> glow;
+	std::array<Glow, 20> glow;
 
 	struct Chams
 	{
