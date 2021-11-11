@@ -228,7 +228,7 @@ public:
 				Spiral
 			};
 
-			bool enabled;
+			bool enabled = false;
 			int sprite = 0;
 			std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f};
 			float width = 1.0f;
@@ -244,9 +244,9 @@ public:
 
 		struct Dlights
 		{
-			bool enabled;
+			bool enabled = false;
 			std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f};
-			float radius;
+			float radius = 100.0f;
 		};
 
 		Dlights selfDlights;
