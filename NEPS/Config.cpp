@@ -405,7 +405,7 @@ static void from_json(const json &j, Config::AntiAim &a)
 	read(j, "Yaw", a.yaw);
 	read(j, "Yaw angle", a.yawAngle);
 	read(j, "Look at enemies", a.lookAtEnemies);
-	read(j, "Auto direction", a.autoDirection);
+	read(j, "Auto direction", a.direction);
 	read(j, "Right key", a.rightKey);
 	read(j, "Back key", a.backKey);
 	read(j, "Left key", a.leftKey);
@@ -1054,7 +1054,7 @@ static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &du
 	WRITE("Yaw", yaw);
 	WRITE("Yaw angle", yawAngle);
 	WRITE("Look at enemies", lookAtEnemies);
-	WRITE("Auto direction", autoDirection);
+	WRITE("Auto direction", direction);
 	WRITE("Right key", rightKey);
 	WRITE("Back key", backKey);
 	WRITE("Left key", leftKey);

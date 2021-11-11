@@ -113,7 +113,7 @@ public:
 		bool yaw = false;
 		float yawAngle = 0.0f;
 		bool lookAtEnemies = false;
-		bool autoDirection = false;
+		int direction = 0;
 		int rightKey = 0;
 		int backKey = 0;
 		int leftKey = 0;
