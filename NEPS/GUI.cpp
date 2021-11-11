@@ -809,7 +809,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SliderFloat("##pitch_sl", &currentConfig.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
 		}
 		ImGui::Checkbox("Look at enemies", &currentConfig.lookAtEnemies);
-		ImGui::Checkbox("Auto direction", &currentConfig.autoDirection);
+		ImGui::Combo("Direction", &currentConfig.direction, "Off\0Auto\0Manual\0");
 		ImGui::SameLine();
 		if (ImGui::ArrowButton("yaw_directions", ImGuiDir_Right))
 			ImGui::OpenPopup("##yaw_dir");
