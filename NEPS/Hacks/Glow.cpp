@@ -121,7 +121,7 @@ void Glow::render() noexcept
 			applyGlow(glow[18]); break;
 
 		case ClassId::Hostage: applyGlow(glow[19]); break;
-		case ClassId::Ragdoll: applyGlow(glow[20]); break;
+		//case ClassId::Ragdoll: applyGlow(glow[20]); break;
 		default:
 			if (entity->isWeapon())
 			{
