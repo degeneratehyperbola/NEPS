@@ -479,6 +479,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		return;
 
 	if (!cfg.shootMidair && PlayerFlag_OnGround)
+		return;
 
 	if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;
 
