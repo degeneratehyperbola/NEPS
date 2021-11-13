@@ -116,7 +116,12 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 		cmd->viewangles.y += bestAngle;
 	}
 
-	if (cfg.autoDirection)
+	switch (cfg.direction)
+	{
+	case 0:
+		dir = 0;
+		break;
+	case 1:
 	{
 		constexpr std::array positions = {-35.0f, 0.0f, 35.0f};
 		std::array active = {false, false, false};
@@ -141,16 +146,20 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			dir = 1;
 		else
 			dir = 0;
-	} else
+	}
+		break;
+	case 2:
 	{
-		if (cfg.rightKey && GetAsyncKeyState(cfg.rightKey) & 1)
+		if (cfg.rightKey && GetAsyncKeyState(cfg.rightKey))
 			dir = -1;
 
-		if (cfg.backKey && GetAsyncKeyState(cfg.backKey) & 1)
+		if (cfg.backKey && GetAsyncKeyState(cfg.backKey))
 			dir = 0;
 
-		if (cfg.leftKey && GetAsyncKeyState(cfg.leftKey) & 1)
+		if (cfg.leftKey && GetAsyncKeyState(cfg.leftKey))
 			dir = 1;
+	}
+		break;
 	}
 
 	cmd->viewangles.y += 90.0f * dir;
@@ -234,7 +243,7 @@ void AntiAim::visualize(ImDrawList *drawList) noexcept
 
 	const auto &cfg = Config::AntiAim::getRelevantConfig();
 
-	if (cfg.visualizeDirection.enabled)
+	if (cfg.visualizeDirection.enabled && cfg.direction)
 	{
 		const auto color = Helpers::calculateColor(cfg.visualizeDirection);
 		switch (dir)
@@ -251,7 +260,7 @@ void AntiAim::visualize(ImDrawList *drawList) noexcept
 		}
 	}
 
-	if (cfg.visualizeSide.enabled)
+	if (cfg.visualizeSide.enabled && cfg.desync)
 	{
 		const auto color = Helpers::calculateColor(cfg.visualizeSide);
 		if (flip)
