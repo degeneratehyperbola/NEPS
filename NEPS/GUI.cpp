@@ -66,19 +66,22 @@ GUI::GUI() noexcept
 	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts))) {
 		const std::filesystem::path path{ pathToFonts };
 		CoTaskMemFree(pathToFonts);
-		font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
+		font = io.Fonts->AddFontFromFileTTF((path / "Deng.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());	
 		if (!font) {
-			io.Fonts->AddFontDefault(&cfg);
+			font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
+			if (!font) {
+				io.Fonts->AddFontDefault(&cfg);
 
-			cfg.MergeMode = true;
-			static constexpr ImWchar symbol[]{
-				0x2605, 0x2605, // ★
-				0
-			};
-			io.Fonts->AddFontFromFileTTF((path / "seguisym.ttf").string().c_str(), 13.0f, &cfg, symbol);
-			cfg.MergeMode = false;
-			if (!font)
-				font = io.Fonts->AddFontFromMemoryCompressedTTF(_compressedFontData, _compressedFontSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
+				cfg.MergeMode = true;
+				static constexpr ImWchar symbol[]{
+					0x2605, 0x2605, // ★
+					0
+				};
+				io.Fonts->AddFontFromFileTTF((path / "seguisym.ttf").string().c_str(), 13.0f, &cfg, symbol);
+				cfg.MergeMode = false;
+				if (!font)
+					font = io.Fonts->AddFontFromMemoryCompressedTTF(_compressedFontData, _compressedFontSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
+			}
 		}
 	}
 }
@@ -2146,9 +2149,17 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 
 			{
 				constexpr auto playerModels = "Default\0Special Agent Ava | FBI\0Operator | FBI SWAT\0Markus Delrow | FBI HRT\0Michael Syfers | FBI Sniper\0B Squadron Officer | SAS\0Seal Team 6 Soldier | NSWC SEAL\0Buckshot | NSWC SEAL\0Lt. Commander Ricksaw | NSWC SEAL\0Third Commando Company | KSK\0'Two Times' McCoy | USAF TACP\0Dragomir | Sabre\0Rezan The Ready | Sabre\0'The Doctor' Romanov | Sabre\0Maximus | Sabre\0Blackwolf | Sabre\0The Elite Mr. Muhlik | Elite Crew\0Ground Rebel | Elite Crew\0Osiris | Elite Crew\0Prof. Shahmat | Elite Crew\0Enforcer | Phoenix\0Slingshot | Phoenix\0Soldier | Phoenix\0Pirate\0Pirate Variant A\0Pirate Variant B\0Pirate Variant C\0Pirate Variant D\0Anarchist\0Anarchist Variant A\0Anarchist Variant B\0Anarchist Variant C\0Anarchist Variant D\0Balkan Variant A\0Balkan Variant B\0Balkan Variant C\0Balkan Variant D\0Balkan Variant E\0Jumpsuit Variant A\0Jumpsuit Variant B\0Jumpsuit Variant C\0Street Soldier | Phoenix\0'Blueberries' Buckshot | NSWC SEAL\0'Two Times' McCoy | TACP Cavalry\0Rezan the Redshirt | Sabre\0Dragomir | Sabre Footsoldier\0Cmdr. Mae 'Dead Cold' Jamison | SWAT\0 1st Lieutenant Farlow | SWAT\0John 'Van Healen' Kask | SWAT\0Bio-Haz Specialist | SWAT\0Sergeant Bombson | SWAT\0Chem-Haz Specialist | SWAT\0Sir Bloody Miami Darryl | The Professionals\0Sir Bloody Silent Darryl | The Professionals\0Sir Bloody Skullhead Darryl | The Professionals\0Sir Bloody Darryl Royale | The Professionals\0Sir Bloody Loudmouth Darryl | The Professionals\0Safecracker Voltzmann | The Professionals\0Little Kev | The Professionals\0Number K | The Professionals\0Getaway Sally | The Professionals\0";
-
+				const char* kits[] = { "CSGO", "CSGO2", "Crimson_Assault", "Sharpened", "Insurgency", "ADB", "High_Moon", "Deaths_Head_Demolition","Desert_Fire","LNOE","Metal",
+					"All_I_Want_for_Christmas","IsoRhythm","For_No_Mankind","Hotline_Miami","Total_Domination","The_Talos_Principle","Battlepack","MOLOTOV","Uber_Blasto_Phone",
+					"Hazardous_Environments","II-Headshot","The_8-Bit_Kit","I_Am","Diamonds","Invasion!","Lions_Mouth","Sponge_Fingerz","Disgusting","Java_Havana_Funkaloo",
+					"Moments_CSGO","Aggressive","The_Good_Youth","FREE","Lifes_Not_Out_to_Get_You","Backbone","GLA","III-Arena","EZ4ENCE","The Master Chief Collection","King, Scar",
+					"Anti-Citizen","Bachram","Gunman Taco Truck","Eye of the Dragon","M.U.D.D. FORCE","Neo Noir","Bodacious","Drifter","All for Dust","Hades Music Kit","The Lowlife Pack",
+					"CHAIN$AW.LXADXUT","Mocha Petal","~Yellow Magic~","Vici","Astro Bellum","Work Hard, Play Hard","KOLIBRI","u mad!","Flasbang Dance"};
 				ImGui::Combo("T player model", &config->visuals.playerModelT, playerModels, 20);
 				ImGui::Combo("CT player model", &config->visuals.playerModelCT, playerModels, 20);
+				ImGui::Checkbox("", &config->visuals.musicKitChanger);
+				ImGui::SameLine();
+				ImGui::Combo("Music Kit", &config->visuals.musicKit, kits, IM_ARRAYSIZE(kits));
 			}
 
 			ImGui::PopItemWidth();

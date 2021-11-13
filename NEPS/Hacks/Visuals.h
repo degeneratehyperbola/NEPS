@@ -8,6 +8,7 @@ struct ImDrawList;
 
 namespace Visuals
 {
+    void musicKit(FrameStage stage) noexcept;
     void playerModel(FrameStage stage) noexcept;
     void colorWorld() noexcept;
     void modifySmoke(FrameStage stage) noexcept;

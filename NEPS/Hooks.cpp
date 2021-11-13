@@ -316,7 +316,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		break;
 	case FrameStage::NetUpdateEnd:
 		break;
-	case FrameStage::RenderStart:
+	case FrameStage::RenderStart:		
 		Animations::fixAnimation(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
@@ -328,6 +328,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 
 	if (interfaces->engine->isInGame())
 	{
+		Visuals::musicKit(stage);
 		Visuals::flashlight(stage);
 		Visuals::skybox(stage);
 		Visuals::removeBlur(stage);

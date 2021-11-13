@@ -547,6 +547,8 @@ static void from_json(const json &j, Config::Visuals &v)
 	read(j, "Hit marker time", v.hitMarkerTime);
 	read(j, "Playermodel T", v.playerModelT);
 	read(j, "Playermodel CT", v.playerModelCT);
+	read(j, "Music Kit", v.musicKit);
+	read(j, "Music Kit Changer", v.musicKitChanger);
 	read<value_t::object>(j, "Color correction", v.colorCorrection);
 	read(j, "Aspect ratio", v.aspectratio);
 	read(j, "Opposite hand knife", v.oppositeHandKnife);
@@ -1380,6 +1382,8 @@ static void to_json(json &j, const Config::Visuals &o)
 	WRITE("Hit marker", hitMarker);
 	WRITE("Hit marker time", hitMarkerTime);
 	WRITE("Playermodel T", playerModelT);
+	WRITE("Music Kit", musicKit);
+	WRITE("Music Kit Changer", musicKitChanger);
 	WRITE("Playermodel CT", playerModelCT);
 	WRITE("Color correction", colorCorrection);
 	WRITE("Bullet impacts", bulletImpacts);

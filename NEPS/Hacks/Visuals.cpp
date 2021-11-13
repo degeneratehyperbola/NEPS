@@ -18,6 +18,7 @@
 #include "../SDK/Surface.h"
 #include "../SDK/ModelInfo.h"
 #include "../SDK/ViewSetup.h"
+#include "../SDK/PlayerResource.h"
 
 #include "../lib/fnv.hpp"
 #include "../lib/Helpers.hpp"
@@ -29,6 +30,18 @@
 
 #include <array>
 
+void Visuals::musicKit(FrameStage stage) noexcept
+{
+	if (!config->visuals.musicKitChanger)
+		return;
+
+	auto playerResource = *memory->playerResource;
+
+	if (localPlayer && playerResource)
+	{
+		playerResource->musicId()[localPlayer->index()] = config->visuals.musicKit + 1;
+	}
+}
 void Visuals::playerModel(FrameStage stage) noexcept
 {
 	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)

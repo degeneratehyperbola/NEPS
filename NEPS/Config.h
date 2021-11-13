@@ -211,6 +211,8 @@ public:
 		float hitMarkerTime = 0.6f;
 		int playerModelT = 0;
 		int playerModelCT = 0;
+		int musicKit = 1;
+		bool musicKitChanger = false;
 		float aspectratio = 0;
 		bool oppositeHandKnife = false;
 		int bulletImpacts = 0;
