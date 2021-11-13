@@ -360,6 +360,7 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Auto shot", a.autoShoot);
 	read(j, "Auto scope", a.autoScope);
 	read(j, "Auto stop", a.autoStop);
+	read(j, "Shoot Midair", a.shootMidair);
 	read(j, "Targeting", a.targeting);
 	read(j, "Hitgroup", a.hitGroup);
 	read(j, "Fov", a.fov);
@@ -1015,6 +1016,7 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Auto shot", autoShoot);
 	WRITE("Auto scope", autoScope);
 	WRITE("Auto stop", autoStop);
+	WRITE("Shoot Midair", shootMidair);
 	WRITE("Targeting", targeting);
 	WRITE("Hitgroup", hitGroup);
 	WRITE("Fov", fov);

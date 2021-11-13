@@ -49,6 +49,7 @@ public:
 		bool autoShoot = false;
 		bool autoScope = false;
 		bool autoStop = false;
+		bool shootMidair = true;
 		bool multipoint = false;
 		float multipointScale = 0.8f;
 		int targeting = 0;

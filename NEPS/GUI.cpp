@@ -696,6 +696,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Auto shoot", &config->aimbot[currentWeapon].autoShoot);
 		ImGui::Checkbox("Auto scope", &config->aimbot[currentWeapon].autoScope);
 		ImGui::Checkbox("Auto stop", &config->aimbot[currentWeapon].autoStop);
+		ImGui::Checkbox("Shoot Midair", &config->aimbot[currentWeapon].shootMidair);
 
 		ImGui::SetNextItemWidth(80);
 		ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");

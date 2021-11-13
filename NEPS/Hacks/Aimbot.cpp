@@ -478,6 +478,8 @@ void Aimbot::run(UserCmd *cmd) noexcept
 	if (!weaponData)
 		return;
 
+	if (!cfg.shootMidair && PlayerFlag_OnGround)
+
 	if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;
 
     if (!cfg.betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
