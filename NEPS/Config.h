@@ -377,7 +377,7 @@ public:
 
 	struct Movement
 	{
-		bool bunnyHop = false;
+		KeyBind bunnyHop;
 		float bunnyChance = 100.0f;
 		bool autoStrafe = false;
 		KeyBind edgeJump;

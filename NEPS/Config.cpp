@@ -781,7 +781,7 @@ static void from_json(const json &j, Config::Griefing::Blockbot &b)
 
 static void from_json(const json &j, Config::Movement &m)
 {
-	read(j, "Bunny hop", m.bunnyHop);
+	read<value_t::object>(j, "Enabled", m.bunnyHop);
 	read(j, "Bunny Chance", m.bunnyChance);
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
@@ -1285,7 +1285,7 @@ static void to_json(json &j, const Config::Movement &o)
 {
 	const Config::Movement dummy;
 
-	WRITE("Bunny hop", bunnyHop);
+	WRITE("Enabled", bunnyHop);
 	WRITE("Bunny Chance", bunnyChance);
 	WRITE("Auto strafe", autoStrafe);
 	WRITE("Edge jump", edgeJump);

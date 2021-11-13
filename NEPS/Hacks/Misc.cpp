@@ -453,7 +453,7 @@ void Misc::bunnyHop(UserCmd *cmd) noexcept
 	static auto wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
 	srand(memory->globalVars->realtime + rand());
 
-	if (config->movement.bunnyHop && !(localPlayer->flags() & PlayerFlag_OnGround) && localPlayer->moveType() != MoveType::Ladder && !wasLastTimeOnGround)
+	if (static Helpers::KeyBindState flag; flag[config->movement.bunnyHop] && !(localPlayer->flags() & PlayerFlag_OnGround) && localPlayer->moveType() != MoveType::Ladder && !wasLastTimeOnGround)
 		if (rand() / float(RAND_MAX) < config->movement.bunnyChance / 100.0f)
 			cmd->buttons &= ~UserCmd::Button_Jump;
 		

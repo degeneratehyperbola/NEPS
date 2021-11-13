@@ -66,7 +66,7 @@ GUI::GUI() noexcept
 	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts))) {
 		const std::filesystem::path path{ pathToFonts };
 		CoTaskMemFree(pathToFonts);
-		font = io.Fonts->AddFontFromFileTTF((path / "Deng.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());	
+		font = io.Fonts->AddFontFromFileTTF((path / "simhei.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());	
 		if (!font) {
 			font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
 			if (!font) {
@@ -2456,7 +2456,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 		ImGui::Begin("Movement", &window.movement, windowFlags);
 	}
 
-	ImGui::Checkbox("Bunnyhop", &config->movement.bunnyHop);
+	ImGuiCustom::keyBind("Bunny Hop", config->movement.bunnyHop);
 	ImGui::SliderFloat("##bunnychance", &config->movement.bunnyChance, 0.0f, 100.0f, "Bunny Chance %.0f%%");
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
