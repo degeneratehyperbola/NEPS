@@ -811,6 +811,7 @@ bool Config::load(const char8_t *name, bool incremental) noexcept
 	if (!incremental)
 		reset();
 
+	read<value_t::object>(j, "RCS", rcs);
 	read(j, "Aimbot", aimbot);
 	read(j, "Triggerbot", triggerbot);
 	read<value_t::object>(j, "Backtrack", backtrack);
@@ -1497,6 +1498,7 @@ void Config::save(size_t id) const noexcept
 	{
 		json j;
 
+		j["RCS"] = rcs;
 		j["Aimbot"] = aimbot;
 		j["Triggerbot"] = triggerbot;
 		j["Backtrack"] = backtrack;
@@ -1558,6 +1560,7 @@ void Config::reset() noexcept
 	griefing = {};
 	movement = {};
 	misc = {};
+	rcs = {};
 }
 
 void Config::listConfigs() noexcept

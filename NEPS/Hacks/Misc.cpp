@@ -708,11 +708,12 @@ void Misc::autoPistol(UserCmd *cmd) noexcept
 	if (config->misc.autoPistol && localPlayer)
 	{
 		const auto activeWeapon = localPlayer->getActiveWeapon();
+		const auto activeWeaponType = activeWeapon->getWeaponType();
 		if (activeWeapon && !activeWeapon->isC4() && activeWeapon->nextPrimaryAttack() > memory->globalVars->serverTime() && !activeWeapon->isGrenade())
 		{
 			if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
 				cmd->buttons &= ~UserCmd::Button_Attack2;
-			else
+			else if (!(activeWeaponType == WeaponType::Rifle || activeWeaponType == WeaponType::SubMachinegun || activeWeaponType == WeaponType::Machinegun))//Will conflict with RCS
 				cmd->buttons &= ~UserCmd::Button_Attack;
 		}
 	}
