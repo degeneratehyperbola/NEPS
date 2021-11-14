@@ -35,6 +35,7 @@
 #include "SDK/Sound.h"
 #include "SDK/StudioRender.h"
 #include "SDK/Surface.h"
+#include "SDK/UserMessage.h"
 #include "SDK/ViewSetup.h"
 
 #define FRAME_ADDRESS ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))
@@ -626,6 +627,22 @@ static void __fastcall doProceduralFootPlant(void *thisptr, void *edx, void *bon
 	hooks->originalDoProceduralFootPlant(thisptr, nullptr, boneToWorld, leftFootChain, rightFootChain, bone);
 }
 
+static bool __stdcall dispatchUserMessage(void *thisptr, UserMessageType type, int passthroughFlags, int size, const void *data) noexcept
+{
+	switch (type)
+	{
+	case UserMessageType::VoteStart:
+		Misc::onVoteChange(type, data, size);
+		break;
+	case UserMessageType::VotePass:
+	case UserMessageType::VoteFailed:
+		Misc::onVoteChange(type);
+		break;
+	}
+
+	return hooks->client.callOriginal<bool, 38>(type, passthroughFlags, size, data);
+}
+
 Hooks::Hooks(HMODULE moduleHandle) noexcept
 {
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
@@ -664,6 +681,7 @@ void Hooks::install() noexcept
 
 	bspQuery.hookAt(6, listLeavesInBox);
 	client.hookAt(37, frameStageNotify);
+	client.hookAt(38, dispatchUserMessage);
 	clientMode.hookAt(17, shouldDrawFog);
 	clientMode.hookAt(18, overrideView);
 	clientMode.hookAt(24, createMove);
