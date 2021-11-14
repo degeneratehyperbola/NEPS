@@ -1419,9 +1419,9 @@ void Misc::teamDamageList(GameEvent *event)
 		for (const auto &[handle, damage] : damageList)
 		{
 			if (const auto player = GameData::playerByHandle(handle))
-				ImGui::TextWrapped("%s did %ddp", player->name.c_str(), damage);
+				ImGui::Text("%s -> %idp", player->name.c_str(), damage);
 			else if (GameData::local().handle == handle)
-				ImGui::TextWrapped("You did %ddp", damage);
+				ImGui::TextColored({1.0f, 0.4f, 0.2f, 1.0f}, "You -> %idp", damage);
 		}
 
 		ImGui::End();
