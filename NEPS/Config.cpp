@@ -744,6 +744,8 @@ static void from_json(const json &j, Config::Griefing &g)
 	read(j, "Vote reveal", g.revealVotes);
 	read(j, "Spam use", g.spamUse);
 	read<value_t::object>(j, "Team damage list", g.teamDamageList);
+	read<value_t::object>(j, "Nuke chat", g.chatNuke);
+	read<value_t::object>(j, "Basmala chat", g.chatBasmala);
 }
 
 static void from_json(const json &j, Config::Griefing::TeamDamageList &tdl)
@@ -1270,6 +1272,8 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Vote reveal", revealVotes);
 	WRITE("Spam use", spamUse);
 	WRITE("Team damage list", teamDamageList);
+	WRITE("Nuke chat", chatNuke);
+	WRITE("Basmala chat", chatBasmala);
 }
 
 static void to_json(json &j, const Config::Movement &o)

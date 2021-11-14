@@ -2372,31 +2372,9 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	}
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
-	if (ImGui::Button("Nuke chat", {85, 0}))
-	{
-		std::ostringstream ss;
-
-		ss << "say ";
-
-		for (int i = 0; i <= 75; ++i)
-			ss << "\xE2\x80\xA9";
-
-		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
-	}
-
+	ImGuiCustom::keyBind("Basmala chat", config->griefing.chatBasmala);
 	ImGui::SameLine();
-
-	if (ImGui::Button("Basmala chat", {-1, 0}))
-	{
-		std::ostringstream ss;
-
-		ss << "say ";
-
-		for (int i = 0; i <= 30; ++i)
-			ss << "\uFDFD ";
-
-		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
-	}
+	ImGuiCustom::keyBind("Nuke chat", config->griefing.chatNuke);
 
 	ImGui::Checkbox("Team damage list", &config->griefing.teamDamageList.enabled);
 	ImGui::SameLine();

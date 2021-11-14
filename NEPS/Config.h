@@ -340,6 +340,8 @@ public:
 		int banColor = 6;
 		std::string banText = "Cheater has been permanently banned from official CS:GO servers.";
 		bool spamUse = false;
+		KeyBind chatNuke;
+		KeyBind chatBasmala;
 
 		struct TeamDamageList
 		{
