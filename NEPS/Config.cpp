@@ -371,6 +371,8 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Smooth start", a.quadratic);
 	read(j, "Linear speed", a.linear);
 	read<value_t::object>(j, "Override", a.aimbotOverride);
+	read(j, "Recoil reduction H", a.recoilReductionH);
+	read(j, "Recoil reduction V", a.recoilReductionV);
 	read(j, "Between shots", a.betweenShots);
 }
 
@@ -1022,6 +1024,8 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Smooth start", quadratic);
 	WRITE("Linear speed", linear);
 	WRITE("Override", aimbotOverride);
+	WRITE("Recoil reduction H", recoilReductionH);
+	WRITE("Recoil reduction V", recoilReductionV);
 	WRITE("Between shots", betweenShots);
 }
 
