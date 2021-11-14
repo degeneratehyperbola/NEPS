@@ -243,7 +243,7 @@ void Visuals::thirdperson() noexcept
 {
 	if (!localPlayer || !config->visuals.thirdPerson.keyMode)
 	{
-		if (localPlayer)
+		if (localPlayer->isAlive())
 			memory->input->isCameraInThirdPerson = false;
 		return;
 	}
