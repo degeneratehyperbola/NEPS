@@ -22,6 +22,7 @@
 #include "Hacks/Misc.h"
 #include "Hacks/Triggerbot.h"
 #include "Hacks/Visuals.h"
+#include "Hacks/RCS.h"
 
 #include "SDK/ClientClass.h"
 #include "SDK/Cvar.h"
@@ -36,7 +37,6 @@
 #include "SDK/StudioRender.h"
 #include "SDK/Surface.h"
 #include "SDK/ViewSetup.h"
-#include <NEPS/Hacks/RCS.h>
 
 #define FRAME_ADDRESS ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))
 #define RETURN_ADDRESS std::uintptr_t(_ReturnAddress())
