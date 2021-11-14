@@ -705,7 +705,7 @@ void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
 
 void Misc::autoPistol(UserCmd *cmd) noexcept
 {
-	if (config->misc.autoPistol && localPlayer)
+	if (config->misc.autoPistol && localPlayer->isAlive())
 	{
 		const auto activeWeapon = localPlayer->getActiveWeapon();
 		const auto activeWeaponType = activeWeapon->getWeaponType();
@@ -713,7 +713,7 @@ void Misc::autoPistol(UserCmd *cmd) noexcept
 		{
 			if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
 				cmd->buttons &= ~UserCmd::Button_Attack2;
-			else if (!(activeWeaponType == WeaponType::Rifle || activeWeaponType == WeaponType::SubMachinegun || activeWeaponType == WeaponType::Machinegun))//Will conflict with RCS
+			else //if (!(activeWeaponType == WeaponType::Rifle || activeWeaponType == WeaponType::SubMachinegun || activeWeaponType == WeaponType::Machinegun))//Will conflict with RCS
 				cmd->buttons &= ~UserCmd::Button_Attack;
 		}
 	}
@@ -1135,7 +1135,7 @@ void Misc::useSpam(UserCmd *cmd) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (!config->griefing.spamUse)
+	if (static Helpers::KeyBindState flag; !flag[config->griefing.spamUse])
 		return;
 
 	static auto plantAnywhere = interfaces->cvar->findVar("mp_plant_c4_anywhere");

@@ -2433,7 +2433,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 		ImGuiCustom::colorPicker("Visualize", config->griefing.blockbot.visualize);
 		ImGui::EndPopup();
 	}
-	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
+	ImGuiCustom::keyBind("Spam use", config->griefing.spamUse);
 
 	if (ImGui::Button("Nuke chat", {85, 0}))
 	{
