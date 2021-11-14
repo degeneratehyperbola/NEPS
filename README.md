@@ -22,6 +22,7 @@ This is a CS:GO multihack, originally developed as a griefing cheat but evolved 
 NEPS has seen numerous performance improvements, even from an already fantastically optimized base, having both low-level and very situation-specific retouches, and as a proud owner of a 2013 thinkpad, I think NEPS's performance is better than most other options, especially on the low end of the spectrum.
 
 ## NEPS features
+- RCS or Recoil Control System: remove recoil and make shooting more stable
 - Aimbot: aim assistance
 - Triggerbot: automatically shoot a player if in front of crosshair
 - Backtrack: abuse lag compensation to interact with opponent's previous records
