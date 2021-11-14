@@ -19,7 +19,9 @@
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/NetworkStringTable.h"
 #include "../SDK/Panorama.h"
+#include "../SDK/ProtobufReader.h"
 #include "../SDK/Surface.h"
+#include "../SDK/UserMessage.h"
 #include "../SDK/VarMapping.h"
 #include "../SDK/WeaponSystem.h"
 
@@ -1421,7 +1423,7 @@ void Misc::teamDamageList(GameEvent *event)
 			if (const auto player = GameData::playerByHandle(handle))
 				ImGui::Text("%s -> %idp", player->name.c_str(), damage);
 			else if (GameData::local().handle == handle)
-				ImGui::TextColored({1.0f, 0.4f, 0.2f, 1.0f}, "You -> %idp", damage);
+				ImGui::TextColored({1.0f, 0.7f, 0.2f, 1.0f}, "YOU -> %idp", damage);
 		}
 
 		ImGui::End();
@@ -1702,7 +1704,7 @@ void Misc::velocityGraph() noexcept
 
 }
 
-void Misc::voteRevealer(GameEvent &event) noexcept
+void Misc::onPlayerVote(GameEvent &event) noexcept
 {
 	if (!config->griefing.revealVotes)
 		return;
@@ -1716,8 +1718,51 @@ void Misc::voteRevealer(GameEvent &event) noexcept
 
 	const auto votedYes = event.getInt("vote_option") == 0;
 	const char color = votedYes ? '\x4' : '\x2';
+	const auto isLocal = localPlayer && entity == localPlayer.get();
 
-	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s %s voted %c%s\x1", entity->isOtherEnemy(localPlayer.get()) ? "Enemy" : "Teammate", entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
+	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s %s voted %c%s\x1", localPlayer->isOtherEnemy(entity) ? "Enemy" : "Teammate", isLocal ? "\x10YOU\x8" : entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
+}
+
+void Misc::onVoteChange(UserMessageType type, const void *data, int size) noexcept
+{
+	switch (type)
+	{
+	case UserMessageType::VoteStart:
+	{
+		if (!data || !size) break;
+
+		constexpr auto voteName = [](int index)
+		{
+			switch (index)
+			{
+			case 0: return "kicking a player";
+			case 1: return "changing the level";
+			case 6: return "surrendering";
+			case 13: return "starting a timeout";
+			default: return "";
+			}
+		};
+
+		const auto reader = ProtobufReader{static_cast<const std::uint8_t *>(data), size};
+		const auto entityIndex = reader.readInt32(2);
+
+		const auto entity = interfaces->entityList->getEntity(entityIndex);
+		if (!entity || !entity->isPlayer())
+			return;
+
+		const auto isLocal = localPlayer && entity == localPlayer.get();
+		const auto voteType = reader.readInt32(3);
+
+		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s started a vote for\x1 %s", isLocal ? "\x10YOU\x8" : entity->getPlayerName().c_str(), voteName(voteType));
+	}
+		break;
+	case UserMessageType::VotePass:
+		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 vote\x4 PASSED\x1");
+		break;
+	case UserMessageType::VoteFailed:
+		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 vote\x2 FAILED\x1");
+		break;
+	}
 }
 
 void Misc::forceRelayCluster() noexcept
