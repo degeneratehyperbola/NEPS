@@ -40,8 +40,9 @@ public:
 
 		KeyBind bind;
 		float recoilForce = 2.f;
-		float shiftX = 0.f;
-		float shiftY = 0.f;
+		bool humanize = false;
+		float shiftX = 1.f;
+		float shiftY = 1.f;
 	} rcs;
 
 	struct Aimbot

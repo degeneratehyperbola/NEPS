@@ -403,9 +403,10 @@ void GUI::renderRCSWindow(bool contentOnly) noexcept
 
 	ImGuiCustom::keyBind("Enabled", config->rcs.bind);
 	ImGui::Separator();
-	ImGui::SliderFloat("##recoilforce", &config->rcs.recoilForce, 0.0f, 5.0f, "Recoil Force%.3f");
-	ImGui::SliderFloat("##shiftX", &config->rcs.shiftX, 0.f, 1.0f, "Shift X Value%.5f");
-	ImGui::SliderFloat("##shiftY", &config->rcs.shiftY, 0.f, 1.0f, "Shift Y Value%.5f");
+	ImGui::SliderFloat("##recoilforce", &config->rcs.recoilForce, 0.0f, 5.0f, "Recoil Force Multiplier %.3f");
+	ImGui::Checkbox("Humanize", &config->rcs.humanize);
+	ImGui::SliderFloat("##shiftX", &config->rcs.shiftX, 0.01f, 1.0f, "X Shift Multiplier %.5f");
+	ImGui::SliderFloat("##shiftY", &config->rcs.shiftY, 0.01f, 1.0f, "Y Shift Multiplier %.5f");
 
 }
 void GUI::renderAimbotWindow(bool contentOnly) noexcept
