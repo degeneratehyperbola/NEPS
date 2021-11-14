@@ -1728,3 +1728,32 @@ void Misc::forceRelayCluster() noexcept
 
 	*memory->relayCluster = dataCentersList[config->misc.forceRelayCluster];
 }
+
+void Misc::runChatSpammer() noexcept
+{
+	if (interfaces->engine->isConnected()) return;
+
+	if (static Helpers::KeyBindState flag; !flag[config->griefing.chatNuke])
+	{
+		std::ostringstream ss;
+
+		ss << "say ";
+
+		for (int i = 0; i <= 75; ++i)
+			ss << "\xE2\x80\xA9";
+
+		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
+	}
+
+	if (static Helpers::KeyBindState flag; !flag[config->griefing.chatBasmala])
+	{
+		std::ostringstream ss;
+
+		ss << "say ";
+
+		for (int i = 0; i <= 30; ++i)
+			ss << "\uFDFD ";
+
+		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
+	}
+}

@@ -54,4 +54,5 @@ namespace Misc
 	void velocityGraph() noexcept;
 	void voteRevealer(GameEvent &event) noexcept;
 	void forceRelayCluster() noexcept;
+	void runChatSpammer() noexcept;
 }

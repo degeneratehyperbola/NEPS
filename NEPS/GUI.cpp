@@ -2376,7 +2376,6 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
 	ImGuiCustom::keyBind("Basmala chat", config->griefing.chatBasmala);
-	ImGui::SameLine();
 	ImGuiCustom::keyBind("Nuke chat", config->griefing.chatNuke);
 
 	ImGui::Checkbox("Team damage list", &config->griefing.teamDamageList.enabled);
