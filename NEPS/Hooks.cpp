@@ -173,6 +173,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	memory->globalVars->serverTime(cmd);
 	Misc::changeConVarsTick();
 
+	Misc::runChatSpammer();
 	Misc::runReportbot();
 	Misc::antiAfkKick(cmd);
 	Misc::useSpam(cmd);
