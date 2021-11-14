@@ -1393,6 +1393,12 @@ void Misc::teamDamageList(GameEvent *event)
 		}
 	} else
 	{
+		if (!interfaces->engine->isConnected())
+		{
+			damageList.clear();
+			return;
+		}
+
 		if (!config->griefing.teamDamageList.enabled)
 			return;
 
