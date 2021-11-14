@@ -34,6 +34,16 @@ public:
 		ImFont *big;
 	};
 
+	struct RCS
+	{
+		static RCS& getRelevantConfig() noexcept;
+
+		KeyBind bind;
+		float recoilForce = 2.f;
+		float shiftX = 0.f;
+		float shiftY = 0.f;
+	} rcs;
+
 	struct Aimbot
 	{
 		static Aimbot &getRelevantConfig() noexcept;

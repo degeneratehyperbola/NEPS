@@ -36,6 +36,7 @@
 #include "SDK/StudioRender.h"
 #include "SDK/Surface.h"
 #include "SDK/ViewSetup.h"
+#include <NEPS/Hacks/RCS.h>
 
 #define FRAME_ADDRESS ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))
 #define RETURN_ADDRESS std::uintptr_t(_ReturnAddress())
@@ -195,6 +196,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	EnginePrediction::run(cmd);
 
 	Aimbot::run(cmd);
+	Rcs::run(cmd);
 	Backtrack::run(cmd);
 	Triggerbot::run(cmd);
 	Misc::edgeJump(cmd);

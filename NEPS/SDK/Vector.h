@@ -276,6 +276,18 @@ struct Vector
 	}
 
 	float x, y, z;
+
+	void clamp() {
+		while (y > 180)
+			y -= 360;
+		while (y < -180)
+			y += 360;
+
+		if (x > 89.f)
+			x = 89.f;
+		else if (x < -89.f)
+			x = -89.f;
+	}
 };
 
 #include "Matrix3x4.h"
@@ -286,3 +298,5 @@ constexpr auto Vector::transform(const Matrix3x4 &mat) const noexcept
 				  dotProduct({ mat[1][0], mat[1][1], mat[1][2] }) + mat[1][3],
 				  dotProduct({ mat[2][0], mat[2][1], mat[2][2] }) + mat[2][3]};
 }
+#define Vector3 Vector
+#define Vec3 Vector

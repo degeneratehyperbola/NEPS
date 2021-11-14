@@ -332,6 +332,14 @@ static void from_json(const json &j, ImVec2 &v)
 	read(j, "Y", v.y);
 }
 
+static void from_json(const json& j, Config::RCS& n)
+{
+	read<value_t::object>(j, "Bind", n.bind);
+	read(j, "Recoil Force", n.recoilForce);
+	read(j, "Shift X", n.shiftX);
+	read(j, "Shift Y", n.shiftY);
+}
+
 static void from_json(const json &j, Config::Aimbot::AimbotOverride &v)
 {
 	read<value_t::object>(j, "Bind", v.bind);
@@ -986,6 +994,15 @@ static void to_json(json &j, const ImVec2 &o, const ImVec2 &dummy = {})
 {
 	WRITE("X", x);
 	WRITE("Y", y);
+}
+
+static void to_json(json& j, const Config::RCS& o, const Config::RCS& dummy = {})
+{
+	WRITE("Bind", bind);
+	WRITE("Recoil Force", recoilForce);
+	WRITE("Shift X", shiftX);
+	WRITE("Shift Y", shiftY);
+	
 }
 
 static void to_json(json &j, const Config::Aimbot::AimbotOverride &o, const Config::Aimbot::AimbotOverride &dummy = {})
