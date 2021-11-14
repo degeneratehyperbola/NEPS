@@ -743,6 +743,9 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 			break;
 		}
 
+		ImGui::SliderFloat("#rcsH", &config->aimbot[currentWeapon].recoilReductionH, 0.0f, 100.0f, "RCS Horizontal %.0f%%");
+		ImGui::SliderFloat("#rcsV", &config->aimbot[currentWeapon].recoilReductionV, 0.0f, 100.0f, "RCS Vertical %.0f%%");
+
 		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
 	}
 
