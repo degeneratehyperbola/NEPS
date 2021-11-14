@@ -669,19 +669,13 @@ void Hooks::install() noexcept
 		MH_Initialize();
 
 	bspQuery.init(interfaces->engine->getBSPTreeQuery());
-	client.init(interfaces->client);
-	clientMode.init(memory->clientMode);
-	engine.init(interfaces->engine);
-	modelRender.init(interfaces->modelRender);
-	panel.init(interfaces->panel);
-	sound.init(interfaces->sound);
-	surface.init(interfaces->surface);
-	svCheats.init(interfaces->cvar->findVar("sv_cheats"));
-	viewRender.init(memory->viewRender);
-
 	bspQuery.hookAt(6, listLeavesInBox);
+
+	client.init(interfaces->client);
 	client.hookAt(37, frameStageNotify);
 	client.hookAt(38, dispatchUserMessage);
+
+	clientMode.init(memory->clientMode);
 	clientMode.hookAt(17, shouldDrawFog);
 	clientMode.hookAt(18, overrideView);
 	clientMode.hookAt(24, createMove);
@@ -689,16 +683,30 @@ void Hooks::install() noexcept
 	clientMode.hookAt(35, getViewModelFov);
 	clientMode.hookAt(44, doPostScreenEffects);
 	clientMode.hookAt(58, updateColorCorrectionWeights);
+
+	engine.init(interfaces->engine);
 	engine.hookAt(27, isConnected);
 	engine.hookAt(82, isPlayingDemo);
 	engine.hookAt(101, getScreenAspectRatio);
 	engine.hookAt(218, getDemoPlaybackParameters);
+
+	modelRender.init(interfaces->modelRender);
 	modelRender.hookAt(21, drawModelExecute);
+
+	panel.init(interfaces->panel);
 	panel.hookAt(41, paintTraverse);
+
+	sound.init(interfaces->sound);
 	sound.hookAt(5, emitSound);
+
+	surface.init(interfaces->surface);
 	surface.hookAt(15, setDrawColor);
 	surface.hookAt(67, lockCursor);
+
+	svCheats.init(interfaces->cvar->findVar("sv_cheats"));
 	svCheats.hookAt(13, svCheatsGetBool);
+
+	viewRender.init(memory->viewRender);
 	viewRender.hookAt(39, render2dEffectsPreHud);
 	viewRender.hookAt(41, renderSmokeOverlay);
 
