@@ -308,7 +308,7 @@ void GUI::renderContextMenu() noexcept
 	if (ImGui::MenuItem("Fog UI"))
 		interfaces->engine->clientCmdUnrestricted("fogui");
 	if (ImGui::MenuItem("Loaded textures"))
-		interfaces->cvar->findVar("mat_texture_list")->;
+		interfaces->cvar->findVar("mat_texture_list")->setValue(true);
 	#endif // NEPS_DEBUG
 
 	if (ImGui::MenuItem("Unload"))
