@@ -241,7 +241,12 @@ void Visuals::modifyFire(FrameStage stage) noexcept
 
 void Visuals::thirdperson() noexcept
 {
-	if (!localPlayer || !config->visuals.thirdPerson.keyMode) return;
+	if (!localPlayer || !config->visuals.thirdPerson.keyMode)
+	{
+		if (localPlayer)
+			memory->input->isCameraInThirdPerson = false;
+		return;
+	}
 
 	static Helpers::KeyBindState thirdPerson;
 
@@ -298,6 +303,7 @@ void Visuals::removeGrass(FrameStage stage) noexcept
 		{
 		case fnv::hash("dz_blacksite"): return "detail/detailsprites_survival";
 		case fnv::hash("dz_sirocco"): return "detail/dust_massive_detail_sprites";
+		case fnv::hash("dz_county"): return "detail/county/detailsprites_county";
 		case fnv::hash("coop_autumn"): return "detail/autumn_detail_sprites";
 		case fnv::hash("dz_frostbite"): return "ski/detail/detailsprites_overgrown_ski";
 			// dz_junglety has been removed in 7/23/2020 patch

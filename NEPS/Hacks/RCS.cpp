@@ -23,14 +23,17 @@ void Rcs::run(UserCmd* cmd) noexcept
 	if (!localPlayer->isAlive() || !localPlayer)
 		return;
 
+	const auto activeWeaponType = localPlayer->getActiveWeapon()->getWeaponType();
+	if (!(activeWeaponType == WeaponType::Rifle || activeWeaponType == WeaponType::SubMachinegun || activeWeaponType == WeaponType::Machinegun))
+		return;
+
 	int shotCount = localPlayer->shotsFired();
 	int oldShotCount = 0;
 	static Vector3 dwOldPunchAngle;
-	localPlayer->aimPunchAngle();
 	const auto dwPunch = localPlayer->aimPunchAngle();
 	const auto dwViewAngles = interfaces->engine->getViewAngles();
 	const float totalPunch = dwPunch.x + dwPunch.y;
-
+	
 	if (totalPunch != 0.f && shotCount >= 1 && shotCount != oldShotCount)
 	{
 		const float recoilForce = config->rcs.recoilForce;

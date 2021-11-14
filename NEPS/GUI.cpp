@@ -14,6 +14,9 @@
 
 #include "res_defaultfont.h"
 
+#include "SDK/ConVar.h"
+#include "SDK/Cvar.h"
+
 #ifdef NEPS_DEBUG
 #include "GameData.h"
 #include "resource.h"
@@ -24,8 +27,7 @@
 #include "SDK/Client.h"
 #include "SDK/ClientClass.h"
 #include "SDK/ClientMode.h"
-#include "SDK/ConVar.h"
-#include "SDK/Cvar.h"
+
 #include "SDK/Effects.h"
 #include "SDK/EngineTrace.h"
 #include "SDK/Entity.h"
@@ -66,7 +68,7 @@ GUI::GUI() noexcept
 	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts))) {
 		const std::filesystem::path path{ pathToFonts };
 		CoTaskMemFree(pathToFonts);
-		font = io.Fonts->AddFontFromFileTTF((path / "SIMYOU.TTF").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());	
+		font = io.Fonts->AddFontFromFileTTF((path / "SIMYOU.TTF").string().c_str(), 11.0f, &cfg, Helpers::getFontGlyphRanges());	
 		if (!font) {
 			font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
 			if (!font) {
@@ -116,7 +118,7 @@ void GUI::render() noexcept
 {
 	#ifdef NEPS_DEBUG
 	static Texture debugNotice = {IDB_PNG2, L"PNG"};
-	if (debugNotice.get())
+	if (debugNotice.get() && config->misc.debugNotice)
 		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
 	#endif // NEPS_DEBUG
 
@@ -298,12 +300,15 @@ void GUI::renderContextMenu() noexcept
 		interfaces->engine->clientCmdUnrestricted("toggleconsole");
 	if (ImGui::MenuItem("Demo UI"))
 		interfaces->engine->clientCmdUnrestricted("demoui");
-
+	if (ImGui::MenuItem("HUD"))
+		interfaces->cvar->findVar("cl_drawhud")->setValue(!interfaces->cvar->findVar("cl_drawhud")->getInt());
+	if (ImGui::MenuItem("Screenshot"))
+		interfaces->engine->clientCmdUnrestricted("jpeg");
 	#ifdef NEPS_DEBUG
 	if (ImGui::MenuItem("Fog UI"))
 		interfaces->engine->clientCmdUnrestricted("fogui");
 	if (ImGui::MenuItem("Loaded textures"))
-		interfaces->cvar->findVar("mat_texture_list")->setValue(true);
+		interfaces->cvar->findVar("mat_texture_list")->;
 	#endif // NEPS_DEBUG
 
 	if (ImGui::MenuItem("Unload"))
@@ -2569,6 +2574,9 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Indicators", &config->misc.indicators.enabled);
 	ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
 	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);
+	#ifdef NEPS_DEBUG
+		ImGui::Checkbox("Debug Notice", &config->misc.debugNotice);
+	#endif
 
 	ImGui::Columns(1);
 

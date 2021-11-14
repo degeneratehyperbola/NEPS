@@ -727,6 +727,8 @@ static void from_json(const json &j, Config::Misc &m)
 	read<value_t::object>(j, "Bomb timer", m.bombTimer);
 	read<value_t::object>(j, "Watermark", m.watermark);
 	read<value_t::object>(j, "Indicators", m.indicators);
+	read(j, "Debug Notice", m.debugNotice);
+
 }
 
 static void from_json(const json &j, Config::Exploits &e)
@@ -1234,6 +1236,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Watermark", watermark);
 	WRITE("Indicators", indicators);
+	WRITE("Debug Notice", debugNotice);
 }
 
 static void to_json(json &j, const Config::Exploits &o)
