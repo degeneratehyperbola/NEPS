@@ -173,9 +173,6 @@
     <ClCompile Include="..\shared_lib\stb\stb.cpp">
       <Filter>lib\stb</Filter>
     </ClCompile>
-    <ClCompile Include="Hacks\RCS.cpp">
-      <Filter>Hacks</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.h">
@@ -495,9 +492,6 @@
     </ClInclude>
     <ClInclude Include="..\shared_lib\MemorySearch.hpp">
       <Filter>lib</Filter>
-    </ClInclude>
-    <ClInclude Include="Hacks\RCS.h">
-      <Filter>Hacks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -135,7 +135,6 @@ void GUI::render() noexcept
 	if (!config->style.menuStyle)
 	{
 		renderMenuBar();
-		renderRCSWindow();
 		renderAimbotWindow();
 		renderAntiAimWindow();
 		renderTriggerbotWindow();
@@ -202,11 +201,6 @@ void GUI::renderGuiStyle2() noexcept
 	ImGui::Begin("NEPS.PP", nullptr, windowFlags | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
 	if (ImGui::BeginTabBar("TabBar", ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_NoTooltip))
 	{
-		if (ImGui::BeginTabItem("RCS"))
-		{
-			renderRCSWindow(true);
-			ImGui::EndTabItem();
-		}
 		if (ImGui::BeginTabItem("Aimbot"))
 		{
 			renderAimbotWindow(true);
@@ -322,7 +316,6 @@ void GUI::renderMenuBar() noexcept
 		menuBarItem("Config", window.config);
 		menuBarItem("Style", window.style);
 		ImGui::Separator();
-		menuBarItem("RCS", window.rcs);
 		menuBarItem("Aimbot", window.aimbot);
 		menuBarItem("Triggerbot", window.triggerbot);
 		menuBarItem("Backtrack", window.backtrack);
@@ -391,24 +384,6 @@ void GUI::renderMenuBar() noexcept
 	}
 }
 
-void GUI::renderRCSWindow(bool contentOnly) noexcept
-{
-	if (!contentOnly)
-	{
-		if (!window.rcs)
-			return;
-		ImGui::SetNextWindowContentSize({ 280, 0 });
-		ImGui::Begin("RCS", &window.rcs, windowFlags);
-	}
-
-	ImGuiCustom::keyBind("Enabled", config->rcs.bind);
-	ImGui::Separator();
-	ImGui::SliderFloat("##recoilforce", &config->rcs.recoilForce, 0.0f, 5.0f, "Recoil Force Multiplier %.3f");
-	ImGui::Checkbox("Humanize", &config->rcs.humanize);
-	ImGui::SliderFloat("##shiftX", &config->rcs.shiftX, 0.01f, 1.0f, "X Shift Multiplier %.5f");
-	ImGui::SliderFloat("##shiftY", &config->rcs.shiftY, 0.01f, 1.0f, "Y Shift Multiplier %.5f");
-
-}
 void GUI::renderAimbotWindow(bool contentOnly) noexcept
 {
 	if (!contentOnly)
@@ -2679,7 +2654,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 
 	if (ImGui::BeginPopup("Config to reset"))
 	{
-		static constexpr const char *names[]{"Whole", "Aimbot", "Triggerbot", "Backtrack", "Anti-aim", "Chams", "Glow", "ESP", "Visuals", "Skin changer", "Sound", "Griefing", "Exploits", "Movement", "Misc", "Style", "RCS"};
+		static constexpr const char *names[]{"Whole", "Aimbot", "Triggerbot", "Backtrack", "Anti-aim", "Chams", "Glow", "ESP", "Visuals", "Skin changer", "Sound", "Griefing", "Exploits", "Movement", "Misc", "Style"};
 		for (int i = 0; i < IM_ARRAYSIZE(names); i++)
 		{
 			if (i == 1) ImGui::Separator();
@@ -2704,7 +2679,6 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 				case 13: config->movement = { }; break;
 				case 14: config->misc = { }; break;
 				case 15: config->style = { }; updateColors(); break;
-				case 16: config->rcs = { }; break;
 				}
 			}
 		}

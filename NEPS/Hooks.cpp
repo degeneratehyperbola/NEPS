@@ -22,7 +22,6 @@
 #include "Hacks/Misc.h"
 #include "Hacks/Triggerbot.h"
 #include "Hacks/Visuals.h"
-#include "Hacks/RCS.h"
 
 #include "SDK/ClientClass.h"
 #include "SDK/Cvar.h"
@@ -196,7 +195,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	EnginePrediction::run(cmd);
 
 	Aimbot::run(cmd);
-	Rcs::run(cmd);
 	Backtrack::run(cmd);
 	Triggerbot::run(cmd);
 	Misc::edgeJump(cmd);

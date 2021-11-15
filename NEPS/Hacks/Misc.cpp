@@ -713,7 +713,7 @@ void Misc::autoPistol(UserCmd *cmd) noexcept
 		{
 			if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
 				cmd->buttons &= ~UserCmd::Button_Attack2;
-			else if (!(activeWeaponType == WeaponType::Rifle || activeWeaponType == WeaponType::SubMachinegun || activeWeaponType == WeaponType::Machinegun))//Will conflict with RCS
+			else
 				cmd->buttons &= ~UserCmd::Button_Attack;
 		}
 	}
