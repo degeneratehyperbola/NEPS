@@ -168,6 +168,11 @@ public:
 		return v;
 	}
 
+	UtlVector<Matrix3x4> &boneCache() noexcept
+	{
+		return *(UtlVector<Matrix3x4> *)((uintptr_t)this + 0x2914);
+	}
+
 	AnimLayer *animationLayers() noexcept
 	{
 		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2990);
