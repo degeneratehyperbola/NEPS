@@ -726,21 +726,12 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::SetNextItemWidth(100);
-		ImGui::Combo("Smoothing", &config->aimbot[currentWeapon].interpolation, "None\0Linear\0Quadratic\0Both\0");
-		switch (config->aimbot[currentWeapon].interpolation)
+		ImGui::Checkbox("Humanize", &config->aimbot[currentWeapon].humanize);
+		if (config->aimbot[currentWeapon].humanize)
 		{
-		case 0:
-			break;
-		case 1:
-			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linear, 0.0f, 20.0f, "Speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
-			break;
-		case 2:
-			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Smoothness %.4f");
-			break;
-		case 3:
-			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linear, 0.0f, 20.0f, "Linear %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
-			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Quadratic %.4f");
-			break;
+			ImGui::SliderFloat("##acceleration", &config->aimbot[currentWeapon].acceleration, 0.0f, 5.0f, "Acceleration %.4fdeg/tick^2", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##friction", &config->aimbot[currentWeapon].friction, 1.0f, 5.0f, "Friction %.4f", ImGuiSliderFlags_Logarithmic);
+			config->aimbot[currentWeapon].friction = std::fmaxf(1.0f, config->aimbot[currentWeapon].friction);
 		}
 
 		ImGui::SliderFloat("#rcsH", &config->aimbot[currentWeapon].recoilReductionH, 0.0f, 100.0f, "RCS Horizontal %.0f%%");
