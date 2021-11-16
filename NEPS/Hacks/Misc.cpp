@@ -1701,7 +1701,7 @@ void Misc::watermark() noexcept
 
 void Misc::velocityGraph() noexcept
 {
-
+	// Upcoming
 }
 
 void Misc::onPlayerVote(GameEvent &event) noexcept
