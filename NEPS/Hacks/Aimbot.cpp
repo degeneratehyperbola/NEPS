@@ -452,9 +452,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 	if (!activeWeapon || !activeWeapon->clip() || activeWeapon->isKnife())
 		return;
 
-	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
-		return;
-
 	const auto &cfg = Config::Aimbot::getRelevantConfig();
 
 	const auto weaponData = activeWeapon->getWeaponData();
