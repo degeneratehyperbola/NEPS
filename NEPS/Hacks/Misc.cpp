@@ -1709,9 +1709,6 @@ void Misc::onPlayerVote(GameEvent &event) noexcept
 	if (!config->griefing.revealVotes)
 		return;
 
-	if (!localPlayer)
-		return;
-
 	const auto entity = interfaces->entityList->getEntity(event.getInt("entityid"));
 	if (!entity || !entity->isPlayer())
 		return;
@@ -1725,6 +1722,9 @@ void Misc::onPlayerVote(GameEvent &event) noexcept
 
 void Misc::onVoteChange(UserMessageType type, const void *data, int size) noexcept
 {
+	if (!config->griefing.revealVotes)
+		return;
+
 	switch (type)
 	{
 	case UserMessageType::VoteStart:
