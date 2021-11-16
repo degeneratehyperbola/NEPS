@@ -627,7 +627,7 @@ static void __fastcall doProceduralFootPlant(void *thisptr, void *edx, void *bon
 	hooks->originalDoProceduralFootPlant(thisptr, nullptr, boneToWorld, leftFootChain, rightFootChain, bone);
 }
 
-static bool __stdcall dispatchUserMessage(void *thisptr, UserMessageType type, int passthroughFlags, int size, const void *data) noexcept
+static bool __stdcall dispatchUserMessage(UserMessageType type, int passthroughFlags, int size, const void *data) noexcept
 {
 	switch (type)
 	{
