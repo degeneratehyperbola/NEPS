@@ -29,8 +29,8 @@ struct VarMap;
 
 enum class MoveType
 {
-    Noclip = 8,
-    Ladder = 9
+	Noclip = 8,
+	Ladder = 9
 };
 
 enum PlayerFlag
@@ -89,20 +89,20 @@ enum EffectFlag
 
 enum class ObsMode
 {
-    None = 0,
-    Deathcam,
-    Freezecam,
-    Fixed,
-    InEye,
-    Chase,
-    Roaming
+	None = 0,
+	Deathcam,
+	Freezecam,
+	Fixed,
+	InEye,
+	Chase,
+	Roaming
 };
 
 class Collideable
 {
 public:
-    VIRTUAL_METHOD(const Vector&, obbMins, 1, (), (this))
-    VIRTUAL_METHOD(const Vector&, obbMaxs, 2, (), (this))
+	VIRTUAL_METHOD(const Vector &, obbMins, 1, (), (this))
+	VIRTUAL_METHOD(const Vector &, obbMaxs, 2, (), (this))
 };
 
 enum class Team
@@ -129,7 +129,7 @@ public:
 	VIRTUAL_METHOD(const Model *, getModel, 8, (), (this + sizeof(uintptr_t)))
 	VIRTUAL_METHOD(const Matrix3x4 &, toWorldTransform, 32, (), (this + sizeof(uintptr_t)))
 
-	VIRTUAL_METHOD(int&, handle, 2, (), (this))
+	VIRTUAL_METHOD(int &, handle, 2, (), (this))
 	VIRTUAL_METHOD(Collideable *, getCollideable, 3, (), (this))
 	VIRTUAL_METHOD(const Vector &, getAbsOrigin, 10, (), (this))
 	VIRTUAL_METHOD(const Vector &, getAbsAngle, 11, (), (this))
@@ -263,12 +263,12 @@ public:
 		if (!set) return nullptr;
 		return set->getHitbox(i);
 	}
-    
-	bool isOtherEnemy(Entity* other) noexcept;
 
-	VarMap* getVarMap() noexcept
+	bool isOtherEnemy(Entity *other) noexcept;
+
+	VarMap *getVarMap() noexcept
 	{
-		return reinterpret_cast<VarMap*>(this + 0x24);
+		return reinterpret_cast<VarMap *>(this + 0x24);
 	}
 
 	float getMaxDesyncAngle() noexcept
@@ -312,8 +312,8 @@ public:
 		return name;
 	}
 
-	bool canSee(Entity* other, const Vector& pos) noexcept;
-	bool visibleTo(Entity* other) noexcept;
+	bool canSee(Entity *other, const Vector &pos) noexcept;
+	bool visibleTo(Entity *other) noexcept;
 
 	bool grenadeExploded() noexcept
 	{
@@ -352,7 +352,7 @@ public:
 	NETVAR(spotted, "CBaseEntity", "m_bSpotted", bool)
 
 	NETVAR(activeWeapon, "CBaseCombatCharacter", "m_hActiveWeapon", int)
-	NETVAR(weapons, "CBaseCombatCharacter", "m_hMyWeapons", int [64])
+	NETVAR(weapons, "CBaseCombatCharacter", "m_hMyWeapons", int[64])
 	PNETVAR(wearables, "CBaseCombatCharacter", "m_hMyWearables", int)
 	NETVAR(nextAttack, "CBaseCombatCharacter", "m_flNextAttack", float)
 
@@ -367,7 +367,7 @@ public:
 	NETVAR(viewPunchAngle, "CBasePlayer", "m_viewPunchAngle", Vector)
 	NETVAR(velocity, "CBasePlayer", "m_vecVelocity[0]", Vector)
 	NETVAR(observerMode, "CBasePlayer", "m_iObserverMode", ObsMode)
-	NETVAR(lastPlaceName, "CBasePlayer", "m_szLastPlaceName", char [18])
+	NETVAR(lastPlaceName, "CBasePlayer", "m_szLastPlaceName", char[18])
 	NETVAR_OFFSET(thirdPersonAngles, "CBasePlayer", "deadflag", 4, Vector)
 
 	NETVAR(armor, "CCSPlayer", "m_ArmorValue", int)
@@ -409,7 +409,7 @@ public:
 	NETVAR(itemDefinitionIndex2, "CBaseAttributableItem", "m_iItemDefinitionIndex", WeaponId)
 	NETVAR(itemIDHigh, "CBaseAttributableItem", "m_iItemIDHigh", int)
 	NETVAR(entityQuality, "CBaseAttributableItem", "m_iEntityQuality", int)
-	NETVAR(customName, "CBaseAttributableItem", "m_szCustomName", char [32])
+	NETVAR(customName, "CBaseAttributableItem", "m_szCustomName", char[32])
 	NETVAR(fallbackPaintKit, "CBaseAttributableItem", "m_nFallbackPaintKit", unsigned)
 	NETVAR(fallbackSeed, "CBaseAttributableItem", "m_nFallbackSeed", unsigned)
 	NETVAR(fallbackWear, "CBaseAttributableItem", "m_flFallbackWear", float)
@@ -430,7 +430,7 @@ public:
 	NETVAR(c4Defuser, "CPlantedC4", "m_hBombDefuser", int)
 
 	NETVAR(tabletReceptionIsBlocked, "CTablet", "m_bTabletReceptionIsBlocked", bool)
-    
+
 	NETVAR(droneTarget, "CDrone", "m_hMoveToThisEntity", int)
 
 	NETVAR(thrower, "CBaseGrenade", "m_hThrower", int)
@@ -442,10 +442,10 @@ public:
 	NETVAR(mapHasBombTarget, "CCSGameRulesProxy", "m_bMapHasBombTarget", bool)
 	NETVAR(freezePeriod, "CCSGameRulesProxy", "m_bFreezePeriod", bool)
 
-	NETVAR(fireXDelta, "CInferno", "m_fireXDelta", int [100])
-	NETVAR(fireYDelta, "CInferno", "m_fireYDelta", int [100])
-	NETVAR(fireZDelta, "CInferno", "m_fireZDelta", int [100])
-	NETVAR(fireIsBurning, "CInferno", "m_bFireIsBurning", bool [100])
+	NETVAR(fireXDelta, "CInferno", "m_fireXDelta", int[100])
+	NETVAR(fireYDelta, "CInferno", "m_fireYDelta", int[100])
+	NETVAR(fireZDelta, "CInferno", "m_fireZDelta", int[100])
+	NETVAR(fireIsBurning, "CInferno", "m_bFireIsBurning", bool[100])
 	NETVAR(fireCount, "CInferno", "m_fireCount", int)
 };
 

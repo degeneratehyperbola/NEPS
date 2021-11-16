@@ -493,6 +493,12 @@
     <ClInclude Include="..\shared_lib\MemorySearch.hpp">
       <Filter>lib</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\ProtobufReader.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\UserMessage.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\logo.png">

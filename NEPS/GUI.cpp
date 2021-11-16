@@ -743,6 +743,9 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 			break;
 		}
 
+		ImGui::SliderFloat("#rcsH", &config->aimbot[currentWeapon].recoilReductionH, 0.0f, 100.0f, "RCS Horizontal %.0f%%");
+		ImGui::SliderFloat("#rcsV", &config->aimbot[currentWeapon].recoilReductionV, 0.0f, 100.0f, "RCS Vertical %.0f%%");
+
 		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
 	}
 
@@ -809,7 +812,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SliderFloat("##pitch_sl", &currentConfig.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
 		}
 		ImGui::Checkbox("Look at enemies", &currentConfig.lookAtEnemies);
-		ImGui::Checkbox("Auto direction", &currentConfig.autoDirection);
+		ImGui::Combo("Direction", &currentConfig.direction, "Off\0Auto\0Manual\0");
 		ImGui::SameLine();
 		if (ImGui::ArrowButton("yaw_directions", ImGuiDir_Right))
 			ImGui::OpenPopup("##yaw_dir");
@@ -1221,7 +1224,7 @@ void GUI::renderGlowWindow(bool contentOnly) noexcept
 
 	ImGui::PushItemWidth(100);
 
-	ImGui::Combo("##category", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Local player\0Weapons\0C4\0Planted C4\0Chickens\0Defuse kits\0Projectiles\0Hostages\0Ragdolls\0");
+	ImGui::Combo("##category", &currentCategory, "Allies\0Enemies\0Planting\0Defusing\0Local player\0Weapons\0C4\0Planted C4\0Chickens\0Defuse kits\0Projectiles\0Hostages\0");
 	static int currentItem{0};
 	if (currentCategory <= 3)
 	{
@@ -2364,39 +2367,16 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	{
 		ImGuiCustom::keyBind("Target", config->griefing.blockbot.target);
 		ImGui::PushItemWidth(192.0f);
-		ImGui::SliderFloat("##tfactor", &config->griefing.blockbot.trajectoryFac, 0.0f, 4.0f, "Trajectory factor %.3fu");
-		ImGui::SliderFloat("##dfactor", &config->griefing.blockbot.distanceFac, 0.0f, 4.0f, "Distance factor %.3fu");
+		ImGui::SliderFloat("##tfactor", &config->griefing.blockbot.trajectoryFac, 0.0f, 4.0f, "Trajectory factor %.3f");
+		ImGui::SliderFloat("##dfactor", &config->griefing.blockbot.distanceFac, 0.0f, 4.0f, "Distance factor %.3f");
 		ImGui::PopItemWidth();
 		ImGuiCustom::colorPicker("Visualize", config->griefing.blockbot.visualize);
 		ImGui::EndPopup();
 	}
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
 
-	if (ImGui::Button("Nuke chat", {85, 0}))
-	{
-		std::ostringstream ss;
-
-		ss << "say ";
-
-		for (int i = 0; i <= 75; ++i)
-			ss << "\xE2\x80\xA9";
-
-		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::Button("Basmala chat", {-1, 0}))
-	{
-		std::ostringstream ss;
-
-		ss << "say ";
-
-		for (int i = 0; i <= 30; ++i)
-			ss << "\uFDFD ";
-
-		interfaces->engine->clientCmdUnrestricted(ss.str().c_str());
-	}
+	ImGuiCustom::keyBind("Basmala chat", config->griefing.chatBasmala);
+	ImGuiCustom::keyBind("Nuke chat", config->griefing.chatNuke);
 
 	ImGui::Checkbox("Team damage list", &config->griefing.teamDamageList.enabled);
 	ImGui::SameLine();

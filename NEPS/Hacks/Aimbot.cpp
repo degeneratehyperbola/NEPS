@@ -96,9 +96,9 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 	if (!cfg.betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
 		return;
 
-	constexpr auto predictionFraction = 0.07f;
+	constexpr auto predictionFactor = 0.07f;
 
-	const auto predictedEyePosition = localPlayer->getEyePosition() + localPlayer->velocity() * predictionFraction;
+	const auto predictedEyePosition = localPlayer->getEyePosition() + localPlayer->velocity() * predictionFactor;
 
 	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 	{
@@ -121,11 +121,11 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		bool goesThroughWall = true;
 
 		// A subject to change
-		origin = entity->getBonePosition(8) + entity->velocity() * predictionFraction;
+		origin = entity->getBonePosition(8) + entity->velocity() * predictionFactor;
 		damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head);
 		goesThroughWall = goesThroughWall && trace.startPos != predictedEyePosition;
 
-		origin = entity->getBonePosition(0) + entity->velocity() * predictionFraction;
+		origin = entity->getBonePosition(0) + entity->velocity() * predictionFactor;
 		damage = std::max(damage, Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head));
 		goesThroughWall = goesThroughWall && trace.startPos != predictedEyePosition;
 
@@ -156,7 +156,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 	if (!weaponData)
 		return;
 
-	const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{};
+	const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() * Vector{1.0f - cfg.recoilReductionV / 100, 1.0f - cfg.recoilReductionH / 100, 1.0f} : Vector{};
 	const auto localPlayerEyePosition = localPlayer->getEyePosition();
 	bool doOverride = false;
 	{
@@ -449,7 +449,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		return;
 
 	const auto activeWeapon = localPlayer->getActiveWeapon();
-	if (!activeWeapon || !activeWeapon->clip())
+	if (!activeWeapon || !activeWeapon->clip() || activeWeapon->isKnife())
 		return;
 
 	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
@@ -469,25 +469,33 @@ void Aimbot::run(UserCmd *cmd) noexcept
     if (!cfg.ignoreFlash && localPlayer->isFlashed())
         return;
 
-    if ((cmd->buttons & UserCmd::Button_Attack || cfg.autoShoot || cfg.aimlock)) {
+    if (cmd->buttons & UserCmd::Button_Attack || cfg.autoShoot || cfg.aimlock) {
 
 		if (cfg.scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !cfg.autoScope)
 			return;
 
-		static auto prevTargetHandle = targetHandle;
+		static auto previousTargetHandle = targetHandle;
 
-		if (prevTargetHandle != targetHandle)
+		if (previousTargetHandle != targetHandle)
 			resetMissCounter();
 
 		chooseTarget(cmd);
+
+		const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() * Vector { cfg.recoilReductionV / 100, cfg.recoilReductionH / 100, 1.0f } : Vector{};
+		static Vector previousAimPunch = aimPunch;
+		if (aimPunch.notNull() && (cfg.recoilReductionH || cfg.recoilReductionV))
+		{
+			cmd->viewangles -= cfg.silent ? aimPunch : aimPunch - previousAimPunch;
+			if (!cfg.silent)
+				interfaces->engine->setViewAngles(cmd->viewangles);
+		}
+		previousAimPunch = aimPunch;
 
 		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
 		if (target && targetAngle.notNull())
 		{
 			static Vector lastAngles = cmd->viewangles;
 			static int lastCommand = 0;
-
-			const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{};
 
 			if (lastCommand == cmd->commandNumber - 1 && lastAngles.notNull() && cfg.silent)
 				cmd->viewangles = lastAngles;
@@ -528,6 +536,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			lastCommand = cmd->commandNumber;
 		}
 
-		prevTargetHandle = targetHandle;
+		previousTargetHandle = targetHandle;
 	}
 }

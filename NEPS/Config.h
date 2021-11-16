@@ -74,6 +74,8 @@ public:
 			float hitchance = 0.0f;
 			int hitGroup = 127;
 		} aimbotOverride;
+		float recoilReductionH = 0.0f;
+		float recoilReductionV = 0.0f;
 	};
 	std::array<Aimbot, 40> aimbot;
 
@@ -113,7 +115,7 @@ public:
 		bool yaw = false;
 		float yawAngle = 0.0f;
 		bool lookAtEnemies = false;
-		bool autoDirection = false;
+		int direction = 0;
 		int rightKey = 0;
 		int backKey = 0;
 		int leftKey = 0;
@@ -135,7 +137,7 @@ public:
 		int style = 0;
 		bool full = false;
 	};
-	std::array<Glow, 21> glow;
+	std::array<Glow, 20> glow;
 
 	struct Chams
 	{
@@ -228,7 +230,7 @@ public:
 				Spiral
 			};
 
-			bool enabled;
+			bool enabled = false;
 			int sprite = 0;
 			std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f};
 			float width = 1.0f;
@@ -244,9 +246,9 @@ public:
 
 		struct Dlights
 		{
-			bool enabled;
+			bool enabled = false;
 			std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f};
-			float radius;
+			float radius = 100.0f;
 		};
 
 		Dlights selfDlights;
@@ -340,6 +342,8 @@ public:
 		int banColor = 6;
 		std::string banText = "Cheater has been permanently banned from official CS:GO servers.";
 		bool spamUse = false;
+		KeyBind chatNuke;
+		KeyBind chatBasmala;
 
 		struct TeamDamageList
 		{

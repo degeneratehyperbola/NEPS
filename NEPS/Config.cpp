@@ -371,6 +371,8 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Smooth start", a.quadratic);
 	read(j, "Linear speed", a.linear);
 	read<value_t::object>(j, "Override", a.aimbotOverride);
+	read(j, "Recoil reduction H", a.recoilReductionH);
+	read(j, "Recoil reduction V", a.recoilReductionV);
 	read(j, "Between shots", a.betweenShots);
 }
 
@@ -405,7 +407,7 @@ static void from_json(const json &j, Config::AntiAim &a)
 	read(j, "Yaw", a.yaw);
 	read(j, "Yaw angle", a.yawAngle);
 	read(j, "Look at enemies", a.lookAtEnemies);
-	read(j, "Auto direction", a.autoDirection);
+	read(j, "Auto direction", a.direction);
 	read(j, "Right key", a.rightKey);
 	read(j, "Back key", a.backKey);
 	read(j, "Left key", a.leftKey);
@@ -744,6 +746,8 @@ static void from_json(const json &j, Config::Griefing &g)
 	read(j, "Vote reveal", g.revealVotes);
 	read(j, "Spam use", g.spamUse);
 	read<value_t::object>(j, "Team damage list", g.teamDamageList);
+	read<value_t::object>(j, "Nuke chat", g.chatNuke);
+	read<value_t::object>(j, "Basmala chat", g.chatBasmala);
 }
 
 static void from_json(const json &j, Config::Griefing::TeamDamageList &tdl)
@@ -1021,6 +1025,8 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Smooth start", quadratic);
 	WRITE("Linear speed", linear);
 	WRITE("Override", aimbotOverride);
+	WRITE("Recoil reduction H", recoilReductionH);
+	WRITE("Recoil reduction V", recoilReductionV);
 	WRITE("Between shots", betweenShots);
 }
 
@@ -1055,7 +1061,7 @@ static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &du
 	WRITE("Yaw", yaw);
 	WRITE("Yaw angle", yawAngle);
 	WRITE("Look at enemies", lookAtEnemies);
-	WRITE("Auto direction", autoDirection);
+	WRITE("Auto direction", direction);
 	WRITE("Right key", rightKey);
 	WRITE("Back key", backKey);
 	WRITE("Left key", leftKey);
@@ -1271,6 +1277,8 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Vote reveal", revealVotes);
 	WRITE("Spam use", spamUse);
 	WRITE("Team damage list", teamDamageList);
+	WRITE("Nuke chat", chatNuke);
+	WRITE("Basmala chat", chatBasmala);
 }
 
 static void to_json(json &j, const Config::Movement &o)
