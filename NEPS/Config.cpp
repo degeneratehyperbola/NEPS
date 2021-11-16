@@ -367,9 +367,9 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Hitchance", a.hitchance);
 	read(j, "Min damage", a.minDamage);
 	read(j, "Min damage auto-wall", a.minDamageAutoWall);
-	read(j, "Interpolation", a.interpolation);
-	read(j, "Smooth start", a.quadratic);
-	read(j, "Linear speed", a.linear);
+	read(j, "Humanize", a.humanize);
+	read(j, "Acceleration", a.acceleration);
+	read(j, "Friction", a.friction);
 	read<value_t::object>(j, "Override", a.aimbotOverride);
 	read(j, "Recoil reduction H", a.recoilReductionH);
 	read(j, "Recoil reduction V", a.recoilReductionV);
@@ -1020,9 +1020,9 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Hitchance", hitchance);
 	WRITE("Min damage", minDamage);
 	WRITE("Min damage auto-wall", minDamageAutoWall);
-	WRITE("Interpolation", interpolation);
-	WRITE("Smooth start", quadratic);
-	WRITE("Linear speed", linear);
+	WRITE("Humanize", humanize);
+	WRITE("Acceleration", acceleration);
+	WRITE("Friction", friction);
 	WRITE("Override", aimbotOverride);
 	WRITE("Recoil reduction H", recoilReductionH);
 	WRITE("Recoil reduction V", recoilReductionV);

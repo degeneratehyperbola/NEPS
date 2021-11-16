@@ -491,6 +491,8 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		}
 		previousAimPunch = aimPunch;
 
+		static Vector aimVelocity = Vector{};
+
 		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
 		if (target && targetAngle.notNull())
 		{
@@ -509,14 +511,16 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				clamped = true;
 			}
 
-			if (cfg.interpolation == 2 || cfg.interpolation == 3)
-				targetAngle = targetAngle * (1.0f - cfg.quadratic);
+			if (cfg.humanize)
+			{
+				const auto l = targetAngle.length();
+				if (l > cfg.acceleration)
+					aimVelocity += targetAngle / l * cfg.acceleration;
+				else
+					aimVelocity += targetAngle;
+			}
 
-			const auto l = targetAngle.length();
-			if ((cfg.interpolation == 1 || cfg.interpolation == 3) && l > cfg.linear)
-				targetAngle *= cfg.linear / l;
-
-			if (targetAngle.notNull())
+			if (targetAngle.notNull() && !cfg.humanize)
 			{
 				cmd->viewangles += targetAngle;
 
@@ -534,6 +538,18 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			} else lastAngles = Vector{};
 
 			lastCommand = cmd->commandNumber;
+		}
+
+		if (!cfg.humanize) aimVelocity = Vector{};
+
+		if (aimVelocity.notNull())
+		{
+			aimVelocity /= cfg.friction;
+
+			cmd->viewangles += aimVelocity;
+
+			if (!cfg.silent)
+				interfaces->engine->setViewAngles(cmd->viewangles);
 		}
 
 		previousTargetHandle = targetHandle;
