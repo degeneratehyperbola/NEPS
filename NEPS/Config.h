@@ -396,6 +396,7 @@ public:
 		bool disableInterp = false;
 		bool disableIK = false;
 		bool resolveLby = false;
+		int resolverType = 0;
 		bool unlockInvertory = false;
 		bool disablePanoramablur = false;
 
