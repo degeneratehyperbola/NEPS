@@ -33,18 +33,11 @@ void Rcs::run(UserCmd* cmd) noexcept
 	const auto dwPunch = localPlayer->aimPunchAngle();
 	const auto dwViewAngles = interfaces->engine->getViewAngles();
 	const float totalPunch = dwPunch.x + dwPunch.y;
-	
 	if (totalPunch != 0.f && shotCount >= 1 && shotCount != oldShotCount)
 	{
-		static float randX = 1.f;
-		static float randY = 1.f;
-		if (config->rcs.humanize) {
-			randX *= 1.f - random(.2f, .5f);
-			randY *= 1.f - random(.2f, .4f);
-		}
 		const float recoilForce = config->rcs.recoilForce;
-		const float recoilForceX = recoilForce * randX * config->rcs.shiftX;
-		const float recoilForceY = recoilForce * randY * config->rcs.shiftY;
+		const float recoilForceX = recoilForce * config->rcs.shiftX;
+		const float recoilForceY = recoilForce * config->rcs.shiftY;
 		const float angleX = (dwViewAngles.x + dwOldPunchAngle.x) - (dwPunch.x * recoilForceX);
 		const float angleY = (dwViewAngles.y + dwOldPunchAngle.y) - (dwPunch.y * recoilForceY);
 		const float angleZ = 0.f;
@@ -54,7 +47,6 @@ void Rcs::run(UserCmd* cmd) noexcept
 		interfaces->engine->setViewAngles(AimAngle);
 		dwOldPunchAngle = Vector3{ dwPunch.x * recoilForceX, dwPunch.y * recoilForceY, 0.f };
 		oldShotCount = shotCount;
-		randX = randY = 1.f;
 	}
 	else {
 		dwOldPunchAngle = Vector3{ 0.f,0.f,0.f };

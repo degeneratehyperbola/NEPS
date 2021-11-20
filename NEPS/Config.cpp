@@ -336,7 +336,6 @@ static void from_json(const json& j, Config::RCS& n)
 {
 	read<value_t::object>(j, "Bind", n.bind);
 	read(j, "Recoil Force", n.recoilForce);
-	read(j, "Humanize", n.humanize);
 	read(j, "Shift X", n.shiftX);
 	read(j, "Shift Y", n.shiftY);
 }
@@ -378,6 +377,7 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Min damage", a.minDamage);
 	read(j, "Min damage auto-wall", a.minDamageAutoWall);
 	read(j, "Humanize", a.humanize);
+	read(j, "Smooth start", a.quadratic);
 	read(j, "Acceleration", a.acceleration);
 	read(j, "Friction", a.friction);
 	read<value_t::object>(j, "Override", a.aimbotOverride);
@@ -1007,7 +1007,6 @@ static void to_json(json &j, const ImVec2 &o, const ImVec2 &dummy = {})
 static void to_json(json& j, const Config::RCS& o, const Config::RCS& dummy = {})
 {
 	WRITE("Bind", bind);
-	WRITE("Humanize", humanize);
 	WRITE("Recoil Force", recoilForce);
 	WRITE("Shift X", shiftX);
 	WRITE("Shift Y", shiftY);
@@ -1051,6 +1050,7 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Min damage", minDamage);
 	WRITE("Min damage auto-wall", minDamageAutoWall);
 	WRITE("Humanize", humanize);
+	WRITE("Smooth start", quadratic);
 	WRITE("Acceleration", acceleration);
 	WRITE("Friction", friction);
 	WRITE("Override", aimbotOverride);

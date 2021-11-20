@@ -40,7 +40,6 @@ public:
 
 		KeyBind bind;
 		float recoilForce = 2.f;
-		bool humanize = false;
 		float shiftX = 1.f;
 		float shiftY = 1.f;
 	} rcs;
@@ -71,6 +70,7 @@ public:
 		float hitchance = 0.0f;
 		int hitGroup = 127;
 		bool humanize = false;
+		float quadratic = 0.0f;
 		float acceleration = 0.6f;
 		float friction = 2.0f;
 		bool betweenShots = true;
@@ -398,6 +398,7 @@ public:
 		bool autoStrafe = false;
 		KeyBind edgeJump;
 		bool fastStop = false;
+		int quickPeekKey = 0;
 	} movement;
 
 	struct Misc

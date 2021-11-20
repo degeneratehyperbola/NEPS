@@ -13,6 +13,7 @@
 #include "../SDK/EngineTrace.h"
 #include "../SDK/FrameStage.h"
 #include "../SDK/GameEvent.h"
+#include "../lib/Helpers.hpp"
 #include "../SDK/Input.h"
 #include "../SDK/ItemSchema.h"
 #include "../SDK/Localize.h"
@@ -161,6 +162,76 @@ void Misc::updateClanTag() noexcept
 		memory->setClanTag("", "");
 	}
 }
+
+struct customCmd
+{
+	float forwardmove;
+	float sidemove;
+	float upmove;
+};
+
+bool hasShot;
+Vector quickPeekStartPos;
+ImVec2 drawPos;
+std::vector<customCmd>usercmdQuickpeek;
+int qpCount;
+
+void Misc::drawQuickPeekStartPos() noexcept
+{
+	if (!Helpers::worldToScreen(quickPeekStartPos, drawPos))
+		return;
+
+	if (quickPeekStartPos != Vector{ 0, 0, 0 }) {
+		interfaces->surface->setDrawColor(255, 255, 255);
+		interfaces->surface->drawCircle(drawPos.x, drawPos.y, 0, 10);
+	}
+}
+
+void gotoStart(UserCmd* cmd) {
+	if (usercmdQuickpeek.empty()) return;
+	if (hasShot)
+	{
+		if (qpCount > 0)
+		{
+			cmd->upmove = -usercmdQuickpeek.at(qpCount).upmove;
+			cmd->sidemove = -usercmdQuickpeek.at(qpCount).sidemove;
+			cmd->forwardmove = -usercmdQuickpeek.at(qpCount).forwardmove;
+			qpCount--;
+		}
+	}
+	else
+	{
+		qpCount = usercmdQuickpeek.size();
+	}
+}
+
+void Misc::quickPeek(UserCmd* cmd) noexcept
+{
+	if (!localPlayer || !localPlayer->isAlive()) return;
+	if (GetAsyncKeyState(config->movement.quickPeekKey)) {
+		if (quickPeekStartPos == Vector{ 0, 0, 0 }) {
+			quickPeekStartPos = localPlayer->getAbsOrigin();
+		}
+		else {
+			customCmd tempCmd = {};
+			tempCmd.forwardmove = cmd->forwardmove;
+			tempCmd.sidemove = cmd->sidemove;
+			tempCmd.upmove = cmd->upmove;
+
+			if (cmd->buttons & UserCmd::Button_Attack) hasShot = true;
+			gotoStart(cmd);
+
+			if (!hasShot)
+				usercmdQuickpeek.push_back(tempCmd);
+		}
+	}
+	else {
+		hasShot = false;
+		quickPeekStartPos = Vector{ 0, 0, 0 };
+		usercmdQuickpeek.clear();
+	}
+}
+
 
 static void drawCrosshair(ImDrawList *drawList, ImVec2 pos, ImU32 color, int type)
 {
@@ -715,7 +786,7 @@ void Misc::autoPistol(UserCmd *cmd) noexcept
 		{
 			if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
 				cmd->buttons &= ~UserCmd::Button_Attack2;
-			else if (!(activeWeaponType == WeaponType::Rifle || activeWeaponType == WeaponType::SubMachinegun || activeWeaponType == WeaponType::Machinegun))//Will conflict with RCS
+			else if (!activeWeapon->isFullAuto())
 				cmd->buttons &= ~UserCmd::Button_Attack;
 		}
 	}

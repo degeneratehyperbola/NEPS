@@ -536,6 +536,8 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				clamped = true;
 			}
 
+			targetAngle = targetAngle * (1.0f - cfg.quadratic);
+
 			if (cfg.humanize)
 			{
 				const auto l = targetAngle.length();

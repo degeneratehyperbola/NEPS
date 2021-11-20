@@ -12,6 +12,8 @@ namespace Misc
 	void edgeJump(UserCmd *cmd) noexcept;
 	void slowwalk(UserCmd *cmd) noexcept;
 	void updateClanTag() noexcept;
+	void drawQuickPeekStartPos() noexcept;
+	void quickPeek(UserCmd* cmd) noexcept;
 	void overlayCrosshair(ImDrawList *drawlist) noexcept;
 	void recoilCrosshair(ImDrawList *drawList) noexcept;
 	void visualizeInaccuracy(ImDrawList *drawList) noexcept;

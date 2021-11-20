@@ -218,6 +218,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	Misc::fixMovement(cmd, currentViewAngles.y);
 	Misc::moonwalk(cmd);
+	Misc::quickPeek(cmd);
 
 	cmd->viewangles.x = std::clamp(cmd->viewangles.x, -89.0f, 89.0f);
 	cmd->viewangles.y = std::clamp(cmd->viewangles.y, -180.0f, 180.0f);

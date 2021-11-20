@@ -397,16 +397,17 @@ void GUI::renderRCSWindow(bool contentOnly) noexcept
 	{
 		if (!window.rcs)
 			return;
-		ImGui::SetNextWindowContentSize({ 280, 0 });
 		ImGui::Begin("RCS", &window.rcs, windowFlags);
 	}
 
 	ImGuiCustom::keyBind("Enabled", config->rcs.bind);
 	ImGui::Separator();
 	ImGui::SliderFloat("##recoilforce", &config->rcs.recoilForce, 0.0f, 5.0f, "Recoil Force Multiplier %.3f");
-	ImGui::Checkbox("Humanize", &config->rcs.humanize);
 	ImGui::SliderFloat("##shiftX", &config->rcs.shiftX, 0.01f, 1.0f, "X Shift Multiplier %.5f");
 	ImGui::SliderFloat("##shiftY", &config->rcs.shiftY, 0.01f, 1.0f, "Y Shift Multiplier %.5f");
+
+	if (!contentOnly)
+		ImGui::End();
 
 }
 void GUI::renderAimbotWindow(bool contentOnly) noexcept
@@ -778,6 +779,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Smoothness %.4f", ImGuiSliderFlags_Logarithmic);
 		ImGui::Checkbox("Humanize", &config->aimbot[currentWeapon].humanize);
 		if (config->aimbot[currentWeapon].humanize)
 		{
@@ -2463,6 +2465,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
+	ImGuiCustom::keyBind("Quick Peek", &config->movement.quickPeekKey);
 
 	if (!contentOnly)
 		ImGui::End();
