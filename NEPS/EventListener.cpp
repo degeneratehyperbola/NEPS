@@ -72,7 +72,7 @@ void EventListener::fireGameEvent(GameEvent *event)
 		Visuals::bulletBeams(event);
 		break;
 	case fnv::hash("vote_cast"):
-		Misc::voteRevealer(*event);
+		Misc::onPlayerVote(*event);
 		break;
 	case fnv::hash("cs_match_end_restart"):
 		Misc::teamDamageList(event);

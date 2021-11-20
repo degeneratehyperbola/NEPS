@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR cmdLine
 	{
 		auto csgoProcess = OpenProcess(PROCESS_ALL_ACCESS, false, csgoPid);
 		if (!csgoProcess)
-			MessageBoxA(0, "Falied to load NEPS.\nYou need to run CS:GO before running the loader.", "NEPS", MB_OK | MB_ICONERROR);
+			MessageBoxA(0, "Falied to load NEPS.\nFailed to open CS:GO process. Try running NLoader with administrator privileges.", "NEPS", MB_OK | MB_ICONERROR);
 		else
 		{
 			if (!Helpers::bypassCsgoInject(csgoProcess))

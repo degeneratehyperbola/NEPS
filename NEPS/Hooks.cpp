@@ -35,6 +35,7 @@
 #include "SDK/Sound.h"
 #include "SDK/StudioRender.h"
 #include "SDK/Surface.h"
+#include "SDK/UserMessage.h"
 #include "SDK/ViewSetup.h"
 
 #define FRAME_ADDRESS ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))
@@ -173,6 +174,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	memory->globalVars->serverTime(cmd);
 	Misc::changeConVarsTick();
 
+	Misc::runChatSpammer();
 	Misc::runReportbot();
 	Misc::antiAfkKick(cmd);
 	Misc::useSpam(cmd);
@@ -214,6 +216,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	Misc::fixMovement(cmd, currentViewAngles.y);
 	Misc::moonwalk(cmd);
+	Misc::quickPeek(cmd);
 
 	cmd->viewangles.x = std::clamp(cmd->viewangles.x, -89.0f, 89.0f);
 	cmd->viewangles.y = std::clamp(cmd->viewangles.y, -180.0f, 180.0f);
@@ -626,6 +629,22 @@ static void __fastcall doProceduralFootPlant(void *thisptr, void *edx, void *bon
 	hooks->originalDoProceduralFootPlant(thisptr, nullptr, boneToWorld, leftFootChain, rightFootChain, bone);
 }
 
+static bool __stdcall dispatchUserMessage(UserMessageType type, int passthroughFlags, int size, const void *data) noexcept
+{
+	switch (type)
+	{
+	case UserMessageType::VoteStart:
+		Misc::onVoteChange(type, data, size);
+		break;
+	case UserMessageType::VotePass:
+	case UserMessageType::VoteFailed:
+		Misc::onVoteChange(type);
+		break;
+	}
+
+	return hooks->client.callOriginal<bool, 38>(type, passthroughFlags, size, data);
+}
+
 Hooks::Hooks(HMODULE moduleHandle) noexcept
 {
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
@@ -652,18 +671,13 @@ void Hooks::install() noexcept
 		MH_Initialize();
 
 	bspQuery.init(interfaces->engine->getBSPTreeQuery());
-	client.init(interfaces->client);
-	clientMode.init(memory->clientMode);
-	engine.init(interfaces->engine);
-	modelRender.init(interfaces->modelRender);
-	panel.init(interfaces->panel);
-	sound.init(interfaces->sound);
-	surface.init(interfaces->surface);
-	svCheats.init(interfaces->cvar->findVar("sv_cheats"));
-	viewRender.init(memory->viewRender);
-
 	bspQuery.hookAt(6, listLeavesInBox);
+
+	client.init(interfaces->client);
 	client.hookAt(37, frameStageNotify);
+	client.hookAt(38, dispatchUserMessage);
+
+	clientMode.init(memory->clientMode);
 	clientMode.hookAt(17, shouldDrawFog);
 	clientMode.hookAt(18, overrideView);
 	clientMode.hookAt(24, createMove);
@@ -671,16 +685,30 @@ void Hooks::install() noexcept
 	clientMode.hookAt(35, getViewModelFov);
 	clientMode.hookAt(44, doPostScreenEffects);
 	clientMode.hookAt(58, updateColorCorrectionWeights);
+
+	engine.init(interfaces->engine);
 	engine.hookAt(27, isConnected);
 	engine.hookAt(82, isPlayingDemo);
 	engine.hookAt(101, getScreenAspectRatio);
 	engine.hookAt(218, getDemoPlaybackParameters);
+
+	modelRender.init(interfaces->modelRender);
 	modelRender.hookAt(21, drawModelExecute);
+
+	panel.init(interfaces->panel);
 	panel.hookAt(41, paintTraverse);
+
+	sound.init(interfaces->sound);
 	sound.hookAt(5, emitSound);
+
+	surface.init(interfaces->surface);
 	surface.hookAt(15, setDrawColor);
 	surface.hookAt(67, lockCursor);
+
+	svCheats.init(interfaces->cvar->findVar("sv_cheats"));
 	svCheats.hookAt(13, svCheatsGetBool);
+
+	viewRender.init(memory->viewRender);
 	viewRender.hookAt(39, render2dEffectsPreHud);
 	viewRender.hookAt(41, renderSmokeOverlay);
 

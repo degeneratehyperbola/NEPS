@@ -1,6 +1,7 @@
 #pragma once
 
 enum class FrameStage;
+enum class UserMessageType;
 class GameEvent;
 struct ImDrawList;
 struct UserCmd;
@@ -11,6 +12,8 @@ namespace Misc
 	void edgeJump(UserCmd *cmd) noexcept;
 	void slowwalk(UserCmd *cmd) noexcept;
 	void updateClanTag() noexcept;
+	void drawQuickPeekStartPos() noexcept;
+	void quickPeek(UserCmd* cmd) noexcept;
 	void overlayCrosshair(ImDrawList *drawlist) noexcept;
 	void recoilCrosshair(ImDrawList *drawList) noexcept;
 	void visualizeInaccuracy(ImDrawList *drawList) noexcept;
@@ -52,6 +55,8 @@ namespace Misc
 	void spectatorList() noexcept;
 	void watermark() noexcept;
 	void velocityGraph() noexcept;
-	void voteRevealer(GameEvent &event) noexcept;
+	void onPlayerVote(GameEvent &event) noexcept;
+	void onVoteChange(UserMessageType type, const void *data = nullptr, int size = 0) noexcept;
 	void forceRelayCluster() noexcept;
+	void runChatSpammer() noexcept;
 }

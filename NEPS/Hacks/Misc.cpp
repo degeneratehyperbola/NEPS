@@ -13,13 +13,16 @@
 #include "../SDK/EngineTrace.h"
 #include "../SDK/FrameStage.h"
 #include "../SDK/GameEvent.h"
+#include "../lib/Helpers.hpp"
 #include "../SDK/Input.h"
 #include "../SDK/ItemSchema.h"
 #include "../SDK/Localize.h"
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/NetworkStringTable.h"
 #include "../SDK/Panorama.h"
+#include "../SDK/ProtobufReader.h"
 #include "../SDK/Surface.h"
+#include "../SDK/UserMessage.h"
 #include "../SDK/VarMapping.h"
 #include "../SDK/WeaponSystem.h"
 
@@ -159,6 +162,76 @@ void Misc::updateClanTag() noexcept
 		memory->setClanTag("", "");
 	}
 }
+
+struct customCmd
+{
+	float forwardmove;
+	float sidemove;
+	float upmove;
+};
+
+bool hasShot;
+Vector quickPeekStartPos;
+ImVec2 drawPos;
+std::vector<customCmd>usercmdQuickpeek;
+int qpCount;
+
+void Misc::drawQuickPeekStartPos() noexcept
+{
+	if (!Helpers::worldToScreen(quickPeekStartPos, drawPos))
+		return;
+
+	if (quickPeekStartPos != Vector{ 0, 0, 0 }) {
+		interfaces->surface->setDrawColor(255, 255, 255);
+		interfaces->surface->drawCircle(drawPos.x, drawPos.y, 0, 10);
+	}
+}
+
+void gotoStart(UserCmd* cmd) {
+	if (usercmdQuickpeek.empty()) return;
+	if (hasShot)
+	{
+		if (qpCount > 0)
+		{
+			cmd->upmove = -usercmdQuickpeek.at(qpCount).upmove;
+			cmd->sidemove = -usercmdQuickpeek.at(qpCount).sidemove;
+			cmd->forwardmove = -usercmdQuickpeek.at(qpCount).forwardmove;
+			qpCount--;
+		}
+	}
+	else
+	{
+		qpCount = usercmdQuickpeek.size();
+	}
+}
+
+void Misc::quickPeek(UserCmd* cmd) noexcept
+{
+	if (!localPlayer || !localPlayer->isAlive()) return;
+	if (GetAsyncKeyState(config->movement.quickPeekKey)) {
+		if (quickPeekStartPos == Vector{ 0, 0, 0 }) {
+			quickPeekStartPos = localPlayer->getAbsOrigin();
+		}
+		else {
+			customCmd tempCmd = {};
+			tempCmd.forwardmove = cmd->forwardmove;
+			tempCmd.sidemove = cmd->sidemove;
+			tempCmd.upmove = cmd->upmove;
+
+			if (cmd->buttons & UserCmd::Button_Attack) hasShot = true;
+			gotoStart(cmd);
+
+			if (!hasShot)
+				usercmdQuickpeek.push_back(tempCmd);
+		}
+	}
+	else {
+		hasShot = false;
+		quickPeekStartPos = Vector{ 0, 0, 0 };
+		usercmdQuickpeek.clear();
+	}
+}
+
 
 static void drawCrosshair(ImDrawList *drawList, ImVec2 pos, ImU32 color, int type)
 {
@@ -451,7 +524,7 @@ void Misc::bunnyHop(UserCmd *cmd) noexcept
 		return;
 
 	static auto wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
-	srand(memory->globalVars->realtime + rand());
+	srand(int(memory->globalVars->realtime) + rand());
 
 	if (static Helpers::KeyBindState flag; flag[config->movement.bunnyHop] && !(localPlayer->flags() & PlayerFlag_OnGround) && localPlayer->moveType() != MoveType::Ladder && !wasLastTimeOnGround)
 		if (rand() / float(RAND_MAX) < config->movement.bunnyChance / 100.0f)
@@ -705,15 +778,14 @@ void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
 
 void Misc::autoPistol(UserCmd *cmd) noexcept
 {
-	if (config->misc.autoPistol && localPlayer->isAlive())
+	if (config->misc.autoPistol && localPlayer->isAlive() && cmd->buttons == UserCmd::Button_Attack2 || cmd->buttons == UserCmd::Button_Attack)
 	{
 		const auto activeWeapon = localPlayer->getActiveWeapon();
-		const auto activeWeaponType = activeWeapon->getWeaponType();
 		if (activeWeapon && !activeWeapon->isC4() && activeWeapon->nextPrimaryAttack() > memory->globalVars->serverTime() && !activeWeapon->isGrenade())
 		{
 			if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
 				cmd->buttons &= ~UserCmd::Button_Attack2;
-			else
+			else if (!activeWeapon->isFullAuto())
 				cmd->buttons &= ~UserCmd::Button_Attack;
 		}
 	}
@@ -1396,6 +1468,12 @@ void Misc::teamDamageList(GameEvent *event)
 		}
 	} else
 	{
+		if (!interfaces->engine->isConnected())
+		{
+			damageList.clear();
+			return;
+		}
+
 		if (!config->griefing.teamDamageList.enabled)
 			return;
 
@@ -1416,9 +1494,9 @@ void Misc::teamDamageList(GameEvent *event)
 		for (const auto &[handle, damage] : damageList)
 		{
 			if (const auto player = GameData::playerByHandle(handle))
-				ImGui::TextWrapped("%s did %ddp", player->name.c_str(), damage);
+				ImGui::Text("%s -> %idp", player->name.c_str(), damage);
 			else if (GameData::local().handle == handle)
-				ImGui::TextWrapped("You did %ddp", damage);
+				ImGui::TextColored({1.0f, 0.7f, 0.2f, 1.0f}, "YOU -> %idp", damage);
 		}
 
 		ImGui::End();
@@ -1699,12 +1777,9 @@ void Misc::velocityGraph() noexcept
 
 }
 
-void Misc::voteRevealer(GameEvent &event) noexcept
+void Misc::onPlayerVote(GameEvent &event) noexcept
 {
 	if (!config->griefing.revealVotes)
-		return;
-
-	if (!localPlayer)
 		return;
 
 	const auto entity = interfaces->entityList->getEntity(event.getInt("entityid"));
@@ -1713,8 +1788,54 @@ void Misc::voteRevealer(GameEvent &event) noexcept
 
 	const auto votedYes = event.getInt("vote_option") == 0;
 	const char color = votedYes ? '\x4' : '\x2';
+	const auto isLocal = localPlayer && entity == localPlayer.get();
 
-	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s %s voted %c%s\x1", entity->isOtherEnemy(localPlayer.get()) ? "Enemy" : "Teammate", entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
+	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s %s voted %c%s\x1", localPlayer->isOtherEnemy(entity) ? "Enemy" : "Teammate", isLocal ? "\x10YOU\x8" : entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
+}
+
+void Misc::onVoteChange(UserMessageType type, const void *data, int size) noexcept
+{
+	if (!config->griefing.revealVotes)
+		return;
+
+	switch (type)
+	{
+	case UserMessageType::VoteStart:
+	{
+		if (!data || !size) break;
+
+		constexpr auto voteName = [](int index)
+		{
+			switch (index)
+			{
+			case 0: return "kicking a player";
+			case 1: return "changing the level";
+			case 6: return "surrendering";
+			case 13: return "starting a timeout";
+			default: return "";
+			}
+		};
+
+		const auto reader = ProtobufReader{static_cast<const std::uint8_t *>(data), size};
+		const auto entityIndex = reader.readInt32(2);
+
+		const auto entity = interfaces->entityList->getEntity(entityIndex);
+		if (!entity || !entity->isPlayer())
+			return;
+
+		const auto isLocal = localPlayer && entity == localPlayer.get();
+		const auto voteType = reader.readInt32(3);
+
+		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s started a vote for\x1 %s", isLocal ? "\x10YOU\x8" : entity->getPlayerName().c_str(), voteName(voteType));
+	}
+		break;
+	case UserMessageType::VotePass:
+		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 vote\x4 PASSED\x1");
+		break;
+	case UserMessageType::VoteFailed:
+		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 vote\x2 FAILED\x1");
+		break;
+	}
 }
 
 void Misc::forceRelayCluster() noexcept
@@ -1724,4 +1845,18 @@ void Misc::forceRelayCluster() noexcept
 	"mad", "sto", "lhr", "atl", "eat", "ord", "lax", "mwh", "okc", "sea", "iad"};
 
 	*memory->relayCluster = dataCentersList[config->misc.forceRelayCluster];
+}
+
+void Misc::runChatSpammer() noexcept
+{
+	if (interfaces->engine->isConnected()) return;
+
+	constexpr auto nuke = "say \xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9";
+	constexpr auto basmala = "say \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD";
+
+	if (static Helpers::KeyBindState flag; !flag[config->griefing.chatNuke])
+		interfaces->engine->clientCmdUnrestricted(nuke);
+
+	if (static Helpers::KeyBindState flag; !flag[config->griefing.chatBasmala])
+		interfaces->engine->clientCmdUnrestricted(basmala);
 }
