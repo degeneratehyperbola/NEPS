@@ -332,7 +332,6 @@ static void from_json(const json &j, ImVec2 &v)
 	read(j, "Y", v.y);
 }
 
-
 static void from_json(const json &j, Config::Aimbot::AimbotOverride &v)
 {
 	read<value_t::object>(j, "Bind", v.bind);
