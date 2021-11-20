@@ -499,6 +499,12 @@
     <ClInclude Include="Hacks\RCS.h">
       <Filter>Hacks</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\ProtobufReader.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\UserMessage.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\logo.png">

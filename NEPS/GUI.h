@@ -43,20 +43,20 @@ private:
 	{
 		bool rcs = false;
 		bool aimbot = false;
-		bool antiAim = false;
 		bool triggerbot = false;
 		bool backtrack = false;
-		bool glow = false;
+		bool antiAim = false;
 		bool chams = false;
+		bool glow = false;
 		bool streamProofESP = false;
 		bool visuals = false;
 		bool skinChanger = false;
 		bool sound = false;
-		bool style = false;
-		bool exploits = false;
 		bool griefing = false;
+		bool exploits = false;
 		bool movement = false;
 		bool misc = false;
+		bool style = false;
 		bool config = false;
 	} window;
 

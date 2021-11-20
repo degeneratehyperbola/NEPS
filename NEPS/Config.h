@@ -70,9 +70,9 @@ public:
 		int minDamageAutoWall = 0;
 		float hitchance = 0.0f;
 		int hitGroup = 127;
-		int interpolation = 0;
-		float quadratic = 0.0f;
-		float linear = 255.0f;
+		bool humanize = false;
+		float acceleration = 0.6f;
+		float friction = 2.0f;
 		bool betweenShots = true;
 		int firstShotDelay{ 0 };
 		int killDelay{ 0 };
@@ -88,6 +88,8 @@ public:
 			float hitchance = 0.0f;
 			int hitGroup = 127;
 		} aimbotOverride;
+		float recoilReductionH = 0.0f;
+		float recoilReductionV = 0.0f;
 	};
 	std::array<Aimbot, 40> aimbot;
 
@@ -356,6 +358,9 @@ public:
 		std::string killMessageString;
 		int banColor = 6;
 		std::string banText = "Cheater has been permanently banned from official CS:GO servers.";
+		bool spamUse = false;
+		KeyBind chatNuke;
+		KeyBind chatBasmala;
 		KeyBind spamUse;
 
 		struct TeamDamageList
