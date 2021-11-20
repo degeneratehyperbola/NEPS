@@ -536,10 +536,11 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				clamped = true;
 			}
 
-			targetAngle = targetAngle * (1.0f - cfg.quadratic);
+			
 
 			if (cfg.humanize)
 			{
+				targetAngle = targetAngle * (1.0f - cfg.quadratic);
 				const auto l = targetAngle.length();
 				if (l > cfg.acceleration)
 					aimVelocity += targetAngle / l * cfg.acceleration;

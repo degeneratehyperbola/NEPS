@@ -658,6 +658,7 @@ static void from_json(const json &j, Config::Style &s)
 			}
 		}
 	}
+	read(j, "Scaling", s.scaling);
 }
 
 static void from_json(const json &j, Config::Misc::PurchaseList &pl)
@@ -1459,6 +1460,7 @@ static void to_json(json &j, const Config::Style &o)
 
 	for (int i = 0; i < ImGuiCol_COUNT; ++i)
 		colors[ImGui::GetStyleColorName(i)] = style.Colors[i];
+	WRITE("Scaling", scaling);
 }
 
 static void to_json(json &j, const sticker_setting &o)

@@ -779,11 +779,12 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Smoothness %.4f", ImGuiSliderFlags_Logarithmic);
+		
 		ImGui::Checkbox("Humanize", &config->aimbot[currentWeapon].humanize);
 		if (config->aimbot[currentWeapon].humanize)
 		{
 			ImGui::SliderFloat("##acceleration", &config->aimbot[currentWeapon].acceleration, 0.0f, 5.0f, "Acceleration %.4fdeg/tick^2", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Smoothness %.4f");
 			ImGui::SliderFloat("##friction", &config->aimbot[currentWeapon].friction, 1.0f, 5.0f, "Friction %.4f", ImGuiSliderFlags_Logarithmic);
 			config->aimbot[currentWeapon].friction = std::fmaxf(1.0f, config->aimbot[currentWeapon].friction);
 		}
