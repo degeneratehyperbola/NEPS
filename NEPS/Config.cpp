@@ -803,6 +803,7 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
 	read(j, "Fast stop", m.fastStop);
+	read(j, "Quick Peek", m.quickPeekKey);
 }
 
 bool Config::load(const char8_t *name, bool incremental) noexcept
@@ -1324,6 +1325,7 @@ static void to_json(json &j, const Config::Movement &o)
 	WRITE("Auto strafe", autoStrafe);
 	WRITE("Edge jump", edgeJump);
 	WRITE("Fast stop", fastStop);
+	WRITE("Quick Peek", quickPeekKey);
 }
 
 static void to_json(json &j, const Config::Visuals::ColorCorrection &o, const Config::Visuals::ColorCorrection &dummy)
