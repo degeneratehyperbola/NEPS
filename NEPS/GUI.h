@@ -21,7 +21,6 @@ private:
 	void renderContextMenu() noexcept;
 	void renderMenuBar() noexcept;
 	void renderDebugWindow() noexcept;
-	void renderRCSWindow(bool contentOnly = false) noexcept;
 	void renderAimbotWindow(bool contentOnly = false) noexcept;
 	void renderAntiAimWindow(bool contentOnly = false) noexcept;
 	void renderTriggerbotWindow(bool contentOnly = false) noexcept;
@@ -41,7 +40,6 @@ private:
 
 	struct
 	{
-		bool rcs = false;
 		bool aimbot = false;
 		bool triggerbot = false;
 		bool backtrack = false;

@@ -524,7 +524,7 @@ void Misc::bunnyHop(UserCmd *cmd) noexcept
 		return;
 
 	static auto wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
-	srand(memory->globalVars->realtime + rand());
+	srand(int(memory->globalVars->realtime) + rand());
 
 	if (static Helpers::KeyBindState flag; flag[config->movement.bunnyHop] && !(localPlayer->flags() & PlayerFlag_OnGround) && localPlayer->moveType() != MoveType::Ladder && !wasLastTimeOnGround)
 		if (rand() / float(RAND_MAX) < config->movement.bunnyChance / 100.0f)
@@ -778,10 +778,9 @@ void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
 
 void Misc::autoPistol(UserCmd *cmd) noexcept
 {
-	if (config->misc.autoPistol && localPlayer->isAlive())
+	if (config->misc.autoPistol && localPlayer->isAlive() && cmd->buttons == UserCmd::Button_Attack2 || cmd->buttons == UserCmd::Button_Attack)
 	{
 		const auto activeWeapon = localPlayer->getActiveWeapon();
-		const auto activeWeaponType = activeWeapon->getWeaponType();
 		if (activeWeapon && !activeWeapon->isC4() && activeWeapon->nextPrimaryAttack() > memory->globalVars->serverTime() && !activeWeapon->isGrenade())
 		{
 			if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)

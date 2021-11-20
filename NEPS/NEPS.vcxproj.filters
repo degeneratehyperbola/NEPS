@@ -53,9 +53,6 @@
     <ClCompile Include="Memory.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Config.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Hacks\Misc.cpp">
       <Filter>Hacks</Filter>
     </ClCompile>
@@ -173,8 +170,8 @@
     <ClCompile Include="..\shared_lib\stb\stb.cpp">
       <Filter>lib\stb</Filter>
     </ClCompile>
-    <ClCompile Include="Hacks\RCS.cpp">
-      <Filter>Hacks</Filter>
+    <ClCompile Include="Config.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -495,9 +492,6 @@
     </ClInclude>
     <ClInclude Include="..\shared_lib\MemorySearch.hpp">
       <Filter>lib</Filter>
-    </ClInclude>
-    <ClInclude Include="Hacks\RCS.h">
-      <Filter>Hacks</Filter>
     </ClInclude>
     <ClInclude Include="SDK\ProtobufReader.h">
       <Filter>SDK</Filter>

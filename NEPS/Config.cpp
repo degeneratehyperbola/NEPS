@@ -332,13 +332,6 @@ static void from_json(const json &j, ImVec2 &v)
 	read(j, "Y", v.y);
 }
 
-static void from_json(const json& j, Config::RCS& n)
-{
-	read<value_t::object>(j, "Bind", n.bind);
-	read(j, "Recoil Force", n.recoilForce);
-	read(j, "Shift X", n.shiftX);
-	read(j, "Shift Y", n.shiftY);
-}
 
 static void from_json(const json &j, Config::Aimbot::AimbotOverride &v)
 {
@@ -820,7 +813,6 @@ bool Config::load(const char8_t *name, bool incremental) noexcept
 	if (!incremental)
 		reset();
 
-	read<value_t::object>(j, "RCS", rcs);
 	read(j, "Aimbot", aimbot);
 	read(j, "Triggerbot", triggerbot);
 	read<value_t::object>(j, "Backtrack", backtrack);
@@ -1004,15 +996,6 @@ static void to_json(json &j, const ImVec2 &o, const ImVec2 &dummy = {})
 {
 	WRITE("X", x);
 	WRITE("Y", y);
-}
-
-static void to_json(json& j, const Config::RCS& o, const Config::RCS& dummy = {})
-{
-	WRITE("Bind", bind);
-	WRITE("Recoil Force", recoilForce);
-	WRITE("Shift X", shiftX);
-	WRITE("Shift Y", shiftY);
-	
 }
 
 static void to_json(json &j, const Config::Aimbot::AimbotOverride &o, const Config::Aimbot::AimbotOverride &dummy = {})
@@ -1515,7 +1498,6 @@ void Config::save(size_t id) const noexcept
 	{
 		json j;
 
-		j["RCS"] = rcs;
 		j["Aimbot"] = aimbot;
 		j["Triggerbot"] = triggerbot;
 		j["Backtrack"] = backtrack;
@@ -1577,7 +1559,6 @@ void Config::reset() noexcept
 	griefing = {};
 	movement = {};
 	misc = {};
-	rcs = {};
 }
 
 void Config::listConfigs() noexcept

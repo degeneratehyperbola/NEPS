@@ -31,7 +31,6 @@
     <ClCompile Include="Hacks\Chams.cpp" />
     <ClCompile Include="Hacks\EnginePrediction.cpp" />
     <ClCompile Include="Hacks\Glow.cpp" />
-    <ClCompile Include="Hacks\RCS.cpp" />
     <ClCompile Include="Hacks\SkinChanger.cpp">
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -106,7 +105,6 @@
     <ClInclude Include="lib\minhook\trampoline.h" />
     <ClInclude Include="lib\nlohmann\json.hpp" />
     <ClInclude Include="Netvars.h" />
-    <ClInclude Include="Hacks\RCS.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="res_defaultfont.h" />
     <ClInclude Include="SDK\AnimState.h" />
