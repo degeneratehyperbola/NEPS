@@ -778,7 +778,7 @@ void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
 
 void Misc::autoPistol(UserCmd *cmd) noexcept
 {
-	if (config->misc.autoPistol && localPlayer->isAlive() && cmd->buttons == UserCmd::Button_Attack2 || cmd->buttons == UserCmd::Button_Attack)
+	if (config->misc.autoPistol && localPlayer->isAlive() && localPlayer->activeWeapon())
 	{
 		const auto activeWeapon = localPlayer->getActiveWeapon();
 		if (activeWeapon && !activeWeapon->isC4() && activeWeapon->nextPrimaryAttack() > memory->globalVars->serverTime() && !activeWeapon->isGrenade())
