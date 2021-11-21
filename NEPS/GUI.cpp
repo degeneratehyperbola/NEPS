@@ -789,7 +789,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
 	static std::size_t currentCategory;
 
-	if (ImGui::BeginListBox("##list", {70, 150}))
+	if (ImGui::BeginListBox("##list", {70, 180}))
 	{
 		for (std::size_t i = 0; i < categories.size(); ++i)
 		{
@@ -818,7 +818,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginChild("##child", {210, 0}, false, ImGuiWindowFlags_NoScrollbar))
+	if (ImGui::BeginChild("##child", {220, 0}, false, ImGuiWindowFlags_NoScrollbar))
 	{
 		auto &currentConfig = config->antiAim[categories[currentCategory]];
 
@@ -828,7 +828,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(-1);
 		ImGui::SliderFloat("##yaw_sl", &currentConfig.yawAngle, -180.0f, 180.0f, "Yaw %.2fdeg");
-		if (!currentConfig.fakeUp)
+		if (!currentConfig.fakeUp || !currentConfig.dance)
 		{
 			ImGui::Checkbox("##pitch", &currentConfig.pitch);
 			ImGui::SameLine();
@@ -861,12 +861,15 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::Combo("Desync type", &currentConfig.desyncType, "Micro movement\0Opposite\0Interchanged\0Fake desync\0Sway\0");
 			ImGuiCustom::keyBind("Flip key", &currentConfig.flipKey);
 			ImGuiCustom::colorPicker("Visualize", currentConfig.visualizeSide);
+			ImGui::SliderInt("Left limit", &currentConfig.leftLimit, 0, 60, "%d");
+			ImGui::SliderInt("Right limit", &currentConfig.rightLimit, 0, 60, "%d");
 
 			ImGui::Separator();
 
 			ImGui::Checkbox("Fake pitch up", &currentConfig.fakeUp);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("May get you insta-overwatch");
+			ImGui::Checkbox("Dance", &currentConfig.dance);
 			ImGui::EndPopup();
 		}
 
@@ -887,6 +890,8 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::Checkbox("Extend", &currentConfig.extend);
 			ImGui::EndPopup();
 		}
+		ImGui::SetNextItemWidth(130);
+		ImGui::Combo("AA Type", &currentConfig.AAType, "None\0Jitter\0FastSpin\0Small Jitter\0Side Lisp\0");
 	}
 
 	ImGui::EndChild();

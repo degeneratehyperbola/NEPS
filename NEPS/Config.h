@@ -135,6 +135,12 @@ public:
 		bool legitAA = false;
 		bool extend = false;
 		KeyBind invert;
+		bool fakeAngle = false;
+		KeyBind fakeAngleInvert;
+		int leftLimit = 60;
+		int rightLimit = 60;
+		bool dance = false;
+		int AAType = 0;
 	};
 
 	std::unordered_map<std::string, AntiAim> antiAim;

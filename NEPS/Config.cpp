@@ -427,7 +427,10 @@ static void from_json(const json &j, Config::AntiAim &a)
 	read(j, "Legit", a.legitAA);
 	read(j, "Extend", a.extend);
 	read<value_t::object>(j, "Invert", a.invert);
-
+	read(j, "Left limit", a.leftLimit);
+	read(j, "Right limit", a.rightLimit);
+	read(j, "Dance", a.dance);
+	read(j, "AA", a.AAType);
 }
 
 static void from_json(const json &j, Config::Glow &g)
@@ -1096,6 +1099,10 @@ static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &du
 	WRITE("Legit", legitAA);
 	WRITE("Extend", extend);
 	WRITE("Invert", invert);
+	WRITE("Left limit", leftLimit);
+	WRITE("Right limit", rightLimit);
+	WRITE("Dance", dance);
+	WRITE("AA", AAType);
 }
 
 static void to_json(json &j, const Config::Glow &o, const Config::Glow &dummy = {})
