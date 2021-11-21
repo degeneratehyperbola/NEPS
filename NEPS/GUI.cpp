@@ -2458,7 +2458,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
-	ImGuiCustom::keyBind("Quick Peek", &config->movement.quickPeekKey);
+	ImGuiCustom::keyBind("Quick Peek", config->movement.quickPeekKey);
 
 	if (!contentOnly)
 		ImGui::End();
@@ -2508,6 +2508,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
 	ImGui::Checkbox("No panorama blur", &config->misc.disablePanoramablur);
 	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
+	ImGui::Checkbox("Grenade trajectory", &config->misc.nadeTrajectory);
 	ImGui::SetNextItemWidth(-1);
 	ImGui::SliderFloat("##angle_delta", &config->misc.maxAngleDelta, 0.0f, 255.0f, "Aimstep %.2fdeg");
 	ImGui::Checkbox("Preserve killfeed", &config->misc.preserveKillfeed.enabled);

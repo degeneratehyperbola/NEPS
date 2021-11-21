@@ -208,7 +208,7 @@ void gotoStart(UserCmd* cmd) {
 void Misc::quickPeek(UserCmd* cmd) noexcept
 {
 	if (!localPlayer || !localPlayer->isAlive()) return;
-	if (GetAsyncKeyState(config->movement.quickPeekKey)) {
+	if (static Helpers::KeyBindState flag; flag[config->movement.quickPeekKey]) {
 		if (quickPeekStartPos == Vector{ 0, 0, 0 }) {
 			quickPeekStartPos = localPlayer->getAbsOrigin();
 		}
@@ -573,6 +573,13 @@ void Misc::changeConVarsTick() noexcept
 	static auto nadeVar = interfaces->cvar->findVar("cl_grenadepreview");
 	nadeVar->onChangeCallbacks.size = 0;
 	nadeVar->setValue(config->misc.nadePredict);
+	static auto trajectoryVar{ interfaces->cvar->findVar("sv_grenade_trajectory") };
+	static auto trajectoryTimeVar{ interfaces->cvar->findVar("sv_grenade_trajectory_time") };
+	static auto timeBackup = trajectoryTimeVar->getFloat();
+	trajectoryVar->onChangeCallbacks.size = 0;
+	trajectoryVar->setValue(config->misc.nadeTrajectory);
+	trajectoryTimeVar->onChangeCallbacks.size = 0;
+	trajectoryTimeVar->setValue(config->misc.nadeTrajectory ? 4 : timeBackup);
 	static auto shadowVar = interfaces->cvar->findVar("cl_csm_enabled");
 	shadowVar->setValue(!config->visuals.noShadows);
 	static auto lerpVar = interfaces->cvar->findVar("cl_interpolate");

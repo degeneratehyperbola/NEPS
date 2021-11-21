@@ -723,6 +723,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Quick reload", m.quickReload);
 	read(j, "Fix tablet signal", m.fixTabletSignal);
 	read(j, "Grenade predict", m.nadePredict);
+	read(j, "Grenade trajectory", m.nadeTrajectory);
 	read(j, "Force relay cluster", m.forceRelayCluster);
 	read(j, "Aimstep", m.maxAngleDelta);
 	read<value_t::object>(j, "Preserve killfeed", m.preserveKillfeed);
@@ -803,7 +804,7 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
 	read(j, "Fast stop", m.fastStop);
-	read(j, "Quick Peek", m.quickPeekKey);
+	read<value_t::object>(j, "Quick Peek", m.quickPeekKey);
 }
 
 bool Config::load(const char8_t *name, bool incremental) noexcept
@@ -1236,6 +1237,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Quick reload", quickReload);
 	WRITE("Fix tablet signal", fixTabletSignal);
 	WRITE("Grenade predict", nadePredict);
+	WRITE("Grenade trajectory", nadeTrajectory);
 	WRITE("Force relay cluster", forceRelayCluster);
 	WRITE("Aimstep", maxAngleDelta);
 	WRITE("Preserve killfeed", preserveKillfeed);

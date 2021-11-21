@@ -399,7 +399,7 @@ public:
 		bool autoStrafe = false;
 		KeyBind edgeJump;
 		bool fastStop = false;
-		int quickPeekKey = 0;
+		KeyBind quickPeekKey;
 	} movement;
 
 	struct Misc
@@ -474,6 +474,7 @@ public:
 		bool fastPlant = false;
 		bool fixTabletSignal = false;
 		bool nadePredict = false;
+		bool nadeTrajectory = false;
 		int forceRelayCluster = 0;
 	} misc;
 
