@@ -132,7 +132,11 @@ public:
 		Color4Toggle visualizeSide = {1.0f, 1.0f, 1.0f, 0.5f};
 		KeyBind choke;
 		int chokedPackets = 0;
+		bool legitAA = false;
+		bool extend = false;
+		KeyBind invert;
 	};
+
 	std::unordered_map<std::string, AntiAim> antiAim;
 
 	struct Glow : Color4
@@ -384,7 +388,7 @@ public:
 	struct Movement
 	{
 		KeyBind bunnyHop;
-		float bunnyChance = 100.0f;
+		int bunnyChance = 100;
 		bool autoStrafe = false;
 		KeyBind edgeJump;
 		bool fastStop = false;

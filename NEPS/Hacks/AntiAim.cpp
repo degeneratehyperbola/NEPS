@@ -48,7 +48,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 {
 	if (!canAntiAim(cmd)) return;
 
-	
+
 
 	const auto networkChannel = interfaces->engine->getNetworkChannel();
 	if (!networkChannel)
@@ -59,6 +59,9 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 	if (static Helpers::KeyBindState flag; !flag[cfg.enabled])
 		return;
+
+	if (cfg.legitAA)
+		AntiAim::legit(cmd, currentViewAngles, sendPacket);
 
 	if (static Helpers::KeyBindState flag; config->exploits.fakeDuckPackets && flag[config->exploits.fakeDuck])
 	{
@@ -228,6 +231,49 @@ bool AntiAim::fakePitch(UserCmd *cmd) noexcept
 	}
 
 	return false;
+}
+
+void AntiAim::legit(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacket) noexcept
+{
+	if (!canAntiAim(cmd))
+		return;
+
+	static float nextLbyUpdate;
+	const bool lbyUpdate = Helpers::lbyUpdate(localPlayer.get(), nextLbyUpdate);
+	const auto& cfg = Config::AntiAim::getRelevantConfig();
+
+	if (cmd->viewangles.y == currentViewAngles.y)
+	{
+		static Helpers::KeyBindState flag;
+		bool invert = flag[cfg.invert];
+		float desyncAngle = localPlayer->getMaxDesyncAngle() * 2.f;
+		if (lbyUpdate && cfg.extend)
+		{
+			cmd->viewangles.y += !invert ? desyncAngle : -desyncAngle;
+			sendPacket = false;
+			if (fabsf(cmd->sidemove) < 5.0f)
+			{
+				if (cmd->buttons & UserCmd::Button_Duck)
+					cmd->sidemove = cmd->tickCount & 1 ? 3.25f : -3.25f;
+				else
+					cmd->sidemove = cmd->tickCount & 1 ? 1.1f : -1.1f;
+			}
+			return;
+		}
+
+		if (fabsf(cmd->sidemove) < 5.0f && !cfg.extend)
+		{
+			if (cmd->buttons & UserCmd::Button_Duck)
+				cmd->sidemove = cmd->tickCount & 1 ? 3.25f : -3.25f;
+			else
+				cmd->sidemove = cmd->tickCount & 1 ? 1.1f : -1.1f;
+		}
+
+		if (sendPacket)
+			return;
+
+		cmd->viewangles.y += invert ? desyncAngle : -desyncAngle;
+	}
 }
 
 void AntiAim::visualize(ImDrawList *drawList) noexcept

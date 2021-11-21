@@ -518,19 +518,42 @@ bool Misc::changeName(bool reconnect, const char *newName, float delay) noexcept
 	return false;
 }
 
-void Misc::bunnyHop(UserCmd *cmd) noexcept
+void Misc::bunnyHop(UserCmd* cmd) noexcept
 {
-	if (!localPlayer)
-		return;
 
-	static auto wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
-	srand(int(memory->globalVars->realtime) + rand());
+	static bool hasLanded = true;
+	static int bhopInSeries = 1;
+	static float lastTimeInAir{};
+	static int chanceToHit = config->movement.bunnyChance;
+	static auto wasLastTimeOnGround{ localPlayer->flags() & 1 };
+
+	chanceToHit = config->movement.bunnyChance;
+
+	if (bhopInSeries <= 1) {
+		chanceToHit = chanceToHit * 1.5;
+	}
+
+	//config->misc.DEBUG = bhopInSeries;
+
 
 	if (static Helpers::KeyBindState flag; flag[config->movement.bunnyHop] && !(localPlayer->flags() & PlayerFlag_OnGround) && localPlayer->moveType() != MoveType::Ladder && !wasLastTimeOnGround)
-		if (rand() / float(RAND_MAX) < config->movement.bunnyChance / 100.0f)
+		if (rand() % 100 <= chanceToHit) {
 			cmd->buttons &= ~UserCmd::Button_Jump;
-		
-	wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
+		}
+	//memory->globalVars->realtime - lastTimeInAir <= 2 &&
+	if (!wasLastTimeOnGround && hasLanded) {
+		bhopInSeries++;
+		lastTimeInAir = memory->globalVars->realtime;
+		hasLanded = false;
+	}
+	if (wasLastTimeOnGround) {
+		hasLanded = true;
+		if (memory->globalVars->realtime - lastTimeInAir >= 3) {
+			bhopInSeries = 0;
+		}
+	}
+
+	wasLastTimeOnGround = localPlayer->flags() & 1;
 }
 
 void Misc::fakeBan() noexcept

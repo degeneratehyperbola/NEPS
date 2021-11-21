@@ -424,6 +424,10 @@ static void from_json(const json &j, Config::AntiAim &a)
 	read<value_t::object>(j, "Visualize side", a.visualizeSide);
 	read<value_t::object>(j, "Choke", a.choke);
 	read(j, "Choked packets", a.chokedPackets);
+	read(j, "Legit", a.legitAA);
+	read(j, "Extend", a.extend);
+	read<value_t::object>(j, "Invert", a.invert);
+
 }
 
 static void from_json(const json &j, Config::Glow &g)
@@ -1089,6 +1093,9 @@ static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &du
 	WRITE("Visualize side", visualizeSide);
 	WRITE("Choke", choke);
 	WRITE("Choked packets", chokedPackets);
+	WRITE("Legit", legitAA);
+	WRITE("Extend", extend);
+	WRITE("Invert", invert);
 }
 
 static void to_json(json &j, const Config::Glow &o, const Config::Glow &dummy = {})

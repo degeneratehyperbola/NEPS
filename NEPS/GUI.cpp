@@ -875,6 +875,18 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 		currentConfig.chokedPackets = std::clamp(currentConfig.chokedPackets, 0, 64);
 		ImGui::SameLine();
 		ImGuiCustom::keyBind("##choke", currentConfig.choke);
+
+		ImGui::Separator();
+		ImGui::Checkbox("Legit AA", &currentConfig.legitAA);
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("legit_advanced", ImGuiDir_Right))
+			ImGui::OpenPopup("##legitaa");
+		if (ImGui::BeginPopup("##legitaa"))
+		{
+			ImGuiCustom::keyBind("Invert", currentConfig.invert);
+			ImGui::Checkbox("Extend", &currentConfig.extend);
+			ImGui::EndPopup();
+		}
 	}
 
 	ImGui::EndChild();
@@ -2436,7 +2448,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	}
 
 	ImGuiCustom::keyBind("Bunny Hop", config->movement.bunnyHop);
-	ImGui::SliderFloat("##bunnychance", &config->movement.bunnyChance, 0.0f, 100.0f, "Bunny Chance %.0f%%");
+	ImGui::SliderInt("##bhopchance", &config->movement.bunnyChance, 0, 100, "BhopChance: %d %");
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
