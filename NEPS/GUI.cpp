@@ -1209,6 +1209,7 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Scoped only", &config->triggerbot[currentWeapon].scopedOnly);
 		ImGui::Checkbox("Ignore flash", &config->triggerbot[currentWeapon].ignoreFlash);
 		ImGui::Checkbox("Ignore smoke", &config->triggerbot[currentWeapon].ignoreSmoke);
+		ImGui::Checkbox("Shoot Midair", &config->triggerbot[currentWeapon].shootMidair);
 		ImGui::SetNextItemWidth(80);
 		ImGuiCustom::multiCombo("Hit group", config->triggerbot[currentWeapon].hitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
 

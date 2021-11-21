@@ -32,6 +32,9 @@ void Triggerbot::run(UserCmd *cmd) noexcept
 
 	if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;
 
+	if (!cfg.shootMidair && !(localPlayer->flags() & PlayerFlag_OnGround))
+		return;
+
 	if (!cfg.hitGroup)
 		return;
 

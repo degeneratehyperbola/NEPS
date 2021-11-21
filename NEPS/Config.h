@@ -93,6 +93,7 @@ public:
 		bool scopedOnly = true;
 		bool ignoreFlash = false;
 		bool ignoreSmoke = false;
+		bool shootMidair = true;
 		int hitGroup = 127;
 		int shotDelay = 0;
 		float hitchance = 0.0f;
