@@ -2484,6 +2484,19 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fast plant", &config->misc.fastPlant);
 
 	ImGui::Checkbox("Auto reload", &config->misc.autoReload);
+
+	ImGui::Checkbox("Auto defuse", &config->misc.autoDefuse.enabled);
+	ImGui::SameLine();
+
+	if (ImGui::ArrowButton("autodef", ImGuiDir_Right))
+		ImGui::OpenPopup("##autodef");
+
+	if (ImGui::BeginPopup("##autodef"))
+	{
+		ImGui::Checkbox("Slient", &config->misc.autoDefuse.silent);
+		ImGui::EndPopup();
+	}
+
 	ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
 	ImGui::Checkbox("Quick reload", &config->misc.quickReload);
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);

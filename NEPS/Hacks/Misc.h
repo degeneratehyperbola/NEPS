@@ -19,6 +19,7 @@ namespace Misc
 	void visualizeInaccuracy(ImDrawList *drawList) noexcept;
 	void prepareRevolver(UserCmd *) noexcept;
 	void fastPlant(UserCmd *) noexcept;
+	void AutoDefuse(UserCmd* cmd) noexcept;
 	void fastStop(UserCmd *) noexcept;
 	void stealNames() noexcept;
 	void quickReload(UserCmd *) noexcept;

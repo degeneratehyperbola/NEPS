@@ -288,6 +288,41 @@ struct Vector
 		else if (x < -89.f)
 			x = -89.f;
 	}
+
+	static void vectorAngles(const Vector forward, Vector angles)
+	{
+		if (forward.y == 0.0f && forward.x == 0.0f)
+		{
+			angles.x = (forward.z > 0.0f) ? 270.0f : 90.0f; // Pitch (up/down)
+			angles.y = 0.0f;  //yaw left/right
+		}
+		else
+		{
+			angles.x = atan2(-forward.z, forward.length2D()) * -180 / M_PI;
+			angles.y = atan2(forward.y, forward.x) * 180 / M_PI;
+
+			if (angles.y > 90)
+				angles.y -= 180;
+			else if (angles.y < 90)
+				angles.y += 180;
+			else if (angles.y == 90)
+				angles.y = 0;
+		}
+
+		angles.z = 0.0f;
+	}
+
+	static auto calcAngle(const Vector src, const Vector dst)
+	{
+		Vector angles;
+		Vector delta = src - dst;
+
+		vectorAngles(delta, angles);
+
+		delta.clamp();
+
+		return angles;
+	}
 };
 
 #include "Matrix3x4.h"

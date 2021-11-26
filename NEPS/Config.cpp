@@ -697,6 +697,12 @@ static void from_json(const json &j, Config::Misc::SpectatorList &sl)
 	read(j, "Enabled", sl.enabled);
 }
 
+static void from_json(const json &j, Config::Misc::AutoDefuse &kk)
+{
+	read(j, "Enabled", kk.enabled);
+	read(j, "Silent", kk.silent);
+}
+
 static void from_json(const json &j, Config::Misc &m)
 {
 	read(j, "Menu key", m.menuKey);
@@ -731,6 +737,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read<value_t::object>(j, "Spectator list", m.spectatorList);
 	read<value_t::object>(j, "Bomb timer", m.bombTimer);
 	read<value_t::object>(j, "Watermark", m.watermark);
+	read<value_t::object>(j, "Auto Defuse", m.autoDefuse);
 	read<value_t::object>(j, "Indicators", m.indicators);
 	read(j, "Debug Notice", m.debugNotice);
 
@@ -1193,6 +1200,11 @@ static void to_json(json &j, const Config::Misc::Watermark &o, const Config::Mis
 	WRITE("Enabled", enabled);
 	WRITE("Position", position);
 }
+static void to_json(json &j, const Config::Misc::AutoDefuse&o, const Config::Misc::AutoDefuse &dummy = {})
+{
+	WRITE("Enabled", enabled);
+	WRITE("Silent", silent);
+}
 
 static void to_json(json &j, const Config::Misc::BombTimer &o, const Config::Misc::BombTimer &dummy = {})
 {
@@ -1245,6 +1257,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Spectator list", spectatorList);
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Watermark", watermark);
+	WRITE("Auto Defuse", autoDefuse);
 	WRITE("Indicators", indicators);
 	WRITE("Debug Notice", debugNotice);
 }

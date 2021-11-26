@@ -228,7 +228,6 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	int maxJitter;
 	float temp;
 	Vector temp_qangle;
-	const float M_PHI = 1.61803398874989484820; // golden ratio
 
 	if (cfg.dance)
 	{

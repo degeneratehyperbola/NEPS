@@ -333,16 +333,6 @@ unsigned int Helpers::calculateColor(float r, float g, float b, float a) noexcep
 	return ImGui::ColorConvertFloat4ToU32({r, g, b, a});
 }
 
-const ImWchar* GetGlyphRangesCN()
-{
-	static const ImWchar ranges[] =
-	{
-		0x4E00, 0x9FA5, // Basic Latin
-		0,
-	};
-	return &ranges[0];
-}
-
 ImWchar *Helpers::getFontGlyphRanges() noexcept
 {
 	static ImVector<ImWchar> ranges;
@@ -361,7 +351,7 @@ ImWchar *Helpers::getFontGlyphRanges() noexcept
 		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesDefault());
 		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesJapanese());
-		builder.AddRanges(GetGlyphRangesCN());
+		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
 		// ★龍王™
 		builder.AddChar(u'\u2605'); // ★
 		builder.AddChar(u'\u9F8D'); // 龍

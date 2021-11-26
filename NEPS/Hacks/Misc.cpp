@@ -381,6 +381,55 @@ void Misc::fastPlant(UserCmd *cmd) noexcept
 		cmd->buttons &= ~UserCmd::Button_Use;
 }
 
+void Misc::AutoDefuse(UserCmd* cmd) noexcept
+{
+
+	if (!config->misc.autoDefuse.enabled)
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	if (localPlayer->team() != Team::CT)
+		return;
+
+	const auto& bomb = GameData::plantedC4();
+	Entity* bomb_ = nullptr;
+
+	
+
+	if (memory->plantedC4s->size > 0 && (!*memory->gameRules || (*memory->gameRules)->mapHasBombTarget()))
+		bomb_ = (*memory->plantedC4s)[0];
+
+	if (!bomb_ || !bomb_->c4Ticking()) return;
+
+	float bombTimer = bomb.blowTime - memory->globalVars->currenttime;
+
+	if (config->misc.autoDefuse.silent)
+	{
+		float distance = localPlayer->origin().distTo(bomb_->origin());
+		if (cmd->buttons & UserCmd::Button_Use && distance <= 75.0f)
+		{
+			Vector pVecTarget = localPlayer->getEyePosition();
+			Vector pTargetBomb = bomb_->origin();
+			Vector angle = Vector::calcAngle(pVecTarget, pTargetBomb);
+			angle.clamp();
+			cmd->viewangles = angle;
+		}
+	}
+	else
+		if (localPlayer->hasDefuser() && bombTimer > 5.5f)
+			return;
+
+		if (!localPlayer->hasDefuser() && bombTimer > 10.5f)
+			return;
+
+		float distance = localPlayer->origin().distTo(bomb_->origin());
+		if (distance <= 75.0f)
+			cmd->buttons |= UserCmd::Button_Use;
+		
+}
+
 void Misc::fastStop(UserCmd *cmd) noexcept
 {
 	if (!config->movement.fastStop)

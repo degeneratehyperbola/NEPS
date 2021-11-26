@@ -461,6 +461,12 @@ public:
 			int position = 1;
 		} watermark;
 
+		struct AutoDefuse
+		{
+			bool enabled = false;
+			bool silent = false;
+		} autoDefuse;
+
 		KeyBind prepareRevolver;
 		int quickHealthshotKey = 0;
 		float maxAngleDelta = 255.0f;
@@ -476,6 +482,7 @@ public:
 		bool nadePredict = false;
 		bool nadeTrajectory = false;
 		int forceRelayCluster = 0;
+
 	} misc;
 
 	void scheduleFontLoad(const std::string &name) noexcept;
