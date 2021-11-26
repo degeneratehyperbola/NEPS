@@ -2458,7 +2458,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
-	ImGuiCustom::keyBind("Quick Peek", config->movement.quickPeekKey);
+	ImGuiCustom::keyBind("Quick Peek", &config->movement.quickPeekKey);
 
 	if (!contentOnly)
 		ImGui::End();

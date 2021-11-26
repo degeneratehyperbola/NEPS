@@ -399,7 +399,7 @@ public:
 		bool autoStrafe = false;
 		KeyBind edgeJump;
 		bool fastStop = false;
-		KeyBind quickPeekKey;
+		int quickPeekKey = 0;
 	} movement;
 
 	struct Misc

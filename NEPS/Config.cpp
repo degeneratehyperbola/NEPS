@@ -804,7 +804,7 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
 	read(j, "Fast stop", m.fastStop);
-	read<value_t::object>(j, "Quick Peek", m.quickPeekKey);
+	read(j, "Quick Peek", m.quickPeekKey);
 }
 
 bool Config::load(const char8_t *name, bool incremental) noexcept
