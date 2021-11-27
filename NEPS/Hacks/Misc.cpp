@@ -405,9 +405,10 @@ void Misc::AutoDefuse(UserCmd* cmd) noexcept
 
 	float bombTimer = bomb.blowTime - memory->globalVars->currenttime;
 	float distance = localPlayer->origin().distTo(bomb_->origin());
+	bool distanceok = distance <= 75.f;
 	bool cannotDefuse = (bomb.blowTime < bomb.defuseCountDown);
 
-	if (cannotDefuse || distance > 75.0f) return;
+	if (cannotDefuse || !distanceok) return;
 
 	if (config->misc.autoDefuse.silent)
 	{
@@ -420,7 +421,7 @@ void Misc::AutoDefuse(UserCmd* cmd) noexcept
 			cmd->viewangles = angle;
 		}
 	}
-	else
+	else 
 		cmd->buttons |= UserCmd::Button_Use;
 		
 }
@@ -461,6 +462,13 @@ void Misc::stealNames() noexcept
 		return;
 
 	static std::vector<int> stolenIds;
+
+	auto duration = std::chrono::system_clock::now().time_since_epoch();
+	long currentTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+	static long timeStamp = currentTime_ms;
+
+	if (currentTime_ms - timeStamp < 350)
+		return;
 
 	for (int i = 1; i <= memory->globalVars->maxClients; ++i)
 	{
