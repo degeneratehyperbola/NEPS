@@ -6,6 +6,8 @@
 
 class Matrix3x4;
 
+#define M_PI_F		((float)(M_PI))	// Shouldn't collide with anything.
+
 struct Vector
 {
 	constexpr auto notNull() const noexcept
@@ -322,6 +324,31 @@ struct Vector
 		delta.clamp();
 
 		return angles;
+	}
+
+	static void inline SinCos(float radians, float* sine, float* cosine)
+	{
+		*sine = sin(radians);
+		*cosine = cos(radians);
+	}
+
+
+	static float DEG2RAD(float x)
+	{
+		return ((float)(x) * (float)(M_PI_F / 180.f));
+	}
+	
+
+	static void AngleVectors(const Vector& angles, Vector& forward)
+	{
+		float sp, sy, cp, cy;
+
+		SinCos(DEG2RAD(angles.y), &sy, &cy);
+		SinCos(DEG2RAD(angles.x), &sp, &cp);
+
+		forward.x = cp * cy;
+		forward.y = cp * sy;
+		forward.z = -sp;
 	}
 };
 

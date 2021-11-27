@@ -467,6 +467,12 @@ public:
 			bool silent = false;
 		} autoDefuse;
 
+		struct KnifeBot
+		{
+			KeyBind enabled;
+			bool friendly = false;
+		} knifeBot;
+
 		KeyBind prepareRevolver;
 		int quickHealthshotKey = 0;
 		float maxAngleDelta = 255.0f;

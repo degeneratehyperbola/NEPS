@@ -19,6 +19,7 @@
 #include "Hacks/EnginePrediction.h"
 #include "Hacks/StreamProofESP.h"
 #include "Hacks/Glow.h"
+#include "Hacks/KnifeBot.h"
 #include "Hacks/Misc.h"
 #include "Hacks/Triggerbot.h"
 #include "Hacks/Visuals.h"
@@ -199,6 +200,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Aimbot::run(cmd);
 	Backtrack::run(cmd);
 	Triggerbot::run(cmd);
+	KnifeBot::run(cmd);
 	Misc::edgeJump(cmd);
 	Misc::blockBot(cmd, currentViewAngles);
 	Misc::fastPlant(cmd);

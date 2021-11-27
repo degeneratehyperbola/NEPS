@@ -404,11 +404,14 @@ void Misc::AutoDefuse(UserCmd* cmd) noexcept
 	if (!bomb_ || !bomb_->c4Ticking()) return;
 
 	float bombTimer = bomb.blowTime - memory->globalVars->currenttime;
+	float distance = localPlayer->origin().distTo(bomb_->origin());
+	bool cannotDefuse = (bomb.blowTime < bomb.defuseCountDown);
+
+	if (cannotDefuse || distance > 75.0f) return;
 
 	if (config->misc.autoDefuse.silent)
 	{
-		float distance = localPlayer->origin().distTo(bomb_->origin());
-		if (cmd->buttons & UserCmd::Button_Use && distance <= 75.0f)
+		if (cmd->buttons & UserCmd::Button_Use)
 		{
 			Vector pVecTarget = localPlayer->getEyePosition();
 			Vector pTargetBomb = bomb_->origin();
@@ -418,15 +421,7 @@ void Misc::AutoDefuse(UserCmd* cmd) noexcept
 		}
 	}
 	else
-		if (localPlayer->hasDefuser() && bombTimer > 5.5f)
-			return;
-
-		if (!localPlayer->hasDefuser() && bombTimer > 10.5f)
-			return;
-
-		float distance = localPlayer->origin().distTo(bomb_->origin());
-		if (distance <= 75.0f)
-			cmd->buttons |= UserCmd::Button_Use;
+		cmd->buttons |= UserCmd::Button_Use;
 		
 }
 

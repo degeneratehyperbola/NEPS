@@ -13,6 +13,7 @@
 #include "../SDK/UserCmd.h"
 #include "../SDK/GlobalVars.h"
 
+#define M_PHI 1.61803398874989484820; // golden ratio
 
 static bool canAntiAim(UserCmd *cmd) noexcept
 {

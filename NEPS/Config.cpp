@@ -703,6 +703,12 @@ static void from_json(const json &j, Config::Misc::AutoDefuse &kk)
 	read(j, "Silent", kk.silent);
 }
 
+static void from_json(const json &j, Config::Misc::KnifeBot &ff)
+{
+	read<value_t::object>(j, "Enabled", ff.enabled);
+	read(j, "Friendly", ff.friendly);
+}
+
 static void from_json(const json &j, Config::Misc &m)
 {
 	read(j, "Menu key", m.menuKey);
@@ -738,6 +744,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read<value_t::object>(j, "Bomb timer", m.bombTimer);
 	read<value_t::object>(j, "Watermark", m.watermark);
 	read<value_t::object>(j, "Auto Defuse", m.autoDefuse);
+	read<value_t::object>(j, "Knife Bot", m.knifeBot);
 	read<value_t::object>(j, "Indicators", m.indicators);
 	read(j, "Debug Notice", m.debugNotice);
 
@@ -1206,6 +1213,12 @@ static void to_json(json &j, const Config::Misc::AutoDefuse&o, const Config::Mis
 	WRITE("Silent", silent);
 }
 
+static void to_json(json &j, const Config::Misc::KnifeBot&o, const Config::Misc::KnifeBot&dummy = {})
+{
+	WRITE("Enabled", enabled);
+	WRITE("Friendly", friendly);
+}
+
 static void to_json(json &j, const Config::Misc::BombTimer &o, const Config::Misc::BombTimer &dummy = {})
 {
 	WRITE("Enabled", enabled);
@@ -1258,6 +1271,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Watermark", watermark);
 	WRITE("Auto Defuse", autoDefuse);
+	WRITE("KnifeBot", knifeBot);
 	WRITE("Indicators", indicators);
 	WRITE("Debug Notice", debugNotice);
 }

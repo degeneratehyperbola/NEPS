@@ -173,6 +173,9 @@
     <ClCompile Include="Config.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Hacks\KnifeBot.cpp">
+      <Filter>Hacks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.h">
@@ -498,6 +501,9 @@
     </ClInclude>
     <ClInclude Include="SDK\UserMessage.h">
       <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="Hacks\KnifeBot.h">
+      <Filter>Hacks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -43,6 +43,7 @@
     <ClCompile Include="Hooks\MinHook.cpp" />
     <ClCompile Include="Hooks\VmtHook.cpp" />
     <ClCompile Include="Hooks\VmtSwap.cpp" />
+    <ClCompile Include="Hacks\KnifeBot.cpp" />
     <ClCompile Include="lib\Helpers.cpp" />
     <ClCompile Include="lib\ImGuiCustom.cpp" />
     <ClCompile Include="lib\minhook\buffer.c" />
@@ -92,6 +93,7 @@
     <ClInclude Include="Hooks\MinHook.h" />
     <ClInclude Include="Hooks\VmtHook.h" />
     <ClInclude Include="Hooks\VmtSwap.h" />
+    <ClInclude Include="Hacks\KnifeBot.h" />
     <ClInclude Include="lib\fnv.hpp" />
     <ClInclude Include="lib\Helpers.hpp" />
     <ClInclude Include="lib\ImGuiCustom.hpp" />

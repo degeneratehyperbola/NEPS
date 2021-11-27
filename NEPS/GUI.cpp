@@ -2496,6 +2496,18 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Slient", &config->misc.autoDefuse.silent);
 		ImGui::EndPopup();
 	}
+	
+	ImGuiCustom::keyBind("KnifeBot", config->misc.knifeBot.enabled);
+	ImGui::SameLine();
+
+	if (ImGui::ArrowButton("knifebot", ImGuiDir_Right))
+		ImGui::OpenPopup("##knifebot");
+
+	if (ImGui::BeginPopup("##knifebot"))
+	{
+		ImGui::Checkbox("Friendly Fire", &config->misc.knifeBot.friendly);
+		ImGui::EndPopup();
+	}
 
 	ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
 	ImGui::Checkbox("Quick reload", &config->misc.quickReload);
