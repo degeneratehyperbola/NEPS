@@ -300,8 +300,8 @@ struct Vector
 		}
 		else
 		{
-			angles.x = (double)atan2(-forward.z, forward.length2D()) * -180 / M_PI;
-			angles.y = (double)atan2(forward.y, forward.x) * 180 / M_PI;
+			angles.x = atan2(-forward.z, forward.length2D()) * -180.f / M_PI;
+			angles.y = atan2(forward.y, forward.x) * 180.f / M_PI;
 
 			if (angles.y > 90)
 				angles.y -= 180;
@@ -316,12 +316,12 @@ struct Vector
 
 	static auto calcAngle(const Vector src, const Vector dst)
 	{
-		Vector angles = Vector{ 0,0,0 };
+		Vector angles;
 		Vector delta = src - dst;
 
 		vectorAngles(delta, angles);
 
-		delta.clamp();
+		delta.normalize();
 
 		return angles;
 	}
