@@ -53,7 +53,7 @@ namespace GameData
 	const std::vector<WeaponData> &weapons() noexcept;
 	const std::vector<EntityData> &entities() noexcept;
 	const std::vector<LootCrateData> &lootCrates() noexcept;
-	const std::list<ProjectileData> &projectiles() noexcept;
+	const std::forward_list<ProjectileData> &projectiles() noexcept;
 	const PlayerData *playerByHandle(int handle) noexcept;
 	const BombData &plantedC4() noexcept;
 	const std::vector<InfernoData> &infernos() noexcept;
@@ -110,9 +110,9 @@ struct EntityData final : BaseData
 
 struct ProjectileData : BaseData
 {
-	ProjectileData(Entity *projectile) noexcept;
+	ProjectileData(Entity* projectile) noexcept;
 
-	void update(Entity *projectile) noexcept;
+	void update(Entity* projectile) noexcept;
 
 	constexpr auto operator==(int otherHandle) const noexcept
 	{
@@ -123,10 +123,9 @@ struct ProjectileData : BaseData
 	bool thrownByLocalPlayer = false;
 	bool thrownByEnemy = false;
 	int handle;
-	const char *name;
+	const char* name = nullptr;
 	std::vector<std::pair<float, Vector>> trajectory;
 };
-
 struct PlayerData : BaseData
 {
 	void update(Entity *entity) noexcept;

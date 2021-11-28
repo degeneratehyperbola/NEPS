@@ -616,8 +616,6 @@ static void renderEntityEsp(const BaseData &entityData, const std::unordered_map
 	}
 }
 
-#include "../SDK/ClientMode.h"
-
 static void renderProjectileEsp(const ProjectileData &projectileData, const Projectile &parentConfig, const Projectile &itemConfig, const char *name) noexcept
 {
 	const auto &config = itemConfig.enabled ? itemConfig : parentConfig;

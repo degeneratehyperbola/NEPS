@@ -21,7 +21,7 @@ static std::vector<ObserverData> observerData;
 static std::vector<WeaponData> weaponData;
 static std::vector<EntityData> entityData;
 static std::vector<LootCrateData> lootCrateData;
-static std::list<ProjectileData> projectileData;
+static std::forward_list<ProjectileData> projectileData;
 static BombData bombData;
 static std::vector<InfernoData> infernoData;
 static std::vector<SmokeData> smokeData;
@@ -108,12 +108,10 @@ void GameData::update() noexcept
 			{
 				auto classId = entity->getClientClass()->classId;
 
-				switch (classId)
-				{
+				switch (entity->getClientClass()->classId) {
 				case ClassId::GrenadeProjectile:
-					if (entity->grenadeExploded())
-					{
-						if (const auto it = std::find(projectileData.begin(), projectileData.end(), entity->handle()); it != projectileData.end())
+					if (!entity->shouldDraw()) {
+						if (const auto it = std::ranges::find(projectileData, entity->handle(), &ProjectileData::handle); it != projectileData.end())
 							it->exploded = true;
 						break;
 					}
@@ -125,7 +123,7 @@ void GameData::update() noexcept
 				case ClassId::MolotovProjectile:
 				case ClassId::SensorGrenadeProjectile:
 				case ClassId::SnowballProjectile:
-					if (const auto it = std::find(projectileData.begin(), projectileData.end(), entity->handle()); it != projectileData.end())
+					if (const auto it = std::ranges::find(projectileData, entity->handle(), &ProjectileData::handle); it != projectileData.end())
 						it->update(entity);
 					else
 						projectileData.emplace_front(entity);
@@ -216,10 +214,11 @@ const std::vector<LootCrateData> &GameData::lootCrates() noexcept
 	return lootCrateData;
 }
 
-const std::list<ProjectileData> &GameData::projectiles() noexcept
+const std::forward_list<ProjectileData>& GameData::projectiles() noexcept
 {
 	return projectileData;
 }
+
 
 const BombData &GameData::plantedC4() noexcept
 {
