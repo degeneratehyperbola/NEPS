@@ -111,7 +111,7 @@ public:
 		bool enabled = false;
 		bool ignoreSmoke = false;
 		bool recoilBasedFov = false;
-		int timeLimit = 0;
+		int timeLimit = 400;
 		bool fakeLatency{ false };
 		bool drawAllChams{ false };
 	} backtrack;
