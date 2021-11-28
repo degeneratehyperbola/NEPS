@@ -20,18 +20,28 @@ static bool canAntiAim(UserCmd *cmd) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return false;
 
-	if (localPlayer->throwing(cmd))
+	auto weapon = localPlayer->getActiveWeapon();
+	auto weaponClass = getWeaponClass(localPlayer->getActiveWeapon()->itemDefinitionIndex2());
+
+	if (!weapon)
 		return false;
 
+	if (weaponClass != 40 && cmd->buttons & (UserCmd::Button_Attack | UserCmd::Button_Attack2))
+		return false;
+
+	if (localPlayer->throwing(cmd))
+		return false;
 
 	if (*memory->gameRules && (*memory->gameRules)->freezePeriod())
 		return false;
 
-	if (cmd->buttons & UserCmd::Button_Use)
+	if (cmd->buttons & UserCmd::Button_Use || !localPlayer->isAlive())
 		return false;
 
 	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
 		return false;
+
+
 
 	return true;
 }

@@ -308,6 +308,10 @@ static void from_json(const json &j, Projectile &p)
 
 	read<value_t::object>(j, "Trails", p.trails);
 }
+static void from_json(const json &j, HealthBarType &p)
+{
+	read<value_t::object>(j, "Type", p.type);
+}
 
 static void from_json(const json &j, Player &p)
 {
@@ -318,6 +322,7 @@ static void from_json(const json &j, Player &p)
 	read(j, "Audible Only", p.audibleOnly);
 	read(j, "Spotted Only", p.spottedOnly);
 	read<value_t::object>(j, "Health Bar", p.healthBar);
+	read<value_t::object>(j, "Health Bar Type", p.healthBarType);
 	read<value_t::object>(j, "Health", p.health);
 	read<value_t::object>(j, "Skeleton", p.skeleton);
 	read<value_t::object>(j, "Head Box", p.headBox);
@@ -995,6 +1000,11 @@ static void to_json(json &j, const Shared &o, const Shared &dummy = {})
 	WRITE("Text Cull Distance", textCullDistance);
 }
 
+static void to_json(json &j, const HealthBarType &o, const HealthBarType&dummy = {})
+{
+	WRITE("Type", type);
+}
+
 static void to_json(json &j, const Player &o, const Player &dummy = {})
 {
 	to_json(j, static_cast<const Shared &>(o), dummy);
@@ -1003,6 +1013,7 @@ static void to_json(json &j, const Player &o, const Player &dummy = {})
 	WRITE("Audible Only", audibleOnly);
 	WRITE("Spotted Only", spottedOnly);
 	WRITE("Health Bar", healthBar);
+	WRITE("Health Bar Type", healthBarType);
 	WRITE("Health", health);
 	WRITE("Skeleton", skeleton);
 	WRITE("Head Box", headBox);

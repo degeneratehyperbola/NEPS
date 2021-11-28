@@ -292,8 +292,10 @@ static void drawHealthBar(const HealthBarType& config, const ImVec2 &pos, float 
 
 	constexpr float width = 3.0f;
 
+
 	if (healthBarConfig.enabled)
 	{
+		drawList->PushClipRect(pos + ImVec2{ 0.0f, (100 - health) / 100.0f * height }, pos + ImVec2{ width + 1.0f, height + 1.0f });
 		const auto green = Helpers::calculateColor(0, 255, 0, 255);
 		const auto yellow = Helpers::calculateColor(255, 255, 0, 255);
 		const auto red = Helpers::calculateColor(255, 0, 0, 255);
@@ -315,8 +317,8 @@ static void drawHealthBar(const HealthBarType& config, const ImVec2 &pos, float 
 			ImVec2 max = min + ImVec2{ width, height };
 			const auto color = config.type == HealthBarType::HealthBased ? Helpers::healthColor(std::clamp(health / 100.0f, 0.0f, 1.0f)) : Helpers::calculateColor(healthBarConfig);
 			if (healthBarConfig.border)
-				drawList->AddRectFilled(min - ImVec2{ 1.0f, 1.0f }, max + ImVec2{ 1.0f, 1.0f }, color & IM_COL32_A_MASK);
-			drawList->AddRectFilled(min + ImVec2{ 0.0f, (100 - health) / 100.0f * height }, max, color);
+				drawList->AddRectFilled(pos + ImVec2{ 1.0f, 1.0f }, pos + ImVec2{ width + 1.0f, height + 1.0f }, color & IM_COL32_A_MASK);
+			drawList->AddRectFilled(pos, pos + ImVec2{ width, height }, color);
 		}
 		drawList->PopClipRect();
 	}
