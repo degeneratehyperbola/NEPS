@@ -21,6 +21,7 @@ namespace Misc
 	void fastPlant(UserCmd *) noexcept;
 	void AutoDefuse(UserCmd* cmd) noexcept;
 	void fastStop(UserCmd *) noexcept;
+	void allCvar() noexcept;
 	void stealNames() noexcept;
 	void quickReload(UserCmd *) noexcept;
 	bool changeName(bool, const char *, float) noexcept;

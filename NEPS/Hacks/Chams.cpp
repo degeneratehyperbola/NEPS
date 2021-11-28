@@ -242,6 +242,9 @@ void Chams::renderSleeves() noexcept
 
 void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int health, const Matrix3x4* customMatrix) noexcept
 {
+
+	if (static Helpers::KeyBindState flag; !flag[config->visuals.chamsMaster]) return;
+
 	for (const auto &cham : chams)
 	{
 		if (!cham.enabled || !cham.ignoreZ)

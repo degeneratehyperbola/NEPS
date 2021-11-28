@@ -114,6 +114,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 
 	AntiAim::visualize(ImGui::GetBackgroundDrawList());
 	Visuals::hitMarker(nullptr, ImGui::GetBackgroundDrawList());
+	Visuals::damageIndicator(nullptr, ImGui::GetBackgroundDrawList());
 	Misc::visualizeInaccuracy(ImGui::GetBackgroundDrawList());
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
@@ -123,6 +124,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::teamDamageList();
 	Misc::drawBombTimer();
 	Misc::indicators();
+	Misc::allCvar();
 
 	#ifndef LEGACY_WATERMARK
 	Misc::spectatorList();

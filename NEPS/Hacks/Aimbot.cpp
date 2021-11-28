@@ -19,6 +19,7 @@
 #include "../SDK/GameEvent.h"
 
 #include "../lib/Helpers.hpp"
+#include "../GameData.h"
 
 static Vector targetAngle;
 static int targetHandle;
@@ -494,7 +495,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 	if (lastKillTime + config->aimbot[weaponIndex].killDelay / 1000.0f > now)
 		return;
 	
-    if ((cmd->buttons & UserCmd::Button_Attack || cfg.autoShoot || cfg.aimlock)) {
+    if ((cmd->buttons & UserCmd::Button_Attack || cfg.autoShoot || cfg.aimlock) && activeWeapon->getInaccuracy() <= config->aimbot[weaponIndex].maxAimInaccuracy) {
 
 		if (cfg.scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !cfg.autoScope)
 			return;
@@ -556,7 +557,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 					interfaces->engine->setViewAngles(cmd->viewangles);
 			}
 
-			if (cfg.autoShoot && activeWeapon->nextPrimaryAttack() <= time)
+			if ((cfg.autoShoot && activeWeapon->nextPrimaryAttack() <= time) && activeWeapon->getInaccuracy() <= config->aimbot[weaponIndex].maxShotInaccuracy)
 				cmd->buttons |= UserCmd::Button_Attack;
 
 			if (clamped)

@@ -4,6 +4,7 @@
 
 #include "../SDK/Beam.h"
 #include "../SDK/Cvar.h"
+#include "../SDK/ClientMode.h"
 #include "../SDK/ConVar.h"
 #include "../SDK/Entity.h"
 #include "../SDK/FrameStage.h"
@@ -484,6 +485,53 @@ void Visuals::hitMarker(GameEvent *event, ImDrawList *drawList) noexcept
 		break;
 	}
 	}
+}
+
+
+
+void Visuals::damageIndicator(GameEvent *event, ImDrawList* drawList) noexcept
+{
+	if (!config->visuals.damageIndicator) return;
+
+	static float lastHitTime = 0.0f;
+	static int hitMarkerDmg = 0;
+	static bool hitMessage = false;
+	static int playerHandle = 0;
+	static std::string playerName = "";
+	static int playerHealth = 0;
+	static int randX = 0;
+	static int randY = 0;
+	if (event)
+	{
+		if (localPlayer && event->getInt("attacker") == localPlayer->getUserId())
+		{
+			lastHitTime = memory->globalVars->realtime;
+			hitMarkerDmg = event->getInt("dmg_health");
+			hitMessage = true;
+			playerHandle = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")))->handle();
+			playerName = GameData::playerByHandle(playerHandle)->name;
+			playerHealth = GameData::playerByHandle(playerHandle)->health - hitMarkerDmg;
+			if (playerHealth < 0) playerHealth = 0;
+			randX = rand() % 80 - 40;
+			randY = rand() % 40 - 20;
+		}
+		return;
+	}
+
+	const auto timeSinceHit = memory->globalVars->realtime - lastHitTime;
+
+	if (timeSinceHit > config->visuals.damageIndicatorTime)
+		return;
+
+	std::string dmg = std::to_string(hitMarkerDmg);
+	std::string text = "\x1[\x5NEPS\x1] " + dmg + " damage to " + playerName + " (" + std::to_string(playerHealth) + " health)";
+
+	if (hitMessage && config->visuals.damageIndicatorMessage) memory->clientMode->getHudChat()->printf(0, text.c_str());
+	hitMessage = false;
+
+	const auto& pos = ImGui::GetIO().DisplaySize / 2.0f + ImVec2{ float(randX), float(randY) };
+	const auto color = Helpers::calculateColor(1.0f, 1.0f, 1.0f, 1.0f - timeSinceHit / config->visuals.damageIndicatorTime);
+	ImGuiCustom::drawText(drawList, NULL, NULL, color, color & IM_COL32_A_MASK, dmg.c_str(), pos);
 }
 
 void Visuals::disablePostProcessing(FrameStage stage) noexcept

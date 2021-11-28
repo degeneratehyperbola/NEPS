@@ -38,8 +38,26 @@
 #endif // NEPS_DEBUG
 #include "SDK/Engine.h"
 
-constexpr auto windowFlags = ImGuiWindowFlags_NoResize
-| ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
+
+constexpr auto windowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
+constexpr auto wndFlags2 = 0;//ImGuiWindowFlags_NoScrollbar
+
+static ImFont* addFontFromVFONT(const std::string& path, float size, const ImWchar* glyphRanges, bool merge) noexcept
+{
+	auto file = Helpers::loadBinaryFile(path);
+	if (!Helpers::decodeVFONT(file))
+		return nullptr;
+
+	ImFontConfig cfg;
+	cfg.FontData = file.data();
+	cfg.FontDataSize = file.size();
+	cfg.FontDataOwnedByAtlas = false;
+	cfg.MergeMode = merge;
+	cfg.GlyphRanges = glyphRanges;
+	cfg.SizePixels = size;
+
+	return ImGui::GetIO().Fonts->AddFont(&cfg);
+}
 
 GUI::GUI() noexcept
 {
@@ -60,7 +78,7 @@ GUI::GUI() noexcept
 	ImFontConfig cfg;
 	cfg.OversampleH = cfg.OversampleV = 1;
 	cfg.PixelSnapH = true;
-	cfg.SizePixels = 13.0f;
+	cfg.SizePixels = 15.0f;
 	cfg.GlyphOffset = {1.0f, -1.0f};
 	if (cfg.Name[0] == '\0')
 		std::sprintf(cfg.Name, "NEPS N-Kana (default), %dpx", static_cast<int>(cfg.SizePixels));
@@ -68,24 +86,26 @@ GUI::GUI() noexcept
 	if (PWSTR pathToFonts; SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Fonts, 0, nullptr, &pathToFonts))) {
 		const std::filesystem::path path{ pathToFonts };
 		CoTaskMemFree(pathToFonts);
-		font = io.Fonts->AddFontFromFileTTF((path / "SIMYOU.TTF").string().c_str(), 11.0f, &cfg, Helpers::getFontGlyphRanges());	
-		if (!font) {
-			font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), 13.0f, &cfg, Helpers::getFontGlyphRanges());
-			if (!font) {
-				io.Fonts->AddFontDefault(&cfg);
+		font = io.Fonts->AddFontFromFileTTF((path / "tahoma.ttf").string().c_str(), cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
+		if (!font) 
+		{
+			io.Fonts->AddFontDefault(&cfg);
 
-				cfg.MergeMode = true;
-				static constexpr ImWchar symbol[]{
-					0x2605, 0x2605, // ★
-					0
-				};
-				io.Fonts->AddFontFromFileTTF((path / "seguisym.ttf").string().c_str(), 13.0f, &cfg, symbol);
-				cfg.MergeMode = false;
-				if (!font)
-					font = io.Fonts->AddFontFromMemoryCompressedTTF(_compressedFontData, _compressedFontSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
-			}
+			cfg.MergeMode = true;
+			static constexpr ImWchar symbol[]{
+				0x2605, 0x2605, // ★
+				0
+			};
+			io.Fonts->AddFontFromFileTTF((path / "seguisym.ttf").string().c_str(), cfg.SizePixels, &cfg, symbol);
+			cfg.MergeMode = false;
+			if (!font)
+				font = io.Fonts->AddFontFromMemoryCompressedTTF(_compressedFontData, _compressedFontSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
 		}
 	}
+	if (!font)
+		io.Fonts->AddFontDefault(&cfg);
+	addFontFromVFONT("csgo/panorama/fonts/notosanskr-regular.vfont", 15.0f, io.Fonts->GetGlyphRangesKorean(), true);
+	addFontFromVFONT("csgo/panorama/fonts/notosanssc-regular.vfont", 17.0f, io.Fonts->GetGlyphRangesChineseFull(), true);
 }
 
 static void drawColorPalette() noexcept
@@ -123,6 +143,14 @@ void GUI::render() noexcept
 	#endif // NEPS_DEBUG
 
 	ImGui::GetIO().FontGlobalScale = config->style.scaling;
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.WindowRounding = config->style.rounding;
+	style.ChildRounding = config->style.rounding;
+	style.FrameRounding = config->style.rounding;
+	style.GrabRounding = config->style.rounding;
+	style.PopupRounding = config->style.rounding;
+	style.ScrollbarRounding = config->style.rounding;
 
 	if (!open)
 		return;
@@ -183,6 +211,9 @@ void GUI::updateColors() const noexcept
 	case 3: ImGuiCustom::StyleColors3(); break;
 	case 4: ImGuiCustom::StyleColors4(); break;
 	case 5: ImGuiCustom::StyleColors5(); break;
+	case 6: ImGui::StyleColorsDark(); break;
+	case 7: ImGui::StyleColorsLight(); break;
+	case 8: ImGui::StyleColorsClassic(); break;
 	}
 }
 
@@ -683,7 +714,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginChild("##child", {330, 0}, false, ImGuiWindowFlags_NoScrollbar))
+	if (ImGui::BeginChild("##child", {330, 0}, false, wndFlags2))
 	{
 		ImGuiCustom::keyBind("Enabled", config->aimbot[currentWeapon].bind);
 
@@ -718,6 +749,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::SliderFloat("##scale", &config->aimbot[currentWeapon].multipointScale, 0.5f, 1.0f, "Multipoint scale %.5f");
 		ImGui::SliderFloat("##fov", &config->aimbot[currentWeapon].fov, 0.0f, 255.0f, "FOV %.2fdeg", ImGuiSliderFlags_Logarithmic);
 		ImGui::SliderFloat("##hitchance", &config->aimbot[currentWeapon].hitchance, 0.0f, 100.0f, "Hitchance %.0f%%");
+		ImGui::SliderFloat("Max aim inaccuracy", &config->aimbot[currentWeapon].maxAimInaccuracy, 0.0f, 1.0f, "Max aim inaccuracy %.5f", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("Max shot inaccuracy", &config->aimbot[currentWeapon].maxShotInaccuracy, 0.0f, 1.0f, "Max shot inaccuracy %.5f", ImGuiSliderFlags_Logarithmic);
 		ImGui::SetNextItemWidth(90);
 		ImGui::InputFloat("Distance", &config->aimbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
 		config->aimbot[currentWeapon].distance = std::max(config->aimbot[currentWeapon].distance, 0.0f);
@@ -818,7 +851,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginChild("##child", {220, 0}, false, ImGuiWindowFlags_NoScrollbar))
+	if (ImGui::BeginChild("##child", {220, 0}, false, wndFlags2))
 	{
 		auto &currentConfig = config->antiAim[categories[currentCategory]];
 
@@ -836,6 +869,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SliderFloat("##pitch_sl", &currentConfig.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
 		}
 		ImGui::Checkbox("Look at enemies", &currentConfig.lookAtEnemies);
+		ImGui::SetNextItemWidth(100);
 		ImGui::Combo("Direction", &currentConfig.direction, "Off\0Auto\0Manual\0");
 		ImGui::SameLine();
 		if (ImGui::ArrowButton("yaw_directions", ImGuiDir_Right))
@@ -1199,7 +1233,7 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginChild("##child", {170, 0}, false, ImGuiWindowFlags_NoScrollbar))
+	if (ImGui::BeginChild("##child", {170, 0}, false, wndFlags2))
 	{
 		ImGuiCustom::keyBind("Enabled", config->triggerbot[currentWeapon].bind);
 		ImGui::Separator();
@@ -1244,6 +1278,7 @@ void GUI::renderBacktrackWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Enabled", &config->backtrack.enabled);
 	ImGui::SameLine(90);
 	ImGui::Checkbox("Ignore smoke", &config->backtrack.ignoreSmoke);
+	ImGui::Checkbox("Recoil based fov", &config->backtrack.recoilBasedFov);
 	ImGui::PushItemWidth(180);
 	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 200, "Time limit %dms");
 
@@ -1261,6 +1296,9 @@ void GUI::renderGlowWindow(bool contentOnly) noexcept
 		ImGui::SetNextWindowContentSize({280, 0});
 		ImGui::Begin("Glow", &window.glow, windowFlags);
 	}
+
+	ImGuiCustom::keyBind("Master", config->visuals.glowMaster);
+	ImGui::Separator();
 
 	static int currentCategory = 0;
 
@@ -1308,6 +1346,9 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 			return;
 		ImGui::Begin("Chams", &window.chams, windowFlags);
 	}
+
+	ImGuiCustom::keyBind("Master", config->visuals.chamsMaster);
+	ImGui::Separator();
 
 	static int currentCategory = 0;
 	static int layer = 1;
@@ -1371,6 +1412,9 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			return;
 		ImGui::Begin("ESP", &window.streamProofESP, windowFlags);
 	}
+
+	ImGuiCustom::keyBind("Master", config->esp.master);
+	ImGui::Separator();
 
 	static std::size_t currentCategory;
 	static auto currentItem = "All";
@@ -1675,7 +1719,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginChild("##child", {320, 0}, false, ImGuiWindowFlags_NoScrollbar))
+	if (ImGui::BeginChild("##child", {320, 0}, false, wndFlags2))
 	{
 		auto &sharedConfig = getConfigShared(currentCategory, currentItem);
 
@@ -1741,6 +1785,16 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGui::SameLine(spacing);
 			ImGuiCustom::colorPicker("Health", playerConfig.health);
 			ImGuiCustom::colorPicker("Health bar", playerConfig.healthBar);
+			ImGui::SameLine();
+			if (ImGui::ArrowButton("healthbartype", ImGuiDir_Right))
+				ImGui::OpenPopup("##healthbartype");
+
+			if (ImGui::BeginPopup("##healthbartype"))
+			{
+				ImGui::SetNextItemWidth(95.0f);
+				ImGui::Combo("Type", &playerConfig.healthBarType.type, "Gradient\0Solid\0Health-based\0");
+				ImGui::EndPopup();
+			}
 			ImGui::SameLine(spacing);
 			ImGuiCustom::colorPicker("Flags", playerConfig.flags);
 			ImGuiCustom::colorPicker("Offscreen", playerConfig.offscreen);
@@ -1784,7 +1838,8 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::SetNextItemWidth(80);
-		ImGui::InputFloat("Text cull", &sharedConfig.textCullDistance, 1.0f, 10.0f, "%.0fu");
+		ImGui::InputFloat("Text Cull Distance", &sharedConfig.textCullDistance, 0.4f, 0.8f, "%.1fm");
+		sharedConfig.textCullDistance = std::clamp(sharedConfig.textCullDistance, 0.0f, 999.9f);
 	}
 
 	ImGui::EndChild();
@@ -1985,6 +2040,18 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
+	ImGui::Checkbox("Damage indicator", &config->visuals.damageIndicator);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("damage_indicator", ImGuiDir_Right))
+		ImGui::OpenPopup("##damage_indicator");
+
+	if (ImGui::BeginPopup("##damage_indicator"))
+	{
+		ImGui::SliderFloat("##time", &config->visuals.damageIndicatorTime, 0.1f, 1.5f, "Time %.2fs");
+		ImGui::Checkbox("Message", &config->visuals.damageIndicatorMessage);
+		ImGui::EndPopup();
+	}
+
 	ImGui::PopItemWidth();
 	ImGui::SliderFloat("##aspect_ratio", &config->visuals.aspectratio, 0.0f, 5.0f, "Aspect ratio %.2f");
 
@@ -2088,7 +2155,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginChild("##settings", {520, 0}, false, ImGuiWindowFlags_NoScrollbar))
+	if (ImGui::BeginChild("##settings", {520, 0}, false, wndFlags2))
 	{
 		ImGui::Checkbox("Enabled", &selected_entry.enabled);
 		ImGui::Separator();
@@ -2509,6 +2576,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
+	ImGui::Checkbox("All Cvar", &config->misc.allCvar);
 	ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
 	ImGui::Checkbox("Quick reload", &config->misc.quickReload);
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
@@ -2532,6 +2600,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
 	ImGui::Checkbox("No panorama blur", &config->misc.disablePanoramablur);
+	ImGui::Checkbox("Full bright", &config->misc.fullBright);
 	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
 	ImGui::Checkbox("Grenade trajectory", &config->misc.nadeTrajectory);
 	ImGui::SetNextItemWidth(-1);
@@ -2591,15 +2660,19 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 	}
 
 	ImGui::PushItemWidth(100);
-	//if (ImGui::Combo("Menu style", &config->style.menuStyle, "Classic\0One window\0"))
-	//    window = {};
-	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Alwayslose\0Aimwhen\0Coca-Cola\0Twotap\0Cherry\0Custom\0"))
+	#ifdef NEPS_DEBUG
+	if (ImGui::Combo("Menu style", &config->style.menuStyle, "Classic\0One window\0"))
+		window = {};
+	#endif
+	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Alwayslose\0Aimwhen\0Coca-Cola\0Twotap\0Cherry\0Dark\0Light\0Classic\0Custom\0"))
 		updateColors();
 	ImGui::PopItemWidth();
 	ImGui::SetNextItemWidth(90);
 	ImGui::InputFloat("Font scale", &config->style.scaling, 0.1f, 1.0f, "%.2f");
+	ImGui::SetNextItemWidth(90);
+	ImGui::SliderFloat("Rounding", &config->style.rounding, 0.0f, 12.0f, "%.2f");
 
-	if (config->style.menuColors == 6)
+	if (config->style.menuColors == 9)
 	{
 		ImGuiStyle &style = ImGui::GetStyle();
 		for (int i = 0; i < ImGuiCol_COUNT; ++i)
@@ -2760,6 +2833,12 @@ void GUI::renderDebugWindow() noexcept
 		if (ImGui::Button("Test chat virtual methods", {-1, 0}))
 			memory->clientMode->getHudChat()->printf(0, "\x1N \x2N \x3N \x4N \x5N \x6N \x7N \x8N \x9N \xAN \xBN \xCN \xDN \xEN \xFN \x10N \x1");
 
+		float inacc = 0.f;
+		if (ImGui::Button("Show Weapon Inaccuracy", { -1, 0 }))
+		{
+			inacc = localPlayer->getActiveWeapon()->getInaccuracy();
+			memory->clientMode->getHudChat()->printf(0, "%.6f%%", inacc);
+		}
 		if (ImGui::Button("List client classes", {-1, 0}))
 		{
 			for (int i = 0; i <= interfaces->entityList->getHighestEntityIndex(); i++)

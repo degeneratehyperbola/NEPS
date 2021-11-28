@@ -21,6 +21,7 @@ namespace Visuals
     void hitEffect(GameEvent* event = nullptr) noexcept;
     void killEffect(GameEvent* event = nullptr) noexcept;
     void hitMarker(GameEvent* event = nullptr, ImDrawList* drawList = nullptr) noexcept;
+    void damageIndicator(GameEvent* event = nullptr, ImDrawList* drawList = nullptr) noexcept;
     void disablePostProcessing(FrameStage stage) noexcept;
     void reduceFlashEffect() noexcept;
     bool removeHands(const char* modelName) noexcept;

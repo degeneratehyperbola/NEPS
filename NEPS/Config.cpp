@@ -378,6 +378,8 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Between shots", a.betweenShots);
 	read(j, "First shot delay", a.firstShotDelay);
 	read(j, "Kill delay", a.killDelay);
+	read(j, "Max aim inaccuracy", a.maxAimInaccuracy);
+	read(j, "Max shot inaccuracy", a.maxShotInaccuracy);
 }
 
 static void from_json(const json &j, Config::Triggerbot &t)
@@ -403,6 +405,7 @@ static void from_json(const json &j, Config::Backtrack &b)
 	read(j, "Enabled", b.enabled);
 	read(j, "Ignore smoke", b.ignoreSmoke);
 	read(j, "Time limit", b.timeLimit);
+	read(j, "Recoil Based FOV", b.recoilBasedFov);
 }
 
 static void from_json(const json &j, Config::AntiAim &a)
@@ -464,6 +467,7 @@ static void from_json(const json &j, Config::Chams &c)
 
 static void from_json(const json &j, Config::ESP &e)
 {
+	read<value_t::object>(j, "Master", e.master);
 	read(j, "Allies", e.allies);
 	read(j, "Enemies", e.enemies);
 	read(j, "Weapons", e.weapons);
@@ -515,6 +519,8 @@ static void from_json(const json &j, Config::Visuals::Dlights &b)
 
 static void from_json(const json &j, Config::Visuals &v)
 {
+	read<value_t::object>(j, "Glow Master", v.glowMaster);
+	read<value_t::object>(j, "Chams Master", v.chamsMaster);
 	read(j, "Disable post-processing", v.disablePostProcessing);
 	read(j, "Inverse ragdoll gravity", v.inverseRagdollGravity);
 	read(j, "No fog", v.noFog);
@@ -557,6 +563,9 @@ static void from_json(const json &j, Config::Visuals &v)
 	read(j, "Kill effect time", v.killEffectTime);
 	read(j, "Hit marker", v.hitMarker);
 	read(j, "Hit marker time", v.hitMarkerTime);
+	read(j, "Damage indicator", v.damageIndicator);
+	read(j, "Damage indicator time", v.damageIndicatorTime);
+	read(j, "Damage indicator message", v.damageIndicatorMessage);
 	read(j, "Playermodel T", v.playerModelT);
 	read(j, "Playermodel CT", v.playerModelCT);
 	read(j, "Music Kit", v.musicKit);
@@ -638,6 +647,8 @@ static void from_json(const json &j, Config::Style &s)
 {
 	read(j, "Menu style", s.menuStyle);
 	read(j, "Menu colors", s.menuColors);
+	read(j, "Scaling", s.scaling);
+	read(j, "Rounding", s.rounding);
 
 	if (j.contains("Colors") && j["Colors"].is_object())
 	{
@@ -658,7 +669,7 @@ static void from_json(const json &j, Config::Style &s)
 			}
 		}
 	}
-	read(j, "Scaling", s.scaling);
+	
 }
 
 static void from_json(const json &j, Config::Misc::PurchaseList &pl)
@@ -734,6 +745,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fast plant", m.fastPlant);
 	read(j, "Quick reload", m.quickReload);
 	read(j, "Fix tablet signal", m.fixTabletSignal);
+	read(j, "Full bright", m.fullBright);
 	read(j, "Grenade predict", m.nadePredict);
 	read(j, "Grenade trajectory", m.nadeTrajectory);
 	read(j, "Force relay cluster", m.forceRelayCluster);
@@ -747,6 +759,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read<value_t::object>(j, "KnifeBot", m.knifeBot);
 	read<value_t::object>(j, "Indicators", m.indicators);
 	read(j, "Debug Notice", m.debugNotice);
+	read(j, "All Cvar", m.allCvar);
 
 }
 
@@ -1066,6 +1079,8 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Between shots", betweenShots);
 	WRITE("First shot delay", firstShotDelay);
 	WRITE("Kill delay", killDelay);
+	WRITE("Max aim inaccuracy", maxAimInaccuracy);
+	WRITE("Max shot inaccuracy", maxShotInaccuracy);
 }
 
 static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerbot &dummy = {})
@@ -1091,6 +1106,7 @@ static void to_json(json &j, const Config::Backtrack &o, const Config::Backtrack
 	WRITE("Enabled", enabled);
 	WRITE("Ignore smoke", ignoreSmoke);
 	WRITE("Time limit", timeLimit);
+	WRITE("Recoil Based FOV", recoilBasedFov);
 }
 
 static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &dummy = {})
@@ -1152,6 +1168,9 @@ static void to_json(json &j, const Config::Chams &o)
 
 static void to_json(json &j, const Config::ESP &o)
 {
+	const Config::ESP dummy;
+
+	WRITE("Master", master);
 	j["Allies"] = o.allies;
 	j["Enemies"] = o.enemies;
 	j["Weapons"] = o.weapons;
@@ -1261,6 +1280,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fast plant", fastPlant);
 	WRITE("Quick reload", quickReload);
 	WRITE("Fix tablet signal", fixTabletSignal);
+	WRITE("Full bright", fullBright);
 	WRITE("Grenade predict", nadePredict);
 	WRITE("Grenade trajectory", nadeTrajectory);
 	WRITE("Force relay cluster", forceRelayCluster);
@@ -1274,6 +1294,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("KnifeBot", knifeBot);
 	WRITE("Indicators", indicators);
 	WRITE("Debug Notice", debugNotice);
+	WRITE("All Cvar", allCvar);
 }
 
 static void to_json(json &j, const Config::Exploits &o)
@@ -1400,6 +1421,8 @@ static void to_json(json &j, const Config::Visuals &o)
 {
 	const Config::Visuals dummy = {};
 
+	WRITE("Glow Master", glowMaster);
+	WRITE("Chams Master", chamsMaster);
 	WRITE("Aspect ratio", aspectratio);
 	WRITE("Opposite hand knife", oppositeHandKnife);
 	WRITE("Disable post-processing", disablePostProcessing);
@@ -1444,6 +1467,9 @@ static void to_json(json &j, const Config::Visuals &o)
 	WRITE("Kill effect time", killEffectTime);
 	WRITE("Hit marker", hitMarker);
 	WRITE("Hit marker time", hitMarkerTime);
+	WRITE("Damage indicator", damageIndicator);
+	WRITE("Damage indicator time", damageIndicatorTime);
+	WRITE("Damage indicator message", damageIndicatorMessage);
 	WRITE("Playermodel T", playerModelT);
 	WRITE("Music Kit", musicKit);
 	WRITE("Music Kit Changer", musicKitChanger);
@@ -1483,13 +1509,14 @@ static void to_json(json &j, const Config::Style &o)
 
 	WRITE("Menu style", menuStyle);
 	WRITE("Menu colors", menuColors);
+	WRITE("Scaling", scaling);
+	WRITE("Rounding", rounding);
 
 	auto &colors = j["Colors"];
 	ImGuiStyle &style = ImGui::GetStyle();
 
 	for (int i = 0; i < ImGuiCol_COUNT; ++i)
 		colors[ImGui::GetStyleColorName(i)] = style.Colors[i];
-	WRITE("Scaling", scaling);
 }
 
 static void to_json(json &j, const sticker_setting &o)

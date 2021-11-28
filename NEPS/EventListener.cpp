@@ -64,6 +64,7 @@ void EventListener::fireGameEvent(GameEvent *event)
 		Misc::playHitSound(*event);
 		Visuals::hitEffect(event);
 		Visuals::hitMarker(event);
+		Visuals::damageIndicator(event);
 		[[fallthrough]];
 	case fnv::hash("weapon_fire"):
 		Aimbot::missCounter(event);

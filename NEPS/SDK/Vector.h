@@ -300,8 +300,8 @@ struct Vector
 		}
 		else
 		{
-			angles.x = atan2(-forward.z, forward.length2D()) * -180.f / M_PI;
-			angles.y = atan2(forward.y, forward.x) * 180.f / M_PI;
+			angles.x = (float)(atan2(-forward.z, forward.length2D()) * -180.f / M_PI);
+			angles.y = (float)(atan2(forward.y, forward.x) * 180.f / M_PI);
 
 			if (angles.y > 90)
 				angles.y -= 180;

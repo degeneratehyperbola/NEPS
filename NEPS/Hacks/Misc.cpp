@@ -453,6 +453,18 @@ void Misc::fastStop(UserCmd *cmd) noexcept
 	cmd->sidemove = negatedDirection.y;
 }
 
+void Misc::allCvar()noexcept
+{
+	if (config->misc.allCvar)
+	{
+		auto iterator = interfaces->cvar->factoryInternalIterator();
+		for (iterator->setFirst(); iterator->isValid(); iterator->next()) {
+			auto cmdBase = iterator->get();
+			if (cmdBase->isFlagSet(FCVAR_DEVELOPMENTONLY | FCVAR_HIDDEN))
+				cmdBase->removeFlags(FCVAR_DEVELOPMENTONLY | FCVAR_HIDDEN);
+		}
+	}
+}
 void Misc::stealNames() noexcept
 {
 	if (!config->griefing.nameStealer)
@@ -625,6 +637,9 @@ void Misc::changeConVarsTick() noexcept
 	static auto nadeVar = interfaces->cvar->findVar("cl_grenadepreview");
 	nadeVar->onChangeCallbacks.size = 0;
 	nadeVar->setValue(config->misc.nadePredict);
+	static auto fullBright = interfaces->cvar->findVar("mat_fullbright");
+	fullBright->onChangeCallbacks.size = 0;
+	fullBright->setValue(config->misc.fullBright);
 	static auto trajectoryVar{ interfaces->cvar->findVar("sv_grenade_trajectory") };
 	static auto trajectoryTimeVar{ interfaces->cvar->findVar("sv_grenade_trajectory_time") };
 	static auto timeBackup = trajectoryTimeVar->getFloat();

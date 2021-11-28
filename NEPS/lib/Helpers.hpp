@@ -47,6 +47,12 @@ namespace Helpers
 	std::array<float, 3U> rgbToHsv(float r, float g, float b) noexcept;
 	std::array<float, 3U> hsvToRgb(float h, float s, float v) noexcept;
 
+	void convertHSVtoRGB(float h, float s, float v, float& outR, float& outG, float& outB) noexcept;
+
+	void healthColor(float fraction, float& outR, float& outG, float& outB) noexcept;
+
+	unsigned int healthColor(float fraction) noexcept;
+
 	std::array<float, 3U> rainbowColor(float speed) noexcept;
 	std::array<float, 4U> rainbowColor(float speed, float alpha) noexcept;
 
@@ -97,6 +103,8 @@ namespace Helpers
 
 	std::wstring toWideString(const std::string &str) noexcept;
 	std::wstring toUpper(std::wstring str) noexcept;
+
+	bool decodeVFONT(std::vector<char>& buffer) noexcept;
 
 	struct KeyBindState
 	{
@@ -161,6 +169,8 @@ namespace Helpers
 		}
 		return delta;
 	}
+
+	std::vector<char> loadBinaryFile(const std::string& path) noexcept;
 
 	float approachAngleDeg(float target, float value, float speed) noexcept;
 	float approachAngleRad(float target, float value, float speed) noexcept;

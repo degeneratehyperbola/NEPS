@@ -505,6 +505,9 @@
     <ClInclude Include="Hacks\KnifeBot.h">
       <Filter>Hacks</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\Inconstructible.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\logo.png">

@@ -66,6 +66,8 @@ public:
 		bool betweenShots = true;
 		int firstShotDelay{ 0 };
 		int killDelay{ 0 };
+		float maxAimInaccuracy = 1.0f;
+		float maxShotInaccuracy = 1.0f;
 		struct AimbotOverride
 		{
 			KeyBind bind;
@@ -108,6 +110,7 @@ public:
 	{
 		bool enabled = false;
 		bool ignoreSmoke = false;
+		bool recoilBasedFov = false;
 		int timeLimit = 200;
 	} backtrack;
 
@@ -173,6 +176,7 @@ public:
 
 	struct ESP
 	{
+		KeyBind master;
 		std::unordered_map<std::string, Player> allies;
 		std::unordered_map<std::string, Player> enemies;
 		std::unordered_map<std::string, Weapon> weapons;
@@ -183,6 +187,8 @@ public:
 
 	struct Visuals
 	{
+		KeyBind glowMaster;
+		KeyBind chamsMaster;
 		bool disablePostProcessing = false;
 		bool inverseRagdollGravity = false;
 		bool noFog = false;
@@ -224,6 +230,9 @@ public:
 		float killEffectTime = 0.6f;
 		int hitMarker = 0;
 		float hitMarkerTime = 0.6f;
+		bool damageIndicator = 0;
+		float damageIndicatorTime = 0.6f;
+		bool damageIndicatorMessage = false;
 		int playerModelT = 0;
 		int playerModelCT = 0;
 		int musicKit = 1;
@@ -333,6 +342,7 @@ public:
 		int menuStyle = 0;
 		int menuColors = 0;
 		float scaling = 1.0f;
+		float rounding = 0.0f;
 	} style;
 
 	struct Exploits
@@ -485,9 +495,11 @@ public:
 		bool quickReload = false;
 		bool fastPlant = false;
 		bool fixTabletSignal = false;
+		bool fullBright = false;
 		bool nadePredict = false;
 		bool nadeTrajectory = false;
 		int forceRelayCluster = 0;
+		bool allCvar = false;
 
 	} misc;
 

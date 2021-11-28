@@ -3,6 +3,7 @@
 #include <shared_lib/imgui/imgui_internal.h>
 
 #include "ImguiCustom.hpp"
+#include "Helpers.hpp"
 #include "../Interfaces.h"
 #include "../SDK/InputSystem.h"
 
@@ -709,11 +710,9 @@ void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos
 
 ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, float distance, float cullDistance, unsigned int textColor, unsigned int borderColor, const char *text, const ImVec2 &pos, bool centered, bool adjustHeight) noexcept
 {
-	if (!(borderColor & IM_COL32_A_MASK) && !(textColor & IM_COL32_A_MASK))
+	//if (!(borderColor & IM_COL32_A_MASK) && !(textColor & IM_COL32_A_MASK))
 
-	if (cullDistance > 0 && distance > cullDistance)
-		return {};
-	else if (cullDistance < 0 && distance < -cullDistance)
+	if (cullDistance > 0 && Helpers::unitsToMeters(distance) > cullDistance)
 		return {};
 
 	const auto textSize = ImGui::CalcTextSize(text);
@@ -731,3 +730,6 @@ ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, float distance, float cullDis
 
 	return textSize;
 }
+
+
+

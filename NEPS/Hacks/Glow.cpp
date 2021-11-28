@@ -12,6 +12,8 @@ static std::vector<std::pair<int, int>> customGlowEntities;
 
 void Glow::render() noexcept
 {
+	if (static Helpers::KeyBindState flag; !flag[config->visuals.glowMaster]) return;
+
     if (!localPlayer)
 		return;
 

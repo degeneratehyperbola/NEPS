@@ -94,7 +94,7 @@ void Backtrack::run(UserCmd *cmd) noexcept
 
 			const auto &headOrigin = entity->getBonePosition(8);
 
-			auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, headOrigin, cmd->viewangles + aimPunch);
+			auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, headOrigin, cmd->viewangles + (config->backtrack.recoilBasedFov ? aimPunch : Vector{ }));
 			auto fov = std::hypotf(angle.x, angle.y);
 			if (fov < bestFov)
 			{
@@ -116,7 +116,7 @@ void Backtrack::run(UserCmd *cmd) noexcept
 				if (!valid(record.simulationTime))
 					continue;
 
-				auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, record.origin, cmd->viewangles + aimPunch);
+				auto angle = Helpers::calculateRelativeAngle(localPlayerEyePosition, record.origin, cmd->viewangles + (config->backtrack.recoilBasedFov ? aimPunch : Vector{ }));
 				auto fov = std::hypotf(angle.x, angle.y);
 				if (fov < bestFov)
 				{

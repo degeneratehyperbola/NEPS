@@ -117,6 +117,17 @@ struct Bar : Color4BorderToggle
 	// What
 };
 
+struct HealthBarType : Color4BorderToggle {
+	enum Type {
+		Gradient = 0,
+		Solid,
+		HealthBased
+	};
+
+	int type = Type::Gradient;
+	Color4& asColor4() noexcept { return static_cast<Color4&>(*this); }
+};
+
 struct Player : Shared
 {
 	Color4BorderToggle weapon;
@@ -124,6 +135,7 @@ struct Player : Shared
 	bool audibleOnly = false;
 	bool spottedOnly = false;
 	Color4BorderToggle healthBar;
+	HealthBarType healthBarType;
 	Color4BorderToggle health;
 	Color4BorderToggleThickness skeleton;
 	Box headBox;

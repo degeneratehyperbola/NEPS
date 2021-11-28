@@ -285,7 +285,7 @@ struct FontPush
 	}
 };
 
-static void drawHealthBar(const ImVec2 &pos, float height, int health, const Color4BorderToggle &healthBarConfig, const Color4BorderToggle &text, float distance, float cull) noexcept
+static void drawHealthBar(const HealthBarType& config, const ImVec2 &pos, float height, int health, const Color4BorderToggle &healthBarConfig, const Color4BorderToggle &text, float distance, float cull) noexcept
 {
 	const int originalHealth = health;
 	health = std::clamp(health, 0, 100);
@@ -294,15 +294,31 @@ static void drawHealthBar(const ImVec2 &pos, float height, int health, const Col
 
 	if (healthBarConfig.enabled)
 	{
-		ImVec2 min = pos;
-		ImVec2 max = min + ImVec2{width, height};
+		const auto green = Helpers::calculateColor(0, 255, 0, 255);
+		const auto yellow = Helpers::calculateColor(255, 255, 0, 255);
+		const auto red = Helpers::calculateColor(255, 0, 0, 255);
 
-		const auto color = Helpers::calculateColor(healthBarConfig);
+		if (config.type == HealthBarType::Gradient) 
+		{
+			ImVec2 min = pos;
+			ImVec2 max = min + ImVec2{ width, height / 2.0f };
+			drawList->AddRectFilled(min + ImVec2{ 1.0f, 1.0f }, pos + ImVec2{ width + 1.0f, height + 1.0f }, Helpers::calculateColor(0, 0, 0, 255));
 
-		if (healthBarConfig.border)
-			drawList->AddRectFilled(min - ImVec2{1.0f, 1.0f}, max + ImVec2{1.0f, 1.0f}, color & IM_COL32_A_MASK);
-
-		drawList->AddRectFilled(min + ImVec2{0.0f, (100 - health) / 100.0f * height}, max, color);
+			drawList->AddRectFilledMultiColor(ImFloor(min), ImFloor(max), green, green, yellow, yellow);
+			min.y += height / 2.0f;
+			max.y += height / 2.0f;
+			drawList->AddRectFilledMultiColor(ImFloor(min), ImFloor(max), yellow, yellow, red, red);
+		}
+		else 
+		{
+			ImVec2 min = pos;
+			ImVec2 max = min + ImVec2{ width, height };
+			const auto color = config.type == HealthBarType::HealthBased ? Helpers::healthColor(std::clamp(health / 100.0f, 0.0f, 1.0f)) : Helpers::calculateColor(healthBarConfig);
+			if (healthBarConfig.border)
+				drawList->AddRectFilled(min - ImVec2{ 1.0f, 1.0f }, max + ImVec2{ 1.0f, 1.0f }, color & IM_COL32_A_MASK);
+			drawList->AddRectFilled(min + ImVec2{ 0.0f, (100 - health) / 100.0f * height }, max, color);
+		}
+		drawList->PopClipRect();
 	}
 
 
@@ -329,7 +345,7 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 
 	FontPush font{config.font.name, playerData.distanceToLocal};
 
-	drawHealthBar(bbox.min - ImVec2{5.0f, 0.0f}, (bbox.max.y - bbox.min.y), playerData.health, config.healthBar, config.health, playerData.distanceToLocal, config.textCullDistance);
+	drawHealthBar(config.healthBarType, bbox.min - ImVec2{5.0f, 0.0f}, (bbox.max.y - bbox.min.y), playerData.health, config.healthBar, config.health, playerData.distanceToLocal, config.textCullDistance);
 
 	if (config.name.enabled)
 	{
@@ -600,6 +616,8 @@ static void renderEntityEsp(const BaseData &entityData, const std::unordered_map
 	}
 }
 
+#include "../SDK/ClientMode.h"
+
 static void renderProjectileEsp(const ProjectileData &projectileData, const Projectile &parentConfig, const Projectile &itemConfig, const char *name) noexcept
 {
 	const auto &config = itemConfig.enabled ? itemConfig : parentConfig;
@@ -608,7 +626,7 @@ static void renderProjectileEsp(const ProjectileData &projectileData, const Proj
 	{
 		if (!projectileData.exploded)
 			renderEntityBox(projectileData, name, config);
-
+		
 		if (config.trails.enabled)
 		{
 			if (projectileData.thrownByLocalPlayer)
@@ -623,6 +641,8 @@ static void renderProjectileEsp(const ProjectileData &projectileData, const Proj
 
 void StreamProofESP::render() noexcept
 {
+	if (static Helpers::KeyBindState flag; !flag[config->esp.master]) return;
+
 	drawList = ImGui::GetBackgroundDrawList();
 
 	GameData::Lock lock;
@@ -639,8 +659,8 @@ void StreamProofESP::render() noexcept
 			renderEntityEsp(lootCrate, config->esp.lootCrates, lootCrate.name);
 	}
 
-	for (const auto &projectile : GameData::projectiles())
-		renderProjectileEsp(projectile, config->esp.projectiles["All"], config->esp.projectiles[projectile.name], projectile.name);
+    for (const auto& projectile : GameData::projectiles())
+        renderProjectileEsp(projectile, config->esp.projectiles["All"], config->esp.projectiles[projectile.name], projectile.name);
 
 	for (const auto &player : GameData::players())
 	{

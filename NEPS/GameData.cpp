@@ -164,19 +164,15 @@ void GameData::update() noexcept
 	std::sort(entityData.begin(), entityData.end());
 	std::sort(lootCrateData.begin(), lootCrateData.end());
 
-	std::for_each(projectileData.begin(), projectileData.end(), [](auto &projectile)
-	{
+	std::ranges::for_each(projectileData, [](auto& projectile) {
 		if (interfaces->entityList->getEntityFromHandle(projectile.handle) == nullptr)
 			projectile.exploded = true;
-	});
+		});
 
-	std::erase_if(projectileData, [](const auto &projectile)
-	{
-		return interfaces->entityList->getEntityFromHandle(projectile.handle) == nullptr
-			&& (projectile.trajectory.size() < 1 || projectile.trajectory[projectile.trajectory.size() - 1].first + 60.0f < memory->globalVars->realtime);
-	});
+	std::erase_if(projectileData, [](const auto& projectile) { return interfaces->entityList->getEntityFromHandle(projectile.handle) == nullptr
+		&& (projectile.trajectory.size() < 1 || projectile.trajectory[projectile.trajectory.size() - 1].first + 60.0f < memory->globalVars->realtime); });
 
-	std::erase_if(playerData, [](const auto &player) { return interfaces->entityList->getEntityFromHandle(player.handle) == nullptr; });
+	std::erase_if(playerData, [](const auto& player) { return interfaces->entityList->getEntityFromHandle(player.handle) == nullptr; });
 }
 
 void GameData::clearProjectileList() noexcept
@@ -344,6 +340,7 @@ BaseData::BaseData(Entity *entity) noexcept
 	coordinateFrame = entity->toWorldTransform();
 }
 
+
 EntityData::EntityData(Entity *entity) noexcept : BaseData{entity}
 {
 	name = [](Entity *entity)
@@ -365,12 +362,10 @@ EntityData::EntityData(Entity *entity) noexcept : BaseData{entity}
 	}(entity);
 }
 
-ProjectileData::ProjectileData(Entity *projectile) noexcept : BaseData{projectile}
+ProjectileData::ProjectileData(Entity* projectile) noexcept : BaseData{ projectile }
 {
-	name = [](Entity *projectile)
-	{
-		switch (projectile->getClientClass()->classId)
-		{
+	name = [](Entity* projectile) {
+		switch (projectile->getClientClass()->classId) {
 		case ClassId::GrenadeProjectile:
 			if (const auto model = projectile->getModel(); model && strstr(model->name, "flashbang"))
 				return "Flashbang";
@@ -387,8 +382,7 @@ ProjectileData::ProjectileData(Entity *projectile) noexcept : BaseData{projectil
 		}
 	}(projectile);
 
-	if (const auto thrower = interfaces->entityList->getEntityFromHandle(projectile->thrower()); thrower && localPlayer)
-	{
+	if (const auto thrower = interfaces->entityList->getEntityFromHandle(projectile->thrower()); thrower && localPlayer) {
 		if (thrower == localPlayer.get())
 			thrownByLocalPlayer = true;
 		else
@@ -398,11 +392,11 @@ ProjectileData::ProjectileData(Entity *projectile) noexcept : BaseData{projectil
 	handle = projectile->handle();
 }
 
-void ProjectileData::update(Entity *projectile) noexcept
+void ProjectileData::update(Entity* projectile) noexcept
 {
-	static_cast<BaseData &>(*this) = {projectile};
+	static_cast<BaseData&>(*this) = { projectile };
 
-	if (const auto &pos = projectile->getAbsOrigin(); trajectory.size() < 1 || trajectory[trajectory.size() - 1].second != pos)
+	if (const auto& pos = projectile->getAbsOrigin(); trajectory.size() < 1 || trajectory[trajectory.size() - 1].second != pos)
 		trajectory.emplace_back(memory->globalVars->realtime, pos);
 }
 
