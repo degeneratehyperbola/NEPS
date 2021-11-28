@@ -508,7 +508,14 @@ void Visuals::damageIndicator(GameEvent *event, ImDrawList* drawList) noexcept
 			lastHitTime = memory->globalVars->realtime;
 			hitMarkerDmg = event->getInt("dmg_health");
 			hitMessage = true;
+			if (event->getInt("userid") == localPlayer->getUserId())
+			{
+				playerHealth = localPlayer->health();
+				playerName = "\x2You\x1";
+				return;
+			}
 			playerHandle = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")))->handle();
+			if (!playerHandle) return;
 			playerName = GameData::playerByHandle(playerHandle)->name;
 			playerHealth = GameData::playerByHandle(playerHandle)->health - hitMarkerDmg;
 			if (playerHealth < 0) playerHealth = 0;
