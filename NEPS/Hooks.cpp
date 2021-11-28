@@ -106,6 +106,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 
 	Visuals::drawSmokeHull(ImGui::GetBackgroundDrawList());
 	Visuals::drawMolotovHull(ImGui::GetBackgroundDrawList());
+	Visuals::drawSmokeTimer(ImGui::GetBackgroundDrawList());
 	Visuals::playerBounds(ImGui::GetBackgroundDrawList());
 	Visuals::playerVelocity(ImGui::GetBackgroundDrawList());
 	Misc::visualizeBlockBot(ImGui::GetBackgroundDrawList());
@@ -193,6 +194,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::fastStop(cmd);
 	Misc::autoStrafe(cmd);
 	Misc::bunnyHop(cmd);
+	Misc::fixMouseDelta(cmd);
 	Misc::prepareRevolver(cmd);
 	Aimbot::predictPeek(cmd);
 	if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk]) Misc::slowwalk(cmd);

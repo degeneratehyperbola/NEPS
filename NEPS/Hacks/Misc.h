@@ -34,6 +34,7 @@ namespace Misc
 	void killMessage(GameEvent &event) noexcept;
 	void fixMovement(UserCmd *cmd, float yaw) noexcept;
 	void antiAfkKick(UserCmd *cmd) noexcept;
+	void fixMouseDelta(UserCmd* cmd) noexcept;
 	void tweakPlayerAnimations(FrameStage stage) noexcept;
 	void autoPistol(UserCmd *cmd) noexcept;
 	void autoReload(UserCmd *cmd) noexcept;

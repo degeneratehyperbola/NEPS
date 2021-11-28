@@ -112,6 +112,8 @@ public:
 		bool ignoreSmoke = false;
 		bool recoilBasedFov = false;
 		int timeLimit = 200;
+		bool fakeLatency{ false };
+		bool drawAllChams{ false };
 	} backtrack;
 
 	struct AntiAim
@@ -283,6 +285,15 @@ public:
 		Dlights enemyDlights;
 
 		Color4ToggleThickness molotovHull = {1.0f, 0.5f, 0.0f, 0.3f};
+
+		struct SmokeTimer {
+			bool enabled = false;
+			Color4 backgroundColor{ 1.0f, 1.0f, 1.0f, 0.5f };
+			Color4 timerColor{ 0.0f, 0.0f, 1.0f, 1.0f };
+			float timerThickness{ 1.f };
+			Color4 textColor{ 1.0f, 1.0f, 1.0f, 1.0f };
+		} smokeTimer;
+
 		Color4ToggleThickness smokeHull = {0.5f, 0.5f, 0.5f, 0.3f};
 		Color4ToggleThickness playerBounds;
 		Color4BorderToggleThickness playerVelocity;
@@ -422,6 +433,7 @@ public:
 		bool fixBoneMatrix = true;
 		bool fixMovement = true;
 		bool fixAnimation = true;
+		bool fixMouseDelta = true;
 		bool disableModelOcclusion = true;
 		bool disableInterp = false;
 		bool disableIK = false;
@@ -497,7 +509,6 @@ public:
 		bool fixTabletSignal = false;
 		bool fullBright = false;
 		bool nadePredict = false;
-		bool nadeTrajectory = false;
 		int forceRelayCluster = 0;
 		bool allCvar = false;
 

@@ -1279,8 +1279,9 @@ void GUI::renderBacktrackWindow(bool contentOnly) noexcept
 	ImGui::SameLine(90);
 	ImGui::Checkbox("Ignore smoke", &config->backtrack.ignoreSmoke);
 	ImGui::Checkbox("Recoil based fov", &config->backtrack.recoilBasedFov);
+	ImGui::Checkbox("Chams Last/All Tick", &config->backtrack.drawAllChams);
 	ImGui::PushItemWidth(180);
-	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 200, "Time limit %dms");
+	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 400, "Time limit %dms");
 
 	ImGui::PopItemWidth();
 	if (!contentOnly)
@@ -1897,6 +1898,18 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGuiCustom::colorPicker("Molotov radius", config->visuals.molotovHull);
 	ImGui::SameLine(130);
 	ImGuiCustom::colorPicker("Smoke radius", config->visuals.smokeHull);
+	ImGui::Checkbox("Smoke Timer", &config->visuals.smokeTimer.enabled);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("popup_smokeTimer", ImGuiDir_Right))
+		ImGui::OpenPopup("##popup_smokeTimer");
+
+	if (ImGui::BeginPopup("##popup_smokeTimer"))
+	{
+		ImGuiCustom::colorPicker("Background color", config->visuals.smokeTimer.backgroundColor);
+		ImGuiCustom::colorPicker("Text color", config->visuals.smokeTimer.textColor);
+		ImGuiCustom::colorPicker("Timer color", config->visuals.smokeTimer.timerColor, nullptr, &config->visuals.smokeTimer.timerThickness);
+		ImGui::EndPopup();
+	}
 	ImGuiCustom::colorPicker("Player bounds", config->visuals.playerBounds);
 	//ImGui::SameLine(130);
 	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVelocity);
@@ -2585,6 +2598,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
 	ImGui::Checkbox("Fix bone matrix", &config->misc.fixBoneMatrix);
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
+	ImGui::Checkbox("Fix mouse delta", &config->misc.fixMouseDelta);
 	ImGui::Checkbox("Fix local animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
 	ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
@@ -2602,7 +2616,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("No panorama blur", &config->misc.disablePanoramablur);
 	ImGui::Checkbox("Full bright", &config->misc.fullBright);
 	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
-	ImGui::Checkbox("Grenade trajectory", &config->misc.nadeTrajectory);
 	ImGui::SetNextItemWidth(-1);
 	ImGui::SliderFloat("##angle_delta", &config->misc.maxAngleDelta, 0.0f, 255.0f, "Aimstep %.2fdeg");
 	ImGui::Checkbox("Preserve killfeed", &config->misc.preserveKillfeed.enabled);

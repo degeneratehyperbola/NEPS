@@ -206,11 +206,16 @@ struct InfernoData
 	std::vector<Vector> points;
 };
 
-struct SmokeData
-{
-	SmokeData(Entity *smoke) noexcept;
+#define SMOKEGRENADE_LIFETIME 17.5f
+
+struct SmokeData {
+	SmokeData(const Vector& origin, int handle) noexcept;
+
+	[[nodiscard]] float fadingAlpha() const noexcept;
 
 	Vector origin;
+	float explosionTime;
+	int handle;
 };
 
 struct SessionData

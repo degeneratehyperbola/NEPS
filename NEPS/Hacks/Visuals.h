@@ -30,6 +30,7 @@ namespace Visuals
     void skybox(FrameStage stage) noexcept;
     void bulletBeams(GameEvent *event);
     void drawMolotovHull(ImDrawList *drawList) noexcept;
+    void drawSmokeTimer(ImDrawList* drawList) noexcept;
 	void drawSmokeHull(ImDrawList *drawList) noexcept;
     void flashlight(FrameStage stage) noexcept;
     void playerBounds(ImDrawList *drawList) noexcept;

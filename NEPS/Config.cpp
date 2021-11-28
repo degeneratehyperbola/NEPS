@@ -406,6 +406,8 @@ static void from_json(const json &j, Config::Backtrack &b)
 	read(j, "Ignore smoke", b.ignoreSmoke);
 	read(j, "Time limit", b.timeLimit);
 	read(j, "Recoil Based FOV", b.recoilBasedFov);
+	read(j, "Fake Latency", b.fakeLatency);
+	read(j, "Draw All Chams", b.drawAllChams);
 }
 
 static void from_json(const json &j, Config::AntiAim &a)
@@ -517,6 +519,15 @@ static void from_json(const json &j, Config::Visuals::Dlights &b)
 	read(j, "Radius", b.radius);
 }
 
+static void from_json(const json& j, Config::Visuals::SmokeTimer& s)
+{
+	read(j, "Enabled", s.enabled);
+	read<value_t::object>(j, "Background color", s.backgroundColor);
+	read<value_t::object>(j, "Timer color", s.timerColor);
+	read(j, "Timer thickness", s.timerThickness);
+	read<value_t::object>(j, "Text color", s.textColor);
+}
+
 static void from_json(const json &j, Config::Visuals &v)
 {
 	read<value_t::object>(j, "Glow Master", v.glowMaster);
@@ -582,6 +593,7 @@ static void from_json(const json &j, Config::Visuals &v)
 	read<value_t::object>(j, "Dlights ally", v.allyDlights);
 	read<value_t::object>(j, "Dlights enemy", v.enemyDlights);
 	read<value_t::object>(j, "Inferno hull", v.molotovHull);
+	read<value_t::object>(j, "Smoke timer", v.smokeTimer);
 	read<value_t::object>(j, "Smoke hull", v.smokeHull);
 	read<value_t::object>(j, "Player bounds", v.playerBounds);
 	read<value_t::object>(j, "Player velocity", v.playerVelocity);
@@ -729,6 +741,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fix animation LOD", m.fixAnimationLOD);
 	read(j, "Fix bone matrix", m.fixBoneMatrix);
 	read(j, "Fix movement", m.fixMovement);
+	read(j, "Fix mouse delta", m.fixMouseDelta);
 	read(j, "Fix animations", m.fixAnimation);
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
 	read(j, "Disable interpolation", m.disableInterp);
@@ -747,7 +760,6 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fix tablet signal", m.fixTabletSignal);
 	read(j, "Full bright", m.fullBright);
 	read(j, "Grenade predict", m.nadePredict);
-	read(j, "Grenade trajectory", m.nadeTrajectory);
 	read(j, "Force relay cluster", m.forceRelayCluster);
 	read(j, "Aimstep", m.maxAngleDelta);
 	read<value_t::object>(j, "Preserve killfeed", m.preserveKillfeed);
@@ -1107,6 +1119,8 @@ static void to_json(json &j, const Config::Backtrack &o, const Config::Backtrack
 	WRITE("Ignore smoke", ignoreSmoke);
 	WRITE("Time limit", timeLimit);
 	WRITE("Recoil Based FOV", recoilBasedFov);
+	WRITE("Fake Latency", fakeLatency);
+	WRITE("Draw All Chams", drawAllChams);
 }
 
 static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &dummy = {})
@@ -1264,6 +1278,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix animation LOD", fixAnimationLOD);
 	WRITE("Fix bone matrix", fixBoneMatrix);
 	WRITE("Fix movement", fixMovement);
+	WRITE("Fix mouse delta", fixMouseDelta);
 	WRITE("Fix animations", fixAnimation);
 	WRITE("Disable model occlusion", disableModelOcclusion);
 	WRITE("Disable interpolation", disableInterp);
@@ -1282,7 +1297,6 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix tablet signal", fixTabletSignal);
 	WRITE("Full bright", fullBright);
 	WRITE("Grenade predict", nadePredict);
-	WRITE("Grenade trajectory", nadeTrajectory);
 	WRITE("Force relay cluster", forceRelayCluster);
 	WRITE("Aimstep", maxAngleDelta);
 	WRITE("Preserve killfeed", preserveKillfeed);
@@ -1417,6 +1431,15 @@ static void to_json(json &j, const Config::Visuals::Dlights &o, const Config::Vi
 	WRITE("Radius", radius);
 }
 
+static void to_json(json& j, const Config::Visuals::SmokeTimer& o, const Config::Visuals::SmokeTimer& dummy)
+{
+	WRITE("Enabled", enabled);
+	WRITE("Background color", backgroundColor);
+	WRITE("Timer color", timerColor);
+	WRITE("Timer thickness", timerThickness);
+	WRITE("Text color", textColor);
+}
+
 static void to_json(json &j, const Config::Visuals &o)
 {
 	const Config::Visuals dummy = {};
@@ -1484,6 +1507,7 @@ static void to_json(json &j, const Config::Visuals &o)
 	WRITE("Dlights ally", allyDlights);
 	WRITE("Dlights enemy", enemyDlights);
 	WRITE("Inferno hull", molotovHull);
+	WRITE("Smoke timer", smokeTimer);
 	WRITE("Smoke hull", smokeHull);
 	WRITE("Player bounds", playerBounds);
 	WRITE("Player velocity", playerVelocity);

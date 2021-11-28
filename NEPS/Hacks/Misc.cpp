@@ -631,28 +631,28 @@ void Misc::changeConVarsTick() noexcept
 	static auto tracerVar = interfaces->cvar->findVar("cl_weapon_debug_show_accuracy");
 	tracerVar->onChangeCallbacks.size = 0;
 	tracerVar->setValue(config->visuals.accuracyTracers);
+
 	static auto impactsVar = interfaces->cvar->findVar("sv_showimpacts");
 	impactsVar->onChangeCallbacks.size = 0;
 	impactsVar->setValue(config->visuals.bulletImpacts);
+
 	static auto nadeVar = interfaces->cvar->findVar("cl_grenadepreview");
 	nadeVar->onChangeCallbacks.size = 0;
 	nadeVar->setValue(config->misc.nadePredict);
+
 	static auto fullBright = interfaces->cvar->findVar("mat_fullbright");
 	fullBright->onChangeCallbacks.size = 0;
 	fullBright->setValue(config->misc.fullBright);
-	static auto trajectoryVar{ interfaces->cvar->findVar("sv_grenade_trajectory") };
-	static auto trajectoryTimeVar{ interfaces->cvar->findVar("sv_grenade_trajectory_time") };
-	static auto timeBackup = trajectoryTimeVar->getFloat();
-	trajectoryVar->onChangeCallbacks.size = 0;
-	trajectoryVar->setValue(config->misc.nadeTrajectory);
-	trajectoryTimeVar->onChangeCallbacks.size = 0;
-	trajectoryTimeVar->setValue(config->misc.nadeTrajectory ? 12 : timeBackup);
+
 	static auto shadowVar = interfaces->cvar->findVar("cl_csm_enabled");
 	shadowVar->setValue(!config->visuals.noShadows);
+
 	static auto lerpVar = interfaces->cvar->findVar("cl_interpolate");
 	lerpVar->setValue(true);
+
 	static auto exrpVar = interfaces->cvar->findVar("cl_extrapolate");
 	exrpVar->setValue(false);
+
 	static auto ragdollGravity = interfaces->cvar->findVar("cl_ragdoll_gravity");
 	ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? -600 : 600);
 }
@@ -843,6 +843,87 @@ void Misc::antiAfkKick(UserCmd *cmd) noexcept
 	if (config->exploits.antiAfkKick && cmd->commandNumber % 2)
 		cmd->buttons |= 1 << 26;
 }
+
+void Misc::fixMouseDelta(UserCmd* cmd) noexcept
+{
+	if (!config->misc.fixMouseDelta)
+		return;
+
+	if (!cmd)
+		return;
+
+	static Vector delta_viewangles{ };
+	Vector delta = cmd->viewangles - delta_viewangles;
+
+	delta.x = std::clamp(delta.x, -89.0f, 89.0f);
+	delta.y = std::clamp(delta.y, -180.0f, 180.0f);
+	delta.z = 0.0f;
+	static ConVar* sensitivity;
+	if (!sensitivity)
+		sensitivity = interfaces->cvar->findVar("sensitivity");;
+	if (delta.x != 0.f) {
+		static ConVar* m_pitch;
+
+		if (!m_pitch)
+			m_pitch = interfaces->cvar->findVar("m_pitch");
+
+		int final_dy = static_cast<int>((delta.x / m_pitch->getFloat()) / sensitivity->getFloat());
+		if (final_dy <= 32767) {
+			if (final_dy >= -32768) {
+				if (final_dy >= 1 || final_dy < 0) {
+					if (final_dy <= -1 || final_dy > 0)
+						final_dy = final_dy;
+					else
+						final_dy = -1;
+				}
+				else {
+					final_dy = 1;
+				}
+			}
+			else {
+				final_dy = 32768;
+			}
+		}
+		else {
+			final_dy = 32767;
+		}
+
+		cmd->mousedy = static_cast<short>(final_dy);
+	}
+
+	if (delta.y != 0.f) {
+		static ConVar* m_yaw;
+
+		if (!m_yaw)
+			m_yaw = interfaces->cvar->findVar("m_yaw");
+
+		int final_dx = static_cast<int>((delta.y / m_yaw->getFloat()) / sensitivity->getFloat());
+		if (final_dx <= 32767) {
+			if (final_dx >= -32768) {
+				if (final_dx >= 1 || final_dx < 0) {
+					if (final_dx <= -1 || final_dx > 0)
+						final_dx = final_dx;
+					else
+						final_dx = -1;
+				}
+				else {
+					final_dx = 1;
+				}
+			}
+			else {
+				final_dx = 32768;
+			}
+		}
+		else {
+			final_dx = 32767;
+		}
+
+		cmd->mousedx = static_cast<short>(final_dx);
+	}
+
+	delta_viewangles = cmd->viewangles;
+}
+
 
 void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
 {

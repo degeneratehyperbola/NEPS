@@ -48,6 +48,7 @@ public:
 	GlowObjectManager *glowObjectManager;
 	ClientState *clientState;
 	UtlVector<Entity *> *plantedC4s;
+	UtlVector<int>* smokeHandles;
 
 	bool *disablePostProcessing;
 

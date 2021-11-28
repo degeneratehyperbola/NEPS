@@ -735,6 +735,46 @@ void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 	}
 }
 
+void Visuals::drawSmokeTimer(ImDrawList* drawList) noexcept
+{
+	if (!config->visuals.smokeTimer.enabled)
+		return;
+
+	if (!interfaces->engine->isInGame())
+		return;
+
+	GameData::Lock lock;
+	for (const auto& smoke : GameData::smokes()) {
+		const auto time = std::clamp(smoke.explosionTime + SMOKEGRENADE_LIFETIME - memory->globalVars->realtime, 0.f, SMOKEGRENADE_LIFETIME);
+		std::ostringstream text; text << std::fixed << std::showpoint << std::setprecision(1) << time << " sec.";
+
+		auto text_size = ImGui::CalcTextSize(text.str().c_str());
+		ImVec2 pos;
+
+		if (Helpers::worldToScreen(smoke.origin, pos)) {
+			const auto radius = 10.f + config->visuals.smokeTimer.timerThickness;
+			const auto fraction = std::clamp(time / SMOKEGRENADE_LIFETIME, 0.0f, 1.0f);
+
+			Helpers::setAlphaFactor(smoke.fadingAlpha());
+			drawList->AddCircle(pos, radius, Helpers::calculateColor(config->visuals.smokeTimer.backgroundColor), 40, 3.0f + config->visuals.smokeTimer.timerThickness);
+			if (fraction == 1.0f) {
+				drawList->AddCircle(pos, radius, Helpers::calculateColor(config->visuals.smokeTimer.timerColor), 40, 2.0f + config->visuals.smokeTimer.timerThickness);
+			}
+			else {
+				constexpr float pi = std::numbers::pi_v<float>;
+				const auto arc270 = (3 * pi) / 2;
+				drawList->PathArcTo(pos, radius - 0.5f, arc270 - (2 * pi * fraction), arc270, 40);
+				drawList->PathStroke(Helpers::calculateColor(config->visuals.smokeTimer.timerColor), false, 2.0f + config->visuals.smokeTimer.timerThickness);
+			}
+			drawList->AddText(ImVec2(pos.x - (text_size.x / 2), pos.y + (config->visuals.smokeTimer.timerThickness * 2.f) + (text_size.y / 2)), Helpers::calculateColor(config->visuals.smokeTimer.textColor), text.str().c_str());
+			constexpr auto s = "S";
+			text_size = ImGui::CalcTextSize(s);
+			drawList->AddText(ImVec2(pos.x - (text_size.x / 2), pos.y - (text_size.y / 2)), Helpers::calculateColor(config->visuals.smokeTimer.textColor), s);
+			Helpers::setAlphaFactor(1.f);
+		}
+	}
+}
+
 void Visuals::drawSmokeHull(ImDrawList *drawList) noexcept
 {
 	if (!config->visuals.smokeHull.enabled)

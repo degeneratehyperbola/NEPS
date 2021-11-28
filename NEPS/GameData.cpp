@@ -48,8 +48,6 @@ void GameData::update() noexcept
 	entityData.clear();
 	lootCrateData.clear();
 	infernoData.clear();
-	smokeData.clear();
-
 	localPlayerData.update();
 	bombData.update();
 	sessionData.update();
@@ -58,9 +56,20 @@ void GameData::update() noexcept
 	{
 		playerData.clear();
 		projectileData.clear();
+		smokeData.clear();
 		return;
 	}
 
+	std::erase_if(smokeData, [](const auto& smoke) { return (interfaces->entityList->getEntityFromHandle(smoke.handle) == nullptr && smoke.fadingAlpha() == 0.f); });
+	for (int i = 0; i < memory->smokeHandles->size; ++i) {
+		const auto handle = memory->smokeHandles->memory[i];
+		const auto smoke = interfaces->entityList->getEntityFromHandle(handle);
+		if (!smoke)
+			continue;
+
+		if (std::ranges::find(std::as_const(smokeData), handle, &SmokeData::handle) == smokeData.cend())
+			smokeData.push_back(SmokeData(smoke->getAbsOrigin(), handle));
+	}
 	viewMatrix = interfaces->engine->worldToScreenMatrix();
 
 	const auto observerMode = localPlayer->getObserverMode();
@@ -151,8 +160,6 @@ void GameData::update() noexcept
 					break;
 				}
 
-				if (classId == ClassId::SmokeGrenadeProjectile && entity->didSmokeEffect())
-					smokeData.emplace_back(entity);
 			}
 		}
 	}
@@ -171,6 +178,7 @@ void GameData::update() noexcept
 		&& (projectile.trajectory.size() < 1 || projectile.trajectory[projectile.trajectory.size() - 1].first + 60.0f < memory->globalVars->realtime); });
 
 	std::erase_if(playerData, [](const auto& player) { return interfaces->entityList->getEntityFromHandle(player.handle) == nullptr; });
+
 }
 
 void GameData::clearProjectileList() noexcept
@@ -702,10 +710,14 @@ InfernoData::InfernoData(Entity *inferno) noexcept
 	}
 }
 
-SmokeData::SmokeData(Entity *smoke) noexcept
+
+float SmokeData::fadingAlpha() const noexcept
 {
-	origin = smoke->getAbsOrigin();
+	constexpr float fadeTime = 1.f;
+	return std::clamp(1.0f - (memory->globalVars->realtime - (explosionTime + SMOKEGRENADE_LIFETIME)) / fadeTime, 0.0f, 1.0f);
 }
+
+SmokeData::SmokeData(const Vector& origin, int handle) noexcept : origin{ origin }, handle{ handle }, explosionTime{ memory->globalVars->realtime } {}
 
 void SessionData::update() noexcept
 {

@@ -23,6 +23,7 @@ EventListener::EventListener() noexcept
 	interfaces->gameEventManager->addListener(this, "vote_cast");
 	interfaces->gameEventManager->addListener(this, "weapon_fire");
 	interfaces->gameEventManager->addListener(this, "cs_match_end_restart");
+	interfaces->gameEventManager->addListener(this, "cs_win_panel_match");
 
 	if (const auto desc = memory->getEventDescriptor(interfaces->gameEventManager, "player_death", nullptr))
 		std::swap(desc->listeners[0], desc->listeners[desc->listeners.size - 1]);

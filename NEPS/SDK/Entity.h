@@ -10,6 +10,7 @@
 #include "Vector.h"
 #include "VirtualMethod.h"
 #include "WeaponData.h"
+#include "UserCmd.h"
 
 #include "../Config.h"
 #include "../Interfaces.h"
@@ -303,6 +304,22 @@ public:
 
 	bool hasC4() noexcept;
 	bool isVip() noexcept;
+
+	bool throwing(UserCmd* cmd)
+	{
+		auto weapon = localPlayer->getActiveWeapon();
+		auto weaponClass = getWeaponClass(weapon->itemDefinitionIndex2());
+		if (weaponClass == 40) {
+			if (!weapon->pinPulled())
+				if (weapon->throwTime() > 0.f)
+					return true;
+
+			if ((cmd->buttons & (UserCmd::Button_Attack | UserCmd::Button_Attack2)))
+				if (weapon->throwTime() > 0.f)
+					return true;
+		}
+		return false;
+	}
 
 	void getPlayerName(char(&out)[128]) noexcept;
 	[[nodiscard]] std::string getPlayerName() noexcept
