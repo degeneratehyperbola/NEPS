@@ -26,6 +26,15 @@
 
 #include "imgui.h"
 #include "imgui_impl_dx9.h"
+#include <wrl/client.h>
+
+using Microsoft::WRL::ComPtr;
+
+#ifdef NEPS_DEBUG
+#include "NEPS/Resources/Shaders/Build/Debug/default_vs.h"
+#else
+#include "NEPS/Resources/Shaders/Build/Release/default_vs.h"
+#endif
 
 // DirectX
 #include <d3d9.h>
@@ -36,6 +45,9 @@ static LPDIRECT3DVERTEXBUFFER9  g_pVB = NULL;
 static LPDIRECT3DINDEXBUFFER9   g_pIB = NULL;
 static LPDIRECT3DTEXTURE9       g_FontTexture = NULL;
 static int                      g_VertexBufferSize = 5000, g_IndexBufferSize = 10000;
+
+static ComPtr<IDirect3DVertexShader9> vertexShader;
+static ComPtr<IDirect3DVertexDeclaration9> vertexDeclaration;
 
 struct CUSTOMVERTEX
 {
@@ -64,7 +76,7 @@ static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
 
     // Setup render state: fixed-pipeline, alpha-blending, no face culling, no depth testing, shade mode (for gradient)
     g_pd3dDevice->SetPixelShader(NULL);
-    g_pd3dDevice->SetVertexShader(NULL);
+    g_pd3dDevice->SetVertexShader(vertexShader.Get());
     g_pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
     g_pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
@@ -107,6 +119,7 @@ static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
         g_pd3dDevice->SetTransform(D3DTS_WORLD, &mat_identity);
         g_pd3dDevice->SetTransform(D3DTS_VIEW, &mat_identity);
         g_pd3dDevice->SetTransform(D3DTS_PROJECTION, &mat_projection);
+        g_pd3dDevice->SetVertexShaderConstantF(0, &mat_projection.m[0][0], 4);
     }
 }
 
@@ -188,6 +201,7 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
     g_pIB->Unlock();
     g_pd3dDevice->SetStreamSource(0, g_pVB, 0, sizeof(CUSTOMVERTEX));
     g_pd3dDevice->SetIndices(g_pIB);
+    g_pd3dDevice->SetVertexDeclaration(vertexDeclaration.Get());
     g_pd3dDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
 
     // Setup desired DX state
@@ -306,6 +320,20 @@ bool ImGui_ImplDX9_CreateDeviceObjects()
         return false;
     if (!ImGui_ImplDX9_CreateFontsTexture())
         return false;
+
+    if (!vertexDeclaration.Get()) {
+        constexpr D3DVERTEXELEMENT9 elements[]{
+            { 0, 0, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+            { 0, 8, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
+            { 0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
+            D3DDECL_END()
+        };
+        g_pd3dDevice->CreateVertexDeclaration(elements, vertexDeclaration.GetAddressOf());
+    }
+
+    if (!vertexShader.Get())
+        g_pd3dDevice->CreateVertexShader(reinterpret_cast<const DWORD*>(default_vs), vertexShader.GetAddressOf());
+
     return true;
 }
 
@@ -315,7 +343,8 @@ void ImGui_ImplDX9_InvalidateDeviceObjects()
         return;
     if (g_pVB) { g_pVB->Release(); g_pVB = NULL; }
     if (g_pIB) { g_pIB->Release(); g_pIB = NULL; }
-	ImGui_ImplDX9_DestroyFontsTexture();
+    vertexShader.Reset();
+    ImGui_ImplDX9_DestroyFontsTexture();
 }
 
 void ImGui_ImplDX9_NewFrame()

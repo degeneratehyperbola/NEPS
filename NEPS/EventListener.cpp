@@ -44,6 +44,7 @@ void EventListener::fireGameEvent(GameEvent *event)
 	{
 	case fnv::hash("round_start"):
 		GameData::clearProjectileList();
+		GameData::clearPlayersLastLocation();
 		Misc::preserveKillfeed(true);
 		Aimbot::resetMissCounter();
 		[[fallthrough]];

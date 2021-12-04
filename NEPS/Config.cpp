@@ -785,6 +785,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read<value_t::object>(j, "KnifeBot", m.knifeBot);
 	read<value_t::object>(j, "Status Bar", m.Sbar);
 	read<value_t::object>(j, "Indicators", m.indicators);
+	read(j, "Player List", m.playerList);
 	read(j, "Debug Notice", m.debugNotice);
 	read(j, "All Cvar", m.allCvar);
 
@@ -1338,6 +1339,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("KnifeBot", knifeBot);
 	WRITE("Status Bar", Sbar);
 	WRITE("Indicators", indicators);
+	WRITE("Player List", playerList);
 	WRITE("Debug Notice", debugNotice);
 	WRITE("All Cvar", allCvar);
 }

@@ -34,6 +34,7 @@ namespace GameData
 {
 	void update() noexcept;
 	void clearProjectileList() noexcept;
+	void clearPlayersLastLocation() noexcept;
 
 	class Lock
 	{
@@ -149,6 +150,10 @@ struct PlayerData : BaseData
 	float flashDuration;
 	int health;
 	int armor;
+	int money;
+	int userId;
+	std::string team;
+	uint64_t steamID;
 	Vector headMins, headMaxs;
 	Vector colMins, colMaxs;
 	Vector origin;
@@ -157,6 +162,7 @@ struct PlayerData : BaseData
 	std::string name;
 	std::string activeWeapon;
 	std::vector<std::pair<Vector, Vector>> bones;
+	std::string lastPlaceName;
 };
 
 struct WeaponData : BaseData

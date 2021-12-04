@@ -509,6 +509,7 @@ public:
 		int quickHealthshotKey = 0;
 		float maxAngleDelta = 255.0f;
 
+		bool playerList = false;
 		bool debugNotice = true;
 		bool revealRanks = false;
 		bool revealMoney = false;

@@ -123,6 +123,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::velocityGraph();
 	Misc::purchaseList();
 	Misc::statusBar();
+	Misc::playerList();
 	Misc::teamDamageList();
 	Misc::drawBombTimer();
 	Misc::indicators();

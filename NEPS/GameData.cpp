@@ -187,6 +187,12 @@ void GameData::clearProjectileList() noexcept
 	projectileData.clear();
 }
 
+void GameData::clearPlayersLastLocation() noexcept
+{
+	GameData::Lock lock;
+	std::ranges::for_each(playerData, &std::string::clear, &PlayerData::lastPlaceName);
+}
+
 const Matrix4x4 &GameData::toScreenMatrix() noexcept
 {
 	return viewMatrix;
@@ -447,6 +453,11 @@ void PlayerData::update(Entity *entity) noexcept
 	spotted = entity->spotted();
 	health = entity->health();
 	armor = entity->armor();
+	steamID = entity->getSteamID();
+	money = entity->money();
+	userId = entity->getUserId();
+	team = entity->team() == Team::CT ? "CT" : "T";
+	lastPlaceName = entity->isAlive() && entity->lastPlaceName() ? interfaces->localize->findAsUTF8(entity->lastPlaceName()) : "Unknown";
 
 	isBot = entity->isBot();
 	hasBomb = entity->hasC4();
@@ -531,6 +542,7 @@ void PlayerData::update(Entity *entity) noexcept
 		headMaxs += headBox->capsuleRadius;
 	}
 }
+
 
 WeaponData::WeaponData(Entity *entity) noexcept : BaseData{entity}
 {

@@ -4,6 +4,7 @@
 #include "Localize.h"
 #include "PlayerResource.h"
 
+
 bool Entity::isOtherEnemy(Entity *other) noexcept
 {
 	return memory->isOtherEnemy(this, other);
@@ -90,3 +91,6 @@ bool Entity::visibleTo(Entity *other) noexcept
 
 	return false;
 }
+
+
+

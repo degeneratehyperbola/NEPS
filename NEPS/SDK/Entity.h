@@ -23,6 +23,12 @@ struct ClientClass;
 struct Model;
 struct VarMap;
 
+#define PROP(func_name, offset, type) \
+[[nodiscard]] std::add_lvalue_reference_t<std::add_const_t<type>> func_name() noexcept \
+{ \
+    return *reinterpret_cast<std::add_pointer_t<type>>(this + offset); \
+}
+
 #define PLAYER_EYE_HEIGHT 64.093811f
 #define PLAYER_EYE_HEIGHT_CROUCH 46.076218f
 #define PLAYER_HEIGHT 72.0f
@@ -133,6 +139,7 @@ public:
 	VIRTUAL_METHOD(int &, handle, 2, (), (this))
 	VIRTUAL_METHOD(Collideable *, getCollideable, 3, (), (this))
 	VIRTUAL_METHOD(const Vector &, getAbsOrigin, 10, (), (this))
+	VIRTUAL_METHOD(Team, getTeamNumber, 87, (), (this))
 	VIRTUAL_METHOD(const Vector &, getAbsAngle, 11, (), (this))
 	VIRTUAL_METHOD(void, setModelIndex, 75, (int index), (this, index))
 	VIRTUAL_METHOD(bool, getAttachment, 84, (int index, Vector &origin), (this, index, std::ref(origin)))
@@ -331,6 +338,35 @@ public:
 		return name;
 	}
 
+
+	bool isEnemy() noexcept
+	{
+		if (!localPlayer) {
+			assert(false);
+			return false;
+		}
+
+		if (const auto localTeam = localPlayer->getTeamNumber(); localTeam != Team::TT && localTeam != Team::CT) {
+			// if we're in Spectators team treat CTs as allies and TTs as enemies
+			return getTeamNumber() != Team::CT;
+		}
+		return memory->isOtherEnemy(this, localPlayer.get());
+	}
+
+	bool isGOTV() noexcept
+	{
+		if (PlayerInfo playerInfo; interfaces->engine->getPlayerInfo(index(), playerInfo))
+			return playerInfo.hltv;
+		return false;
+	}
+
+	std::uint64_t getSteamID() noexcept
+	{
+		if (PlayerInfo playerInfo; interfaces->engine->getPlayerInfo(index(), playerInfo))
+			return playerInfo.xuid;
+		return 0;
+	}
+
 	bool canSee(Entity *other, const Vector &pos) noexcept;
 	bool visibleTo(Entity *other) noexcept;
 
@@ -405,6 +441,7 @@ public:
 	NETVAR(lbyTarget, "CCSPlayer", "m_flLowerBodyYawTarget", float)
 	NETVAR(ragdoll, "CCSPlayer", "m_hRagdoll", int)
 	NETVAR(shotsFired, "CCSPlayer", "m_iShotsFired", int)
+	PROP(money, 0xB364, int)
 	NETVAR(waitForNoAttack, "CCSPlayer", "m_bWaitForNoAttack", bool)
 
 	NETVAR(viewModelIndex, "CBaseCombatWeapon", "m_iViewModelIndex", int)

@@ -19,6 +19,7 @@
 #include "../SDK/Localize.h"
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/NetworkStringTable.h"
+#include "../SDK/PlayerResource.h"
 #include "../SDK/Panorama.h"
 #include "../SDK/ProtobufReader.h"
 #include "../SDK/Surface.h"
@@ -1672,6 +1673,148 @@ void Misc::statusBar()noexcept
 		if (cfg.showGameGlobalVars) {
 			ImGui::Text("CurTime: %.1f", memory->globalVars->currenttime);
 			ImGui::Text("RealTime: %.1f", memory->globalVars->realtime);
+		}
+	}
+	ImGui::End();
+}
+
+void Misc::playerList()
+{
+	if (!config->misc.playerList)
+		return;
+
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
+
+	if (!interfaces->engine->isConnected() && !gui->open)
+		return;
+
+	ImGui::SetNextWindowSize(ImVec2(500.0f, 300.0f), ImGuiCond_Once);
+	ImGui::Begin("Player List", nullptr, windowFlags);
+
+	auto playerResource = *memory->playerResource;
+
+	if (localPlayer && playerResource)
+	{
+		if (ImGui::BeginTable("playerList", 10, ImGuiTableFlags_Borders | ImGuiTableFlags_Hideable | ImGuiTableFlags_ScrollY | ImGuiTableFlags_Resizable))
+		{
+			ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, 120.0f);
+			ImGui::TableSetupColumn("Team", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Wins", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Level", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Ranking", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Health", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Armor", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Last Place", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("SteamID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("UserID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableHeadersRow();
+
+			ImGui::TableNextRow();
+			ImGui::PushID(ImGui::TableGetRowIndex());
+
+			if (ImGui::TableNextColumn())
+				if (localPlayer->team() == Team::CT)
+					ImGui::TextColored({ 0.0f, 0.2f, 1.0f, 1.0f }, localPlayer->getPlayerName().c_str());
+				else
+					ImGui::TextColored({ 0.7f, 0.7f, 0.0f, 1.0f }, localPlayer->getPlayerName().c_str());
+
+			if (ImGui::TableNextColumn())
+				ImGui::TextUnformatted(localPlayer->team() == Team::CT ? "CT" : localPlayer->team() == Team::TT ? "T" : "Unknown");
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%i", playerResource->competitiveWins()[localPlayer->index()]);
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%i", playerResource->level()[localPlayer->index()]);
+
+			if (ImGui::TableNextColumn())
+				ImGui::TextUnformatted(interfaces->localize->findAsUTF8(("RankName_" + std::to_string(playerResource->competitiveRanking()[localPlayer->index()])).c_str()));
+
+			if (ImGui::TableNextColumn())
+			{
+				if (!localPlayer->isAlive())
+					ImGui::TextUnformatted("DEAD");
+				else
+					ImGui::Text("%i", localPlayer->health());
+			}
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%i", localPlayer->armor());
+
+			if (ImGui::TableNextColumn())
+				ImGui::Text(interfaces->localize->findAsUTF8(localPlayer->lastPlaceName()));
+
+			if (ImGui::TableNextColumn())
+			{
+				ImGui::Text("%llu", localPlayer->getSteamID());
+				if (ImGui::SmallButton("Copy"))
+					ImGui::SetClipboardText(std::to_string(localPlayer->getSteamID()).c_str());
+			}
+			
+			if (ImGui::TableNextColumn())
+			{
+				ImGui::Text("%llu", localPlayer->getUserId());
+				if (ImGui::SmallButton("Copy"))
+					ImGui::SetClipboardText(std::to_string(localPlayer->getUserId()).c_str());
+			}
+
+			for (auto& player : GameData::players())
+			{
+				ImGui::TableNextRow();
+				ImGui::PushID(ImGui::TableGetRowIndex());
+
+				auto* entity = interfaces->entityList->getEntityFromHandle(player.handle);
+				if (!entity) continue;
+
+				if (ImGui::TableNextColumn())
+					if (player.team  == "CT")
+						ImGui::TextColored({ 0.0f, 0.2f, 1.0f, 1.0f }, player.name.c_str());
+					else
+						ImGui::TextColored({ 0.7f, 0.7f, 0.0f, 1.0f }, player.name.c_str());
+
+				if (ImGui::TableNextColumn())
+					ImGui::TextUnformatted(player.team.c_str());
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%i", playerResource->competitiveWins()[entity->index()]);
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%i", playerResource->level()[entity->index()]);
+
+				if (ImGui::TableNextColumn())
+					ImGui::TextUnformatted(interfaces->localize->findAsUTF8(("RankName_" + std::to_string(playerResource->competitiveRanking()[entity->index()])).c_str()));
+
+				if (ImGui::TableNextColumn())
+				{
+					if (!player.alive)
+						ImGui::TextUnformatted("DEAD");
+					else
+						ImGui::Text("%i", player.health);
+				}
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%i", player.armor);
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text(player.lastPlaceName.c_str());
+
+				if (ImGui::TableNextColumn())
+				{
+					ImGui::Text("%llu", player.steamID);
+					if (ImGui::SmallButton("Copy"))
+						ImGui::SetClipboardText(std::to_string(player.steamID).c_str());
+				}
+
+				if (ImGui::TableNextColumn())
+				{
+					ImGui::Text("%llu", player.userId);
+					if (ImGui::SmallButton("Copy"))
+						ImGui::SetClipboardText(std::to_string(player.userId).c_str());
+				}
+					
+			}
+
+			ImGui::EndTable();
 		}
 	}
 	ImGui::End();

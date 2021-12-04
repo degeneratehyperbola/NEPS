@@ -184,6 +184,7 @@ void GUI::render() noexcept
 		renderGuiStyle2();
 	}
 
+
 	if (!ImGui::GetIO().WantCaptureMouse && ImGui::GetIO().MouseClicked[1])
 		ImGui::OpenPopup("##context_menu");
 
@@ -200,6 +201,8 @@ void GUI::render() noexcept
 	ImGui::ShowDemoWindow();
 	#endif // NEPS_DEBUG
 }
+#include "SDK/InputSystem.h"
+
 
 void GUI::updateColors() const noexcept
 {
@@ -367,6 +370,9 @@ void GUI::renderMenuBar() noexcept
 			renderContextMenu();
 			ImGui::EndMenu();
 		}
+		ImGui::Separator();
+		ImGui::TextUnformatted("[NEPS] Build date: " __DATE__ " " __TIME__);
+		ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 55.0f);
 		ImGui::Separator();
 
 		{
@@ -2661,6 +2667,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
+	ImGui::Checkbox("Player List", &config->misc.playerList);
 	ImGui::Checkbox("Bomb timer", &config->misc.bombTimer.enabled);
 	ImGui::Checkbox("Indicators", &config->misc.indicators.enabled);
 	ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
@@ -3001,53 +3008,6 @@ void GUI::renderDebugWindow() noexcept
 
 			if (localPlayer && playerResource)
 			{
-				if (ImGui::BeginTable("shrek", 4))
-				{
-					ImGui::TableSetupColumn("Name");
-					ImGui::TableSetupColumn("Wins");
-					ImGui::TableSetupColumn("Level");
-					ImGui::TableSetupColumn("Ranking");
-					ImGui::TableHeadersRow();
-
-					ImGui::TableNextRow();
-					ImGui::PushID(ImGui::TableGetRowIndex());
-
-					if (ImGui::TableNextColumn())
-						ImGui::TextUnformatted("Local player");
-
-					if (ImGui::TableNextColumn())
-						ImGui::Text("%i", playerResource->competitiveWins()[localPlayer->index()]);
-
-					if (ImGui::TableNextColumn())
-						ImGui::Text("%i", playerResource->level()[localPlayer->index()]);
-
-					if (ImGui::TableNextColumn())
-						ImGui::Text("%i", playerResource->competitiveRanking()[localPlayer->index()]);
-
-					for (auto &player : GameData::players())
-					{
-						ImGui::TableNextRow();
-						ImGui::PushID(ImGui::TableGetRowIndex());
-
-						auto *entity = interfaces->entityList->getEntityFromHandle(player.handle);
-						if (!entity) continue;
-
-						if (ImGui::TableNextColumn())
-							ImGui::TextUnformatted(player.name.c_str());
-
-						if (ImGui::TableNextColumn())
-							ImGui::Text("%i", playerResource->competitiveWins()[entity->index()]);
-
-						if (ImGui::TableNextColumn())
-							ImGui::Text("%i", playerResource->level()[entity->index()]);
-
-						if (ImGui::TableNextColumn())
-							ImGui::Text("%i", playerResource->competitiveRanking()[entity->index()]);
-					}
-
-					ImGui::EndTable();
-				}
-
 				ImGui::InputInt("Wins", &playerResource->competitiveWins()[localPlayer->index()]);
 				ImGui::InputInt("Level", &playerResource->level()[localPlayer->index()]);
 				ImGui::InputInt("Ranking", &playerResource->competitiveRanking()[localPlayer->index()]);

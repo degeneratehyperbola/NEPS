@@ -185,6 +185,18 @@
   <ItemGroup>
     <ResourceCompile Include="NEPS.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Resources\Shaders\default_vs.hlsl">
+      <ShaderType>Vertex</ShaderType>
+      <ShaderModel>2.0</ShaderModel>
+      <VariableName>default_vs</VariableName>
+      <HeaderFileOutput>$(ProjectDir)Resources\Shaders\Build\default_vs.h</HeaderFileOutput>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)Resources\Shaders\Build\Debug\default_vs.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)Resources\Shaders\Build\Release\default_vs.h</HeaderFileOutput>
+    </FxCompile>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}</ProjectGuid>

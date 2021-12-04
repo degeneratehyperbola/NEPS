@@ -2,3 +2,4 @@ Debug/
 Release/
 .vs/
 **/*.aps
+NEPS/Resources/Shaders/Build/

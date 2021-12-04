@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="SDK">
-      <UniqueIdentifier>{6cc612f0-86fb-4bf6-b64a-74e10f5b498a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Hacks">
       <UniqueIdentifier>{f60a2d6f-e07f-4f71-8db1-6ec82cf1f6d4}</UniqueIdentifier>
     </Filter>
@@ -41,6 +38,12 @@
     </Filter>
     <Filter Include="lib\imgui">
       <UniqueIdentifier>{d208f064-9c58-449b-944a-b77a35b718fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Shaders">
+      <UniqueIdentifier>{dd4afd14-68d2-4675-a2c2-3c2f9e1f6edd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK">
+      <UniqueIdentifier>{6cc612f0-86fb-4bf6-b64a-74e10f5b498a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -457,9 +460,6 @@
     <ClInclude Include="lib\nlohmann\json.hpp">
       <Filter>lib\nlohmann</Filter>
     </ClInclude>
-    <ClInclude Include="res_defaultfont.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared_lib\imgui\imconfig.h">
       <Filter>lib\imgui</Filter>
     </ClInclude>
@@ -520,6 +520,9 @@
     <ClInclude Include="SDK\ClientTools.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="res_defaultfont.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\logo.png">
@@ -536,5 +539,10 @@
     <ResourceCompile Include="NEPS.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Resources\Shaders\default_vs.hlsl">
+      <Filter>Resources\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
