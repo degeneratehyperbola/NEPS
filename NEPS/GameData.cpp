@@ -454,10 +454,10 @@ void PlayerData::update(Entity *entity) noexcept
 	health = entity->health();
 	armor = entity->armor();
 	steamID = entity->getSteamID();
-	money = entity->money();
+	//money = entity->money();
 	userId = entity->getUserId();
 	team = entity->team() == Team::CT ? "CT" : "T";
-	lastPlaceName = entity->isAlive() && entity->lastPlaceName() ? interfaces->localize->findAsUTF8(entity->lastPlaceName()) : "Unknown";
+	lastPlaceName = entity->isAlive() && entity->isDormant() && entity->lastPlaceName() ? interfaces->localize->findAsUTF8(entity->lastPlaceName()) : "Unknown";
 
 	isBot = entity->isBot();
 	hasBomb = entity->hasC4();

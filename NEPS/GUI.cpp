@@ -201,8 +201,6 @@ void GUI::render() noexcept
 	ImGui::ShowDemoWindow();
 	#endif // NEPS_DEBUG
 }
-#include "SDK/InputSystem.h"
-
 
 void GUI::updateColors() const noexcept
 {

@@ -1739,7 +1739,12 @@ void Misc::playerList()
 			}
 
 			if (ImGui::TableNextColumn())
-				ImGui::Text("%i", localPlayer->armor());
+			{
+				if (!localPlayer->isAlive())
+					ImGui::TextUnformatted("0");
+				else
+					ImGui::Text("%i", localPlayer->armor());
+			}
 
 			if (ImGui::TableNextColumn())
 				ImGui::Text(interfaces->localize->findAsUTF8(localPlayer->lastPlaceName()));
@@ -1757,6 +1762,8 @@ void Misc::playerList()
 				if (ImGui::SmallButton("Copy"))
 					ImGui::SetClipboardText(std::to_string(localPlayer->getUserId()).c_str());
 			}
+
+			
 
 			for (auto& player : GameData::players())
 			{
@@ -1793,23 +1800,38 @@ void Misc::playerList()
 				}
 
 				if (ImGui::TableNextColumn())
-					ImGui::Text("%i", player.armor);
+				{
+					if (!player.alive)
+						ImGui::TextUnformatted("0");
+					else
+						ImGui::Text("%i", player.armor);
+				}
 
 				if (ImGui::TableNextColumn())
 					ImGui::Text(player.lastPlaceName.c_str());
 
 				if (ImGui::TableNextColumn())
 				{
-					ImGui::Text("%llu", player.steamID);
-					if (ImGui::SmallButton("Copy"))
-						ImGui::SetClipboardText(std::to_string(player.steamID).c_str());
+					if (player.isBot)
+						ImGui::Text("BOT");
+					else
+					{
+						ImGui::Text("%llu", player.steamID);
+						if (ImGui::SmallButton("Copy"))
+							ImGui::SetClipboardText(std::to_string(player.steamID).c_str());
+					}
 				}
 
 				if (ImGui::TableNextColumn())
 				{
-					ImGui::Text("%llu", player.userId);
-					if (ImGui::SmallButton("Copy"))
-						ImGui::SetClipboardText(std::to_string(player.userId).c_str());
+					if (player.isBot)
+						ImGui::Text("BOT");
+					else
+					{
+						ImGui::Text("%llu", player.userId);
+						if (ImGui::SmallButton("Copy"))
+							ImGui::SetClipboardText(std::to_string(player.userId).c_str());
+					}
 				}
 					
 			}
