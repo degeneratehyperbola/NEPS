@@ -59,7 +59,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 
 		gui->updateColors();
 		SkinChanger::scheduleHudUpdate();
-		
+
 		std::ostringstream welcomeMsg;
 		welcomeMsg << "Let's get started!\n";
 		welcomeMsg << "To open GUI press \"";
@@ -122,6 +122,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 
 	Misc::velocityGraph();
 	Misc::purchaseList();
+	Misc::statusBar();
 	Misc::teamDamageList();
 	Misc::drawBombTimer();
 	Misc::indicators();
@@ -778,6 +779,11 @@ void Hooks::install() noexcept
 
 	if constexpr (std::is_same_v<HookType, MinHook>)
 		MH_EnableHook(MH_ALL_HOOKS);
+
+	const auto time = std::time(nullptr);
+	const auto localTime = std::localtime(&time);
+	memory->conColorMsg({ 149, 86, 207, 255 }, "[%02d:%02d:%02d] NEPS hooked successfuly.\n", localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
+
 }
 
 extern "C" BOOL WINAPI _CRT_INIT(HMODULE moduleHandle, DWORD reason, LPVOID reserved);
@@ -848,4 +854,9 @@ void Hooks::uninstall() noexcept
 
 	if (HANDLE thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(unload), moduleHandle, 0, nullptr))
 		CloseHandle(thread);
+
+	const auto time = std::time(nullptr);
+	const auto localTime = std::localtime(&time);
+	memory->conColorMsg({ 149, 86, 207, 255 }, "[%02d:%02d:%02d] NEPS unhooked successfuly.\n", localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
+
 }

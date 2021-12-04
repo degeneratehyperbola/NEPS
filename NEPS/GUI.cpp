@@ -1332,8 +1332,10 @@ void GUI::renderGlowWindow(bool contentOnly) noexcept
 
 	ImGui::SetNextItemWidth(100);
 	ImGui::Combo("Style", &config->glow[currentItem].style, "Default\0Rim3d\0Edge\0Edge Pulse\0");
-	if (!config->glow[currentItem].style)
+	if (!config->glow[currentItem].style) {
+		ImGui::SliderFloat("Thickness", &config->glow[currentItem].thickness, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags_None);
 		ImGui::Checkbox("Full bloom", &config->glow[currentItem].full);
+	}
 
 	if (!contentOnly)
 		ImGui::End();
@@ -2643,6 +2645,19 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Only during freeze time", &config->misc.purchaseList.onlyDuringFreezeTime);
 		ImGui::Checkbox("Show prices", &config->misc.purchaseList.showPrices);
 		ImGui::Checkbox("No title bar", &config->misc.purchaseList.noTitleBar);
+		ImGui::EndPopup();
+	}
+
+	ImGui::Checkbox("Status Bar", &config->misc.Sbar.enabled);
+	ImGui::SameLine();
+
+	if (ImGui::ArrowButton("sbar", ImGuiDir_Right))
+		ImGui::OpenPopup("##sbar");
+
+	if (ImGui::BeginPopup("##sbar")) {
+		ImGui::Checkbox("Show View Angles", &config->misc.Sbar.showPlayerRealViewAngles);
+		ImGui::Checkbox("Show Player Status", &config->misc.Sbar.showPlayerStatus);
+		ImGui::Checkbox("Show Game Global Vars", &config->misc.Sbar.showGameGlobalVars);
 		ImGui::EndPopup();
 	}
 

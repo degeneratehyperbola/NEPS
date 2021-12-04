@@ -1620,6 +1620,63 @@ void Misc::purchaseList(GameEvent *event) noexcept
 	}
 }
 
+void Misc::statusBar()noexcept
+{
+	auto& cfg = config->misc.Sbar;
+	if (cfg.enabled == false)
+		return;
+
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
+
+	if (!localPlayer && !gui->open)
+		return;
+
+	ImGui::SetNextWindowSize(ImVec2(200.0f, 200.0f), ImGuiCond_Once);
+	ImGui::Begin("Status Bar", nullptr, windowFlags);
+	if (localPlayer && localPlayer->isAlive()) {
+		if (cfg.showPlayerRealViewAngles) {
+			ImGui::Text("Pitch: %.1f", interfaces->engine->getViewAngles().x);
+			ImGui::Text("Yaw: %.1f", interfaces->engine->getViewAngles().y);
+		}
+
+		if (cfg.showPlayerStatus)
+		{
+			std::string message = "Local Player: ";
+			auto local = GameData::local();
+
+			if (localPlayer->flags() & PlayerFlag_OnGround)
+				message += "On Gound\n";
+			if (!(localPlayer->flags() & PlayerFlag_OnGround))
+				message += "In Air\n";
+			if (localPlayer->flags() & PlayerFlag_Crouched)
+				message += "Crouched\n";
+			if (localPlayer->flags() & PlayerFlag_GodMode)
+				message += "God Mode\n";
+			if (localPlayer->flags() & PlayerFlag_OnFire)
+				message += "On Fire\n";
+			if (localPlayer->flags() & PlayerFlag_Swim)
+				message += "Swimming\n";
+			if (localPlayer->isDefusing())
+				message += "Defusing\n";
+			if (localPlayer->isFlashed())
+				message += "Flashed\n";
+			if (localPlayer->inBombZone())
+				message += "In Bomb Zone\n";
+			if (local.shooting)
+				message += "Shooting\n";
+
+			ImGui::Text(message.c_str());
+
+		}
+
+		if (cfg.showGameGlobalVars) {
+			ImGui::Text("CurTime: %.1f", memory->globalVars->currenttime);
+			ImGui::Text("RealTime: %.1f", memory->globalVars->realtime);
+		}
+	}
+	ImGui::End();
+}
+
 void Misc::teamDamageList(GameEvent *event)
 {
 	static std::mutex mtx;

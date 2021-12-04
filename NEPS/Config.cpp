@@ -452,6 +452,7 @@ static void from_json(const json &j, Config::Glow &g)
 	read(j, "Health based", g.healthBased);
 	read(j, "Style", g.style);
 	read(j, "Full bloom", g.full);
+	read(j, "Thickness", g.thickness);
 }
 
 static void from_json(const json &j, Config::Chams::Material &m)
@@ -737,6 +738,14 @@ static void from_json(const json &j, Config::Misc::KnifeBot &ff)
 	read(j, "Friendly", ff.friendly);
 }
 
+static void from_json(const json& j, Config::Misc::StatusBar &s)
+{
+	read(j, "Enabled", s.enabled);
+	read(j, "Show Player Real ViewAngles", s.showPlayerRealViewAngles);
+	read(j, "Show Player Status", s.showPlayerStatus);
+	read(j, "Show GameGlobalVars", s.showGameGlobalVars);
+}
+
 static void from_json(const json &j, Config::Misc &m)
 {
 	read(j, "Menu key", m.menuKey);
@@ -774,6 +783,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read<value_t::object>(j, "Watermark", m.watermark);
 	read<value_t::object>(j, "Auto Defuse", m.autoDefuse);
 	read<value_t::object>(j, "KnifeBot", m.knifeBot);
+	read<value_t::object>(j, "Status Bar", m.Sbar);
 	read<value_t::object>(j, "Indicators", m.indicators);
 	read(j, "Debug Notice", m.debugNotice);
 	read(j, "All Cvar", m.allCvar);
@@ -1170,6 +1180,7 @@ static void to_json(json &j, const Config::Glow &o, const Config::Glow &dummy = 
 	WRITE("Health based", healthBased);
 	WRITE("Style", style);
 	WRITE("Full bloom", full);
+	WRITE("Thickness", thickness);
 }
 
 static void to_json(json &j, const Config::Chams::Material &o)
@@ -1278,6 +1289,14 @@ static void to_json(json &j, const Config::Misc::SpectatorList &o, const Config:
 	WRITE("Enabled", enabled);
 }
 
+static void to_json(json& j, const Config::Misc::StatusBar& o, const Config::Misc::StatusBar &dummy = {})
+{
+	WRITE("Enabled", enabled);
+	WRITE("Show Player Real ViewAngles", showPlayerRealViewAngles);
+	WRITE("Show Player Status", showPlayerStatus);
+	WRITE("Show GameGlobalVars", showGameGlobalVars);
+}
+
 static void to_json(json &j, const Config::Misc &o)
 {
 	const Config::Misc dummy = {};
@@ -1317,6 +1336,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Watermark", watermark);
 	WRITE("Auto Defuse", autoDefuse);
 	WRITE("KnifeBot", knifeBot);
+	WRITE("Status Bar", Sbar);
 	WRITE("Indicators", indicators);
 	WRITE("Debug Notice", debugNotice);
 	WRITE("All Cvar", allCvar);

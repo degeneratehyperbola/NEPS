@@ -156,6 +156,7 @@ public:
 		bool enabled = false;
 		bool healthBased = false;
 		int style = 0;
+		float thickness = 0.6f;
 		bool full = false;
 	};
 	std::array<Glow, 20> glow;
@@ -461,6 +462,15 @@ public:
 			};
 			int mode = Details;
 		} purchaseList;
+
+		struct StatusBar
+		{
+			bool enabled = false;
+			bool showPlayerRealViewAngles = false;
+			bool showPlayerStatus = false;
+			bool showGameGlobalVars = false;
+
+		} Sbar;
 
 		struct BombTimer
 		{

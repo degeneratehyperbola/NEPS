@@ -113,6 +113,7 @@
     <ClInclude Include="SDK\Beam.h" />
     <ClInclude Include="SDK\Client.h" />
     <ClInclude Include="SDK\ClientMode.h" />
+    <ClInclude Include="SDK\ClientTools.h" />
     <ClInclude Include="SDK\ConVar.h" />
     <ClInclude Include="SDK\Effects.h" />
     <ClInclude Include="SDK\EngineTrace.h" />
@@ -133,6 +134,7 @@
     <ClInclude Include="SDK\GlobalVars.h" />
     <ClInclude Include="SDK\GlowObjectManager.h" />
     <ClInclude Include="SDK\Inconstructible.h" />
+    <ClInclude Include="SDK\Platform.h" />
     <ClInclude Include="SDK\ProtobufReader.h" />
     <ClInclude Include="SDK\Input.h" />
     <ClInclude Include="SDK\InputSystem.h" />
@@ -158,6 +160,7 @@
     <ClInclude Include="SDK\RenderContext.h" />
     <ClInclude Include="SDK\RenderView.h" />
     <ClInclude Include="SDK\Sound.h" />
+    <ClInclude Include="SDK\Steam.h" />
     <ClInclude Include="SDK\SteamId.h" />
     <ClInclude Include="SDK\SteamMatchMaking.h" />
     <ClInclude Include="SDK\StudioRender.h" />
@@ -171,6 +174,7 @@
     <ClInclude Include="SDK\VirtualMethod.h" />
     <ClInclude Include="SDK\WeaponId.h" />
     <ClInclude Include="SDK\WeaponData.h" />
+    <ClInclude Include="SDK\WeaponInfo.h" />
     <ClInclude Include="SDK\WeaponSystem.h" />
   </ItemGroup>
   <ItemGroup>

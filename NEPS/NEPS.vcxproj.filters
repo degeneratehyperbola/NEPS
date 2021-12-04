@@ -508,6 +508,18 @@
     <ClInclude Include="SDK\Inconstructible.h">
       <Filter>SDK</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\WeaponInfo.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Steam.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Platform.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\ClientTools.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\logo.png">

@@ -65,7 +65,7 @@ void Glow::render() noexcept
 				glowobject.renderWhenUnoccluded = false;
 				glowobject.glowAlpha = glow.color[3];
 				glowobject.glowStyle = glow.style;
-				glowobject.glowAlphaMax = 0.6f;
+				glowobject.glowAlphaMax = glow.thickness;
 				if (glow.healthBased && health)
 				{
 					const auto &&[r, g, b] = Helpers::hsvToRgb(std::lerp(0.0f, 1.0f / 3.0f, std::clamp(health / 100.0f, 0.0f, 1.0f)), 1.0f, 1.0f);

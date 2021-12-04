@@ -54,6 +54,7 @@ namespace Misc
 	void indicators() noexcept;
 	void drawBombTimer() noexcept;
 	void purchaseList(GameEvent *event = nullptr) noexcept;
+	void statusBar() noexcept;
 	void teamDamageList(GameEvent *event = nullptr);
 	void spectatorList() noexcept;
 	void watermark() noexcept;
