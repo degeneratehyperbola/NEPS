@@ -481,8 +481,7 @@ void Misc::stealNames() noexcept
 	long currentTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 	static long timeStamp = currentTime_ms;
 
-	if (currentTime_ms - timeStamp < 350)
-		return;
+	if (currentTime_ms - timeStamp < 350) return;
 
 	for (int i = 1; i <= memory->globalVars->maxClients; ++i)
 	{
@@ -501,9 +500,12 @@ void Misc::stealNames() noexcept
 		if (changeName(false, (std::string{playerInfo.name} + '\x1').c_str(), 1.0f))
 			stolenIds.emplace_back(playerInfo.userId);
 
+		timeStamp = currentTime_ms;
+
 		return;
 	}
 	stolenIds.clear();
+	
 }
 
 void Misc::quickReload(UserCmd *cmd) noexcept
@@ -888,7 +890,7 @@ void Misc::fixMouseDelta(UserCmd* cmd) noexcept
 	delta.z = 0.0f;
 	static ConVar* sensitivity;
 	if (!sensitivity)
-		sensitivity = interfaces->cvar->findVar("sensitivity");;
+		sensitivity = interfaces->cvar->findVar("sensitivity");
 	if (delta.x != 0.f) {
 		static ConVar* m_pitch;
 
@@ -1616,7 +1618,7 @@ void Misc::purchaseList(GameEvent *event) noexcept
 
 				GameData::Lock lock;
 
-				for (const auto& [userId, purchases] : playerPurchases) {
+				for (const auto& [handle, purchases] : playerPurchases) {
 					std::string s;
 					s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto& p) { return length + p.first.length() + 2; }));
 					for (const auto& purchasedItem : purchases.items) {
@@ -1630,11 +1632,11 @@ void Misc::purchaseList(GameEvent *event) noexcept
 
 					ImGui::TableNextRow();
 
-					if (const auto it = std::ranges::find(GameData::players(), userId, &PlayerData::userId); it != GameData::players().cend()) {
+					if (const auto it = std::ranges::find(GameData::players(), handle, &PlayerData::handle); it != GameData::players().cend()) {
 						if (ImGui::TableNextColumn())
 							ImGuiCustom::textEllipsisInTableCell(it->name.c_str());
 						if (ImGui::TableNextColumn())
-							ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, "$%d", purchases.totalCost);
+							ImGui::TextColored({ 0.0f, 0.5f, 0.0f, 1.0f }, "$%d", purchases.totalCost);
 						if (ImGui::TableNextColumn())
 							ImGui::TextWrapped("%s", s.c_str());
 					}
@@ -1766,7 +1768,7 @@ void Misc::playerList()
 				ImGui::Text(interfaces->localize->findAsUTF8(("RankName_" + std::to_string(playerResource->competitiveRanking()[localPlayer->index()])).c_str()));
 
 			if (ImGui::TableNextColumn())
-				ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, "$%d", localPlayer->account());
+				ImGui::TextColored({ 0.0f, 0.5f, 0.0f, 1.0f }, "$%d", localPlayer->account());
 
 			if (ImGui::TableNextColumn())
 			{
@@ -1846,7 +1848,7 @@ void Misc::playerList()
 					
 
 				if (ImGui::TableNextColumn())
-					ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, "$%d", currentPlayer.money);
+					ImGui::TextColored({ 0.0f, 0.5f, 0.0f, 1.0f }, "$%d", currentPlayer.money);
 
 				if (ImGui::TableNextColumn())
 				{
@@ -1882,6 +1884,42 @@ void Misc::playerList()
 		}
 	}
 	ImGui::End();
+}
+
+void Misc::selfNade(UserCmd* cmd)
+{
+	if (!GetAsyncKeyState(config->misc.selfNade))
+		return;
+
+	if (!interfaces->engine->isInGame() || !interfaces->engine->isConnected())
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	auto activeWeapon = localPlayer->getActiveWeapon();
+
+
+	if (activeWeapon)
+	{
+		if (!activeWeapon->isGrenade())
+			return;
+
+		auto throwStrength = activeWeapon->throwStrength();
+
+		if (throwStrength > 0.10f)
+			cmd->buttons |= UserCmd::Button_Attack2;
+
+		if (throwStrength < 0.11f) 
+			cmd->buttons |= UserCmd::Button_Attack;
+
+		if (throwStrength >= 0.11f || throwStrength <= 0.10f)
+			return;
+
+		cmd->viewangles.x = 89.0f;
+		cmd->buttons &= ~UserCmd::Button_Attack;
+		cmd->buttons &= ~UserCmd::Button_Attack2;
+	}
 }
 
 void Misc::teamDamageList(GameEvent *event)

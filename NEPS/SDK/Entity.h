@@ -333,7 +333,7 @@ public:
 	void getPlayerName(char(&out)[128]) noexcept;
 	[[nodiscard]] std::string getPlayerName() noexcept
 	{
-		char name[128];
+		char name[128] = { 0 };
 		getPlayerName(name);
 		return name;
 	}
@@ -491,6 +491,8 @@ public:
 	NETVAR(thrower, "CBaseGrenade", "m_hThrower", int)
 	NETVAR(pinPulled, "CBaseCSGrenade", "m_bPinPulled", bool)
 	NETVAR(throwTime, "CBaseCSGrenade", "m_fThrowTime", float)
+	NETVAR(throwStrength, "CBaseCSGrenade", "m_flThrowStrength", float);
+	NETVAR(explodeEffectTickBegin, "CBaseCSGrenadeProjectile", "m_nExplodeEffectTickBegin", int);
 
 	NETVAR(didSmokeEffect, "CSmokeGrenadeProjectile", "m_bDidSmokeEffect", bool)
 

@@ -32,6 +32,7 @@
 #include "SDK/EngineTrace.h"
 #include "SDK/Entity.h"
 #include "SDK/EntityList.h"
+#include "SDK/InputSystem.h"
 #include "SDK/NetworkStringTable.h"
 #include "SDK/PlayerResource.h"
 #include "SDK/Surface.h"
@@ -134,6 +135,20 @@ static void drawColorPalette() noexcept
 	ImGui::PopStyleVar(2);
 }
 
+void GUI::handleToggle() noexcept
+{
+	if (ImGui::IsKeyPressed(config->misc.menuKey, false)) {
+		gui->open = !gui->open;
+		if (!gui->open)
+			interfaces->inputSystem->resetInputState();
+
+		if (toggleAnimationEnd > 0.0f && toggleAnimationEnd < 1.0f)
+			toggleAnimationEnd = 1.0f - toggleAnimationEnd;
+		else
+			toggleAnimationEnd = 0.0f;
+	}
+}
+
 void GUI::render() noexcept
 {
 	#ifdef NEPS_DEBUG
@@ -154,6 +169,14 @@ void GUI::render() noexcept
 
 	if (!open)
 		return;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, getTransparency());
+
+	if (open && toggleAnimationEnd < 1.0f)
+		ImGui::SetWindowFocus();
+
+	toggleAnimationEnd += ImGui::GetIO().DeltaTime / animationLength();
+
 
 	// ?Que? I don't know why, but apparently 2048x2048 texture is too much for DX9 ¯\_(ツ)_/¯
 	//static Texture vignette = {IDB_PNG3, L"PNG"};
@@ -369,8 +392,13 @@ void GUI::renderMenuBar() noexcept
 			ImGui::EndMenu();
 		}
 		ImGui::Separator();
-		ImGui::TextUnformatted("[NEPS] Build date: " __DATE__ " " __TIME__);
-		ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 55.0f);
+		ImGui::TextColored({ .5f, 0.22f, 0.f, 1.f}, "[NEPS]" );
+
+		const auto time = std::time(nullptr);
+		const auto localTime = std::localtime(&time);
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Build date: " __DATE__ " " __TIME__ "\nTime: %02d:%02d:%02d" , localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
 		ImGui::Separator();
 
 		{
@@ -2625,6 +2653,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Quick reload", &config->misc.quickReload);
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
 	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
+	ImGuiCustom::keyBind("Self nade", &config->misc.selfNade);
 
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
 	ImGui::Checkbox("Fix bone matrix", &config->misc.fixBoneMatrix);

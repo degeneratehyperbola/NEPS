@@ -769,6 +769,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Disable HUD blur", m.disablePanoramablur);
 	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
 	read(j, "Quick healthshot key", m.quickHealthshotKey);
+	read(j, "Self nade", m.selfNade);
 	read(j, "Radar hack", m.radarHack);
 	read(j, "Reveal ranks", m.revealRanks);
 	read(j, "Reveal money", m.revealMoney);
@@ -1326,6 +1327,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Disable HUD blur", disablePanoramablur);
 	WRITE("Prepare revolver", prepareRevolver);
 	WRITE("Quick healthshot key", quickHealthshotKey);
+	WRITE("Self nade", selfNade);
 	WRITE("Reveal ranks", revealRanks);
 	WRITE("Reveal money", revealMoney);
 	WRITE("Reveal suspect", revealSuspect);

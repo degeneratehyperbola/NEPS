@@ -16,6 +16,10 @@ public:
 	bool open = false;
 	const auto &getFont() noexcept { return font; };
 	void updateColors() const noexcept;
+	void handleToggle() noexcept;
+	float getTransparency() const noexcept { 
+		return std::clamp(open ? toggleAnimationEnd : 1.0f - toggleAnimationEnd, 0.0f, 1.0f); 
+	}
 private:
 	void renderGuiStyle2() noexcept;
 	void renderContextMenu() noexcept;
@@ -59,6 +63,8 @@ private:
 	} window;
 
 	ImFont *font = nullptr;
+	inline constexpr float animationLength() { return 0.25f; }
+	float toggleAnimationEnd = 0.0f;
 };
 
 inline std::unique_ptr<GUI> gui;

@@ -74,17 +74,6 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 		return true;
 	}(window);
 
-	if (msg == WM_KEYDOWN && LOWORD(wParam) == config->misc.menuKey
-		|| ((msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK) && config->misc.menuKey == VK_LBUTTON)
-		|| ((msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK) && config->misc.menuKey == VK_RBUTTON)
-		|| ((msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) && config->misc.menuKey == VK_MBUTTON)
-		|| ((msg == WM_XBUTTONDOWN || msg == WM_XBUTTONDBLCLK) && config->misc.menuKey == HIWORD(wParam) + 4))
-	{
-		gui->open = !gui->open;
-		if (!gui->open)
-			interfaces->inputSystem->resetInputState();
-	}
-
 	LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	ImGui_ImplWin32_WndProcHandler(window, msg, wParam, lParam);
 
@@ -137,6 +126,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	#endif // !LEGACY_WATERMARK
 
 	gui->render();
+	gui->handleToggle();
 
 	ImGui::EndFrame();
 	ImGui::Render();
@@ -216,6 +206,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::revealRanks(cmd);
 	Misc::quickReload(cmd);
 	Misc::quickHealthshot(cmd);
+	Misc::selfNade(cmd);
 	Misc::fixTabletSignal();
 	Misc::removeCrouchCooldown(cmd);
 	Misc::fastStop(cmd);
