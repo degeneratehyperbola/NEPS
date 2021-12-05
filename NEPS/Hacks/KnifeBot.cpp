@@ -105,15 +105,15 @@ void KnifeBot::run(UserCmd* cmd) noexcept
 	float playerDistance = localPlayer->origin().distTo(player->origin());
 	if (localPlayer->getActiveWeapon()->nextPrimaryAttack() < memory->globalVars->currenttime)
 	{
-		if (playerDistance <= 65.f && GetKnife2DamageDone(player) >= player->health())
+		if (playerDistance <= 60.f && GetKnife2DamageDone(player) >= player->health())
 			cmd->buttons |= UserCmd::Button_Attack2;
-		else if (IsPlayerBehind(player) && playerDistance <= 65.f)
+		else if (IsPlayerBehind(player) && playerDistance <= 60.f)
 			cmd->buttons |= UserCmd::Button_Attack2;
-		else if (playerDistance <= 78.f)
+		else if (playerDistance <= 73.f)
 		{
 			if (IsPlayerBehind(player))
 				return;
-			if (playerDistance <= 65.f &&
+			if (playerDistance <= 60.f &&
 				(2 * (GetKnifeDamageDone(player)) + GetKnife2DamageDone(player) - 13) < player->health())
 				cmd->buttons |= UserCmd::Button_Attack2;
 			else
