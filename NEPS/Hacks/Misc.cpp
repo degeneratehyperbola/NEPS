@@ -1740,7 +1740,7 @@ void Misc::playerList()
 			ImGui::TableSetupColumn("Health", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Armor", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Last Place", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn("SteamID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, 100.0f);
+			ImGui::TableSetupColumn("SteamID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, 90.0f);
 			ImGui::TableSetupColumn("UserID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableHeadersRow();
 
