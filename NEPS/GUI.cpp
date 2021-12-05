@@ -743,6 +743,10 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::SetNextItemWidth(80);
 		ImGuiCustom::multiCombo("Hit group", config->aimbot[currentWeapon].hitGroup, "Head\0Chest\0Stomach\0Left arm\0Right arm\0Left leg\0Right leg\0");
 
+		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
+		//ImGui::SliderInt("First shot delay", &config->aimbot[currentWeapon].firstShotDelay, 0, 1000, "First shot delay %d ms");
+		ImGui::SliderInt("", &config->aimbot[currentWeapon].killDelay, 0, 2000, "Kill delay %d ms");
+
 		ImGui::NextColumn();
 
 		ImGui::Checkbox("Multipoint", &config->aimbot[currentWeapon].multipoint);
@@ -790,12 +794,30 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::SetNextItemWidth(100);
+
+		ImGui::Combo("Smoothing", &config->aimbot[currentWeapon].interpolation, "None\0Linear\0Quadratic\0Both\0");
+		switch (config->aimbot[currentWeapon].interpolation)
+		{
+		case 0:
+			break;
+		case 1:
+			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linear, 0.0f, 20.0f, "Speed %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
+			break;
+		case 2:
+			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Smoothness %.4f");
+			break;
+		case 3:
+			ImGui::SliderFloat("##linear_speed", &config->aimbot[currentWeapon].linear, 0.0f, 20.0f, "Linear %.4fdeg/tick", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Quadratic %.4f");
+			break;
+		}
+
+		ImGui::SetNextItemWidth(100);
 		
 		ImGui::Checkbox("Humanize", &config->aimbot[currentWeapon].humanize);
 		if (config->aimbot[currentWeapon].humanize)
 		{
 			ImGui::SliderFloat("##acceleration", &config->aimbot[currentWeapon].acceleration, 0.0f, 5.0f, "Acceleration %.4fdeg/tick^2", ImGuiSliderFlags_Logarithmic);
-			ImGui::SliderFloat("##smoothness", &config->aimbot[currentWeapon].quadratic, 0.0f, 1.0f, "Smoothness %.4f");
 			ImGui::SliderFloat("##friction", &config->aimbot[currentWeapon].friction, 1.0f, 5.0f, "Friction %.4f", ImGuiSliderFlags_Logarithmic);
 			config->aimbot[currentWeapon].friction = std::fmaxf(1.0f, config->aimbot[currentWeapon].friction);
 		}
@@ -803,9 +825,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::SliderFloat("#rcsH", &config->aimbot[currentWeapon].recoilReductionH, 0.0f, 100.0f, "RCS Horizontal %.0f%%");
 		ImGui::SliderFloat("#rcsV", &config->aimbot[currentWeapon].recoilReductionV, 0.0f, 100.0f, "RCS Vertical %.0f%%");
 
-		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
-		//ImGui::SliderInt("First shot delay", &config->aimbot[currentWeapon].firstShotDelay, 0, 1000, "First shot delay %d ms");
-		ImGui::SliderInt("Kill delay", &config->aimbot[currentWeapon].killDelay, 0, 2000, "Kill delay %d ms");
 	}
 
 	ImGui::EndChild();

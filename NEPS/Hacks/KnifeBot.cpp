@@ -10,9 +10,8 @@
 
 bool IsPlayerBehind(Entity* player) noexcept
 {
-	Vector pOrigin = player->origin();
-	pOrigin.clamp();
-	Vector toTarget = (localPlayer->origin() - pOrigin);
+	Vector pOrigin = player->getAbsOrigin();
+	Vector toTarget = (localPlayer->getAbsOrigin() - pOrigin);
 	Vector playerViewAngles;
 	Vector::AngleVectors(player->eyeAngles(), playerViewAngles);
 	if (toTarget.dotProduct(playerViewAngles) > -0.5f)
