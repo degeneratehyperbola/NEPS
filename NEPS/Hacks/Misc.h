@@ -25,6 +25,7 @@ namespace Misc
 	void stealNames() noexcept;
 	void quickReload(UserCmd *) noexcept;
 	bool changeName(bool, const char *, float) noexcept;
+	void autoJumpBug(UserCmd* cmd) noexcept;
 	void bunnyHop(UserCmd *) noexcept;
 	void fakeBan() noexcept;
 	void changeConVarsTick() noexcept;

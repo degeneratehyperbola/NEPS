@@ -250,6 +250,8 @@ public:
 		Color4Toggle inaccuracyCircle = {1.0f, 1.0f, 1.0f, 0.25f};
 		int recoilCrosshairType = 0;
 		int forceCrosshair = 0;
+		Color4ToggleThickness reloadProgress = { 1.0f, 1.0f, 1.0f, 1.0f };
+		Color4Toggle nadeBlast = { 1.0f, 0.0f, 0.09f, 0.51f };
 
 		struct Beams
 		{
@@ -420,6 +422,7 @@ public:
 		int bunnyChance = 100;
 		bool autoStrafe = false;
 		KeyBind edgeJump;
+		KeyBind autoJumpBug;
 		bool fastStop = false;
 		int quickPeekKey = 0;
 	} movement;

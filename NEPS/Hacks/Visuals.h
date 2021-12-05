@@ -21,6 +21,7 @@ namespace Visuals
     void hitEffect(GameEvent* event = nullptr) noexcept;
     void killEffect(GameEvent* event = nullptr) noexcept;
     void hitMarker(GameEvent* event = nullptr, ImDrawList* drawList = nullptr) noexcept;
+    void drawReloadProgress(ImDrawList* drawList = nullptr) noexcept;
     void damageIndicator(GameEvent* event = nullptr, ImDrawList* drawList = nullptr) noexcept;
     void disablePostProcessing(FrameStage stage) noexcept;
     void reduceFlashEffect() noexcept;
@@ -31,6 +32,7 @@ namespace Visuals
     void bulletBeams(GameEvent *event);
     void drawMolotovHull(ImDrawList *drawList) noexcept;
     void drawSmokeTimer(ImDrawList* drawList) noexcept;
+    void drawNadeBlast(ImDrawList* drawList) noexcept;
 	void drawSmokeHull(ImDrawList *drawList) noexcept;
     void flashlight(FrameStage stage) noexcept;
     void playerBounds(ImDrawList *drawList) noexcept;

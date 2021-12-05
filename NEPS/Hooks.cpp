@@ -107,6 +107,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Visuals::drawSmokeHull(ImGui::GetBackgroundDrawList());
 	Visuals::drawMolotovHull(ImGui::GetBackgroundDrawList());
 	Visuals::drawSmokeTimer(ImGui::GetBackgroundDrawList());
+	Visuals::drawNadeBlast(ImGui::GetBackgroundDrawList());
 	Visuals::playerBounds(ImGui::GetBackgroundDrawList());
 	Visuals::playerVelocity(ImGui::GetBackgroundDrawList());
 	Misc::visualizeBlockBot(ImGui::GetBackgroundDrawList());
@@ -116,6 +117,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	AntiAim::visualize(ImGui::GetBackgroundDrawList());
 	Visuals::hitMarker(nullptr, ImGui::GetBackgroundDrawList());
 	Visuals::damageIndicator(nullptr, ImGui::GetBackgroundDrawList());
+	Visuals::drawReloadProgress(ImGui::GetBackgroundDrawList());
 	Misc::visualizeInaccuracy(ImGui::GetBackgroundDrawList());
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
@@ -218,6 +220,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::removeCrouchCooldown(cmd);
 	Misc::fastStop(cmd);
 	Misc::autoStrafe(cmd);
+	Misc::autoJumpBug(cmd);
 	Misc::bunnyHop(cmd);
 	Misc::fixMouseDelta(cmd);
 	Misc::prepareRevolver(cmd);
@@ -246,9 +249,9 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::edgeJump(cmd);
 	Misc::blockBot(cmd, currentViewAngles);
 	Misc::fastPlant(cmd);
-	Misc::AutoDefuse(cmd);
 
 	AntiAim::run(cmd, currentViewAngles, sendPacket);
+	Misc::AutoDefuse(cmd);
 
 	auto viewAnglesDelta = cmd->viewangles - previousViewAngles;
 	viewAnglesDelta.normalize();
@@ -825,6 +828,7 @@ void Hooks::uninstall() noexcept
 	surface.restore();
 	svCheats.restore();
 	viewRender.restore();
+	
 	networkChannel.restore();
 
 	netvars->restore();

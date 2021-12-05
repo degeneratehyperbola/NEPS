@@ -731,5 +731,24 @@ ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, float distance, float cullDis
 	return textSize;
 }
 
+void ImGuiCustom::textEllipsisInTableCell(const char* text) noexcept
+{
+	ImGuiContext& g = *GImGui;
+	ImGuiWindow* window = g.CurrentWindow;
 
+	ImGuiTable* table = g.CurrentTable;
+	IM_ASSERT(table != NULL && "Need to call textEllipsisInTableCell() after BeginTable()!");
+	IM_ASSERT(table->CurrentColumn != -1);
 
+	const char* textEnd = ImGui::FindRenderedTextEnd(text);
+	ImVec2 textSize = ImGui::CalcTextSize(text, textEnd, true);
+	ImVec2 textPos = window->DC.CursorPos;
+	float textHeight = ImMax(textSize.y, table->RowMinHeight - table->CellPaddingY * 2.0f);
+
+	float ellipsisMax = ImGui::TableGetCellBgRect(table, table->CurrentColumn).Max.x;
+	ImGui::RenderTextEllipsis(window->DrawList, textPos, ImVec2(ellipsisMax, textPos.y + textHeight + g.Style.FramePadding.y), ellipsisMax, ellipsisMax, text, textEnd, &textSize);
+
+	ImRect bb(textPos, textPos + textSize);
+	ImGui::ItemSize(textSize, 0.0f);
+	ImGui::ItemAdd(bb, 0);
+}

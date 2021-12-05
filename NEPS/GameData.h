@@ -121,6 +121,7 @@ struct ProjectileData : BaseData
 	}
 
 	bool exploded = false;
+	float explosionTime = 0.0f;
 	bool thrownByLocalPlayer = false;
 	bool thrownByEnemy = false;
 	int handle;

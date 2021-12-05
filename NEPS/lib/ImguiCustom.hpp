@@ -95,4 +95,5 @@ namespace ImGuiCustom
 
 	void drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned int color) noexcept;
 	ImVec2 drawText(ImDrawList *drawList, float distance, float cullDistance, unsigned int textColor, unsigned int borderColor, const char *text, const ImVec2 &pos, bool centered = true, bool adjustHeight = true) noexcept;
+	void textEllipsisInTableCell(const char* text) noexcept;
 }

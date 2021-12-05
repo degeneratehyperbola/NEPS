@@ -1916,6 +1916,9 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGuiCustom::colorPicker("Timer color", config->visuals.smokeTimer.timerColor, nullptr, &config->visuals.smokeTimer.timerThickness);
 		ImGui::EndPopup();
 	}
+
+	ImGuiCustom::colorPicker("Nade Blast", config->visuals.nadeBlast);
+
 	ImGuiCustom::colorPicker("Player bounds", config->visuals.playerBounds);
 	//ImGui::SameLine(130);
 	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVelocity);
@@ -2070,6 +2073,8 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Message", &config->visuals.damageIndicatorMessage);
 		ImGui::EndPopup();
 	}
+
+	ImGuiCustom::colorPicker("Reload timer", config->visuals.reloadProgress);
 
 	ImGui::PopItemWidth();
 	ImGui::SliderFloat("##aspect_ratio", &config->visuals.aspectratio, 0.0f, 5.0f, "Aspect ratio %.2f");
@@ -2543,6 +2548,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGui::SliderInt("##bhopchance", &config->movement.bunnyChance, 0, 100, "BhopChance: %d %");
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
+	ImGuiCustom::keyBind("Auto Jump Bug", config->movement.autoJumpBug);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
 	ImGuiCustom::keyBind("Quick Peek", &config->movement.quickPeekKey);
 

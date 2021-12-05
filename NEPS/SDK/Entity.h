@@ -441,7 +441,6 @@ public:
 	NETVAR(lbyTarget, "CCSPlayer", "m_flLowerBodyYawTarget", float)
 	NETVAR(ragdoll, "CCSPlayer", "m_hRagdoll", int)
 	NETVAR(shotsFired, "CCSPlayer", "m_iShotsFired", int)
-	PROP(money, 0xB364, int)
 	NETVAR(waitForNoAttack, "CCSPlayer", "m_bWaitForNoAttack", bool)
 
 	NETVAR(viewModelIndex, "CBaseCombatWeapon", "m_iViewModelIndex", int)

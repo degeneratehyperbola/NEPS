@@ -609,6 +609,8 @@ static void from_json(const json &j, Config::Visuals &v)
 	read<value_t::object>(j, "Recoil crosshair", v.recoilCrosshair);
 	read<value_t::object>(j, "Inaccuracy circle", v.inaccuracyCircle);
 	read(j, "Force crosshair", v.forceCrosshair);
+	read<value_t::object>(j, "Reload timer", v.reloadProgress);
+	read<value_t::object>(j, "Nade blast", v.nadeBlast);
 }
 
 static void from_json(const json &j, sticker_setting &s)
@@ -858,6 +860,7 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Bunny Chance", m.bunnyChance);
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
+	read<value_t::object>(j, "Air duck", m.autoJumpBug);
 	read(j, "Fast stop", m.fastStop);
 	read(j, "Quick Peek", m.quickPeekKey);
 }
@@ -1419,6 +1422,7 @@ static void to_json(json &j, const Config::Movement &o)
 	WRITE("Bunny Chance", bunnyChance);
 	WRITE("Auto strafe", autoStrafe);
 	WRITE("Edge jump", edgeJump);
+	WRITE("Air duck", autoJumpBug);
 	WRITE("Fast stop", fastStop);
 	WRITE("Quick Peek", quickPeekKey);
 }
@@ -1550,6 +1554,8 @@ static void to_json(json &j, const Config::Visuals &o)
 	WRITE("Recoil crosshair", recoilCrosshair);
 	WRITE("Inaccuracy circle", inaccuracyCircle);
 	WRITE("Force crosshair", forceCrosshair);
+	WRITE("Reload timer", reloadProgress);
+	WRITE("Nade blast", nadeBlast);
 }
 
 static void to_json(json &j, const ImVec4 &o)

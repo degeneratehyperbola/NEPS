@@ -43,7 +43,7 @@ public:
 	HookType sound;
 	HookType surface;
 	HookType viewRender;
-	VmtSwap networkChannel;
+	HookType networkChannel;
 	HookType svCheats;
 private:
 	HMODULE moduleHandle;

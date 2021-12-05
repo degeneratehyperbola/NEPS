@@ -86,7 +86,8 @@ void KnifeBot::run(UserCmd* cmd) noexcept
 	const auto endPos = startPos + Vector::fromAngle(cmd->viewangles + localPlayer->getAimPunch()) * localPlayer->getActiveWeapon()->getWeaponData()->range;
 
 	Trace trace;
-	TraceFilter filter = trace.entity;
+	trace.startPos = localPlayer->origin();
+;	TraceFilter filter = trace.entity;
 	filter.skip = localPlayer.get();
 	interfaces->engineTrace->traceRay({ startPos, endPos }, MASK_SHOT, filter, trace);
 

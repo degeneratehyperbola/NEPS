@@ -419,7 +419,8 @@ void Misc::AutoDefuse(UserCmd* cmd) noexcept
 			Vector pTargetBomb = bomb_->origin();
 			Vector angle = Vector::calcAngle(pVecTarget, pTargetBomb);
 			angle.clamp();
-			cmd->viewangles = angle;
+			if (angle.notNull())
+				cmd->viewangles = angle;
 		}
 	}
 	else 
@@ -583,6 +584,26 @@ bool Misc::changeName(bool reconnect, const char *newName, float delay) noexcept
 	return false;
 }
 
+void Misc::autoJumpBug(UserCmd* cmd) noexcept
+{
+
+	if (static Helpers::KeyBindState flag; !flag[config->movement.autoJumpBug])
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
+		return;
+
+	if (localPlayer->flags() & PlayerFlag_OnGround)
+	{
+		cmd->buttons &= ~UserCmd::Button_Jump;
+		if (!(EnginePrediction::getFlags() & PlayerFlag_OnGround))
+			cmd->buttons |= UserCmd::Button_Duck;
+	}
+}
+
 void Misc::bunnyHop(UserCmd* cmd) noexcept
 {
 
@@ -590,22 +611,28 @@ void Misc::bunnyHop(UserCmd* cmd) noexcept
 	static int bhopInSeries = 1;
 	static float lastTimeInAir{};
 	static int chanceToHit = config->movement.bunnyChance;
-	static auto wasLastTimeOnGround{ localPlayer->flags() & 1 };
+	static auto wasLastTimeOnGround{ localPlayer->flags() & PlayerFlag_OnGround };
 
 	chanceToHit = config->movement.bunnyChance;
 
 	if (bhopInSeries <= 1) {
-		chanceToHit = chanceToHit * 1.5;
+		chanceToHit = (int)(chanceToHit * 1.5f);
 	}
 
-	//config->misc.DEBUG = bhopInSeries;
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
+		return;
 
-	if (static Helpers::KeyBindState flag; flag[config->movement.bunnyHop] && !(localPlayer->flags() & PlayerFlag_OnGround) && localPlayer->moveType() != MoveType::Ladder && !wasLastTimeOnGround)
+	if (static Helpers::KeyBindState flag; flag[config->movement.autoJumpBug])
+		return;
+
+	if (static Helpers::KeyBindState flag; flag[config->movement.bunnyHop] && !(localPlayer->flags() & PlayerFlag_OnGround) && !wasLastTimeOnGround)
 		if (rand() % 100 <= chanceToHit) {
 			cmd->buttons &= ~UserCmd::Button_Jump;
 		}
-	//memory->globalVars->realtime - lastTimeInAir <= 2 &&
+
 	if (!wasLastTimeOnGround && hasLanded) {
 		bhopInSeries++;
 		lastTimeInAir = memory->globalVars->realtime;
@@ -618,7 +645,7 @@ void Misc::bunnyHop(UserCmd* cmd) noexcept
 		}
 	}
 
-	wasLastTimeOnGround = localPlayer->flags() & 1;
+	wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
 }
 
 void Misc::fakeBan() noexcept
@@ -1580,39 +1607,47 @@ void Misc::purchaseList(GameEvent *event) noexcept
 		ImGui::Begin("Purchases", nullptr, windowFlags);
 		ImGui::PopStyleVar();
 
-		if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Details)
-		{
-			GameData::Lock lock;
+		if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Details) {
+			if (ImGui::BeginTable("table", 3, ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_Resizable)) {
+				ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, 100.0f);
+				ImGui::TableSetupColumn("Price", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+				ImGui::TableSetupColumn("Purchases", ImGuiTableColumnFlags_WidthStretch);
+				ImGui::TableSetColumnEnabled(1, config->misc.purchaseList.showPrices);
 
-			for (const auto &[handle, purchases] : playerPurchases)
-			{
-				std::string s;
-				s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto &p) { return length + p.first.length() + 2; }));
-				for (const auto &purchasedItem : purchases.items)
-				{
-					if (purchasedItem.second > 1)
-						s += std::to_string(purchasedItem.second) + "x ";
-					s += purchasedItem.first + ", ";
+				GameData::Lock lock;
+
+				for (const auto& [userId, purchases] : playerPurchases) {
+					std::string s;
+					s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto& p) { return length + p.first.length() + 2; }));
+					for (const auto& purchasedItem : purchases.items) {
+						if (purchasedItem.second > 1)
+							s += std::to_string(purchasedItem.second) + "x ";
+						s += purchasedItem.first + ", ";
+					}
+
+					if (s.length() >= 2)
+						s.erase(s.length() - 2);
+
+					ImGui::TableNextRow();
+
+					if (const auto it = std::ranges::find(GameData::players(), userId, &PlayerData::userId); it != GameData::players().cend()) {
+						if (ImGui::TableNextColumn())
+							ImGuiCustom::textEllipsisInTableCell(it->name.c_str());
+						if (ImGui::TableNextColumn())
+							ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, "$%d", purchases.totalCost);
+						if (ImGui::TableNextColumn())
+							ImGui::TextWrapped("%s", s.c_str());
+					}
 				}
 
-				if (s.length() >= 2)
-					s.erase(s.length() - 2);
-
-				if (const auto player = GameData::playerByHandle(handle))
-				{
-					if (config->misc.purchaseList.showPrices)
-						ImGui::TextWrapped("%s $%d: %s", player->name.c_str(), purchases.totalCost, s.c_str());
-					else
-						ImGui::TextWrapped("%s: %s", player->name.c_str(), s.c_str());
-				}
+				ImGui::EndTable();
 			}
-		} else if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Summary)
-		{
-			for (const auto &purchase : purchaseTotal)
-				ImGui::TextWrapped("%d x %s", purchase.second, purchase.first.c_str());
+		}
+		else if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Summary) {
+			for (const auto& purchase : purchaseTotal)
+				ImGui::TextWrapped("%dx %s", purchase.second, purchase.first.c_str());
 
-			if (config->misc.purchaseList.showPrices && totalCost > 0)
-			{
+			if (config->misc.purchaseList.showPrices && totalCost > 0) {
 				ImGui::Separator();
 				ImGui::TextWrapped("Total: $%d", totalCost);
 			}
@@ -1683,29 +1718,29 @@ void Misc::playerList()
 	if (!config->misc.playerList)
 		return;
 
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse || ImGuiWindowFlags_NoTitleBar || ImGuiWindowFlags_NoResize;
 
 	if (!interfaces->engine->isConnected() && !gui->open)
 		return;
-
-	ImGui::SetNextWindowSize(ImVec2(500.0f, 300.0f), ImGuiCond_Once);
-	ImGui::Begin("Player List", nullptr, windowFlags);
 
 	auto playerResource = *memory->playerResource;
 
 	if (localPlayer && playerResource)
 	{
-		if (ImGui::BeginTable("playerList", 10, ImGuiTableFlags_Borders | ImGuiTableFlags_Hideable | ImGuiTableFlags_ScrollY | ImGuiTableFlags_Resizable))
+		ImGui::SetNextWindowSize(ImClamp(ImVec2{}, {}, ImGui::GetIO().DisplaySize));
+		ImGui::Begin("Player List", nullptr, windowFlags);
+		if (ImGui::BeginTable("playerList", 11, ImGuiTableFlags_Borders | ImGuiTableFlags_Hideable | ImGuiTableFlags_ScrollY | ImGuiTableFlags_Resizable))
 		{
 			ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, 120.0f);
 			ImGui::TableSetupColumn("Team", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Wins", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Level", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Ranking", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Money", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Health", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Armor", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Last Place", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn("SteamID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("SteamID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, 100.0f);
 			ImGui::TableSetupColumn("UserID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableHeadersRow();
 
@@ -1719,35 +1754,34 @@ void Misc::playerList()
 					ImGui::TextColored({ 0.7f, 0.7f, 0.0f, 1.0f }, localPlayer->getPlayerName().c_str());
 
 			if (ImGui::TableNextColumn())
-				ImGui::TextUnformatted(localPlayer->team() == Team::CT ? "CT" : localPlayer->team() == Team::TT ? "T" : "Unknown");
+				ImGui::Text("%s", localPlayer->team() == Team::CT ? "CT" : localPlayer->team() == Team::TT ? "T" : "Unknown");
 
 			if (ImGui::TableNextColumn())
-				ImGui::Text("%i", playerResource->competitiveWins()[localPlayer->index()]);
+				ImGui::Text("%d", playerResource->competitiveWins()[localPlayer->index()]);
 
 			if (ImGui::TableNextColumn())
-				ImGui::Text("%i", playerResource->level()[localPlayer->index()]);
+				ImGui::Text("%d", playerResource->level()[localPlayer->index()]);
 
 			if (ImGui::TableNextColumn())
-				ImGui::TextUnformatted(interfaces->localize->findAsUTF8(("RankName_" + std::to_string(playerResource->competitiveRanking()[localPlayer->index()])).c_str()));
+				ImGui::Text(interfaces->localize->findAsUTF8(("RankName_" + std::to_string(playerResource->competitiveRanking()[localPlayer->index()])).c_str()));
 
 			if (ImGui::TableNextColumn())
-			{
-				if (!localPlayer->isAlive())
-					ImGui::TextUnformatted("DEAD");
-				else
-					ImGui::Text("%i", localPlayer->health());
-			}
+				ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, "$%d", localPlayer->account());
 
 			if (ImGui::TableNextColumn())
 			{
 				if (!localPlayer->isAlive())
-					ImGui::TextUnformatted("0");
+					ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", "DEAD");
 				else
-					ImGui::Text("%i", localPlayer->armor());
+					ImGui::Text("%d", localPlayer->health());
 			}
 
 			if (ImGui::TableNextColumn())
-				ImGui::Text(interfaces->localize->findAsUTF8(localPlayer->lastPlaceName()));
+				ImGui::Text("%d", localPlayer->armor());
+
+			if (ImGui::TableNextColumn())
+				
+				ImGui::Text("%s", localPlayer->isAlive() && localPlayer->lastPlaceName() ? interfaces->localize->findAsUTF8(localPlayer->lastPlaceName()) : "Unknown");
 
 			if (ImGui::TableNextColumn())
 			{
@@ -1757,83 +1791,91 @@ void Misc::playerList()
 			}
 			
 			if (ImGui::TableNextColumn())
-			{
-				ImGui::Text("%llu", localPlayer->getUserId());
-				if (ImGui::SmallButton("Copy"))
-					ImGui::SetClipboardText(std::to_string(localPlayer->getUserId()).c_str());
-			}
-
+				ImGui::Text("%d", localPlayer->getUserId());
 			
+			std::vector<std::reference_wrapper<const PlayerData>> playersOrdered{ GameData::players().begin(), GameData::players().end() };
+			std::ranges::sort(playersOrdered, [](const PlayerData& a, const PlayerData& b) {
+				// enemies first
+				if (a.enemy != b.enemy)
+					return a.enemy && !b.enemy;
 
-			for (auto& player : GameData::players())
+				return a.handle < b.handle;
+				});
+
+			for (auto& player : playersOrdered)
 			{
+				auto currentPlayer = player.get();
 				ImGui::TableNextRow();
 				ImGui::PushID(ImGui::TableGetRowIndex());
 
-				auto* entity = interfaces->entityList->getEntityFromHandle(player.handle);
+				auto* entity = interfaces->entityList->getEntityFromHandle(currentPlayer.handle);
 				if (!entity) continue;
 
 				if (ImGui::TableNextColumn())
-					if (player.team  == "CT")
-						ImGui::TextColored({ 0.0f, 0.2f, 1.0f, 1.0f }, player.name.c_str());
+					if (currentPlayer.team  == "CT")
+						ImGui::TextColored({ 0.0f, 0.2f, 1.0f, 1.0f }, currentPlayer.name.c_str());
 					else
-						ImGui::TextColored({ 0.7f, 0.7f, 0.0f, 1.0f }, player.name.c_str());
+						ImGui::TextColored({ 0.7f, 0.7f, 0.0f, 1.0f },  currentPlayer.name.c_str());
 
 				if (ImGui::TableNextColumn())
-					ImGui::TextUnformatted(player.team.c_str());
-
-				if (ImGui::TableNextColumn())
-					ImGui::Text("%i", playerResource->competitiveWins()[entity->index()]);
-
-				if (ImGui::TableNextColumn())
-					ImGui::Text("%i", playerResource->level()[entity->index()]);
-
-				if (ImGui::TableNextColumn())
-					ImGui::TextUnformatted(interfaces->localize->findAsUTF8(("RankName_" + std::to_string(playerResource->competitiveRanking()[entity->index()])).c_str()));
+					ImGui::Text("%s", currentPlayer.team.c_str());
 
 				if (ImGui::TableNextColumn())
 				{
-					if (!player.alive)
-						ImGui::TextUnformatted("DEAD");
-					else
-						ImGui::Text("%i", player.health);
-				}
-
-				if (ImGui::TableNextColumn())
-				{
-					if (!player.alive)
-						ImGui::TextUnformatted("0");
-					else
-						ImGui::Text("%i", player.armor);
-				}
-
-				if (ImGui::TableNextColumn())
-					ImGui::Text(player.lastPlaceName.c_str());
-
-				if (ImGui::TableNextColumn())
-				{
-					if (player.isBot)
+					if (currentPlayer.isBot)
 						ImGui::Text("BOT");
 					else
-					{
-						ImGui::Text("%llu", player.steamID);
-						if (ImGui::SmallButton("Copy"))
-							ImGui::SetClipboardText(std::to_string(player.steamID).c_str());
-					}
-				}
-
-				if (ImGui::TableNextColumn())
-				{
-					if (player.isBot)
-						ImGui::Text("BOT");
-					else
-					{
-						ImGui::Text("%llu", player.userId);
-						if (ImGui::SmallButton("Copy"))
-							ImGui::SetClipboardText(std::to_string(player.userId).c_str());
-					}
+						ImGui::Text("%d", playerResource->competitiveWins()[entity->index()]);
 				}
 					
+				if (ImGui::TableNextColumn())
+				{
+					if (currentPlayer.isBot)
+						ImGui::Text("BOT");
+					else
+						ImGui::Text("%d", playerResource->level()[entity->index()]);
+				}
+
+				if (ImGui::TableNextColumn())
+				{
+					if (currentPlayer.isBot)
+						ImGui::Text("BOT");
+					else
+						ImGui::Text(interfaces->localize->findAsUTF8(("RankName_" + std::to_string(playerResource->competitiveRanking()[entity->index()])).c_str()));
+				}
+					
+
+				if (ImGui::TableNextColumn())
+					ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, "$%d", currentPlayer.money);
+
+				if (ImGui::TableNextColumn())
+				{
+					if (!currentPlayer.alive)
+						ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", "DEAD");
+					else
+						ImGui::Text("%d", currentPlayer.health);
+				}
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%d", currentPlayer.armor);
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%s", currentPlayer.lastPlaceName.c_str());
+
+				if (ImGui::TableNextColumn())
+				{
+					if (currentPlayer.isBot)
+						ImGui::Text("BOT");
+					else
+					{
+						ImGui::Text("%llu", currentPlayer.steamID);
+						if (ImGui::SmallButton("Copy"))
+							ImGui::SetClipboardText(std::to_string(currentPlayer.steamID).c_str());
+					}
+				}
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%d", currentPlayer.userId);
 			}
 
 			ImGui::EndTable();

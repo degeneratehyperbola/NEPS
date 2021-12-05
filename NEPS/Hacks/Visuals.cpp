@@ -487,7 +487,44 @@ void Visuals::hitMarker(GameEvent *event, ImDrawList *drawList) noexcept
 	}
 }
 
+void Visuals::drawReloadProgress(ImDrawList* drawList) noexcept
+{
 
+	if (!config->visuals.reloadProgress.enabled)
+		return;
+
+	GameData::Lock lock;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	static float reloadLength = 0.0f;
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+
+	if (activeWeapon && activeWeapon->isInReload())
+	{
+		if (!reloadLength)
+			reloadLength = activeWeapon->nextPrimaryAttack() - memory->globalVars->currenttime;
+
+		constexpr int segments = 40;
+		constexpr float pi = std::numbers::pi_v<float>;
+		const auto arc270 = (3 * pi) / 2;
+		float reloadTime = activeWeapon->nextPrimaryAttack() - memory->globalVars->currenttime;
+		const float fraction = std::clamp((reloadTime / reloadLength), 0.0f, 1.0f);
+
+		drawList->PathArcTo(ImGui::GetIO().DisplaySize / 2.0f + ImVec2{ 1.0f, 1.0f }, 20.0f, arc270 - (2 * pi * fraction), arc270, segments);
+		const ImU32 color = Helpers::calculateColor(config->visuals.reloadProgress);
+		drawList->PathStroke(color & 0xFF000000, false, config->visuals.reloadProgress.thickness);
+		drawList->PathArcTo(ImGui::GetIO().DisplaySize / 2.0f, 20.0f, arc270 - (2 * pi * fraction), arc270, segments);
+		drawList->PathStroke(color, false, config->visuals.reloadProgress.thickness);
+		std::ostringstream text;
+		text << std::fixed << std::showpoint << std::setprecision(1) << reloadTime << " s";
+		ImGuiCustom::drawText(drawList, NULL, NULL, color, color & IM_COL32_A_MASK, text.str().c_str(), ImGui::GetIO().DisplaySize / 2.0f);
+	}
+	else {
+		reloadLength = 0.0f;
+	}
+}
 
 void Visuals::damageIndicator(GameEvent *event, ImDrawList* drawList) noexcept
 {
@@ -778,6 +815,146 @@ void Visuals::drawSmokeTimer(ImDrawList* drawList) noexcept
 			text_size = ImGui::CalcTextSize(s);
 			drawList->AddText(ImVec2(pos.x - (text_size.x / 2), pos.y - (text_size.y / 2)), Helpers::calculateColor(config->visuals.smokeTimer.textColor), s);
 			Helpers::setAlphaFactor(1.f);
+		}
+	}
+}
+
+#define IM_NORMALIZE2F_OVER_ZERO(VX,VY)     do { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = 1.0f / ImSqrt(d2); VX *= inv_len; VY *= inv_len; } } while (0)
+#define IM_FIXNORMAL2F(VX,VY)               do { float d2 = VX*VX + VY*VY; if (d2 < 0.5f) d2 = 0.5f; float inv_lensq = 1.0f / d2; VX *= inv_lensq; VY *= inv_lensq; } while (0)
+
+auto generateAntialiasedDot() noexcept
+{
+	constexpr auto segments = 4;
+	constexpr auto radius = 1.0f;
+
+	std::array<ImVec2, segments> circleSegments;
+
+	for (int i = 0; i < segments; ++i) {
+		circleSegments[i] = ImVec2{ radius * std::cos(Helpers::degreesToRadians(i * (360.0f / segments) + 45.0f)),
+									radius * std::sin(Helpers::degreesToRadians(i * (360.0f / segments) + 45.0f)) };
+	}
+
+	// based on ImDrawList::AddConvexPolyFilled()
+	const float AA_SIZE = 1.0f; // _FringeScale;
+	constexpr int idx_count = (segments - 2) * 3 + segments * 6;
+	constexpr int vtx_count = (segments * 2);
+
+	std::array<ImDrawIdx, idx_count> indices;
+	std::size_t indexIdx = 0;
+
+	// Add indexes for fill
+	for (int i = 2; i < segments; ++i) {
+		indices[indexIdx++] = 0;
+		indices[indexIdx++] = (i - 1) << 1;
+		indices[indexIdx++] = i << 1;
+	}
+
+	// Compute normals
+	std::array<ImVec2, segments> temp_normals;
+	for (int i0 = segments - 1, i1 = 0; i1 < segments; i0 = i1++) {
+		const ImVec2& p0 = circleSegments[i0];
+		const ImVec2& p1 = circleSegments[i1];
+		float dx = p1.x - p0.x;
+		float dy = p1.y - p0.y;
+		IM_NORMALIZE2F_OVER_ZERO(dx, dy);
+		temp_normals[i0].x = dy;
+		temp_normals[i0].y = -dx;
+	}
+
+	std::array<ImVec2, vtx_count> vertices;
+	std::size_t vertexIdx = 0;
+
+	for (int i0 = segments - 1, i1 = 0; i1 < segments; i0 = i1++) {
+		// Average normals
+		const ImVec2& n0 = temp_normals[i0];
+		const ImVec2& n1 = temp_normals[i1];
+		float dm_x = (n0.x + n1.x) * 0.5f;
+		float dm_y = (n0.y + n1.y) * 0.5f;
+		IM_FIXNORMAL2F(dm_x, dm_y);
+		dm_x *= AA_SIZE * 0.5f;
+		dm_y *= AA_SIZE * 0.5f;
+
+		vertices[vertexIdx++] = ImVec2{ circleSegments[i1].x - dm_x, circleSegments[i1].y - dm_y };
+		vertices[vertexIdx++] = ImVec2{ circleSegments[i1].x + dm_x, circleSegments[i1].y + dm_y };
+
+		indices[indexIdx++] = (i1 << 1);
+		indices[indexIdx++] = (i0 << 1);
+		indices[indexIdx++] = (i0 << 1) + 1;
+		indices[indexIdx++] = (i0 << 1) + 1;
+		indices[indexIdx++] = (i1 << 1) + 1;
+		indices[indexIdx++] = (i1 << 1);
+	}
+
+	return std::make_pair(vertices, indices);
+}
+
+template <std::size_t N>
+auto generateSpherePoints() noexcept
+{
+	constexpr auto goldenAngle = static_cast<float>(2.399963229728653);
+
+	std::array<Vector, N> points;
+	for (std::size_t i = 1; i <= points.size(); ++i) {
+		const auto latitude = std::asin(2.0f * i / (points.size() + 1) - 1.0f);
+		const auto longitude = goldenAngle * i;
+
+		points[i - 1] = Vector{ std::cos(longitude) * std::cos(latitude), std::sin(longitude) * std::cos(latitude), std::sin(latitude) };
+	}
+	return points;
+};
+
+template <std::size_t VTX_COUNT, std::size_t IDX_COUNT>
+void drawPrecomputedPrimitive(
+	ImDrawList* drawList, 
+	const ImVec2& pos, 
+	ImU32 color, 
+	const std::array<ImVec2, VTX_COUNT>& vertices,
+	const std::array<ImDrawIdx, IDX_COUNT>& indices
+) noexcept
+{
+	drawList->PrimReserve(indices.size(), vertices.size());
+
+	const ImU32 colors[2]{ color, color & ~IM_COL32_A_MASK };
+	const auto uv = ImGui::GetDrawListSharedData()->TexUvWhitePixel;
+	for (std::size_t i = 0; i < vertices.size(); ++i) {
+		drawList->_VtxWritePtr[i].pos = vertices[i] + pos;
+		drawList->_VtxWritePtr[i].uv = uv;
+		drawList->_VtxWritePtr[i].col = colors[i & 1];
+	}
+	drawList->_VtxWritePtr += vertices.size();
+
+	std::memcpy(drawList->_IdxWritePtr, indices.data(), indices.size() * sizeof(ImDrawIdx));
+
+	const auto baseIdx = drawList->_VtxCurrentIdx;
+	for (std::size_t i = 0; i < indices.size(); ++i)
+		drawList->_IdxWritePtr[i] += baseIdx;
+
+	drawList->_IdxWritePtr += indices.size();
+	drawList->_VtxCurrentIdx += vertices.size();
+}
+
+void Visuals::drawNadeBlast(ImDrawList* drawList) noexcept
+{
+	if (!config->visuals.nadeBlast.enabled)
+		return;
+
+	const auto color = Helpers::calculateColor(config->visuals.nadeBlast);
+
+	static const auto spherePoints = generateSpherePoints<1000>();
+	static const auto [vertices, indices] = generateAntialiasedDot();
+
+	constexpr auto blastDuration = 0.35f;
+
+	GameData::Lock lock;
+	for (const auto& projectile : GameData::projectiles()) {
+		if (!projectile.exploded || projectile.explosionTime + blastDuration < memory->globalVars->realtime)
+			continue;
+
+		for (const auto& point : spherePoints) {
+			const auto radius = ImLerp(10.0f, 70.0f, (memory->globalVars->realtime - projectile.explosionTime) / blastDuration);
+			if (ImVec2 screenPos; Helpers::worldToScreen(projectile.coordinateFrame.origin() + point * radius, screenPos)) {
+				drawPrecomputedPrimitive(drawList, screenPos, color, vertices, indices);
+			}
 		}
 	}
 }
