@@ -207,4 +207,6 @@ namespace Helpers
 	std::string decode(std::string) noexcept;
 
 	bool lbyUpdate(Entity *animatable, float &nextUpdate) noexcept;
+	template<std::size_t N>
+	constexpr auto decodeBase85(const char(&input)[N]) noexcept;
 }

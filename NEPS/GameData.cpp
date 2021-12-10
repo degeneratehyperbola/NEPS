@@ -181,7 +181,7 @@ void GameData::update() noexcept
 	std::erase_if(projectileData, [](const auto& projectile) { return interfaces->entityList->getEntityFromHandle(projectile.handle) == nullptr
 		&& (projectile.trajectory.size() < 1 || projectile.trajectory[projectile.trajectory.size() - 1].first + 60.0f < memory->globalVars->realtime); });
 
-	std::erase_if(playerData, [](const auto& player) { return interfaces->entityList->getEntityFromHandle(player.handle) == nullptr; });
+	std::erase_if(playerData, [](const auto& player) { return interfaces->entityList->getEntityFromHandle(player.handle) == nullptr && player.fadingAlpha() < std::numeric_limits<float>::epsilon(); });
 
 }
 
@@ -434,6 +434,18 @@ void PlayerData::update(Entity *entity) noexcept
 
 	dormant = false;
 
+	const auto idx = entity->index();
+
+	if (entity->isDormant()) {
+		if (const auto pr = *memory->playerResource) {
+			alive = pr->getPlayerResourceInterface()->isAlive(idx);
+			if (!alive)
+				lastContactTime = 0.0f;
+			health = pr->getPlayerResourceInterface()->getPlayerHealth(idx);
+		}
+		return;
+	}
+
 	static_cast<BaseData &>(*this) = {entity};
 	origin = entity->getAbsOrigin();
 	velocity = entity->velocity();
@@ -461,6 +473,7 @@ void PlayerData::update(Entity *entity) noexcept
 	money = entity->account();
 	userId = entity->getUserId();
 	team = entity->team() == Team::CT ? "CT" : "T";
+	lastContactTime = alive ? memory->globalVars->realtime : 0.0f;
 	lastPlaceName = entity->isAlive() && entity->lastPlaceName() ? interfaces->localize->findAsUTF8(entity->lastPlaceName()) : lastPlaceName;
 
 	isBot = entity->isBot();
@@ -547,6 +560,11 @@ void PlayerData::update(Entity *entity) noexcept
 	}
 }
 
+float PlayerData::fadingAlpha() const noexcept
+{
+	constexpr float fadeTime = 1.50f;
+	return std::clamp(1.0f - std::max(memory->globalVars->realtime - lastContactTime - 0.25f, 0.0f) / fadeTime, 0.0f, 1.0f);
+}
 
 WeaponData::WeaponData(Entity *entity) noexcept : BaseData{entity}
 {

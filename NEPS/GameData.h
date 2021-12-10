@@ -132,6 +132,8 @@ struct PlayerData : BaseData
 {
 	void update(Entity *entity) noexcept;
 
+	float fadingAlpha() const noexcept;
+
 	int handle;
 	bool dormant;
 	float becameDormant;
@@ -153,6 +155,7 @@ struct PlayerData : BaseData
 	int armor;
 	int money;
 	int userId;
+	float lastContactTime;
 	std::string team;
 	uint64_t steamID;
 	Vector headMins, headMaxs;

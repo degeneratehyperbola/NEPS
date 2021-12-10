@@ -624,7 +624,8 @@ void Misc::bunnyHop(UserCmd* cmd) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder
+		|| localPlayer->flags() & PlayerFlag_InWater || localPlayer->flags() & PlayerFlag_WaterJump)
 		return;
 
 	if (static Helpers::KeyBindState flag; flag[config->movement.autoJumpBug])
@@ -1020,7 +1021,7 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 	if (!config->movement.autoStrafe)
 		return;
 
-	if (!localPlayer || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
+	if (!localPlayer || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder || localPlayer->flags() & PlayerFlag_InWater || localPlayer->flags() & PlayerFlag_WaterJump)
 		return;
 
 	static bool lastHeldJump = cmd->buttons & UserCmd::Button_Jump;
@@ -1788,7 +1789,7 @@ void Misc::playerList()
 			if (ImGui::TableNextColumn())
 			{
 				ImGui::Text("%llu", localPlayer->getSteamID());
-				if (ImGui::SmallButton("Copy"))
+				if (ImGui::SameLine(); ImGui::SmallButton("Copy"))
 					ImGui::SetClipboardText(std::to_string(localPlayer->getSteamID()).c_str());
 			}
 			
@@ -1871,7 +1872,7 @@ void Misc::playerList()
 					else
 					{
 						ImGui::Text("%llu", currentPlayer.steamID);
-						if (ImGui::SmallButton("Copy"))
+						if (ImGui::SameLine(); ImGui::SmallButton("Copy"))
 							ImGui::SetClipboardText(std::to_string(currentPlayer.steamID).c_str());
 					}
 				}
