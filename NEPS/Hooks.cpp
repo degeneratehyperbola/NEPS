@@ -320,6 +320,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 	case FrameStage::NetUpdateEnd:
 		break;
 	case FrameStage::RenderStart:
+		Misc::fakePrime();
 		Animations::fixAnimation(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();

@@ -1787,3 +1787,22 @@ void Misc::runChatSpammer() noexcept
 	if (static Helpers::KeyBindState flag; !flag[config->griefing.chatBasmala])
 		interfaces->engine->clientCmdUnrestricted(basmala);
 }
+
+void Misc::fakePrime() noexcept
+{
+	static bool lastState = false;
+
+	if (config->griefing.fakePrime != lastState)
+	{
+		lastState = config->griefing.fakePrime;
+
+		#ifdef _WIN32
+		if (DWORD oldProtect; VirtualProtect(memory->fakePrime, 4, PAGE_EXECUTE_READWRITE, &oldProtect))
+		{
+			constexpr uint8_t patch[]{0x31, 0xC0, 0x40, 0xC3};
+			std::memcpy(memory->fakePrime, patch, 4);
+			VirtualProtect(memory->fakePrime, 4, oldProtect, nullptr);
+		}
+		#endif
+	}
+}

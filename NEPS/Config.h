@@ -331,6 +331,7 @@ public:
 
 	struct Griefing
 	{
+		bool fakePrime = false;
 		bool nameStealer = false;
 		bool killMessage = false;
 		bool revealVotes = false;
