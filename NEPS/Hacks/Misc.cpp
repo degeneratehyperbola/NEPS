@@ -1717,7 +1717,7 @@ void Misc::onPlayerVote(GameEvent &event) noexcept
 	const char color = votedYes ? '\x4' : '\x2';
 	const auto isLocal = localPlayer && entity == localPlayer.get();
 
-	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s %s voted %c%s\x1", localPlayer->isOtherEnemy(entity) ? "Enemy" : "Teammate", isLocal ? "\x10YOU\x8" : entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
+	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s voted %c%s\x1", isLocal ? "\x10YOU\x8" : entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
 }
 
 void Misc::onVoteChange(UserMessageType type, const void *data, int size) noexcept
