@@ -7,6 +7,7 @@
 #include "LocalPlayer.h"
 #include "Matrix3x4.h"
 #include "ModelInfo.h"
+#include "UtlVector.h"
 #include "Vector.h"
 #include "VirtualMethod.h"
 #include "WeaponData.h"
@@ -172,6 +173,10 @@ public:
 	{
 		return *(UtlVector<Matrix3x4> *)((uintptr_t)this + 0x2914);
 	}
+	Vector getBonePosition(int bone) noexcept
+	{
+		return boneCache()[bone].origin();
+	}
 
 	AnimLayer *animationLayers() noexcept
 	{
@@ -245,13 +250,6 @@ public:
 		}
 
 		return VirtualMethod::call<bool, 13>(this + 4, out, maxBones, boneMask, currentTime);
-	}
-	Vector getBonePosition(int bone) noexcept
-	{
-		if (Matrix3x4 boneMatrices[MAX_STUDIO_BONES]; setupBones(boneMatrices, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime))
-			return boneMatrices[bone].origin();
-		else
-			return Vector{};
 	}
 
 	StudioHitboxSet *getHitboxSet()
