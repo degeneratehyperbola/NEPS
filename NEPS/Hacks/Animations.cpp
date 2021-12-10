@@ -129,7 +129,6 @@ struct ResolverData
 {
 	std::array<AnimLayer, AnimLayer_Count> previousLayers;
 	float feetYaw;
-	float previousFeetYaw;
 	float nextLbyUpdate;
 	int misses;
 	int previousTick;
@@ -152,10 +151,6 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	animatable->clientAnimations() = true;
 
-	state->goalFeetYaw = resolverData.previousFeetYaw;
-	animatable->updateClientSideAnimation();
-	resolverData.previousFeetYaw = state->goalFeetYaw;
-
 	const auto simulationTick = Helpers::timeToTicks(animatable->simulationTime());
 	if (resolverData.previousTick != simulationTick)
 	{
@@ -165,7 +160,9 @@ void Animations::resolve(Entity *animatable) noexcept
 		const float lowDesync = std::fminf(35.0f, maxDesync);
 		if (!Helpers::animDataAuthenticity(animatable) && !lbyUpdate)
 		{
-			const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, resolverData.previousFeetYaw);
+			animatable->updateClientSideAnimation();
+
+			const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->goalFeetYaw);
 			const float lbyTargetDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, animatable->lbyTarget());
 			const bool notMove = animatable->velocity().length2D() < 0.1f && std::fabsf(animatable->velocity().z) < 100.0f;
 
@@ -194,7 +191,6 @@ void Animations::resolve(Entity *animatable) noexcept
 
 	std::copy(layers, layers + animatable->getAnimationLayerCount(), resolverData.previousLayers.begin());
 
-	//animatable->updateClientSideAnimation();
 	memory->invalidateBoneCache(animatable);
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
 }
