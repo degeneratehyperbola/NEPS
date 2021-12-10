@@ -739,6 +739,7 @@ static void from_json(const json &j, Config::Griefing &g)
 	read(j, "Kill message", g.killMessage);
 	read<value_t::string>(j, "Kill message string", g.killMessageString);
 	read(j, "Name stealer", g.nameStealer);
+	read(j, "Fake Prime", g.fakePrime);
 	read(j, "Ban color", g.banColor);
 	read<value_t::string>(j, "Ban text", g.banText);
 	read<value_t::object>(j, "Reportbot", g.reportbot);
@@ -1267,6 +1268,7 @@ static void to_json(json &j, const Config::Griefing &o)
 
 	WRITE("Animated clantag", animatedClanTag);
 	WRITE("Name stealer", nameStealer);
+	WRITE("Fake Prime", fakePrime);
 	WRITE("Kill message", killMessage);
 	WRITE("Kill message string", killMessageString);
 	WRITE("Ban color", banColor);

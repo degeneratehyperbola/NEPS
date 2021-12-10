@@ -2307,6 +2307,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Vote reveal", &config->griefing.revealVotes);
 	ImGui::Checkbox("Name stealer", &config->griefing.nameStealer);
+	ImGui::Checkbox("Fake Prime status", &config->griefing.fakePrime);
 	ImGui::Checkbox("Clock tag", &config->griefing.clocktag);
 
 	ImGui::Checkbox("Custom clantag", &config->griefing.customClanTag);

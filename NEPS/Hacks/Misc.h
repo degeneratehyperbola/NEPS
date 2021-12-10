@@ -57,4 +57,5 @@ namespace Misc
 	void onVoteChange(UserMessageType type, const void *data = nullptr, int size = 0) noexcept;
 	void forceRelayCluster() noexcept;
 	void runChatSpammer() noexcept;
+	void fakePrime() noexcept;
 }
