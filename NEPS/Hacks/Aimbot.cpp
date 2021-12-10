@@ -174,9 +174,6 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 	auto bestDistance = doOverride ? (cfg.distance ? cfg.distance : INFINITY) : (cfg.aimbotOverride.distance ? cfg.aimbotOverride.distance : INFINITY);
 	auto bestDamage = 0;
 	auto bestHitchance = doOverride ? cfg.aimbotOverride.hitchance : cfg.hitchance;
-
-	std::array<Matrix3x4, MAX_STUDIO_BONES> bufferBones;
-
 	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 	{
 		auto entity = interfaces->entityList->getEntity(i);
@@ -192,18 +189,17 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 		if (!hitboxSet)
 			continue;
 
-		if (!entity->setupBones(bufferBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
-			continue;
+		auto boneMatrices = entity->boneCache();
 
 		const Record *backtrackRecord = nullptr;
 		if (config->backtrack.enabled)
 		{
 			Trace trace;
-			auto origin = bufferBones[8].origin();
+			auto origin = boneMatrices[8].origin();
 			int damage = Helpers::findDamage(origin, localPlayer.get(), trace, cfg.friendlyFire);
 			const auto goesThroughWall = trace.startPos != localPlayerEyePosition;
 
-			if (config->backtrack.enabled && enemy)
+			if (enemy)
 			{
 				const auto &records = Backtrack::getRecords(entity->index());
 
@@ -217,7 +213,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 			}
 
 			if (backtrackRecord)
-				std::copy(std::begin(backtrackRecord->matrix), std::end(backtrackRecord->matrix), bufferBones.data());
+				std::copy(std::begin(backtrackRecord->matrix), std::end(backtrackRecord->matrix), boneMatrices.memory);
 		}
 
 		for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
@@ -240,8 +236,8 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				case Hitbox_Head:
 				{
 					const float r = hitbox.capsuleRadius * multipointScale;
-					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
-					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
+					const Vector min = hitbox.bbMin.transform(boneMatrices[hitbox.bone]);
+					const Vector max = hitbox.bbMax.transform(boneMatrices[hitbox.bone]);
 					Vector mid = (min + max) * 0.5f;
 					Vector axis = max - min;
 					axis /= axis.length();
@@ -262,8 +258,8 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				case Hitbox_UpperChest:
 				{
 					const float r = hitbox.capsuleRadius * multipointScale;
-					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
-					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
+					const Vector min = hitbox.bbMin.transform(boneMatrices[hitbox.bone]);
+					const Vector max = hitbox.bbMax.transform(boneMatrices[hitbox.bone]);
 					Vector axis = max - min;
 					axis /= axis.length();
 					Vector axisRel = hitbox.bbMax - hitbox.bbMin;
@@ -276,7 +272,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 
 					axis *= r;
 
-					points.emplace_back((midRel + v1).transform(bufferBones[hitbox.bone]));
+					points.emplace_back((midRel + v1).transform(boneMatrices[hitbox.bone]));
 					points.emplace_back(max + axis);
 					points.emplace_back(min - axis);
 					break;
@@ -284,8 +280,8 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				case Hitbox_Thorax:
 				{
 					const float r = hitbox.capsuleRadius * multipointScale;
-					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
-					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
+					const Vector min = hitbox.bbMin.transform(boneMatrices[hitbox.bone]);
+					const Vector max = hitbox.bbMax.transform(boneMatrices[hitbox.bone]);
 					Vector mid = (min + max) * 0.5f;
 					Vector axis = max - min;
 					axis /= axis.length();
@@ -299,8 +295,8 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				case Hitbox_Pelvis:
 				{
 					const float r = hitbox.capsuleRadius * multipointScale;
-					const Vector min = hitbox.bbMin.transform(bufferBones[hitbox.bone]);
-					const Vector max = hitbox.bbMax.transform(bufferBones[hitbox.bone]);
+					const Vector min = hitbox.bbMin.transform(boneMatrices[hitbox.bone]);
+					const Vector max = hitbox.bbMax.transform(boneMatrices[hitbox.bone]);
 					Vector axis = max - min;
 					axis /= axis.length();
 					Vector axisRel = hitbox.bbMax - hitbox.bbMin;
@@ -313,17 +309,17 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 
 					axis *= r;
 
-					points.emplace_back((midRel - v1).transform(bufferBones[hitbox.bone]));
+					points.emplace_back((midRel - v1).transform(boneMatrices[hitbox.bone]));
 					points.emplace_back(max + axis);
 					points.emplace_back(min - axis);
 					break;
 				}
 				case Hitbox_LeftFoot:
 				case Hitbox_RightFoot:
-					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
+					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(boneMatrices[hitbox.bone]));
 					break;
 				default:
-					points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
+					points.emplace_back(hitbox.bbMax.transform(boneMatrices[hitbox.bone]));
 					break;
 				}
 			} else
@@ -336,10 +332,10 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				case Hitbox_UpperChest:
 				case Hitbox_Thorax:
 				case Hitbox_Pelvis:
-					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(bufferBones[hitbox.bone]));
+					points.emplace_back(((hitbox.bbMin + hitbox.bbMax) * 0.5f).transform(boneMatrices[hitbox.bone]));
 					break;
 				default:
-					points.emplace_back(hitbox.bbMax.transform(bufferBones[hitbox.bone]));
+					points.emplace_back(hitbox.bbMax.transform(boneMatrices[hitbox.bone]));
 					break;
 				}
 			}
