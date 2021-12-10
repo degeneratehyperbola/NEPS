@@ -1739,7 +1739,7 @@ void Misc::onVoteChange(UserMessageType type, const void *data, int size) noexce
 			case 1: return "changing the level";
 			case 6: return "surrendering";
 			case 13: return "starting a timeout";
-			default: return "";
+			default: return "unknown action";
 			}
 		};
 
