@@ -78,9 +78,7 @@ bool Entity::visibleTo(Entity *other) noexcept
 	if (!set)
 		return false;
 
-	Matrix3x4 boneMatrices[MAX_STUDIO_BONES];
-	if (!setupBones(boneMatrices, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
-		return false;
+	auto boneMatrices = boneCache();
 
 	for (const int boxNum : {Hitbox_Belly, Hitbox_LeftForearm, Hitbox_RightForearm})
 	{

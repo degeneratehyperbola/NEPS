@@ -2255,7 +2255,7 @@ void Misc::watermark() noexcept
 
 void Misc::velocityGraph() noexcept
 {
-
+	// Upcoming
 }
 
 void Misc::onPlayerVote(GameEvent &event) noexcept
@@ -2311,10 +2311,10 @@ void Misc::onVoteChange(UserMessageType type, const void *data, int size) noexce
 	}
 		break;
 	case UserMessageType::VotePass:
-		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 vote\x4 PASSED\x1");
+		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 Vote\x4 PASSED\x1");
 		break;
 	case UserMessageType::VoteFailed:
-		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 vote\x2 FAILED\x1");
+		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 Vote\x2 FAILED\x1");
 		break;
 	}
 }

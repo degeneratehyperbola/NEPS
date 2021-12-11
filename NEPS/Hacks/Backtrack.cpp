@@ -57,7 +57,7 @@ void Backtrack::update(FrameStage stage) noexcept
 
 			record.important = Helpers::animDataAuthenticity(entity);
 
-			entity->setupBones(record.matrix, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currenttime);
+			std::copy(entity->boneCache().memory, entity->boneCache().memory + entity->boneCache().size, record.matrix);
 
 			records[i].push_front(record);
 

@@ -1083,3 +1083,8 @@ void Visuals::playerVelocity(ImDrawList *drawList) noexcept
 		ImGuiCustom::drawText(drawList, 0.0f, 0.0f, color, color & IM_COL32_A_MASK, std::to_string(static_cast<int>(local.velocity.length())).c_str(), dir);
 	}
 }
+
+void Visuals::penetrationCrosshair(ImDrawList *drawList) noexcept
+{
+	// Upcoming
+}

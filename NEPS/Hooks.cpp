@@ -105,6 +105,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 
 	AntiAim::visualize(ImGui::GetBackgroundDrawList());
 	Visuals::hitMarker(nullptr, ImGui::GetBackgroundDrawList());
+	Visuals::penetrationCrosshair(ImGui::GetBackgroundDrawList());
 	Visuals::damageIndicator(nullptr, ImGui::GetBackgroundDrawList());
 	Visuals::drawReloadProgress(ImGui::GetBackgroundDrawList());
 	Misc::visualizeInaccuracy(ImGui::GetBackgroundDrawList());
