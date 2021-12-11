@@ -1858,7 +1858,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 
 			if (ImGui::BeginPopup("##offscreen"))
 			{
-				ImGui::Checkbox("Health Based", &playerConfig.offscreen.healthBased);
+				ImGui::Checkbox("Health Text", &playerConfig.offscreen.healthBased);
 				ImGui::EndPopup();
 			}
 			ImGui::SameLine(spacing);

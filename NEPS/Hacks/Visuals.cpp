@@ -568,7 +568,7 @@ void Visuals::damageIndicator(GameEvent *event, ImDrawList* drawList) noexcept
 		return;
 
 	std::string dmg = std::to_string(hitMarkerDmg);
-	std::string text = "\x1[\x5NEPS\x1] " + dmg + " damage to " + playerName + " (" + std::to_string(playerHealth) + " health)";
+	std::string text = "\x1[\x5NEPS\x1] ---> " + dmg + " damage to " + playerName + " (" + std::to_string(playerHealth) + " health)";
 
 	if (hitMessage && config->visuals.damageIndicatorMessage) memory->clientMode->getHudChat()->printf(0, text.c_str());
 	hitMessage = false;

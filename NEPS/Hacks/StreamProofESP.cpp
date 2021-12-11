@@ -543,9 +543,12 @@ static void drawOffscreen(const Color4ToggleHealthBased &config, const PlayerDat
 	const auto l = std::sqrtf(ImLengthSqr(pos));
 	if (!l) return;
 	pos /= l;
-	
-	const auto color = config.healthBased ? Helpers::healthColor(std::clamp(playerData.health / 100.0f, 0.0f, 1.0f)) : Helpers::calculateColor(config);
+
+	const auto health = playerData.health;
+	const auto healthCol = Helpers::healthColor(std::clamp(health / 100.0f, 0.0f, 1.0f));
+	const auto color = Helpers::calculateColor(config);
 	ImGuiCustom::drawTriangleFromCenter(drawList, pos * 300, color);
+	if (config.healthBased) ImGuiCustom::drawText(drawList, NULL, NULL, healthCol, healthCol & IM_COL32_A_MASK, std::to_string(health).c_str(), ImGui::GetIO().DisplaySize / 2 + pos * 300);
 }
 
 static void drawLineOfSight(const Color4ToggleThickness &config, const PlayerData &playerData)
