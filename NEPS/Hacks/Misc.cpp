@@ -2271,7 +2271,7 @@ void Misc::onPlayerVote(GameEvent &event) noexcept
 	const char color = votedYes ? '\x4' : '\x2';
 	const auto isLocal = localPlayer && entity == localPlayer.get();
 
-	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s %s voted %c%s\x1", localPlayer->isOtherEnemy(entity) ? "Enemy" : "Teammate", isLocal ? "\x10YOU\x8" : entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
+	memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s voted %c%s\x1", isLocal ? "\x10YOU\x8" : entity->getPlayerName().c_str(), color, votedYes ? "YES" : "NO");
 }
 
 void Misc::onVoteChange(UserMessageType type, const void *data, int size) noexcept
@@ -2293,7 +2293,7 @@ void Misc::onVoteChange(UserMessageType type, const void *data, int size) noexce
 			case 1: return "changing the level";
 			case 6: return "surrendering";
 			case 13: return "starting a timeout";
-			default: return "";
+			default: return "unknown action";
 			}
 		};
 
@@ -2340,4 +2340,23 @@ void Misc::runChatSpammer() noexcept
 
 	if (static Helpers::KeyBindState flag; !flag[config->griefing.chatBasmala])
 		interfaces->engine->clientCmdUnrestricted(basmala);
+}
+
+void Misc::fakePrime() noexcept
+{
+	static bool lastState = false;
+
+	if (config->griefing.fakePrime != lastState)
+	{
+		lastState = config->griefing.fakePrime;
+
+		#ifdef _WIN32
+		if (DWORD oldProtect; VirtualProtect(memory->fakePrime, 4, PAGE_EXECUTE_READWRITE, &oldProtect))
+		{
+			constexpr uint8_t patch[]{0x31, 0xC0, 0x40, 0xC3};
+			std::memcpy(memory->fakePrime, patch, 4);
+			VirtualProtect(memory->fakePrime, 4, oldProtect, nullptr);
+		}
+		#endif
+	}
 }
