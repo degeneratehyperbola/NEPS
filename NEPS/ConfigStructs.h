@@ -51,6 +51,11 @@ struct Color4ToggleThickness : Color4Toggle
 	float thickness = 1.0f;
 };
 
+struct Color4ToggleHealthBased : Color4Toggle
+{
+	bool healthBased = false;
+};
+
 struct Color4ToggleRounding : Color4Toggle
 {
 	float rounding = 0.0f;
@@ -140,7 +145,7 @@ struct Player : Shared
 	Color4BorderToggleThickness skeleton;
 	Box headBox;
 	Color4BorderToggle flags;
-	Color4Toggle offscreen = {1.0f, 1.0f, 1.0f, 0.5f};
+	Color4ToggleHealthBased offscreen = {1.0f, 1.0f, 1.0f, 0.5f};
 	Color4ToggleThickness lineOfSight;
 
 	using Shared::operator=;

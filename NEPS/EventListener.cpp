@@ -9,6 +9,8 @@
 #include "Hacks/Visuals.h"
 #include "Hacks/Aimbot.h"
 #include "Interfaces.h"
+#include "SDK/Engine.h"
+#include "Config.h"
 
 EventListener::EventListener() noexcept
 {
@@ -68,6 +70,10 @@ void EventListener::fireGameEvent(GameEvent *event)
 		Visuals::hitMarker(event);
 		Visuals::damageIndicator(event);
 		[[fallthrough]];
+	case fnv::hash("cs_win_panel_match"):
+		if (config->griefing.autoDisconnect)
+			interfaces->engine->clientCmdUnrestricted("disconnect");
+		break;
 	case fnv::hash("weapon_fire"):
 		Aimbot::missCounter(event);
 		break;

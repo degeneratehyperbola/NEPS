@@ -1852,6 +1852,15 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGui::SameLine(spacing);
 			ImGuiCustom::colorPicker("Flags", playerConfig.flags);
 			ImGuiCustom::colorPicker("Offscreen", playerConfig.offscreen);
+			ImGui::SameLine();
+			if (ImGui::ArrowButton("offscreen", ImGuiDir_Right))
+				ImGui::OpenPopup("##offscreen");
+
+			if (ImGui::BeginPopup("##offscreen"))
+			{
+				ImGui::Checkbox("Health Based", &playerConfig.offscreen.healthBased);
+				ImGui::EndPopup();
+			}
 			ImGui::SameLine(spacing);
 			ImGuiCustom::colorPicker("Line of sight", playerConfig.lineOfSight);
 		} else if (currentCategory == 2)
@@ -2577,6 +2586,8 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("No title bar", &config->griefing.teamDamageList.noTitleBar);
 		ImGui::EndPopup();
 	}
+
+	ImGui::Checkbox("Auto disconnect", &config->griefing.autoDisconnect);
 
 	if (!contentOnly)
 		ImGui::End();

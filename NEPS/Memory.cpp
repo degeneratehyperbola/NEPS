@@ -39,7 +39,7 @@ Memory::Memory() noexcept
 	auto temp = reinterpret_cast<std::uintptr_t *>(MemorySearch::findPattern("client", "\xB9????\xE8????\x8B\x5D\x08") + 1);
 	hud = *temp;
 	findHudElement = relativeToAbsolute<decltype(findHudElement)>(reinterpret_cast<uintptr_t>(temp) + 5);
-	clearHudWeapon = reinterpret_cast<decltype(clearHudWeapon)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x51\x53\x56\x8B\x75\x08\x8B\xD9\x57\x6B\xFE\x34"));
+	clearHudWeapon = relativeToAbsolute<decltype(clearHudWeapon)>(MemorySearch::findPattern("client", "\xE8????\x8B\xF0\xC6\x44\x24??\xC6\x44\x24") + 1);
 	itemSystem = relativeToAbsolute<decltype(itemSystem)>(MemorySearch::findPattern("client", "\xE8????\x0F\xB7\x0F") + 1);
 	setAbsOrigin = relativeToAbsolute<decltype(setAbsOrigin)>(MemorySearch::findPattern("client", "\xE8????\xEB\x19\x8B\x07") + 1);
 	setAbsAngle = reinterpret_cast<decltype(setAbsAngle)>(reinterpret_cast<DWORD *>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x64\x53\x56\x57\x8B\xF1")));
@@ -83,7 +83,9 @@ Memory::Memory() noexcept
 	invalidateBoneCache = *reinterpret_cast<decltype(invalidateBoneCache)>(MemorySearch::findPattern("client", "\x80\x3D?????\x74\x16\xA1????\x48\xC7\x81"));
 	viewRenderBeams = *reinterpret_cast<ViewRenderBeams **>(MemorySearch::findPattern("client", "\xB9????\xA1????\xFF\x10\xA1????\xB9" + 1));
 	relayCluster = *(std::string**)(MemorySearch::findPattern("steamnetworkingsockets", "\xB8????\xB9????\x0F\x43") + 1);
-	
+	WriteUsercmdDeltaToBufferReturn = *(reinterpret_cast<void**>(MemorySearch::findPattern("engine", "\x84\xC0\x74\x04\xB0\x01\xEB\x02\x32\xC0\x8B\xFE\x46\x3B\xF3\x7E\xC9\x84\xC0\x0F\x84????")));
+	WriteUsercmd = MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x51\x53\x56\x8B\xD9\x8B\x0D");
+
 	_updatePrecachedSounds = relativeToAbsolute<decltype(_updatePrecachedSounds)>(MemorySearch::findPattern("engine", "\x85\xC0\x75?\x8B\xCB\xE8????") + 7);
 	_setOrAddAttributeValueByName = relativeToAbsolute<decltype(_setOrAddAttributeValueByName)>(MemorySearch::findPattern("client", "\xE8????\x8B\x8D????\x85\xC9\x74\x10") + 1);
 

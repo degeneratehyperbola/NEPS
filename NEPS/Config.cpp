@@ -233,6 +233,12 @@ static void from_json(const json &j, Color4ToggleThickness &ctt)
 	read(j, "Thickness", ctt.thickness);
 }
 
+static void from_json(const json &j, Color4ToggleHealthBased &ctj)
+{
+	from_json(j, static_cast<Color4Toggle &>(ctj));
+	read(j, "Health Based", ctj.healthBased);
+}
+
 static void from_json(const json &j, Color4ToggleThicknessRounding &cttr)
 {
 	from_json(j, static_cast<Color4ToggleRounding &>(cttr));
@@ -827,6 +833,7 @@ static void from_json(const json &j, Config::Griefing &g)
 	read<value_t::object>(j, "Team damage list", g.teamDamageList);
 	read<value_t::object>(j, "Nuke chat", g.chatNuke);
 	read<value_t::object>(j, "Basmala chat", g.chatBasmala);
+	read(j, "Auto disconnect", g.autoDisconnect);
 }
 
 static void from_json(const json &j, Config::Griefing::TeamDamageList &tdl)
@@ -979,6 +986,12 @@ static void to_json(json &j, const Color4ToggleThickness &o, const Color4ToggleT
 {
 	to_json(j, static_cast<const Color4Toggle &>(o), dummy);
 	WRITE("Thickness", thickness);
+}
+
+static void to_json(json &j, const Color4ToggleHealthBased &o, const Color4ToggleHealthBased&dummy = {})
+{
+	to_json(j, static_cast<const Color4Toggle &>(o), dummy);
+	WRITE("Health Based", healthBased);
 }
 
 static void to_json(json &j, const Color4ToggleThicknessRounding &o, const Color4ToggleThicknessRounding &dummy = {})
@@ -1418,6 +1431,7 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Team damage list", teamDamageList);
 	WRITE("Nuke chat", chatNuke);
 	WRITE("Basmala chat", chatBasmala);
+	WRITE("Auto disconnect", autoDisconnect);
 }
 
 static void to_json(json &j, const Config::Movement &o)

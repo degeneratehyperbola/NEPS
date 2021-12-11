@@ -525,7 +525,7 @@ static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const 
 		drawList->AddLine(bonePoint, parentPoint, color, config.thickness);
 }
 
-static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerData) noexcept
+static void drawOffscreen(const Color4ToggleHealthBased &config, const PlayerData &playerData) noexcept
 {
 	if (!config.enabled)
 		return;
@@ -543,8 +543,8 @@ static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerDa
 	const auto l = std::sqrtf(ImLengthSqr(pos));
 	if (!l) return;
 	pos /= l;
-
-	const auto color = Helpers::calculateColor(config);
+	
+	const auto color = config.healthBased ? Helpers::healthColor(std::clamp(playerData.health / 100.0f, 0.0f, 1.0f)) : Helpers::calculateColor(config);
 	ImGuiCustom::drawTriangleFromCenter(drawList, pos * 300, color);
 }
 

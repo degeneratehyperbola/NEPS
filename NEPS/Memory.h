@@ -98,6 +98,8 @@ public:
 	uintptr_t demoFileEndReached;
 	uintptr_t audioSourceCache;
 	std::string* relayCluster;
+	void* WriteUsercmdDeltaToBufferReturn;
+	uintptr_t WriteUsercmd;
 	const wchar_t *(__thiscall *getDecoratedPlayerName)(PlayerResource *pr, int index, wchar_t *buffer, int buffsize, int flags);
 	void(__thiscall *createState)(AnimState *state, Entity *);
 	void(__vectorcall *updateState)(AnimState *state, void *, float x, float y, float z, void *);

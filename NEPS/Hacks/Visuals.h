@@ -37,5 +37,5 @@ namespace Visuals
 	void flashlight(FrameStage stage) noexcept;
 	void playerBounds(ImDrawList *drawList) noexcept;
 	void playerVelocity(ImDrawList *drawList) noexcept;
-	void penetrationCrosshair(ImDrawList *drawList) noexcept;
+    void penetrationCrosshair(ImDrawList* drawList) noexcept;
 }

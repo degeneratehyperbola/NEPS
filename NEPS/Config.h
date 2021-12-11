@@ -388,6 +388,7 @@ public:
 		KeyBind chatNuke;
 		KeyBind chatBasmala;
 		KeyBind spamUse;
+		bool autoDisconnect = false;
 
 		struct TeamDamageList
 		{
@@ -528,7 +529,6 @@ public:
 		bool nadePredict = false;
 		int forceRelayCluster = 0;
 		bool allCvar = false;
-
 	} misc;
 
 	void scheduleFontLoad(const std::string &name) noexcept;
