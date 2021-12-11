@@ -32,14 +32,14 @@ Memory::Memory() noexcept
 	lineGoesThroughSmoke = relativeToAbsolute<decltype(lineGoesThroughSmoke)>(MemorySearch::findPattern("client", "\xE8????\x8B\x4C\x24\x30\x33\xD2") + 1);
 	smokeHandles = *reinterpret_cast<decltype(smokeHandles)*>(std::uintptr_t(lineGoesThroughSmoke) + 46);
 	cameraThink = MemorySearch::findPattern("client", "\x85\xC0\x75\x30\x38\x86");
-	invertoryBlock = MemorySearch::findPattern("client", "\x75\x04\xB0\x01\x5F") - 2;
+	invertoryBlock = MemorySearch::findPattern("client", "\x84\xC0\x75\x04\xB0\x01\x5E");
 	acceptMatch = reinterpret_cast<decltype(acceptMatch)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x8B\x4D\x08\xBA????\xE8????\x85\xC0\x75\x12"));
 	getSequenceActivity = reinterpret_cast<decltype(getSequenceActivity)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x53\x8B\x5D\x08\x56\x8B\xF1\x83"));
 	isOtherEnemy = relativeToAbsolute<decltype(isOtherEnemy)>(MemorySearch::findPattern("client", "\x8B\xCE\xE8????\x02\xC0") + 3);
 	auto temp = reinterpret_cast<std::uintptr_t *>(MemorySearch::findPattern("client", "\xB9????\xE8????\x8B\x5D\x08") + 1);
 	hud = *temp;
 	findHudElement = relativeToAbsolute<decltype(findHudElement)>(reinterpret_cast<uintptr_t>(temp) + 5);
-	clearHudWeapon = reinterpret_cast<decltype(clearHudWeapon)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x51\x53\x56\x8B\x75\x08\x8B\xD9\x57\x6B\xFE\x2C"));
+	clearHudWeapon = reinterpret_cast<decltype(clearHudWeapon)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x51\x53\x56\x8B\x75\x08\x8B\xD9\x57\x6B\xFE\x34"));
 	itemSystem = relativeToAbsolute<decltype(itemSystem)>(MemorySearch::findPattern("client", "\xE8????\x0F\xB7\x0F") + 1);
 	setAbsOrigin = relativeToAbsolute<decltype(setAbsOrigin)>(MemorySearch::findPattern("client", "\xE8????\xEB\x19\x8B\x07") + 1);
 	setAbsAngle = reinterpret_cast<decltype(setAbsAngle)>(reinterpret_cast<DWORD *>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x64\x53\x56\x57\x8B\xF1")));

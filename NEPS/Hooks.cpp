@@ -654,7 +654,8 @@ static void __stdcall renderSmokeOverlay(bool update) noexcept
 
 static bool __stdcall isConnected() noexcept
 {
-	if (config->misc.unlockInvertory && RETURN_ADDRESS == memory->invertoryBlock)
+	auto addr = std::uintptr_t(_ReturnAddress());
+	if (config->misc.unlockInvertory && addr == memory->invertoryBlock)
 		return false;
 
 	return hooks->engine.callOriginal<bool, 27>();
