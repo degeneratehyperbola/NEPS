@@ -41,7 +41,7 @@ Memory::Memory() noexcept
 	clearHudWeapon = relativeToAbsolute<decltype(clearHudWeapon)>(MemorySearch::findPattern("client", "\xE8????\x8B\xF0\xC6\x44\x24??\xC6\x44\x24") + 1);
 	itemSystem = relativeToAbsolute<decltype(itemSystem)>(MemorySearch::findPattern("client", "\xE8????\x0F\xB7\x0F") + 1);
 	setAbsOrigin = relativeToAbsolute<decltype(setAbsOrigin)>(MemorySearch::findPattern("client", "\xE8????\xEB\x19\x8B\x07") + 1);
-	setAbsAngle = reinterpret_cast<decltype(setAbsAngle)>(reinterpret_cast<DWORD *>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x64\x53\x56\x57\x8B\xF1")));
+	setAbsAngle = reinterpret_cast<decltype(setAbsAngle)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x64\x53\x56\x57\x8B\xF1"));
 	listLeaves = MemorySearch::findPattern("client", "\x56\x52\xFF\x50\x18") + 5;
 	dispatchSound = reinterpret_cast<int *>(MemorySearch::findPattern("engine", "\x74\x0B\xE8????\x8B\x3D") + 3);
 	checkFileCRC = reinterpret_cast<int *>(MemorySearch::findPattern("engine", "\x8D\x49?\xE8????\x8B\x0D????\x83\xC1?\x8B\x01") + 4);
