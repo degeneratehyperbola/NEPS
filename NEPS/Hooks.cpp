@@ -101,6 +101,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Visuals::playerVelocity(ImGui::GetBackgroundDrawList());
 	Misc::visualizeBlockBot(ImGui::GetBackgroundDrawList());
 
+	Misc::soundESP();
 	StreamProofESP::render();
 
 	AntiAim::visualize(ImGui::GetBackgroundDrawList());
@@ -146,29 +147,6 @@ static HRESULT __stdcall reset(IDirect3DDevice9 *device, D3DPRESENT_PARAMETERS *
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 	return hooks->originalReset(device, params);
 }
-
-static int __fastcall SendDatagram(NetworkChannel* network, void* edx, void* datagram)
-{
-	auto original = hooks->networkChannel.getOriginal<int, 46, void*>(datagram);
-	if (!config->backtrack.fakeLatency || datagram || !interfaces->engine->isInGame() || !config->backtrack.enabled)
-	{
-		return original(network, datagram);
-	}
-	int instate = network->inReliableState;
-	int insequencenr = network->inSequenceNr;
-	int faketimeLimit = config->backtrack.timeLimit; if (faketimeLimit <= 200) { faketimeLimit = 0; }
-	else { faketimeLimit -= 200; }
-	float delta = std::max(0.f, std::clamp(faketimeLimit / 1000.f, 0.f, 0.2f) - network->getLatency(0));
-	Backtrack::AddLatencyToNetwork(network, delta + (delta / 20.0f));
-
-	int result = original(network, datagram);
-
-	network->inReliableState = instate;
-	network->inSequenceNr = insequencenr;
-
-	return result;
-}
-
 
 static void __fastcall checkFileCRC() noexcept
 {
@@ -218,19 +196,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::prepareRevolver(cmd);
 	Aimbot::predictPeek(cmd);
 	if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk]) Misc::slowwalk(cmd);
-
-	static void* oldPointer = nullptr;
-
-	auto network = interfaces->engine->getNetworkChannel();
-	if (oldPointer != network && network && localPlayer)
-	{
-		oldPointer = network;
-		Backtrack::UpdateIncomingSequences(true);
-		hooks->networkChannel.init(network);
-		hooks->networkChannel.hookAt(46, SendDatagram);
-	}
-	Backtrack::UpdateIncomingSequences();
-
 
 	EnginePrediction::run(cmd);
 
@@ -353,14 +318,14 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		break;
 	case FrameStage::NetUpdateStart:
 		break;
+		break;
+	case FrameStage::RenderStart:
+		Misc::fakePrime();
 	case FrameStage::NetUpdatePostUpdateStart:
 		break;
 	case FrameStage::NetUpdatePostUpdateEnd:
 		break;
 	case FrameStage::NetUpdateEnd:
-		break;
-	case FrameStage::RenderStart:
-		Misc::fakePrime();
 		Animations::fixAnimation(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
@@ -823,7 +788,7 @@ void Hooks::uninstall() noexcept
 	svCheats.restore();
 	viewRender.restore();
 	
-	networkChannel.restore();
+	//networkChannel.restore();
 
 	netvars->restore();
 

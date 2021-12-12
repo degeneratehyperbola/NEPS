@@ -1332,7 +1332,7 @@ void GUI::renderBacktrackWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Recoil based fov", &config->backtrack.recoilBasedFov);
 	ImGui::Checkbox("Chams Last/All Tick", &config->backtrack.drawAllChams);
 	ImGui::PushItemWidth(180);
-	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 400, "Time limit %dms");
+	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 200, "Time limit %dms");
 
 	ImGui::PopItemWidth();
 	if (!contentOnly)
@@ -1901,8 +1901,8 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::SetNextItemWidth(80);
-		ImGui::InputFloat("Text Cull Distance", &sharedConfig.textCullDistance, 0.4f, 0.8f, "%.1fm");
-		sharedConfig.textCullDistance = std::clamp(sharedConfig.textCullDistance, 0.0f, 999.9f);
+		ImGui::InputFloat("Text Cull Distance", &sharedConfig.textCullDistance, 0.4f, 0.8f, "%.1fu");
+		sharedConfig.textCullDistance = std::clamp(sharedConfig.textCullDistance, 0.0f, 9999.f);
 	}
 
 	ImGui::EndChild();
@@ -2458,6 +2458,22 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 	ImGui::SliderInt("##weapon", &config->sound.players[currentCategory].weaponVolume, 0, 200, "Weapon volume %d%%");
 	ImGui::SliderInt("##footstep", &config->sound.players[currentCategory].footstepVolume, 0, 200, "Footstep volume %d%%");
 	ImGui::PopItemWidth();
+
+	ImGui::SetNextItemWidth(90);
+	ImGuiCustom::keyBind("Sound ESP", config->sound.soundESP.keybind);
+	ImGui::SameLine();
+
+	if (ImGui::ArrowButton("soundesp", ImGuiDir_Right))
+		ImGui::OpenPopup("##soundesp");
+
+	if (ImGui::BeginPopup("##soundesp"))
+	{
+		ImGui::Checkbox("Show Teammates", &config->sound.soundESP.teammates);
+		ImGui::SetNextItemWidth(110);
+		ImGui::InputFloat("Distance", &config->sound.soundESP.distance, 0.4f, 0.8f, "%.1fu");
+		config->sound.soundESP.distance = std::clamp(config->sound.soundESP.distance, 0.0f, 9999.f);
+		ImGui::EndPopup();
+	}
 
 	if (!contentOnly)
 		ImGui::End();

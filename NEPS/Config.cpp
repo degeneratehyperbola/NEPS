@@ -656,6 +656,13 @@ static void from_json(const json &j, Config::Sound::Player &p)
 	read(j, "Footstep volume", p.footstepVolume);
 }
 
+static void from_json(const json &j, Config::Sound::SoundESP &f)
+{
+	read<value_t::object>(j, "Keybind", f.keybind);
+	read(j, "Teammates", f.teammates);
+	read(j, "Distance", f.distance);
+}
+
 static void from_json(const json &j, Config::Sound &s)
 {
 	read(j, "Chicken volume", s.chickenVolume);
@@ -669,6 +676,7 @@ static void from_json(const json &j, Config::Sound &s)
 	read<value_t::string>(j, "Custom hit sound", s.customHitSound);
 	read<value_t::string>(j, "Custom kill sound", s.customKillSound);
 	read<value_t::string>(j, "Custom death sound", s.customDeathSound);
+	read<value_t::object>(j, "Sound ESP", s.soundESP);
 }
 
 static void from_json(const json &j, Config::Style &s)
@@ -799,7 +807,6 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Player List", m.playerList);
 	read(j, "Debug Notice", m.debugNotice);
 	read(j, "All Cvar", m.allCvar);
-
 }
 
 static void from_json(const json &j, Config::Exploits &e)
@@ -1248,6 +1255,13 @@ static void to_json(json &j, const Config::Sound::Player &o)
 	WRITE("Footstep volume", footstepVolume);
 }
 
+static void to_json(json& j, const Config::Sound::SoundESP& o, const Config::Sound::SoundESP dummy = { })
+{
+	WRITE("Keybind", keybind);
+	WRITE("Teammates", teammates);
+	WRITE("Distance", distance);
+}
+
 static void to_json(json &j, const Config::Sound &o)
 {
 	const Config::Sound dummy;
@@ -1263,6 +1277,7 @@ static void to_json(json &j, const Config::Sound &o)
 	WRITE("Custom hit sound", customHitSound);
 	WRITE("Custom kill sound", customKillSound);
 	WRITE("Custom death sound", customDeathSound);
+	WRITE("Sound ESP", soundESP);
 }
 
 static void to_json(json &j, const Config::Misc::PurchaseList &o, const Config::Misc::PurchaseList &dummy = {})

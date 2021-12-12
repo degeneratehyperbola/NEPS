@@ -113,9 +113,9 @@ public:
 		bool enabled = false;
 		bool ignoreSmoke = false;
 		bool recoilBasedFov = false;
-		int timeLimit = 400;
-		bool fakeLatency{ false };
-		bool drawAllChams{ false };
+		int timeLimit = 200;
+		bool fakeLatency = false;
+		bool drawAllChams = false;
 	} backtrack;
 
 	struct AntiAim
@@ -341,6 +341,13 @@ public:
 		};
 
 		std::array<Player, 3> players;
+
+		struct SoundESP
+		{
+			KeyBind keybind;
+			bool teammates = false;
+			float distance = 700.0f;
+		} soundESP;
 
 		int hitSound = 0;
 		int killSound = 0;

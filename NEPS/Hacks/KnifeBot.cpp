@@ -86,17 +86,13 @@ void KnifeBot::run(UserCmd* cmd) noexcept
 
 	Trace trace;
 	trace.startPos = localPlayer->origin();
-;	TraceFilter filter = trace.entity;
+	TraceFilter filter = trace.entity;
 	filter.skip = localPlayer.get();
 	interfaces->engineTrace->traceRay({ startPos, endPos }, MASK_SHOT, filter, trace);
 
-	if (!trace.entity->isPlayer())
-		return;
-
 	Entity* player = trace.entity;
 
-
-	if (!player || player->isDormant() || !player->isAlive())
+	if (!player || !player->isPlayer() || player->isDormant() || !player->isAlive())
 		return;
 
 	if (!config->misc.knifeBot.friendly && !localPlayer->isOtherEnemy(trace.entity))

@@ -34,6 +34,7 @@ namespace Misc
 	void fixTabletSignal() noexcept;
 	void killMessage(GameEvent &event) noexcept;
 	void fixMovement(UserCmd *cmd, float yaw) noexcept;
+	void soundESP() noexcept;
 	void antiAfkKick(UserCmd *cmd) noexcept;
 	void fixMouseDelta(UserCmd* cmd) noexcept;
 	void tweakPlayerAnimations(FrameStage stage) noexcept;

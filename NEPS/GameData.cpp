@@ -423,6 +423,8 @@ void PlayerData::update(Entity *entity) noexcept
 	name = entity->getPlayerName();
 	inViewFrustum = !interfaces->engine->cullBox(obbMins + origin, obbMaxs + origin);
 
+
+
 	if (entity->isDormant())
 	{
 		if (!dormant)

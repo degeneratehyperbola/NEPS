@@ -708,11 +708,14 @@ void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos
 	drawList->AddPolyline(trianglePoints, 3, color | IM_COL32_A_MASK, ImDrawFlags_Closed, 1.0f);
 }
 
-ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, float distance, float cullDistance, unsigned int textColor, unsigned int borderColor, const char *text, const ImVec2 &pos, bool centered, bool adjustHeight) noexcept
+ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, float distance, float cullDistance, unsigned int textColor, unsigned int borderColor, const char *text, const ImVec2 &pos, bool centered, bool adjustHeight, bool meters) noexcept
 {
 	//if (!(borderColor & IM_COL32_A_MASK) && !(textColor & IM_COL32_A_MASK))
-
-	if (cullDistance > 0 && Helpers::unitsToMeters(distance) > cullDistance)
+	if (!meters) 
+	{
+		if (cullDistance > 0 && distance > cullDistance)
+			return {};
+	} else if (cullDistance > 0 && Helpers::metersToUnits(distance) > cullDistance)
 		return {};
 
 	const auto textSize = ImGui::CalcTextSize(text);

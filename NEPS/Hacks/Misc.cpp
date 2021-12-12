@@ -37,6 +37,7 @@
 #include "../lib/ImguiCustom.hpp"
 
 #include <numeric>
+#include <mmsystem.h>
 
 void Misc::edgeJump(UserCmd *cmd) noexcept
 {
@@ -867,6 +868,46 @@ void Misc::fixMovement(UserCmd *cmd, float yaw) noexcept
 		cmd->forwardmove = std::cos(Helpers::degreesToRadians(yawDelta)) * forwardmove + std::cos(Helpers::degreesToRadians(yawDelta + 90.0f)) * sidemove;
 		cmd->sidemove = std::sin(Helpers::degreesToRadians(yawDelta)) * forwardmove + std::sin(Helpers::degreesToRadians(yawDelta + 90.0f)) * sidemove;
 	}
+}
+
+void Misc::soundESP() noexcept
+{
+	if (Helpers::KeyBindState flag; !flag[config->sound.soundESP.keybind])
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	for (const auto& player : GameData::players())
+	{
+		if (!player.alive) continue;
+		if (player.handle == GameData::local().observerTargetHandle) continue;
+
+		if (!player.alive)
+			return;
+
+		if (!config->sound.soundESP.teammates && !player.enemy)
+			return;
+
+		float playerDistance = localPlayer->origin().distTo(player.origin);
+		if (config->sound.soundESP.distance && config->sound.soundESP.distance < playerDistance)
+			continue;
+
+		auto duration = std::chrono::system_clock::now().time_since_epoch();
+		long currentTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+		static long timeStamp = currentTime_ms;
+
+		if (currentTime_ms - timeStamp < 200) return;
+
+		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+			soundprecache->addString(false, "buttons/bell1.wav");
+
+		interfaces->surface->playSound("buttons/bell1.wav");
+
+		timeStamp = currentTime_ms;
+	}
+
+
 }
 
 void Misc::antiAfkKick(UserCmd *cmd) noexcept
