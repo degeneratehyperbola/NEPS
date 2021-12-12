@@ -955,7 +955,6 @@ void Misc::fixMouseDelta(UserCmd* cmd) noexcept
 	delta_viewangles = cmd->viewangles;
 }
 
-
 void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
 {
 	if (stage == FrameStage::RenderStart)
