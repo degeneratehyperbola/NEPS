@@ -872,7 +872,7 @@ void Misc::fixMovement(UserCmd *cmd, float yaw) noexcept
 void Misc::antiAfkKick(UserCmd *cmd) noexcept
 {
 	if (config->exploits.antiAfkKick && cmd->commandNumber % 2)
-		cmd->buttons |= UserCmd::Button_Reload;
+		cmd->buttons |= 1 << 27;
 }
 
 void Misc::fixMouseDelta(UserCmd* cmd) noexcept
