@@ -37,7 +37,6 @@
 #include "../lib/ImguiCustom.hpp"
 
 #include <numeric>
-#include <mmsystem.h>
 
 void Misc::edgeJump(UserCmd *cmd) noexcept
 {

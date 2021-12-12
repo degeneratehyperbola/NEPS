@@ -101,6 +101,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Visuals::playerVelocity(ImGui::GetBackgroundDrawList());
 	Misc::visualizeBlockBot(ImGui::GetBackgroundDrawList());
 
+
 	Misc::soundESP();
 	StreamProofESP::render();
 
@@ -318,14 +319,14 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		break;
 	case FrameStage::NetUpdateStart:
 		break;
-		break;
-	case FrameStage::RenderStart:
-		Misc::fakePrime();
 	case FrameStage::NetUpdatePostUpdateStart:
 		break;
 	case FrameStage::NetUpdatePostUpdateEnd:
 		break;
 	case FrameStage::NetUpdateEnd:
+		break;
+	case FrameStage::RenderStart:
+		Misc::fakePrime();
 		Animations::fixAnimation(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
@@ -621,8 +622,7 @@ static void __stdcall renderSmokeOverlay(bool update) noexcept
 
 static bool __stdcall isConnected() noexcept
 {
-	auto addr = std::uintptr_t(_ReturnAddress());
-	if (config->misc.unlockInvertory && addr == memory->invertoryBlock)
+	if (config->misc.unlockInvertory && RETURN_ADDRESS == memory->invertoryBlock)
 		return false;
 
 	return hooks->engine.callOriginal<bool, 27>();
@@ -788,7 +788,6 @@ void Hooks::uninstall() noexcept
 	svCheats.restore();
 	viewRender.restore();
 	
-	//networkChannel.restore();
 
 	netvars->restore();
 

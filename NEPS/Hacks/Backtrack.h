@@ -6,7 +6,6 @@
 #include "../SDK/Matrix3x4.h"
 #include "../SDK/Vector.h"
 #include "../SDK/ModelInfo.h"
-#include "../SDK/NetworkChannel.h"
 
 enum class FrameStage;
 struct UserCmd;
