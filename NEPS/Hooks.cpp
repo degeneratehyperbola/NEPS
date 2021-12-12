@@ -113,6 +113,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 
 	AntiAim::visualize(ImGui::GetBackgroundDrawList());
 	Visuals::hitMarker(nullptr, ImGui::GetBackgroundDrawList());
+	Visuals::penetrationCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::visualizeInaccuracy(ImGui::GetBackgroundDrawList());
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
@@ -320,6 +321,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 	case FrameStage::NetUpdateEnd:
 		break;
 	case FrameStage::RenderStart:
+		Misc::fakePrime();
 		Animations::fixAnimation(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();

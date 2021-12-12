@@ -28,9 +28,6 @@ void Triggerbot::run(UserCmd *cmd) noexcept
 	if (!activeWeapon || !activeWeapon->clip() || activeWeapon->nextPrimaryAttack() > time)
 		return;
 
-	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
-		return;
-
 	const auto &cfg = Config::Triggerbot::getRelevantConfig();
 
 	if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;

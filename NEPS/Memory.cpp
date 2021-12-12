@@ -31,14 +31,14 @@ Memory::Memory() noexcept
 	setClanTag = reinterpret_cast<decltype(setClanTag)>(MemorySearch::findPattern("engine", "\x53\x56\x57\x8B\xDA\x8B\xF9\xFF\x15"));
 	lineGoesThroughSmoke = relativeToAbsolute<decltype(lineGoesThroughSmoke)>(MemorySearch::findPattern("client", "\xE8????\x8B\x4C\x24\x30\x33\xD2") + 1);
 	cameraThink = MemorySearch::findPattern("client", "\x85\xC0\x75\x30\x38\x86");
-	invertoryBlock = MemorySearch::findPattern("client", "\x75\x04\xB0\x01\x5F") - 2;
+	invertoryBlock = MemorySearch::findPattern("client", "\x84\xC0\x75\x04\xB0\x01\x5E") - 2;
 	acceptMatch = reinterpret_cast<decltype(acceptMatch)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x8B\x4D\x08\xBA????\xE8????\x85\xC0\x75\x12"));
 	getSequenceActivity = reinterpret_cast<decltype(getSequenceActivity)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x53\x8B\x5D\x08\x56\x8B\xF1\x83"));
 	isOtherEnemy = relativeToAbsolute<decltype(isOtherEnemy)>(MemorySearch::findPattern("client", "\x8B\xCE\xE8????\x02\xC0") + 3);
 	auto temp = reinterpret_cast<std::uintptr_t *>(MemorySearch::findPattern("client", "\xB9????\xE8????\x8B\x5D\x08") + 1);
 	hud = *temp;
 	findHudElement = relativeToAbsolute<decltype(findHudElement)>(reinterpret_cast<uintptr_t>(temp) + 5);
-	clearHudWeapon = reinterpret_cast<decltype(clearHudWeapon)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x51\x53\x56\x8B\x75\x08\x8B\xD9\x57\x6B\xFE\x2C"));
+	clearHudWeapon = reinterpret_cast<decltype(clearHudWeapon)>(MemorySearch::findPattern("client", "\xE8????\x8B\xF0\xC6\x44\x24??\xC6\x44\x24") + 1);
 	itemSystem = relativeToAbsolute<decltype(itemSystem)>(MemorySearch::findPattern("client", "\xE8????\x0F\xB7\x0F") + 1);
 	setAbsOrigin = relativeToAbsolute<decltype(setAbsOrigin)>(MemorySearch::findPattern("client", "\xE8????\xEB\x19\x8B\x07") + 1);
 	setAbsAngle = reinterpret_cast<decltype(setAbsAngle)>(reinterpret_cast<DWORD *>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x64\x53\x56\x57\x8B\xF1")));
@@ -48,6 +48,7 @@ Memory::Memory() noexcept
 	doProceduralFootPlant = reinterpret_cast<int *>(MemorySearch::findPattern("client", "\xF3\x0F\x11\x44\x24?\xE8????\xF6\x86") + 7);
 	viewRender = **reinterpret_cast<ViewRender ***>(MemorySearch::findPattern("client", "\x8B\x0D????\xFF\x75\x0C\x8B\x45\x08") + 2);
 	drawScreenEffectMaterial = relativeToAbsolute<uintptr_t>(MemorySearch::findPattern("client", "\xE8????\x83\xC4\x0C\x8D\x4D\xF8") + 1);
+	fakePrime = reinterpret_cast<std::uint8_t *>(MemorySearch::findPattern("client", "\x8B\x0D????\x85\xC9\x75\x04\x33\xC0\xEB\x1E"));
 	submitReport = reinterpret_cast<decltype(submitReport)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x28\x8B\x4D\x08"));
 
 	const auto tier0 = GetModuleHandleW(L"tier0");

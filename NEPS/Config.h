@@ -58,9 +58,9 @@ public:
 		int minDamageAutoWall = 0;
 		float hitchance = 0.0f;
 		int hitGroup = 127;
-		int interpolation = 0;
-		float quadratic = 0.0f;
-		float linear = 255.0f;
+		bool humanize = false;
+		float acceleration = 0.6f;
+		float friction = 2.0f;
 		bool betweenShots = true;
 		struct AimbotOverride
 		{
@@ -331,6 +331,7 @@ public:
 
 	struct Griefing
 	{
+		bool fakePrime = false;
 		bool nameStealer = false;
 		bool killMessage = false;
 		bool revealVotes = false;
