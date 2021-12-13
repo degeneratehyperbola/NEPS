@@ -694,7 +694,7 @@ void Misc::fixMovement(UserCmd *cmd, float yaw) noexcept
 void Misc::antiAfkKick(UserCmd *cmd) noexcept
 {
 	if (config->exploits.antiAfkKick && cmd->commandNumber % 2)
-		cmd->buttons |= 1 << 26;
+		cmd->buttons |= 1 << 27;
 }
 
 void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
