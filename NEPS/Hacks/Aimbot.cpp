@@ -213,7 +213,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 			}
 
 			if (backtrackRecord)
-				std::copy(std::begin(backtrackRecord->matrix), std::end(backtrackRecord->matrix), boneMatrices.memory);
+				std::copy(std::begin(backtrackRecord->bones), std::end(backtrackRecord->bones), bones.memory);
 		}
 
 		for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
