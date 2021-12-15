@@ -497,7 +497,7 @@ void PlayerData::update(Entity *entity) noexcept
 	if (!studioModel)
 		return;
 
-	auto boneMatrices = entity->boneCache();
+	const auto &boneMatrices = entity->boneCache();
 
 	bones.clear();
 	bones.reserve(20);

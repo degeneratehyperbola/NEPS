@@ -25,7 +25,7 @@ bool Entity::isVip() noexcept
 	return this->isPlayer() && this->index() == (*memory->playerResource)->vip();
 }
 
-void Entity::getPlayerName(char (&out)[128]) noexcept
+void Entity::getPlayerName(char(&out)[128]) noexcept
 {
 	if (!*memory->playerResource)
 	{
@@ -77,7 +77,7 @@ bool Entity::visibleTo(Entity *other) noexcept
 	if (!set)
 		return false;
 
-	auto boneMatrices = boneCache();
+	const auto &boneMatrices = boneCache();
 
 	for (const int boxNum : {Hitbox_Belly, Hitbox_LeftForearm, Hitbox_RightForearm})
 	{
