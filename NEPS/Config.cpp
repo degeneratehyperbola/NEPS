@@ -688,7 +688,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Auto reload", m.autoReload);
 	read(j, "Auto accept", m.autoAccept);
 	read(j, "Fix animation LOD", m.fixAnimationLOD);
-	read(j, "Fix bone matrix", m.fixBoneMatrix);
+	read(j, "Fix bone matrix", m.fixBoneMatrices);
 	read(j, "Fix movement", m.fixMovement);
 	read(j, "Fix animations", m.fixAnimation);
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
@@ -1186,7 +1186,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Auto reload", autoReload);
 	WRITE("Auto accept", autoAccept);
 	WRITE("Fix animation LOD", fixAnimationLOD);
-	WRITE("Fix bone matrix", fixBoneMatrix);
+	WRITE("Fix bone matrix", fixBoneMatrices);
 	WRITE("Fix movement", fixMovement);
 	WRITE("Fix animations", fixAnimation);
 	WRITE("Disable model occlusion", disableModelOcclusion);

@@ -391,7 +391,7 @@ public:
 		bool autoReload = false;
 		bool autoAccept = false;
 		bool fixAnimationLOD = true;
-		bool fixBoneMatrix = true;
+		bool fixBoneMatrices = true;
 		bool fixMovement = true;
 		bool fixAnimation = true;
 		bool disableModelOcclusion = true;

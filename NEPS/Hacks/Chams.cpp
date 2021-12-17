@@ -164,7 +164,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 			const auto &records = Backtrack::getRecords(player->index());
 			if (records.size() && Backtrack::valid(records.front().simulationTime))
 			{
-				applyChams(config->chams["Backtrack"].materials, health, records.back().matrix);
+				applyChams(config->chams["Backtrack"].materials, health, records.back().bones);
 				interfaces->studioRender->forcedMaterialOverride(nullptr);
 			}
 		}

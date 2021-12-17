@@ -18,7 +18,7 @@ struct Record
 	bool important;
 	bool hasHelmet;
 	int armor;
-	Matrix3x4 matrix[MAX_STUDIO_BONES];
+	Matrix3x4 bones[MAX_STUDIO_BONES];
 };
 
 namespace Backtrack

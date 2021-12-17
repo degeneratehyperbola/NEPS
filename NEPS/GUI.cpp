@@ -2420,7 +2420,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Menu key", &config->misc.menuKey);
 	if (config->misc.menuKey == 1) config->misc.menuKey = 0;
 
-	ImGui::Checkbox("Full-auto", &config->misc.autoPistol);
+	ImGui::Checkbox("Always full-auto", &config->misc.autoPistol);
 	ImGui::SameLine(80);
 	ImGui::Checkbox("Fast plant", &config->misc.fastPlant);
 
@@ -2431,7 +2431,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
 
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
-	ImGui::Checkbox("Fix bone matrix", &config->misc.fixBoneMatrix);
+	ImGui::Checkbox("Fix bone matrices", &config->misc.fixBoneMatrices);
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
 	ImGui::Checkbox("Fix local animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
