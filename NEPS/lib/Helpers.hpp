@@ -33,6 +33,41 @@ namespace Helpers
 	constexpr auto degreesToRadians = [](float degrees) constexpr noexcept { return degrees * PI / 180.0f; };
 	constexpr auto radiansToDegrees = [](float radians) constexpr noexcept { return radians * 180.0f / PI; };
 
+	constexpr auto hitboxToHitGroup = [](int hitbox) constexpr noexcept -> int
+	{
+		switch (hitbox)
+		{
+		case Hitbox_Head:
+			return HitGroup::Head;
+		case Hitbox_Neck:
+		case Hitbox_UpperChest:
+		case Hitbox_LowerChest:
+		case Hitbox_Thorax:
+			return HitGroup::Chest;
+		case Hitbox_Belly:
+		case Hitbox_Pelvis:
+			return HitGroup::Stomach;
+		case Hitbox_LeftThigh:
+		case Hitbox_LeftCalf:
+		case Hitbox_LeftFoot:
+			return HitGroup::LeftLeg;
+		case Hitbox_RightThigh:
+		case Hitbox_RightCalf:
+		case Hitbox_RightFoot:
+			return HitGroup::RightLeg;
+		case Hitbox_LeftUpperArm:
+		case Hitbox_LeftForearm:
+		case Hitbox_LeftHand:
+			return HitGroup::LeftArm;
+		case Hitbox_RightUpperArm:
+		case Hitbox_RightForearm:
+		case Hitbox_RightHand:
+			return HitGroup::RightArm;
+		}
+
+		return -1;
+	};
+
 	constexpr auto equals = [](float first, float second, float epsilon) noexcept
 	{
 		epsilon = std::fabsf(epsilon);

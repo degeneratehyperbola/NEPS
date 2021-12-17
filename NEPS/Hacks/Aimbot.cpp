@@ -229,6 +229,9 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				hitboxIdx == Hitbox_Belly)
 				continue;
 
+			if (~hitGroup & (1 << (Helpers::hitboxToHitGroup(hitboxIdx) - 1)))
+				continue;
+
 			const auto hitbox = *hitboxSet->getHitbox(hitboxIdx);
 
 			std::vector<Vector> points;
@@ -367,9 +370,6 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 				Trace trace;
 				const auto damage = Helpers::findDamage(point, localPlayer.get(), trace, cfg.friendlyFire, backtrackRecord, hitboxIdx);
 				bool goesThroughWall = trace.startPos != localPlayerEyePosition;
-
-				if (~hitGroup & (1 << (trace.hitGroup - 1)))
-					continue;
 
 				if (cfg.visibleOnly && goesThroughWall) continue;
 
