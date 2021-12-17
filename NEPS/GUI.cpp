@@ -2423,7 +2423,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Menu key", &config->misc.menuKey);
 	if (config->misc.menuKey == 1) config->misc.menuKey = 0;
 
-	ImGui::Checkbox("Always full-auto", &config->misc.autoPistol);
+	ImGui::Checkbox("Full-auto", &config->misc.autoPistol);
 	ImGui::SameLine(80);
 	ImGui::Checkbox("Fast plant", &config->misc.fastPlant);
 
