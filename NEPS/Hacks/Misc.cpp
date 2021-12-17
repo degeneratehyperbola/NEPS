@@ -708,7 +708,7 @@ void Misc::autoPistol(UserCmd *cmd) noexcept
 	if (config->misc.autoPistol && localPlayer)
 	{
 		const auto activeWeapon = localPlayer->getActiveWeapon();
-		if (activeWeapon && !activeWeapon->isC4() && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime() + memory->globalVars->intervalPerTick && !activeWeapon->isGrenade())
+		if (activeWeapon && !activeWeapon->isC4() && localPlayer->shotsFired() > 0 && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime() + memory->globalVars->intervalPerTick && !activeWeapon->isGrenade())
 		{
 			if (activeWeapon->itemDefinitionIndex2() == WeaponId::Revolver)
 				cmd->buttons &= ~UserCmd::Button_Attack2;
