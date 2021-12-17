@@ -196,41 +196,6 @@ int Helpers::findDamage(const Vector &destination, const Vector &source, Entity 
 
 	auto calcDepth = 4;
 
-	constexpr auto hitboxToHitGroup = [](int hitbox) constexpr noexcept -> int
-	{
-		switch (hitbox)
-		{
-		case Hitbox_Head:
-			return HitGroup::Head;
-		case Hitbox_Neck:
-		case Hitbox_UpperChest:
-		case Hitbox_LowerChest:
-		case Hitbox_Thorax:
-			return HitGroup::Chest;
-		case Hitbox_Belly:
-		case Hitbox_Pelvis:
-			return HitGroup::Stomach;
-		case Hitbox_LeftThigh:
-		case Hitbox_LeftCalf:
-		case Hitbox_LeftFoot:
-			return HitGroup::LeftLeg;
-		case Hitbox_RightThigh:
-		case Hitbox_RightCalf:
-		case Hitbox_RightFoot:
-			return HitGroup::RightLeg;
-		case Hitbox_LeftUpperArm:
-		case Hitbox_LeftForearm:
-		case Hitbox_LeftHand:
-			return HitGroup::LeftArm;
-		case Hitbox_RightUpperArm:
-		case Hitbox_RightForearm:
-		case Hitbox_RightHand:
-			return HitGroup::RightArm;
-		}
-
-		return -1;
-	};
-
 	constexpr auto calcDamage = [](const WeaponInfo *weaponData, bool hasHelmet, int armor, int hitGroup, float traveled, float &damage) noexcept
 	{
 		const auto m = std::strstr(weaponData->name, "Taser") ? 1.0f : HitGroup::getDamageMultiplier(hitGroup, weaponData->headshotMultiplier);
