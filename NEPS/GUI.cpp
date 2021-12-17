@@ -727,15 +727,19 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 		ImGui::SetNextItemWidth(100);
 		ImGui::Checkbox("Humanize", &config->aimbot[currentWeapon].humanize);
-		if (config->aimbot[currentWeapon].humanize)
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("humanize", ImGuiDir_Right))
+			ImGui::OpenPopup("##humanize");
+
+		if (ImGui::BeginPopup("##humanize"))
 		{
 			ImGui::SliderFloat("##acceleration", &config->aimbot[currentWeapon].acceleration, 0.0f, 5.0f, "Acceleration %.4fdeg/tick^2", ImGuiSliderFlags_Logarithmic);
 			ImGui::SliderFloat("##friction", &config->aimbot[currentWeapon].friction, 1.0f, 5.0f, "Friction %.4f", ImGuiSliderFlags_Logarithmic);
 			config->aimbot[currentWeapon].friction = std::fmaxf(1.0f, config->aimbot[currentWeapon].friction);
 		}
 
-		ImGui::SliderFloat("#rcsH", &config->aimbot[currentWeapon].recoilReductionH, 0.0f, 100.0f, "RCS Horizontal %.1f%%");
-		ImGui::SliderFloat("#rcsV", &config->aimbot[currentWeapon].recoilReductionV, 0.0f, 100.0f, "RCS Vertical %.1f%%");
+		ImGui::SliderFloat("#rcsH", &config->aimbot[currentWeapon].recoilReductionH, 0.0f, 100.0f, "RCS horizontal %.1f%%");
+		ImGui::SliderFloat("#rcsV", &config->aimbot[currentWeapon].recoilReductionV, 0.0f, 100.0f, "RCS vertical %.1f%%");
 
 		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
 	}
