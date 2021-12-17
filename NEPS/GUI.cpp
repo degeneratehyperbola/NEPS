@@ -2428,13 +2428,14 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Quick reload", &config->misc.quickReload);
 	ImGuiCustom::keyBind("Prepare revolver", config->misc.prepareRevolver);
 	ImGuiCustom::keyBind("Quick healthshot", &config->misc.quickHealthshotKey);
-
+	
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
 	ImGui::Checkbox("Fix bone matrices", &config->misc.fixBoneMatrices);
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
 	ImGui::Checkbox("Fix local animations", &config->misc.fixAnimation);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
-	ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
+	// Disabled due to instability once again
+	//ImGui::Checkbox("Disable interpolation", &config->misc.disableInterp);
 	ImGui::Checkbox("Disable IK", &config->misc.disableIK);
 	ImGui::Checkbox("Resolve LBY", &config->misc.resolveLby);
 
