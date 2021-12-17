@@ -734,8 +734,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 			config->aimbot[currentWeapon].friction = std::fmaxf(1.0f, config->aimbot[currentWeapon].friction);
 		}
 
-		ImGui::SliderFloat("#rcsH", &config->aimbot[currentWeapon].recoilReductionH, 0.0f, 100.0f, "RCS Horizontal %.0f%%");
-		ImGui::SliderFloat("#rcsV", &config->aimbot[currentWeapon].recoilReductionV, 0.0f, 100.0f, "RCS Vertical %.0f%%");
+		ImGui::SliderFloat("#rcsH", &config->aimbot[currentWeapon].recoilReductionH, 0.0f, 100.0f, "RCS Horizontal %.1f%%");
+		ImGui::SliderFloat("#rcsV", &config->aimbot[currentWeapon].recoilReductionV, 0.0f, 100.0f, "RCS Vertical %.1f%%");
 
 		ImGui::Checkbox("Between shots", &config->aimbot[currentWeapon].betweenShots);
 	}
