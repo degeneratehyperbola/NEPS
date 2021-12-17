@@ -74,8 +74,8 @@ public:
 			float hitchance = 0.0f;
 			int hitGroup = 127;
 		} aimbotOverride;
-		float recoilReductionH = 0.0f;
-		float recoilReductionV = 0.0f;
+		float recoilReductionH = 100.0f;
+		float recoilReductionV = 100.0f;
 	};
 	std::array<Aimbot, 40> aimbot;
 

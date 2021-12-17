@@ -156,7 +156,7 @@ static __forceinline void chooseTarget(UserCmd *cmd) noexcept
 	if (!weaponData)
 		return;
 
-	const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() * Vector{1.0f - cfg.recoilReductionV / 100, 1.0f - cfg.recoilReductionH / 100, 1.0f} : Vector{};
+	const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() * Vector{cfg.recoilReductionV / 100, cfg.recoilReductionH / 100, 1.0f} : Vector{};
 	const auto localPlayerEyePosition = localPlayer->getEyePosition();
 	bool doOverride = false;
 	{
@@ -477,16 +477,6 @@ void Aimbot::run(UserCmd *cmd) noexcept
 			resetMissCounter();
 
 		chooseTarget(cmd);
-
-		const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() * Vector { cfg.recoilReductionV / 100, cfg.recoilReductionH / 100, 1.0f } : Vector{};
-		static Vector previousAimPunch = aimPunch;
-		if (aimPunch.notNull() && (cfg.recoilReductionH || cfg.recoilReductionV))
-		{
-			cmd->viewangles -= cfg.silent ? aimPunch : aimPunch - previousAimPunch;
-			if (!cfg.silent)
-				interfaces->engine->setViewAngles(cmd->viewangles);
-		}
-		previousAimPunch = aimPunch;
 
 		static Vector aimVelocity = Vector{};
 
