@@ -216,7 +216,7 @@ public:
 		Color4 overlayCrosshair;
 		int overlayCrosshairType = 0;
 		Color4 recoilCrosshair;
-		Color4Toggle inaccuracyCircle = {1.0f, 1.0f, 1.0f, 0.25f};
+		Color4BorderToggle inaccuracyCircle = {1.0f, 1.0f, 1.0f, 0.25f};
 		int recoilCrosshairType = 0;
 		int forceCrosshair = 0;
 

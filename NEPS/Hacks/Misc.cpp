@@ -251,13 +251,10 @@ void Misc::visualizeInaccuracy(ImDrawList *drawList) noexcept
 		if (radius > displaySize.x || radius > displaySize.y)
 			return;
 
-		const auto inaccuracy = std::sqrtf(ImLengthSqr((edge - displaySize / 2) / displaySize)) * 200;
 		const auto color = Helpers::calculateColor(config->visuals.inaccuracyCircle);
-		char text[0xF];
-		std::sprintf(text, "%.6f%%", inaccuracy);
-		drawList->AddText(edge, color, text);
 		drawList->AddCircleFilled(displaySize / 2, radius, color);
-		drawList->AddCircle(displaySize / 2, radius, color | IM_COL32_A_MASK);
+		if (config->visuals.inaccuracyCircle.border)
+			drawList->AddCircle(displaySize / 2, radius, color | IM_COL32_A_MASK);
 	}
 }
 
