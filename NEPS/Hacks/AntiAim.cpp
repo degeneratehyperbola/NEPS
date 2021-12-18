@@ -55,6 +55,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	const auto &cfg = Config::AntiAim::getRelevantConfig();
 	const auto time = memory->globalVars->serverTime();
 
+	bool fakeDucking = false;
 	if (static Helpers::KeyBindState flag; config->exploits.fakeDuckPackets && flag[config->exploits.fakeDuck])
 	{
 		sendPacket = networkChannel->chokedPackets >= config->exploits.fakeDuckPackets;
@@ -67,16 +68,20 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 		if (networkChannel->chokedPackets > (config->exploits.fakeDuckPackets / 2))
 			cmd->buttons |= UserCmd::Button_Duck;
-	} else if (static Helpers::KeyBindState flag; flag[cfg.choke] && cfg.chokedPackets)
+
+		fakeDucking = true;
+	}
+	
+	if (Helpers::attacking(cmd->buttons & UserCmd::Button_Attack, cmd->buttons & UserCmd::Button_Attack2))
+		return;
+
+	if (static Helpers::KeyBindState flag; flag[cfg.choke] && cfg.chokedPackets && !fakeDucking)
 	{
 		if (interfaces->engine->isVoiceRecording())
 			sendPacket = networkChannel->chokedPackets >= std::min(3, cfg.chokedPackets);
 		else
 			sendPacket = networkChannel->chokedPackets >= cfg.chokedPackets;
 	}
-
-	if (Helpers::attacking(cmd->buttons & UserCmd::Button_Attack, cmd->buttons & UserCmd::Button_Attack2))
-		return;
 
 	if (cfg.pitch && cmd->viewangles.x == currentViewAngles.x)
 		cmd->viewangles.x = cfg.pitchAngle;
