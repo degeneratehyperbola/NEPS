@@ -253,7 +253,7 @@ void Misc::visualizeInaccuracy(ImDrawList *drawList) noexcept
 
 		const auto color = Helpers::calculateColor(config->visuals.inaccuracyCircle);
 		drawList->AddCircleFilled(displaySize / 2, radius, color);
-		if (config->visuals.inaccuracyCircle.border)
+		if (config->visuals.inaccuracyCircle.outline)
 			drawList->AddCircle(displaySize / 2, radius, color | IM_COL32_A_MASK);
 	}
 }

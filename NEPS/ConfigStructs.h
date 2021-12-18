@@ -31,17 +31,17 @@ struct Color4Toggle : Color4
 	bool enabled = false;
 };
 
-struct Color4Border : Color4
+struct Color4Outline : Color4
 {
-	bool border = true;
+	bool outline = true;
 };
 
-struct Color4BorderToggle : Color4Border
+struct Color4OutlineToggle : Color4Outline
 {
 	bool enabled = false;
 };
 
-struct Color4BorderToggleThickness : Color4BorderToggle
+struct Color4OutlineToggleThickness : Color4OutlineToggle
 {
 	float thickness = 1.0f;
 };
@@ -108,26 +108,26 @@ struct Shared
 	Font font;
 	Snapline snapline;
 	Box box;
-	Color4BorderToggle name;
+	Color4OutlineToggle name;
 	float textCullDistance = 0.0f;
 };
 
-struct Bar : Color4BorderToggle
+struct Bar : Color4OutlineToggle
 {
 	// What
 };
 
 struct Player : Shared
 {
-	Color4BorderToggle weapon;
-	Color4BorderToggle flashDuration;
+	Color4OutlineToggle weapon;
+	Color4OutlineToggle flashDuration;
 	bool audibleOnly = false;
 	bool spottedOnly = false;
-	Color4BorderToggle healthBar;
-	Color4BorderToggle health;
-	Color4BorderToggleThickness skeleton;
+	Color4OutlineToggle healthBar;
+	Color4OutlineToggle health;
+	Color4OutlineToggleThickness skeleton;
 	Box headBox;
-	Color4BorderToggle flags;
+	Color4OutlineToggle flags;
 	Color4Toggle offscreen = {1.0f, 1.0f, 1.0f, 0.5f};
 	Color4ToggleThickness lineOfSight;
 
@@ -136,12 +136,12 @@ struct Player : Shared
 
 struct Weapon : Shared
 {
-	Color4BorderToggle ammo;
+	Color4OutlineToggle ammo;
 
 	using Shared::operator=;
 };
 
-struct Trail : Color4BorderToggleThickness
+struct Trail : Color4OutlineToggleThickness
 {
 	enum Type
 	{

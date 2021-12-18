@@ -285,7 +285,7 @@ struct FontPush
 	}
 };
 
-static void drawHealthBar(const ImVec2 &pos, float height, int health, const Color4BorderToggle &healthBarConfig, const Color4BorderToggle &text, float distance, float cull) noexcept
+static void drawHealthBar(const ImVec2 &pos, float height, int health, const Color4OutlineToggle &healthBarConfig, const Color4OutlineToggle &text, float distance, float cull) noexcept
 {
 	const int originalHealth = health;
 	health = std::clamp(health, 0, 100);
@@ -299,7 +299,7 @@ static void drawHealthBar(const ImVec2 &pos, float height, int health, const Col
 
 		const auto color = Helpers::calculateColor(healthBarConfig);
 
-		if (healthBarConfig.border)
+		if (healthBarConfig.outline)
 			drawList->AddRectFilled(min - ImVec2{1.0f, 1.0f}, max + ImVec2{1.0f, 1.0f}, color & IM_COL32_A_MASK);
 
 		drawList->AddRectFilled(min + ImVec2{0.0f, (100 - health) / 100.0f * height}, max, color);
@@ -372,7 +372,7 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 		const auto color = Helpers::calculateColor(config.flashDuration);
 		constexpr float pi = std::numbers::pi_v<float>;
 		drawList->PathArcTo(flashDurationPos, radius, pi / 2 - (playerData.flashDuration / 255.0f * pi), pi / 2 + (playerData.flashDuration / 255.0f * pi), 40);
-		if (config.flashDuration.border)
+		if (config.flashDuration.outline)
 			drawList->AddPolyline(drawList->_Path.Data, drawList->_Path.Size, color & IM_COL32_A_MASK, false, 3.0f);
 		drawList->PathStroke(color, false);
 
@@ -453,12 +453,12 @@ static void drawProjectileTrajectory(const Trail &config, const std::vector<std:
 				shadowPoints.emplace_back(pos);
 			} else if (config.type == Trail::Circles)
 			{
-				if (config.border)
+				if (config.outline)
 					drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color & IM_COL32_A_MASK, 12, config.thickness + 2.0f);
 				drawList->AddCircle(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color, 12, config.thickness);
 			} else if (config.type == Trail::FilledCircles)
 			{
-				if (config.border)
+				if (config.outline)
 					drawList->AddCircleFilled(pos, 5.0f - point.distTo(GameData::local().origin) / 700.0f, color & IM_COL32_A_MASK);
 				drawList->AddCircleFilled(pos, 4.0f - point.distTo(GameData::local().origin) / 700.0f, color);
 			}
@@ -467,13 +467,13 @@ static void drawProjectileTrajectory(const Trail &config, const std::vector<std:
 
 	if (config.type == Trail::Line)
 	{
-		if (config.border)
+		if (config.outline)
 			drawList->AddPolyline(shadowPoints.data(), shadowPoints.size(), color & IM_COL32_A_MASK, false, config.thickness + 2.0f);
 		drawList->AddPolyline(points.data(), points.size(), color, false, config.thickness);
 	}
 }
 
-static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const PlayerData &playerData) noexcept
+static void drawPlayerSkeleton(const Color4OutlineToggleThickness &config, const PlayerData &playerData) noexcept
 {
 	if (!config.enabled)
 		return;
@@ -499,7 +499,7 @@ static void drawPlayerSkeleton(const Color4BorderToggleThickness &config, const 
 		shadowPoints.emplace_back(bonePoint, parentPoint);
 	}
 
-	if (config.border)
+	if (config.outline)
 		for (const auto &[bonePoint, parentPoint] : shadowPoints)
 			drawList->AddLine(bonePoint, parentPoint, color & IM_COL32_A_MASK, config.thickness + 2.0f);
 

@@ -244,13 +244,13 @@ void AntiAim::visualize(ImDrawList *drawList) noexcept
 		switch (dir)
 		{
 		case -1:
-			ImGuiCustom::drawTriangleFromCenter(drawList, {-200, 0}, color);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {-200, 0}, color, cfg.visualizeDirection.outline);
 			break;
 		case 0:
-			ImGuiCustom::drawTriangleFromCenter(drawList, {0, 100}, color);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {0, 100}, color, cfg.visualizeDirection.outline);
 			break;
 		case 1:
-			ImGuiCustom::drawTriangleFromCenter(drawList, {200, 0}, color);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {200, 0}, color, cfg.visualizeDirection.outline);
 			break;
 		}
 	}
@@ -259,8 +259,8 @@ void AntiAim::visualize(ImDrawList *drawList) noexcept
 	{
 		const auto color = Helpers::calculateColor(cfg.visualizeSide);
 		if (flip)
-			ImGuiCustom::drawTriangleFromCenter(drawList, {100, 0}, color);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {100, 0}, color, cfg.visualizeSide.outline);
 		else
-			ImGuiCustom::drawTriangleFromCenter(drawList, {-100, 0}, color);
+			ImGuiCustom::drawTriangleFromCenter(drawList, {-100, 0}, color, cfg.visualizeSide.outline);
 	}
 }
