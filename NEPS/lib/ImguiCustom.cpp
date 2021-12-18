@@ -6,7 +6,7 @@
 #include "../Interfaces.h"
 #include "../SDK/InputSystem.h"
 
-void ImGuiCustom::colorPicker(const char *name, float color[3], float *alpha, bool *rainbow, float *rainbowSpeed, bool *enable, float *thickness, float *rounding, bool *border) noexcept
+void ImGuiCustom::colorPicker(const char *name, float color[3], float *alpha, bool *rainbow, float *rainbowSpeed, bool *enable, float *thickness, float *rounding, bool *outline) noexcept
 {
 	ImGui::PushID(name);
 	if (enable)
@@ -83,9 +83,9 @@ void ImGuiCustom::colorPicker(const char *name, float color[3], float *alpha, bo
 					ImGui::DragFloat("##thickness", thickness, 0.1f, 1.0f, 10.0f, "Thick %.2f");
 					*thickness = std::max(*thickness, 1.0f);
 				}
-				if (border)
+				if (outline)
 				{
-					ImGui::Checkbox("Outline", border);
+					ImGui::Checkbox("Outline", outline);
 				}
 
 				ImGui::PopItemWidth();
@@ -108,14 +108,14 @@ void ImGuiCustom::colorPicker(const char *name, Color4 &colorConfig, bool *enabl
 	colorPicker(name, colorConfig.color.data(), &colorConfig.color[3], &colorConfig.rainbow, &colorConfig.rainbowSpeed, enable, thickness);
 }
 
-void ImGuiCustom::colorPicker(const char *name, Color4Border &colorConfig, bool *enable, float *thickness) noexcept
+void ImGuiCustom::colorPicker(const char *name, Color4Outline &colorConfig, bool *enable, float *thickness) noexcept
 {
-	colorPicker(name, colorConfig.color.data(), &colorConfig.color[3], &colorConfig.rainbow, &colorConfig.rainbowSpeed, enable, thickness, nullptr, &colorConfig.border);
+	colorPicker(name, colorConfig.color.data(), &colorConfig.color[3], &colorConfig.rainbow, &colorConfig.rainbowSpeed, enable, thickness, nullptr, &colorConfig.outline);
 }
 
-void ImGuiCustom::colorPicker(const char *name, Color4BorderToggle &colorConfig, bool *enable, float *thickness) noexcept
+void ImGuiCustom::colorPicker(const char *name, Color4OutlineToggle &colorConfig, bool *enable, float *thickness) noexcept
 {
-	colorPicker(name, colorConfig.color.data(), &colorConfig.color[3], &colorConfig.rainbow, &colorConfig.rainbowSpeed, &colorConfig.enabled, thickness, nullptr, &colorConfig.border);
+	colorPicker(name, colorConfig.color.data(), &colorConfig.color[3], &colorConfig.rainbow, &colorConfig.rainbowSpeed, &colorConfig.enabled, thickness, nullptr, &colorConfig.outline);
 }
 
 void ImGuiCustom::colorPicker(const char *name, Color4Toggle &colorConfig) noexcept
@@ -690,7 +690,7 @@ void ImGuiCustom::StyleColors5(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_ModalWindowDimBg] = {0.20f, 0.20f, 0.20f, 0.35f};
 }
 
-void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned int color) noexcept
+void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned int color, bool outline) noexcept
 {
 	const auto l = std::sqrtf(ImLengthSqr(pos));
 	if (!l) return;
@@ -698,13 +698,14 @@ void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos
 	const auto center = ImGui::GetIO().DisplaySize / 2 + pos;
 
 	const ImVec2 trianglePoints[] = {
+		center + ImVec2{-0.4f * posNormalized.y, 0.4f * posNormalized.x} *30,
 		center + ImVec2{0.4f * posNormalized.y, -0.4f * posNormalized.x} *30,
-		center + ImVec2{1.0f * posNormalized.x, 1.0f * posNormalized.y} *30,
-		center + ImVec2{-0.4f * posNormalized.y, 0.4f * posNormalized.x} *30
+		center + ImVec2{1.0f * posNormalized.x, 1.0f * posNormalized.y} *30
 	};
 
 	drawList->AddConvexPolyFilled(trianglePoints, 3, color);
-	drawList->AddPolyline(trianglePoints, 3, color | IM_COL32_A_MASK, ImDrawFlags_Closed, 1.0f);
+	if (outline)
+		drawList->AddPolyline(trianglePoints, 3, color | IM_COL32_A_MASK, ImDrawFlags_Closed, 1.5f);
 }
 
 ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, float distance, float cullDistance, unsigned int textColor, unsigned int borderColor, const char *text, const ImVec2 &pos, bool centered, bool adjustHeight) noexcept
