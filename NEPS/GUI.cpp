@@ -821,15 +821,13 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::EndPopup();
 		}
 
-		ImGui::Checkbox("Desync", &currentConfig.desync);
+		ImGui::Combo("Desync", &currentConfig.desync, "None\0Micro movement\0Opposite\0Interchanged\0Fake desync\0Sway\0");
 		ImGui::SameLine();
 		if (ImGui::ArrowButton("desync_advanced", ImGuiDir_Right))
 			ImGui::OpenPopup("##desync");
 
 		if (ImGui::BeginPopup("##desync"))
 		{
-			ImGui::SetNextItemWidth(100);
-			ImGui::Combo("Desync type", &currentConfig.desyncType, "Micro movement\0Opposite\0Interchanged\0Fake desync\0Sway\0");
 			ImGuiCustom::keyBind("Flip key", &currentConfig.flipKey);
 			ImGuiCustom::colorPicker("Visualize", currentConfig.visualizeSide);
 
@@ -1886,9 +1884,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	}
 
 	ImGui::SliderInt("##fov", &config->visuals.fov, 1, 170, "FOV %ddeg");
-	ImGui::Checkbox("Keep FOV", &config->visuals.forceFov);
-	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("Keep FOV when scoped");
+	ImGui::Checkbox("Keep FOV when scoped", &config->visuals.forceFov);
 	ImGui::SliderInt("##far_z", &config->visuals.farZ, 0, 2500, "Far Z %d");
 	ImGui::SliderInt("##flash_red", &config->visuals.flashReduction, 0, 100, "Flash reduction %d%%");
 	ImGui::SliderFloat("##brightness", &config->visuals.brightness, 0.0f, 1.0f, "Brightness %.2f");

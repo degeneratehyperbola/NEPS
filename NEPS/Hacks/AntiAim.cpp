@@ -166,30 +166,30 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	{
 		float a = 0.0f;
 		float b = 0.0f;
-		switch (cfg.desyncType)
+		switch (cfg.desync)
 		{
-		case 0:
-			b = flip ? 120.0f : -120.0f;
-			break;
 		case 1:
-			a = flip ? -120.0f : 120.0f;
 			b = flip ? 120.0f : -120.0f;
 			break;
 		case 2:
 			a = flip ? -120.0f : 120.0f;
-			b = flip ? 60.0f : -60.0f;
+			b = flip ? 120.0f : -120.0f;
 			break;
 		case 3:
+			a = flip ? -120.0f : 120.0f;
+			b = flip ? 60.0f : -60.0f;
+			break;
 		case 4:
+		case 5:
 			a = flip ? 120.0f : -120.0f;
 			b = flip ? 120.0f : -120.0f;
 			break;
 		}
 
-		if (cfg.flipKey && GetAsyncKeyState(cfg.flipKey) & 1 || cfg.desyncType == 4 && lbyUpdate)
+		if (cfg.flipKey && GetAsyncKeyState(cfg.flipKey) & 1 || cfg.desync == 4 && lbyUpdate)
 			flip = !flip;
 
-		if (cfg.desyncType == 0)
+		if (cfg.desync == 0)
 		{
 			microMovement(cmd);
 
