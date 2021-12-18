@@ -262,17 +262,17 @@ static float __stdcall getViewModelFov() noexcept
 	return hooks->clientMode.callOriginal<float, 35>() + additionalFov;
 }
 
-static void __stdcall drawModelExecute(void *ctx, void *state, const ModelRenderInfo &info, Matrix3x4 *customBoneToWorld) noexcept
+static void __stdcall drawModelExecute(void *context, void *state, const ModelRenderInfo &info, Matrix3x4 *customBoneToWorld) noexcept
 {
 	if (interfaces->studioRender->isForcedMaterialOverride())
-		return hooks->modelRender.callOriginal<void, 21>(ctx, state, std::cref(info), customBoneToWorld);
+		return hooks->modelRender.callOriginal<void, 21>(context, state, std::cref(info), customBoneToWorld);
 
 	if (Visuals::removeHands(info.model->name) || Visuals::removeSleeves(info.model->name) || Visuals::removeWeapons(info.model->name))
 		return;
 
 	static Chams chams;
-	if (!chams.render(ctx, state, info, customBoneToWorld))
-		hooks->modelRender.callOriginal<void, 21>(ctx, state, std::cref(info), customBoneToWorld);
+	if (!chams.render(context, state, info, customBoneToWorld))
+		hooks->modelRender.callOriginal<void, 21>(context, state, std::cref(info), customBoneToWorld);
 	interfaces->studioRender->forcedMaterialOverride(nullptr);
 }
 
@@ -626,7 +626,7 @@ static void __fastcall doProceduralFootPlant(void *thisptr, void *edx, void *bon
 	if (config->misc.disableIK)
 		return;
 
-	hooks->originalDoProceduralFootPlant(thisptr, nullptr, boneToWorld, leftFootChain, rightFootChain, bone);
+	hooks->originalDoProceduralFootPlant(thisptr, edx, boneToWorld, leftFootChain, rightFootChain, bone);
 }
 
 static bool __stdcall dispatchUserMessage(UserMessageType type, int passthroughFlags, int size, const void *data) noexcept
