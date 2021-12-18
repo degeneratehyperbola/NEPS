@@ -236,8 +236,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 
 	if (cfg.yaw)
 		cmd->viewangles.y += cfg.yawAngle;
-
-	
+			
 	double factor;
 	static float trigger;
 	int random;

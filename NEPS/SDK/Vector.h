@@ -153,6 +153,10 @@ struct Vector
 	{
 		return std::sqrt(x * x + y * y + z * z);
 	}
+	auto length2() const noexcept
+	{
+		return x * x + y * y + z * z;
+	}
 
 	auto length2D() const noexcept
 	{
@@ -312,6 +316,35 @@ struct Vector
 		}
 
 		angles.z = 0.0f;
+	}
+
+	static void vectorAngles2(Vector forward, Vector* angles)
+	{
+		float tmp, yaw, pitch;
+
+		if (forward.y == 0.f && forward.x == 0.f) {
+			yaw = 0;
+			if (forward.z > 0) {
+				pitch = 270;
+			}
+			else {
+				pitch = 90.f;
+			}
+		}
+		else {
+			yaw = (float)(atan2(forward.y, forward.x) * 180.f / 3.14159265358979323846f);
+			if (yaw < 0) {
+				yaw += 360.f;
+			}
+			tmp = (float)sqrt(forward.x * forward.x + forward.y * forward.y);
+			pitch = (float)(atan2(-forward.z, tmp) * 180.f / 3.14159265358979323846f);
+			if (pitch < 0) {
+				pitch += 360.f;
+			}
+		}
+		angles->x = pitch;
+		angles->y = yaw;
+		angles->z = 0.f;
 	}
 
 	static auto calcAngle(const Vector src, const Vector dst)

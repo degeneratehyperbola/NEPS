@@ -1088,3 +1088,59 @@ void Visuals::penetrationCrosshair(ImDrawList *drawList) noexcept
 {
 	// Upcoming
 }
+
+void Visuals::drawAimbotFov(ImDrawList* drawList) noexcept
+{
+	if (!config->visuals.drawAimbotFov.enabled)
+		return;
+
+	if (!localPlayer || localPlayer->nextAttack() > memory->globalVars->serverTime() || localPlayer->isDefusing() || localPlayer->waitForNoAttack())
+		return;
+
+	const auto activeWeapon = localPlayer->getActiveWeapon();
+	if (!activeWeapon || !activeWeapon->clip())
+		return;
+
+	if (localPlayer->shotsFired() > 0 && !activeWeapon->isFullAuto())
+		return;
+
+	auto weaponIndex = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
+	if (!weaponIndex)
+		return;
+
+	auto weaponClass = getWeaponClass(activeWeapon->itemDefinitionIndex2());
+	if (static Helpers::KeyBindState flag; !flag[config->aimbot[weaponIndex].bind])
+		weaponIndex = weaponClass;
+
+	if (static Helpers::KeyBindState flag; !flag[config->aimbot[weaponIndex].bind])
+		weaponIndex = 0;
+
+	if (static Helpers::KeyBindState flag; !flag[config->aimbot[weaponIndex].bind])
+		return;
+
+	if (!config->aimbot[weaponIndex].betweenShots && (activeWeapon->nextPrimaryAttack() > memory->globalVars->serverTime() || (activeWeapon->isFullAuto() && localPlayer->shotsFired() > 1)))
+		return;
+
+	if (!config->aimbot[weaponIndex].ignoreFlash && localPlayer->isFlashed())
+		return;
+
+	if (config->aimbot[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
+		return;
+
+	const auto& screensize = ImGui::GetIO().DisplaySize;
+	float radius = std::tan(Helpers::degreesToRadians(config->aimbot[weaponIndex].fov) / 2.f) / std::tan(Helpers::degreesToRadians(localPlayer->isScoped() ? localPlayer->fov() : config->visuals.fov) / 2.f) * screensize.x;
+	const ImVec2 screen_mid = { screensize.x / 2.0f, screensize.y / 2.0f };
+
+	const auto aimPunchAngle = localPlayer->getEyePosition() + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000.0f;
+
+	if (ImVec2 pos; Helpers::worldToScreen(aimPunchAngle, pos))
+	{
+		drawList->AddCircle(localPlayer->shotsFired() > 1 ? pos : screen_mid, radius, Helpers::calculateColor(config->visuals.drawAimbotFov), 360);
+		drawList->AddCircleFilled(localPlayer->shotsFired() > 1 ? pos : screen_mid, radius, Helpers::calculateColor(Color4{
+			config->visuals.drawAimbotFov.color[0],
+			config->visuals.drawAimbotFov.color[1], 
+			config->visuals.drawAimbotFov.color[2],
+			config->visuals.drawAimbotFov.color[3] * 0.5f
+			}), 360);
+	}
+}

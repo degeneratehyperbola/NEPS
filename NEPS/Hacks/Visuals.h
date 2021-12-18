@@ -38,4 +38,5 @@ namespace Visuals
 	void playerBounds(ImDrawList *drawList) noexcept;
 	void playerVelocity(ImDrawList *drawList) noexcept;
     void penetrationCrosshair(ImDrawList* drawList) noexcept;
+    void drawAimbotFov(ImDrawList* drawList) noexcept;
 }

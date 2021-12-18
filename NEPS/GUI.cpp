@@ -919,6 +919,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			ImGui::SetNextItemWidth(-1);
 			ImGui::SliderFloat("##pitch_sl", &currentConfig.pitchAngle, -89.0f, 89.0f, "Pitch %.2fdeg");
 		}
+
 		ImGui::Checkbox("Look at enemies", &currentConfig.lookAtEnemies);
 		ImGui::SetNextItemWidth(100);
 		ImGui::Combo("Direction", &currentConfig.direction, "Off\0Auto\0Manual\0");
@@ -1954,6 +1955,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGuiCustom::colorPicker("##rxhair", config->visuals.recoilCrosshair);
 	ImGui::SameLine();
 	ImGui::Combo("Recoil crosshair", &config->visuals.recoilCrosshairType, "None\0Circle dot\0Dot\0Cross\0Empty cross\0");
+	ImGuiCustom::colorPicker("Draw AimBot FOV", config->visuals.drawAimbotFov);
 	ImGui::PopItemWidth();
 
 	ImGuiCustom::colorPicker("Inaccuracy circle", config->visuals.inaccuracyCircle);
@@ -2472,6 +2474,8 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 		ImGui::SetNextItemWidth(110);
 		ImGui::InputFloat("Distance", &config->sound.soundESP.distance, 0.4f, 0.8f, "%.1fu");
 		config->sound.soundESP.distance = std::clamp(config->sound.soundESP.distance, 0.0f, 9999.f);
+		ImGui::SetNextItemWidth(110);	
+		ImGui::SliderFloat("##fov", &config->sound.soundESP.fov, 0.0f, 255.0f, "FOV %.2fdeg", ImGuiSliderFlags_Logarithmic);
 		ImGui::EndPopup();
 	}
 
@@ -2647,7 +2651,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	if (config->misc.menuKey == 1) config->misc.menuKey = 0;
 
 	ImGui::Checkbox("Always full-auto", &config->misc.autoPistol);
-	ImGui::SameLine(80);
+
 	ImGui::Checkbox("Fast plant", &config->misc.fastPlant);
 
 	ImGui::Checkbox("Auto reload", &config->misc.autoReload);

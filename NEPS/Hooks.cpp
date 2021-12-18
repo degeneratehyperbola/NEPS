@@ -128,6 +128,8 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::watermark();
 	#endif // !LEGACY_WATERMARK
 
+	Visuals::drawAimbotFov(ImGui::GetBackgroundDrawList());
+
 	gui->render();
 	gui->handleToggle();
 

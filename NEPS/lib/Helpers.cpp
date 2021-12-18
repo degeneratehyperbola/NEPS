@@ -10,6 +10,61 @@
 #include <shared_lib/imgui/imgui_internal.h>
 #include <fstream>
 
+Vector Helpers::getTargetAngle(Entity* target, int bone)
+{
+	Vector bonePos, eyePos;
+
+	bonePos = target->getBonePosition(bone);
+	eyePos = localPlayer->getEyePosition();
+	eyePos.x = bonePos.x - eyePos.x;
+	eyePos.y = bonePos.y - eyePos.y;
+	eyePos.z = bonePos.z - eyePos.z;
+	eyePos.normalize();
+	Vector::vectorAngles2(eyePos, &eyePos);
+	Vector aimPunch = localPlayer->aimPunchAngle();
+	eyePos.x -= aimPunch.x * 2.0f;
+	eyePos.y -= aimPunch.y * 2.0f;
+	eyePos.z -= aimPunch.z * 2.0f;
+	eyePos.clamp();
+	return eyePos;
+}
+
+Helpers::EntHitbox Helpers::getTarget(Vector vangle, bool teamDamage)
+{
+	const int hitboxList[6] = { Hitbox_LeftFoot, Hitbox_RightFoot, Hitbox_Head, Hitbox_UpperChest, Hitbox_Thorax, Hitbox_Pelvis };
+	float bestFov, fov;
+
+	bestFov = 9999.0f;
+	for (const auto& player : GameData::players())
+	{
+		auto* entity = interfaces->entityList->getEntityFromHandle(player.handle);
+		if (!entity) continue;
+		if (!teamDamage && !player.enemy)
+			continue;
+		const auto hitboxSet = entity->getHitboxSet();
+		if (!hitboxSet)
+			continue;
+		for (int hitboxIdx = 0; hitboxIdx < hitboxSet->numHitboxes; hitboxIdx++)
+		{
+			fov = Helpers::getFov(vangle, Helpers::getTargetAngle(entity, hitboxList[hitboxIdx]));
+			if (fov < bestFov) {
+				bestFov = fov;
+				return Helpers::EntHitbox{ entity, hitboxList[hitboxIdx] };
+			}
+		}
+	}
+	return Helpers::EntHitbox{};
+}
+
+float Helpers::getFov(Vector vangle, Vector angle)
+{
+	Vector a0, a1;
+
+	Vector::AngleVectors(vangle, a0);
+	Vector::AngleVectors(angle, a1);
+	return Helpers::radiansToDegrees(acos(a0.dotProduct(a1) / a0.length2()));
+}
+
 template <std::size_t N>
 constexpr auto Helpers::decodeBase85(const char(&input)[N]) noexcept
 {

@@ -477,11 +477,12 @@ void Misc::stealNames() noexcept
 
 	static std::vector<int> stolenIds;
 
-	auto duration = std::chrono::system_clock::now().time_since_epoch();
-	long currentTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-	static long timeStamp = currentTime_ms;
+	static float previousTime = memory->globalVars->realtime;
+	if (memory->globalVars->realtime < previousTime + 0.3f)
+		return;
 
-	if (currentTime_ms - timeStamp < 350) return;
+	previousTime = memory->globalVars->realtime;
+
 
 	for (int i = 1; i <= memory->globalVars->maxClients; ++i)
 	{
@@ -499,8 +500,6 @@ void Misc::stealNames() noexcept
 
 		if (changeName(false, (std::string{playerInfo.name} + '\x1').c_str(), 1.0f))
 			stolenIds.emplace_back(playerInfo.userId);
-
-		timeStamp = currentTime_ms;
 
 		return;
 	}
@@ -877,36 +876,29 @@ void Misc::soundESP() noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	for (const auto& player : GameData::players())
+	auto viewAngle = interfaces->engine->getViewAngles();
+	auto target = Helpers::getTarget(viewAngle, config->sound.soundESP.teammates);
+
+	if (!target.entity || !target.entity->isAlive() || !target.entity->isAlive())
+		return;
+
+	float playerDistance = localPlayer->origin().distTo(target.entity->origin());
+	if (config->sound.soundESP.distance && config->sound.soundESP.distance < playerDistance)
+		return;
+
+	auto fov = Helpers::getFov(viewAngle, Helpers::getTargetAngle(target.entity, target.hitbox));
+	if (fov <= config->sound.soundESP.fov)
 	{
-		if (!player.alive) continue;
-		if (player.handle == GameData::local().observerTargetHandle) continue;
-
-		if (!player.alive)
+		static float previousTime = memory->globalVars->realtime;
+		if (memory->globalVars->realtime < previousTime + 0.2f)
 			return;
-
-		if (!config->sound.soundESP.teammates && !player.enemy)
-			return;
-
-		float playerDistance = localPlayer->origin().distTo(player.origin);
-		if (config->sound.soundESP.distance && config->sound.soundESP.distance < playerDistance)
-			continue;
-
-		auto duration = std::chrono::system_clock::now().time_since_epoch();
-		long currentTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-		static long timeStamp = currentTime_ms;
-
-		if (currentTime_ms - timeStamp < 200) return;
+		previousTime = memory->globalVars->realtime;
 
 		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
 			soundprecache->addString(false, "buttons/bell1.wav");
 
 		interfaces->surface->playSound("buttons/bell1.wav");
-
-		timeStamp = currentTime_ms;
 	}
-
-
 }
 
 void Misc::antiAfkKick(UserCmd *cmd) noexcept
@@ -1778,12 +1770,12 @@ void Misc::playerList()
 			ImGui::TableSetupColumn("Wins", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Level", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Ranking", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("SteamID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("UserID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Money", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Health", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Armor", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupColumn("Last Place", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn("SteamID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn("UserID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableHeadersRow();
 
 			ImGui::TableNextRow();
@@ -1807,6 +1799,18 @@ void Misc::playerList()
 			if (ImGui::TableNextColumn())
 				ImGui::Text(interfaces->localize->findAsUTF8(("RankName_" + std::to_string(playerResource->competitiveRanking()[localPlayer->index()])).c_str()));
 
+
+
+			if (ImGui::TableNextColumn())
+			{
+				ImGui::Text("%llu", localPlayer->getSteamID());
+				if (ImGui::SameLine(); ImGui::SmallButton("Copy"))
+					ImGui::SetClipboardText(std::to_string(localPlayer->getSteamID()).c_str());
+			}
+			
+			if (ImGui::TableNextColumn())
+				ImGui::Text("%d", localPlayer->getUserId());
+
 			if (ImGui::TableNextColumn())
 				ImGui::TextColored({ 0.0f, 0.5f, 0.0f, 1.0f }, "$%d", localPlayer->account());
 
@@ -1822,18 +1826,7 @@ void Misc::playerList()
 				ImGui::Text("%d", localPlayer->armor());
 
 			if (ImGui::TableNextColumn())
-				
 				ImGui::Text("%s", localPlayer->isAlive() && localPlayer->lastPlaceName() ? interfaces->localize->findAsUTF8(localPlayer->lastPlaceName()) : "Unknown");
-
-			if (ImGui::TableNextColumn())
-			{
-				ImGui::Text("%llu", localPlayer->getSteamID());
-				if (ImGui::SameLine(); ImGui::SmallButton("Copy"))
-					ImGui::SetClipboardText(std::to_string(localPlayer->getSteamID()).c_str());
-			}
-			
-			if (ImGui::TableNextColumn())
-				ImGui::Text("%d", localPlayer->getUserId());
 			
 			std::vector<std::reference_wrapper<const PlayerData>> playersOrdered{ GameData::players().begin(), GameData::players().end() };
 			std::ranges::sort(playersOrdered, [](const PlayerData& a, const PlayerData& b) {
@@ -1854,17 +1847,17 @@ void Misc::playerList()
 				if (!entity) continue;
 
 				if (ImGui::TableNextColumn())
-					if (currentPlayer.team  == "CT")
-						ImGui::TextColored({ 0.0f, 0.2f, 1.0f, 1.0f }, currentPlayer.name.c_str());
+					if (entity->team() == Team::CT)
+						ImGui::TextColored({ 0.0f, 0.2f, 1.0f, 1.0f }, entity->getPlayerName().c_str());
 					else
-						ImGui::TextColored({ 0.7f, 0.7f, 0.0f, 1.0f },  currentPlayer.name.c_str());
+						ImGui::TextColored({ 0.7f, 0.7f, 0.0f, 1.0f }, entity->getPlayerName().c_str());
 
 				if (ImGui::TableNextColumn())
-					ImGui::Text("%s", currentPlayer.team.c_str());
+					ImGui::Text("%s", entity->team() == Team::CT ? "CT" : entity->team() == Team::TT ? "T" : "Unknown");
 
 				if (ImGui::TableNextColumn())
 				{
-					if (currentPlayer.isBot)
+					if (entity->isBot())
 						ImGui::Text("BOT");
 					else
 						ImGui::Text("%d", playerResource->competitiveWins()[entity->index()]);
@@ -1872,7 +1865,7 @@ void Misc::playerList()
 					
 				if (ImGui::TableNextColumn())
 				{
-					if (currentPlayer.isBot)
+					if (entity->isBot())
 						ImGui::Text("BOT");
 					else
 						ImGui::Text("%d", playerResource->level()[entity->index()]);
@@ -1880,44 +1873,43 @@ void Misc::playerList()
 
 				if (ImGui::TableNextColumn())
 				{
-					if (currentPlayer.isBot)
+					if (entity->isBot())
 						ImGui::Text("BOT");
 					else
 						ImGui::Text(interfaces->localize->findAsUTF8(("RankName_" + std::to_string(playerResource->competitiveRanking()[entity->index()])).c_str()));
 				}
-					
-
-				if (ImGui::TableNextColumn())
-					ImGui::TextColored({ 0.0f, 0.5f, 0.0f, 1.0f }, "$%d", currentPlayer.money);
 
 				if (ImGui::TableNextColumn())
 				{
-					if (!currentPlayer.alive)
-						ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", "DEAD");
-					else
-						ImGui::Text("%d", currentPlayer.health);
-				}
-
-				if (ImGui::TableNextColumn())
-					ImGui::Text("%d", currentPlayer.armor);
-
-				if (ImGui::TableNextColumn())
-					ImGui::Text("%s", currentPlayer.lastPlaceName.c_str());
-
-				if (ImGui::TableNextColumn())
-				{
-					if (currentPlayer.isBot)
+					if (entity->isBot())
 						ImGui::Text("BOT");
 					else
 					{
-						ImGui::Text("%llu", currentPlayer.steamID);
+						ImGui::Text("%llu", entity->getSteamID());
 						if (ImGui::SameLine(); ImGui::SmallButton("Copy"))
-							ImGui::SetClipboardText(std::to_string(currentPlayer.steamID).c_str());
+							ImGui::SetClipboardText(std::to_string(entity->getSteamID()).c_str());
 					}
 				}
 
 				if (ImGui::TableNextColumn())
-					ImGui::Text("%d", currentPlayer.userId);
+					ImGui::Text("%d", entity->getUserId());
+				
+				if (ImGui::TableNextColumn())
+					ImGui::TextColored({ 0.0f, 0.5f, 0.0f, 1.0f }, "$%d", entity->account());
+
+				if (ImGui::TableNextColumn())
+				{
+					if (!entity->isAlive())
+						ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", "DEAD");
+					else
+						ImGui::Text("%d", entity->health());
+				}
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%d", entity->armor());
+
+				if (ImGui::TableNextColumn())
+					ImGui::Text("%s", entity->isAlive() && entity->lastPlaceName() ? interfaces->localize->findAsUTF8(entity->lastPlaceName()) : "Unknown");
 			}
 
 			ImGui::EndTable();
@@ -2287,7 +2279,14 @@ void Misc::watermark() noexcept
 		ImGui::SameLine();
 
 		ImGui::TextUnformatted(session.address.c_str());
-	}
+
+		ImGui::SameLine();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		ImGui::TextUnformatted("Connected");
+	} else
+		ImGui::TextUnformatted("Not Connected");
 	ImGui::End();
 
 }

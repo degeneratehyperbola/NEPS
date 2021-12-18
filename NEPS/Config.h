@@ -254,6 +254,7 @@ public:
 		int forceCrosshair = 0;
 		Color4ToggleThickness reloadProgress = { 1.0f, 1.0f, 1.0f, 1.0f };
 		Color4Toggle nadeBlast = { 1.0f, 0.0f, 0.09f, 0.51f };
+		Color4Toggle drawAimbotFov{ 1.0f, 0.0f, 0.0f, 1.0f };
 
 		struct Beams
 		{
@@ -347,6 +348,7 @@ public:
 			KeyBind keybind;
 			bool teammates = false;
 			float distance = 700.0f;
+			float fov = 6.0f;
 		} soundESP;
 
 		int hitSound = 0;

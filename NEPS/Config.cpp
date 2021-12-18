@@ -619,6 +619,7 @@ static void from_json(const json &j, Config::Visuals &v)
 	read(j, "Force crosshair", v.forceCrosshair);
 	read<value_t::object>(j, "Reload timer", v.reloadProgress);
 	read<value_t::object>(j, "Nade blast", v.nadeBlast);
+	read<value_t::object>(j, "Draw aimbot fov", v.drawAimbotFov);
 }
 
 static void from_json(const json &j, sticker_setting &s)
@@ -661,6 +662,7 @@ static void from_json(const json &j, Config::Sound::SoundESP &f)
 	read<value_t::object>(j, "Keybind", f.keybind);
 	read(j, "Teammates", f.teammates);
 	read(j, "Distance", f.distance);
+	read(j, "FOV", f.fov);
 }
 
 static void from_json(const json &j, Config::Sound &s)
@@ -1260,6 +1262,7 @@ static void to_json(json& j, const Config::Sound::SoundESP& o, const Config::Sou
 	WRITE("Keybind", keybind);
 	WRITE("Teammates", teammates);
 	WRITE("Distance", distance);
+	WRITE("FOV", fov);
 }
 
 static void to_json(json &j, const Config::Sound &o)
@@ -1593,6 +1596,7 @@ static void to_json(json &j, const Config::Visuals &o)
 	WRITE("Force crosshair", forceCrosshair);
 	WRITE("Reload timer", reloadProgress);
 	WRITE("Nade blast", nadeBlast);
+	WRITE("Draw aimbot fov", drawAimbotFov);
 }
 
 static void to_json(json &j, const ImVec4 &o)
