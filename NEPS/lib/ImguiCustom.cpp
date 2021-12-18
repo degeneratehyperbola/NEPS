@@ -698,9 +698,9 @@ void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos
 	const auto center = ImGui::GetIO().DisplaySize / 2 + pos;
 
 	const ImVec2 trianglePoints[] = {
-		center + ImVec2{-0.4f * posNormalized.y, 0.4f * posNormalized.x} *30,
-		center + ImVec2{0.4f * posNormalized.y, -0.4f * posNormalized.x} *30,
-		center + ImVec2{1.0f * posNormalized.x, 1.0f * posNormalized.y} *30
+		center + ImVec2{-0.4f * posNormalized.y, 0.4f * posNormalized.x} * 30,
+		center + ImVec2{0.4f * posNormalized.y, -0.4f * posNormalized.x} * 30,
+		center + ImVec2{1.0f * posNormalized.x, 1.0f * posNormalized.y} * 30
 	};
 
 	drawList->AddConvexPolyFilled(trianglePoints, 3, color);

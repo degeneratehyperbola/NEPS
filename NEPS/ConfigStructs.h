@@ -128,7 +128,7 @@ struct Player : Shared
 	Color4OutlineToggleThickness skeleton;
 	Box headBox;
 	Color4OutlineToggle flags;
-	Color4Toggle offscreen = {1.0f, 1.0f, 1.0f, 0.5f};
+	Color4OutlineToggle offscreen = {1.0f, 1.0f, 1.0f, 0.5f};
 	Color4ToggleThickness lineOfSight;
 
 	using Shared::operator=;

@@ -507,7 +507,7 @@ static void drawPlayerSkeleton(const Color4OutlineToggleThickness &config, const
 		drawList->AddLine(bonePoint, parentPoint, color, config.thickness);
 }
 
-static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerData) noexcept
+static void drawOffscreen(const Color4OutlineToggle &config, const PlayerData &playerData) noexcept
 {
 	if (!config.enabled)
 		return;
@@ -527,7 +527,7 @@ static void drawOffscreen(const Color4Toggle &config, const PlayerData &playerDa
 	pos /= l;
 
 	const auto color = Helpers::calculateColor(config);
-	ImGuiCustom::drawTriangleFromCenter(drawList, pos * 300, color);
+	ImGuiCustom::drawTriangleFromCenter(drawList, pos * 300, color, config.outline);
 }
 
 static void drawLineOfSight(const Color4ToggleThickness &config, const PlayerData &playerData)
