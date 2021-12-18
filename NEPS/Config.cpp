@@ -413,7 +413,6 @@ static void from_json(const json &j, Config::AntiAim &a)
 	read(j, "Left key", a.leftKey);
 	read<value_t::object>(j, "Visualize direction", a.visualizeDirection);
 	read(j, "Desync", a.desync);
-	read(j, "Desync type", a.desyncType);
 	read(j, "Fake up", a.fakeUp);
 	read(j, "Flip key", a.flipKey);
 	read<value_t::object>(j, "Visualize side", a.visualizeSide);
@@ -1067,7 +1066,6 @@ static void to_json(json &j, const Config::AntiAim &o, const Config::AntiAim &du
 	WRITE("Left key", leftKey);
 	WRITE("Visualize direction", visualizeDirection);
 	WRITE("Desync", desync);
-	WRITE("Desync type", desyncType);
 	WRITE("Fake up", fakeUp);
 	WRITE("Flip key", flipKey);
 	WRITE("Visualize side", visualizeSide);

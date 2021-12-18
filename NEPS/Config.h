@@ -120,8 +120,7 @@ public:
 		int backKey = 0;
 		int leftKey = 0;
 		Color4Toggle visualizeDirection = {1.0f, 1.0f, 1.0f, 0.5f};
-		bool desync = false;
-		int desyncType = 1;
+		int desync = 0;
 		bool fakeUp = false;
 		int flipKey = 0;
 		Color4Toggle visualizeSide = {1.0f, 1.0f, 1.0f, 0.5f};
