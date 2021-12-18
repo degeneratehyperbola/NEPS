@@ -166,7 +166,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 				if (records.size() && Backtrack::valid(records.front().simulationTime)) {
 					if (!appliedChams)
 						hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);
-					applyChams(config->chams["Backtrack"].materials, health, records.back().matrix);
+					applyChams(config->chams["Backtrack"].materials, health, records.back().bones);
 					interfaces->studioRender->forcedMaterialOverride(nullptr);
 				}
 			}
@@ -175,7 +175,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 					if (records.size() && Backtrack::valid(records.front().simulationTime)) {
 						if (!appliedChams)
 							hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);
-						applyChams(config->chams["Backtrack"].materials, health, records.at(i).matrix);
+						applyChams(config->chams["Backtrack"].materials, health, records.at(i).bones);
 						interfaces->studioRender->forcedMaterialOverride(nullptr);
 					}
 				}
