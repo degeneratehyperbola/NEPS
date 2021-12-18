@@ -83,7 +83,7 @@ enum EffectFlag
 	EffectFlag_ParentAnimates = 1 << 9, // Always assume that the parent entity is animating
 	EffectFlag_FastReflection = 1 << 10, // Marks an entity for reflection rendering when using $reflectonlymarkedentities material variable
 	EffectFlag_NoShadowDepth = 1 << 11, // Indicates this entity does not render into any shadow depthmap
-	EffectFlag_NoShadowDepthCanche = 1 << 12, // Indicates this entity cannot be cached in shadow depthmap and should render every frame
+	EffectFlag_NoShadowDepthCache = 1 << 12, // Indicates this entity cannot be cached in shadow depthmap and should render every frame
 	EffectFlag_NoFlashlight = 1 << 13,
 	EffectFlag_NoCSM = 1 << 14 // Indicates this entity does not render into the cascade shadow depthmap
 };
