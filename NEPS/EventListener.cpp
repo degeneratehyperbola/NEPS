@@ -53,6 +53,7 @@ void EventListener::fireGameEvent(GameEvent *event)
 		SkinChanger::updateStatTrak(*event);
 		SkinChanger::overrideHudIcon(*event);
 		Visuals::killEffect(event);
+		Misc::teamDamageList(event);
 		Misc::killMessage(*event);
 		Misc::playKillSound(*event);
 		Misc::playDeathSound(*event);

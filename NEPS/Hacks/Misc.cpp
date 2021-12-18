@@ -1365,7 +1365,7 @@ void Misc::teamDamageList(GameEvent *event)
 	static std::mutex mtx;
 	std::scoped_lock _{mtx};
 
-	static std::unordered_map<int, int> damageList;
+	static std::unordered_map<int, std::pair<unsigned, unsigned>> damageList;
 
 	if (event)
 	{
@@ -1376,8 +1376,19 @@ void Misc::teamDamageList(GameEvent *event)
 			const auto attacker = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("attacker")));
 			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
 
-			if (attacker && player && localPlayer && !localPlayer->isOtherEnemy(attacker) && !player->isOtherEnemy(attacker))
-				damageList[attacker->handle()] += event->getInt("dmg_health");
+			if (attacker && player && localPlayer && !localPlayer->isOtherEnemy(attacker) && !player->isOtherEnemy(attacker) && player->handle() != attacker->handle())
+				damageList[attacker->index()].first += event->getInt("dmg_health");
+
+			break;
+		}
+		case fnv::hash("player_death"):
+		{
+			const auto attacker = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("attacker")));
+			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
+
+			if (attacker && player && localPlayer && !localPlayer->isOtherEnemy(attacker) && !player->isOtherEnemy(attacker) && player->handle() != attacker->handle())
+				damageList[attacker->index()].second++;
+
 			break;
 		}
 		case fnv::hash("cs_match_end_restart"):
@@ -1412,9 +1423,9 @@ void Misc::teamDamageList(GameEvent *event)
 		for (const auto &[handle, damage] : damageList)
 		{
 			if (const auto player = GameData::playerByHandle(handle))
-				ImGui::Text("%s -> %idp", player->name.c_str(), damage);
+				ImGui::Text("%s -> %idp, %ikills", player->name.c_str(), damage.first, damage.second);
 			else if (GameData::local().handle == handle)
-				ImGui::TextColored({1.0f, 0.7f, 0.2f, 1.0f}, "YOU -> %idp", damage);
+				ImGui::TextColored({1.0f, 0.7f, 0.2f, 1.0f}, "YOU -> %idp, %ikills", damage.first, damage.second);
 		}
 
 		ImGui::End();
