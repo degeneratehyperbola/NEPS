@@ -100,12 +100,12 @@ std::array<float, 3U> Helpers::hsvToRgb(float h, float s, float v) noexcept
 
 std::array<float, 3U> Helpers::rainbowColor(float speed) noexcept
 {
-	return hsvToRgb(speed * memory->globalVars->realtime * 0.1f, 1.0f, 1.0f);
+	return hsvToRgb(speed * memory->globalVars->realTime * 0.1f, 1.0f, 1.0f);
 }
 
 std::array<float, 4U> Helpers::rainbowColor(float speed, float alpha) noexcept
 {
-	auto &&[r, g, b] = hsvToRgb(speed * memory->globalVars->realtime * 0.1f, 1.0f, 1.0f);
+	auto &&[r, g, b] = hsvToRgb(speed * memory->globalVars->realTime * 0.1f, 1.0f, 1.0f);
 	return {r, g, b, alpha};
 }
 

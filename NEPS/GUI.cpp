@@ -2754,7 +2754,7 @@ void GUI::renderDebugWindow() noexcept
 				dlight->outerAngle = 0.0f;
 				dlight->flags = 0;
 				dlight->decay = 0.0f;
-				dlight->die = memory->globalVars->currenttime + life;
+				dlight->die = memory->globalVars->currentTime + life;
 				dlight->origin = entity->getAbsOrigin();
 				dlight->radius = radius;
 				dlight->color.r = static_cast<unsigned char>(lightColor[0] * 255);
@@ -2880,7 +2880,7 @@ void GUI::renderDebugWindow() noexcept
 	{
 		if (localPlayer)
 		{
-			const auto layers = localPlayer->animationLayers();
+			const auto layers = localPlayer->animLayers();
 
 			if (ImGui::BeginTable("shrek2", 5))
 			{
@@ -2891,7 +2891,7 @@ void GUI::renderDebugWindow() noexcept
 				ImGui::TableSetupColumn("Cycle");
 				ImGui::TableHeadersRow();
 
-				for (int i = 0; i < localPlayer->getAnimationLayerCount(); ++i)
+				for (int i = 0; i < localPlayer->getAnimLayerCount(); ++i)
 				{
 					ImGui::TableNextRow();
 					ImGui::PushID(ImGui::TableGetRowIndex());

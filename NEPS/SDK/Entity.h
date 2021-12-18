@@ -178,11 +178,11 @@ public:
 		return boneCache()[bone].origin();
 	}
 
-	AnimLayer *animationLayers() noexcept
+	AnimLayer *animLayers() noexcept
 	{
 		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2990);
 	}
-	int getAnimationLayerCount() noexcept
+	int getAnimLayerCount() noexcept
 	{
 		return *reinterpret_cast<int *>((uintptr_t)this + 0x299C);
 	}

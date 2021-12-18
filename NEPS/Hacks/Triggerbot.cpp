@@ -38,7 +38,7 @@ void Triggerbot::run(UserCmd *cmd) noexcept
 	static auto lastTime = 0.0f;
 	static auto lastContact = 0.0f;
 
-	const auto now = memory->globalVars->realtime;
+	const auto now = memory->globalVars->realTime;
 
 	if (now - lastContact < cfg.burstTime)
 	{

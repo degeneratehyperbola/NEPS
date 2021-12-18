@@ -22,11 +22,11 @@ void EnginePrediction::run(UserCmd* cmd) noexcept
 
     *memory->predictionRandomSeed = 0;
 
-    const auto oldCurrenttime = memory->globalVars->currenttime;
-    const auto oldFrametime = memory->globalVars->frametime;
+    const auto oldCurrenttime = memory->globalVars->currentTime;
+    const auto oldFrametime = memory->globalVars->frameTime;
 
-    memory->globalVars->currenttime = memory->globalVars->serverTime();
-    memory->globalVars->frametime = memory->globalVars->intervalPerTick;
+    memory->globalVars->currentTime = memory->globalVars->serverTime();
+    memory->globalVars->frameTime = memory->globalVars->intervalPerTick;
 
     memory->moveHelper->setHost(localPlayer.get());
     interfaces->prediction->setupMove(localPlayer.get(), cmd, memory->moveHelper, memory->moveData);
@@ -36,8 +36,8 @@ void EnginePrediction::run(UserCmd* cmd) noexcept
 
     *memory->predictionRandomSeed = -1;
 
-    memory->globalVars->currenttime = oldCurrenttime;
-    memory->globalVars->frametime = oldFrametime;
+    memory->globalVars->currentTime = oldCurrenttime;
+    memory->globalVars->frameTime = oldFrametime;
 }
 
 int EnginePrediction::getFlags() noexcept

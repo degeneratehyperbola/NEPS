@@ -17,9 +17,9 @@ constexpr auto Matrix3x4::origin() const noexcept
     return Vector{ mat[0][3], mat[1][3], mat[2][3] };
 }
 
-constexpr void Matrix3x4::setOrigin(Vector in) noexcept
+constexpr void Matrix3x4::setOrigin(Vector origin) noexcept
 {
-	mat[0][3] = in.x;
-	mat[1][3] = in.y;
-	mat[2][3] = in.z;
+	mat[0][3] = origin.x;
+	mat[1][3] = origin.y;
+	mat[2][3] = origin.z;
 }
