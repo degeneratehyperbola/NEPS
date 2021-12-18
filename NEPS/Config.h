@@ -394,7 +394,7 @@ public:
 		bool fixMovement = true;
 		bool fixAnimation = true;
 		bool disableModelOcclusion = true;
-		bool disableInterp = false;
+		bool noExtrapolate = true;
 		bool disableIK = false;
 		bool resolveLby = false;
 		bool unlockInvertory = false;

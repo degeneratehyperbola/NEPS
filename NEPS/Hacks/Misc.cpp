@@ -482,7 +482,7 @@ void Misc::changeConVarsTick() noexcept
 	static auto lerpVar = interfaces->cvar->findVar("cl_interpolate");
 	lerpVar->setValue(true);
 	static auto exrpVar = interfaces->cvar->findVar("cl_extrapolate");
-	exrpVar->setValue(false);
+	exrpVar->setValue(!config->misc.noExtrapolate);
 	static auto ragdollGravity = interfaces->cvar->findVar("cl_ragdoll_gravity");
 	ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? -600 : 600);
 }
@@ -676,11 +676,10 @@ void Misc::antiAfkKick(UserCmd *cmd) noexcept
 
 void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
 {
-	if (stage == FrameStage::RenderStart)
-	{
-		if (!config->misc.fixAnimationLOD && !config->misc.disableInterp && !config->misc.resolveLby)
-			return;
+	if (!config->misc.fixAnimationLOD && !config->misc.resolveLby)
+		return;
 
+	if (stage == FrameStage::RenderStart)
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 		{
 			Entity *entity = interfaces->entityList->getEntity(i);
@@ -695,12 +694,7 @@ void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
 
 			if (config->misc.resolveLby)
 				Animations::resolve(entity);
-
-			if (auto varMap = entity->getVarMap(); varMap && config->misc.disableInterp)
-				for (int j = 0; j < varMap->entries.size; j++)
-					varMap->entries[j].needsToInterpolate = 0;
 		}
-	}
 }
 
 void Misc::autoPistol(UserCmd *cmd) noexcept
