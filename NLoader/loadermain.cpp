@@ -19,16 +19,16 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR cmdLine
 
 	const auto csgoPid = Helpers::findPid(L"csgo.exe");
 	if (!csgoPid)
-		MessageBoxA(0, "Falied to load NEPS.\nYou need to run CS:GO before running the loader.", "NEPS", MB_OK | MB_ICONERROR);
+		MessageBoxA(0, "Failed to load NEPS.\nYou need to run CS:GO before running the loader.", "NEPS", MB_OK | MB_ICONERROR);
 	else
 	{
 		auto csgoProcess = OpenProcess(PROCESS_ALL_ACCESS, false, csgoPid);
 		if (!csgoProcess)
-			MessageBoxA(0, "Falied to load NEPS.\nFailed to open CS:GO process. Try running NLoader with administrator privileges.", "NEPS", MB_OK | MB_ICONERROR);
+			MessageBoxA(0, "Failed to load NEPS.\nFailed to open CS:GO process. Try running NLoader with administrator privileges.", "NEPS", MB_OK | MB_ICONERROR);
 		else
 		{
 			if (!Helpers::bypassCsgoInject(csgoProcess))
-				MessageBoxA(0, "Falied to load NEPS.\nFailed to bypass CS:GO library inject protection.", "NEPS", MB_OK | MB_ICONERROR);
+				MessageBoxA(0, "Failed to load NEPS.\nFailed to bypass CS:GO library inject protection.", "NEPS", MB_OK | MB_ICONERROR);
 			else
 			{
 				wchar_t tempFilePath[MAX_PATH];
@@ -47,18 +47,18 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR cmdLine
 
 					std::uintptr_t dllModuleHandle = 0;
 					if (!Helpers::loadLibreryRemote(csgoProcess, tempFilePath, &dllModuleHandle))
-						MessageBoxA(0, "Falied to load NEPS.\nUnknown error has occured while loading library.", "NEPS", MB_OK | MB_ICONERROR);
+						MessageBoxA(0, "Failed to load NEPS.\nUnknown error has occured while loading library.", "NEPS", MB_OK | MB_ICONERROR);
 					else
 					{
 						if (!dllModuleHandle)
-							MessageBoxA(0, "Falied to load NEPS.\nDllMain returned false or load library failed.", "NEPS", MB_OK | MB_ICONERROR);
+							MessageBoxA(0, "Failed to load NEPS.\nDllMain returned false or load library failed.", "NEPS", MB_OK | MB_ICONERROR);
 						else
 							MessageBoxA(0, "Success! NEPS is now loaded.", "NEPS", MB_OK | MB_ICONINFORMATION);
 					}
 		
 					FreeResource(resource);
 				} else
-					MessageBoxA(0, "Falied to load NEPS.\nFailed to create temporary file.", "NEPS", MB_OK | MB_ICONERROR);
+					MessageBoxA(0, "Failed to load NEPS.\nFailed to create temporary file.", "NEPS", MB_OK | MB_ICONERROR);
 			}
 
 			CloseHandle(csgoProcess);
