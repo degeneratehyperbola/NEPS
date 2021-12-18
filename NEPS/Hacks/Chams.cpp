@@ -278,7 +278,7 @@ void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int 
 		else
 			material->colorModulate(r, g, b);
 
-		const auto pulse = cham.color[3] * (cham.blinking ? std::sin(memory->globalVars->realtime * 5) * 0.5f + 0.5f : 1.0f);
+		const auto pulse = cham.color[3] * (cham.blinking ? std::sin(memory->globalVars->realTime * 5) * 0.5f + 0.5f : 1.0f);
 		const auto invpulse = 1.0f - pulse;
 
 		if (material == glow)
@@ -336,7 +336,7 @@ void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int 
 		else
 			material->colorModulate(r, g, b);
 
-		const auto pulse = cham.color[3] * (cham.blinking ? std::sin(memory->globalVars->realtime * 5) * 0.5f + 0.5f : 1.0f);
+		const auto pulse = cham.color[3] * (cham.blinking ? std::sin(memory->globalVars->realTime * 5) * 0.5f + 0.5f : 1.0f);
 		const auto invpulse = 1.0f - pulse;
 
 		if (material == glow)

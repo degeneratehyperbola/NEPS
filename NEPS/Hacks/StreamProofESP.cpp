@@ -445,7 +445,7 @@ static void drawProjectileTrajectory(const Trail &config, const std::vector<std:
 
 	for (const auto &[time, point] : trajectory)
 	{
-		if (ImVec2 pos; time + config.time >= memory->globalVars->realtime && Helpers::worldToScreen(point, pos, false))
+		if (ImVec2 pos; time + config.time >= memory->globalVars->realTime && Helpers::worldToScreen(point, pos, false))
 		{
 			if (config.type == Trail::Line)
 			{
@@ -560,7 +560,7 @@ static void renderPlayerEsp(const PlayerData &playerData, const Player &playerCo
 
 	if (playerData.dormant)
 	{
-		const float factor = 1.0f - (memory->globalVars->realtime - playerData.becameDormant) * 0.25f;
+		const float factor = 1.0f - (memory->globalVars->realTime - playerData.becameDormant) * 0.25f;
 
 		if (factor <= 0.0f) return;
 

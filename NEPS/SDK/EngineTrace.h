@@ -208,11 +208,11 @@ public:
 		#ifdef TRACE_STATS
 		static int tracesThisFrame, lastFrame;
 
-		if (lastFrame != memory->globalVars->framecount)
+		if (lastFrame != memory->globalVars->frameCount)
 		{
 			memory->debugMsg("traces: frame - %d | count - %d\n", lastFrame, tracesThisFrame);
 			tracesThisFrame = 0;
-			lastFrame = memory->globalVars->framecount;
+			lastFrame = memory->globalVars->frameCount;
 		}
 
 		++tracesThisFrame;
