@@ -5,11 +5,11 @@
 
 namespace ImGuiCustom
 {
-	void colorPicker(const char *name, float color[3], float *alpha = nullptr, bool *rainbow = nullptr, float *rainbowSpeed = nullptr, bool *enable = nullptr, float *thickness = nullptr, float *rounding = nullptr, bool *border = nullptr) noexcept;
+	void colorPicker(const char *name, float color[3], float *alpha = nullptr, bool *rainbow = nullptr, float *rainbowSpeed = nullptr, bool *enable = nullptr, float *thickness = nullptr, float *rounding = nullptr, bool *outline = nullptr) noexcept;
 	void colorPicker(const char *name, Color3Toggle &colorConfig) noexcept;
 	void colorPicker(const char *name, Color4 &colorConfig, bool *enable = nullptr, float *thickness = nullptr) noexcept;
-	void colorPicker(const char *name, Color4Border &colorConfig, bool *enable = nullptr, float *thickness = nullptr) noexcept;
-	void colorPicker(const char *name, Color4BorderToggle &colorConfig, bool *enable = nullptr, float *thickness = nullptr) noexcept;
+	void colorPicker(const char *name, Color4Outline &colorConfig, bool *enable = nullptr, float *thickness = nullptr) noexcept;
+	void colorPicker(const char *name, Color4OutlineToggle &colorConfig, bool *enable = nullptr, float *thickness = nullptr) noexcept;
 	void colorPicker(const char *name, Color4Toggle &colorConfig) noexcept;
 	void colorPicker(const char *name, Color4ToggleRounding &colorConfig) noexcept;
 	void colorPicker(const char *name, Color4ToggleThickness &colorConfig) noexcept;
@@ -93,6 +93,6 @@ namespace ImGuiCustom
 	void StyleColors4(ImGuiStyle *dst = nullptr) noexcept;
 	void StyleColors5(ImGuiStyle *dst = nullptr) noexcept;
 
-	void drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned int color) noexcept;
+	void drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned int color, bool outline = true) noexcept;
 	ImVec2 drawText(ImDrawList *drawList, float distance, float cullDistance, unsigned int textColor, unsigned int borderColor, const char *text, const ImVec2 &pos, bool centered = true, bool adjustHeight = true) noexcept;
 }
