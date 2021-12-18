@@ -528,9 +528,7 @@ void PlayerData::update(Entity *entity) noexcept
 	if (!studioModel)
 		return;
 
-	auto boneMatrices = entity->boneCache();
-	//if (!entity->setupBones(boneMatrices, MAX_STUDIO_BONES, BONE_USED_BY_HITBOX, memory->globalVars->currenttime))
-		//return;
+	const auto &boneMatrices = entity->boneCache();
 
 	bones.clear();
 	bones.reserve(20);

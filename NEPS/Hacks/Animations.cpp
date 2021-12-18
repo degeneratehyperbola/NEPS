@@ -178,7 +178,7 @@ void Animations::resolve(Entity *animatable) noexcept
 			const auto current = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
 
 			resolverData.feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + resolverData.misses + 1) % positions.size()]);
-		}
+		} else resolverData.feetYaw = state->goalFeetYaw;
 	}
 
 	layers[AnimLayer_Lean].weight = FLT_EPSILON;

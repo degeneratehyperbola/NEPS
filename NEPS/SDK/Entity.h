@@ -226,7 +226,7 @@ public:
 
 	bool setupBones(Matrix3x4 *out, int maxBones, int boneMask, float currentTime) noexcept
 	{
-		if (config->misc.fixBoneMatrix && this == localPlayer.get())
+		if (config->misc.fixBoneMatrices && this == localPlayer.get())
 		{
 			int *render = reinterpret_cast<int *>(this + 0x274);
 			int backupRender = *render;
@@ -244,7 +244,7 @@ public:
 			effectFlags() = backupEffects;
 			return result;
 		}
-		if (config->misc.fixBoneMatrix)
+		if (config->misc.fixBoneMatrices)
 		{
 			int *render = reinterpret_cast<int *>(this + 0x274);
 			int backup = *render;
