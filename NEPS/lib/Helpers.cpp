@@ -523,8 +523,7 @@ bool Helpers::animDataAuthenticity(Entity *animatable) noexcept
 	const float simulationTime = animatable->simulationTime();
 	const auto remoteActiveWeapon = animatable->getActiveWeapon();
 	if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime)) return true;
-	const float oldSimulationTime = animatable->oldSimulationTime();
-	if (!std::abs(timeToTicks(simulationTime - oldSimulationTime) - 1)) return true;
+	if (!animatable->getChockedPackets()) return true;
 
 	return false;
 }
