@@ -55,9 +55,9 @@ void Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 		std::copy(poseParams.begin(), poseParams.end(), backupPoseParams.begin());
 
 		desyncedState->update(cmd.viewangles);
-		memory->invalidateBoneCache(localPlayer.get());
 		memory->setAbsAngle(localPlayer.get(), {0.0f, desyncedState->goalFeetYaw, 0.0f});
 
+		memory->invalidateBoneCache(localPlayer.get());
 		const bool updated = localPlayer->setupBones(desyncedBones.data(), MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currentTime);
 
 		if (const auto &origin = localPlayer->getRenderOrigin(); updated)
@@ -120,10 +120,9 @@ void Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 struct ResolverData
 {
 	std::array<AnimLayer, AnimLayer_Count> previousLayers;
-	float feetYaw;
+	float previousFeetYaw;
 	float nextLbyUpdate;
 	int misses;
-	int previousTick;
 };
 
 static std::array<ResolverData, 65> playerResolverData;
@@ -142,36 +141,26 @@ void Animations::resolve(Entity *animatable) noexcept
 		resolverData.misses = Aimbot::getMisses();
 
 	animatable->clientAnimations() = true;
+	
+	state->goalFeetYaw = resolverData.previousFeetYaw;
+	animatable->updateClientSideAnimation();
+	resolverData.previousFeetYaw = state->goalFeetYaw;
 
-	const auto simulationTick = Helpers::timeToTicks(animatable->simulationTime());
-	if (resolverData.previousTick != simulationTick)
+	const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
+	const float lowDesync = std::fminf(35.0f, maxDesync);
+	if (!Helpers::animDataAuthenticity(animatable) && !lbyUpdate)
 	{
-		resolverData.previousTick = simulationTick;
+		const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->goalFeetYaw);
 
-		const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
-		const float lowDesync = std::fminf(35.0f, maxDesync);
-		if (!Helpers::animDataAuthenticity(animatable) && !lbyUpdate)
-		{
-			animatable->updateClientSideAnimation();
+		const std::array<float, 3U> positions = {-maxDesync, 0.0f, maxDesync};
+		std::vector<float> distances;
+		for (const auto &position : positions)
+			distances.emplace_back(std::fabsf(position - lbyDelta));
 
-			const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->goalFeetYaw);
+		const auto current = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
 
-			const std::array<float, 3U> positions = {-maxDesync, 0.0f, maxDesync};
-			std::vector<float> distances;
-			for (const auto &position : positions)
-				distances.emplace_back(std::fabsf(position - lbyDelta));
-
-			const auto current = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
-
-			resolverData.feetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + resolverData.misses + 1) % positions.size()]);
-		} else resolverData.feetYaw = state->goalFeetYaw;
+		state->goalFeetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + resolverData.misses + 1) % positions.size()]);
 	}
-
-	state->duckAmount = std::clamp(state->duckAmount, 0.0f, 1.0f);
-	state->landingDuckAdditiveAmount = std::clamp(state->landingDuckAdditiveAmount, 0.0f, 1.0f);
-	state->feetCycle = layers[AnimLayer_MovementMove].cycle;
-	state->moveWeight = layers[AnimLayer_MovementMove].weight;
-	state->goalFeetYaw = resolverData.feetYaw;
 
 	std::copy(layers, layers + animatable->getAnimLayerCount(), resolverData.previousLayers.begin());
 

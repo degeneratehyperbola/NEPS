@@ -152,15 +152,9 @@ public:
 	VIRTUAL_METHOD(void, updateInaccuracyPenalty, 484, (), (this))
 	VIRTUAL_METHOD(void, updateClientSideAnimation, 224, (), (this))
 
-	Entity *getActiveWeapon() noexcept
-	{
-		return interfaces->entityList->getEntityFromHandle(activeWeapon());
-	}
+	Entity *getActiveWeapon() noexcept { return interfaces->entityList->getEntityFromHandle(activeWeapon()); }
 
-	Vector getEyePosition() noexcept
-	{
-		return getAbsOrigin() + viewOffset();
-	}
+	Vector getEyePosition() noexcept { return getAbsOrigin() + viewOffset(); }
 
 	Vector getAimPunch() noexcept
 	{
@@ -169,23 +163,11 @@ public:
 		return v;
 	}
 
-	UtlVector<Matrix3x4> &boneCache() noexcept
-	{
-		return *(UtlVector<Matrix3x4> *)((uintptr_t)this + 0x2914);
-	}
-	Vector getBonePosition(int bone) noexcept
-	{
-		return boneCache()[bone].origin();
-	}
+	UtlVector<Matrix3x4> &boneCache() noexcept { return *(UtlVector<Matrix3x4> *)((uintptr_t)this + 0x2914); }
+	Vector getBonePosition(int bone) noexcept { return boneCache()[bone].origin(); }
 
-	AnimLayer *animLayers() noexcept
-	{
-		return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2990);
-	}
-	int getAnimLayerCount() noexcept
-	{
-		return *reinterpret_cast<int *>((uintptr_t)this + 0x299C);
-	}
+	AnimLayer *animLayers() noexcept { return *reinterpret_cast<AnimLayer **>((uintptr_t)this + 0x2990); }
+	int getAnimLayerCount() noexcept { return *reinterpret_cast<int *>((uintptr_t)this + 0x299C); }
 
 	std::array<float, PoseParam_Count> &poseParams() noexcept
 	{
@@ -269,10 +251,9 @@ public:
 
 	bool isOtherEnemy(Entity *other) noexcept;
 
-	VarMap *getVarMap() noexcept
-	{
-		return reinterpret_cast<VarMap *>(this + 0x24);
-	}
+	VarMap *getVarMap() noexcept { return reinterpret_cast<VarMap *>(this + 0x24); }
+
+	int getChockedPackets() noexcept { return Helpers::timeToTicks(simulationTime() - oldSimulationTime()) - 1; };
 
 	float getMaxDesyncAngle() noexcept
 	{
@@ -318,25 +299,13 @@ public:
 	bool canSee(Entity *other, const Vector &pos) noexcept;
 	bool visibleTo(Entity *other) noexcept;
 
-	bool grenadeExploded() noexcept
-	{
-		return *reinterpret_cast<bool *>(this + 0x29E8);
-	}
+	bool grenadeExploded() noexcept { return *reinterpret_cast<bool *>(this + 0x29E8); }
 
-	bool isFlashed() noexcept
-	{
-		return flashDuration() > 75.0f;
-	}
+	bool isFlashed() noexcept { return flashDuration() > 75.0f; }
 
-	int &effectFlags() noexcept
-	{
-		return *reinterpret_cast<int *>(this + 0xF0);
-	}
+	int &effectFlags() noexcept { return *reinterpret_cast<int *>(this + 0xF0); }
 
-	int &shouldSkipFrame() noexcept
-	{
-		return *reinterpret_cast<int *>(this + 0xA68);
-	}
+	int &shouldSkipFrame() noexcept { return *reinterpret_cast<int *>(this + 0xA68); }
 
 	NETVAR(clientAnimations, "CBaseAnimating", "m_bClientSideAnimation", bool)
 	NETVAR(body, "CBaseAnimating", "m_nBody", int)
