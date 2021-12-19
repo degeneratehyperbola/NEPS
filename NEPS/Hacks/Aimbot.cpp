@@ -215,7 +215,7 @@ void chooseTarget(UserCmd *cmd) noexcept
 						backtrackRecord = &(*it);
 
 				if (!backtrackRecord && goesThroughWall)
-					if (const auto it = std::find_if(records.begin(), records.end(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.end())
+					if (const auto it = std::find_if(records.rbegin(), records.rend(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.rend())
 						backtrackRecord = &(*it);
 			}
 
