@@ -1377,7 +1377,7 @@ void Misc::teamDamageList(GameEvent *event)
 			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
 
 			if (attacker && player && localPlayer && !localPlayer->isOtherEnemy(attacker) && !player->isOtherEnemy(attacker) && player->handle() != attacker->handle())
-				damageList[attacker->index()].first += event->getInt("dmg_health");
+				damageList[attacker->handle()].first += event->getInt("dmg_health");
 
 			break;
 		}
@@ -1387,7 +1387,7 @@ void Misc::teamDamageList(GameEvent *event)
 			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerFromUserID(event->getInt("userid")));
 
 			if (attacker && player && localPlayer && !localPlayer->isOtherEnemy(attacker) && !player->isOtherEnemy(attacker) && player->handle() != attacker->handle())
-				damageList[attacker->index()].second++;
+				damageList[attacker->handle()].second++;
 
 			break;
 		}
@@ -1397,17 +1397,14 @@ void Misc::teamDamageList(GameEvent *event)
 		}
 	} else
 	{
-		if (!interfaces->engine->isConnected())
-		{
-			damageList.clear();
-			return;
-		}
-
 		if (!config->griefing.teamDamageList.enabled)
 			return;
 
 		if (!interfaces->engine->isInGame())
+		{
+			damageList.clear();
 			return;
+		}
 
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		if (config->griefing.teamDamageList.noTitleBar)
@@ -1420,12 +1417,12 @@ void Misc::teamDamageList(GameEvent *event)
 
 		GameData::Lock lock;
 
-		for (const auto &[handle, damage] : damageList)
+		for (const auto &[handle, info] : damageList)
 		{
 			if (const auto player = GameData::playerByHandle(handle))
-				ImGui::Text("%s -> %idp, %ikills", player->name.c_str(), damage.first, damage.second);
+				ImGui::Text("%s -> %idp, %ikills", player->name.c_str(), info.first, info.second);
 			else if (GameData::local().handle == handle)
-				ImGui::TextColored({1.0f, 0.7f, 0.2f, 1.0f}, "YOU -> %idp, %ikills", damage.first, damage.second);
+				ImGui::TextColored({1.0f, 0.7f, 0.2f, 1.0f}, "YOU -> %idp, %ikills", info.first, info.second);
 		}
 
 		ImGui::End();
