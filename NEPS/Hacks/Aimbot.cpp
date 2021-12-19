@@ -140,7 +140,10 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 	}
 }
 
-static __forceinline void chooseTarget(UserCmd *cmd) noexcept
+#ifndef NEPS_DEBUG
+__forceinline
+#endif
+void chooseTarget(UserCmd *cmd) noexcept
 {
 	const auto &cfg = Config::Aimbot::getRelevantConfig();
 
