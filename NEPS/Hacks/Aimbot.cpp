@@ -98,8 +98,6 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 
 	constexpr auto predictionFactor = 0.07f;
 
-	const auto predictedEyePosition = localPlayer->getEyePosition() + localPlayer->velocity() * predictionFactor;
-
 	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 	{
 		auto entity = interfaces->entityList->getEntity(i);
@@ -111,31 +109,28 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		if (!cfg.friendlyFire && !enemy)
 			continue;
 
-		Trace trace;
 		Record predictedGhost;
 		predictedGhost.hasHelmet = entity->hasHelmet();
 		predictedGhost.armor = entity->armor();
 
-		Vector origin = Vector{};
-		int damage = -1;
-		bool goesThroughWall = true;
+		bool occluded = true;
+		bool occludedBacktrack = true;
+		int damage = Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, predictionFactor);
 
-		// A subject to change
-		origin = entity->getBonePosition(8) + entity->velocity() * predictionFactor;
-		damage = Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head);
-		goesThroughWall = goesThroughWall && trace.startPos != predictedEyePosition;
+		const auto &records = Backtrack::getRecords(entity->index());
 
-		origin = entity->getBonePosition(0) + entity->velocity() * predictionFactor;
-		damage = std::max(damage, Helpers::findDamage(origin, predictedEyePosition, localPlayer.get(), trace, cfg.friendlyFire, &predictedGhost, Hitbox_Head));
-		goesThroughWall = goesThroughWall && trace.startPos != predictedEyePosition;
+		if (const auto it = std::find_if(records.rbegin(), records.rend(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.rend())
+			damage = std::max(damage, Helpers::findDamage(localPlayer.get(), entity, occludedBacktrack, cfg.friendlyFire, predictionFactor, &(*it)));
 
-		if (damage > 0 && trace.entity == entity && (!cfg.visibleOnly || !goesThroughWall))
+		if (damage > 0 && (!cfg.visibleOnly || !occluded || !occludedBacktrack))
 		{
 			if (cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle())
 				cmd->buttons |= UserCmd::Button_Attack2;
 
 			if (cfg.autoStop)
 				Misc::slowwalk(cmd);
+
+			break;
 		}
 	}
 }
