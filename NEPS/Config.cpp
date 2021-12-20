@@ -724,7 +724,7 @@ static void from_json(const json &j, Config::Exploits &e)
 	read(j, "Fake duck packets", e.fakeDuckPackets);
 	read(j, "Moonwalk", e.moonwalk);
 	read<value_t::object>(j, "Slowwalk", e.slowwalk);
-	read<value_t::object>(j, "Doubletap", e.doubletap);
+	read<value_t::object>(j, "Fastwalk", e.fastwalk);
 	read(j, "Bypass sv_pure", e.bypassPure);
 }
 
@@ -1222,7 +1222,7 @@ static void to_json(json &j, const Config::Exploits &o)
 	WRITE("Fake duck packets", fakeDuckPackets);
 	WRITE("Moonwalk", moonwalk);
 	WRITE("Slowwalk", slowwalk);
-	WRITE("Doubletap", doubletap);
+	WRITE("Fastwalk", fastwalk);
 	WRITE("Bypass sv_pure", bypassPure);
 }
 

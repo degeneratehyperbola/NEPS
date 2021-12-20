@@ -2272,12 +2272,12 @@ void GUI::renderExploitsWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Fake duck", config->exploits.fakeDuck);
 	ImGui::SetNextItemWidth(-1);
 	ImGui::InputInt("##duck_packets", &config->exploits.fakeDuckPackets, 1, 5);
+	config->exploits.fakeDuckPackets = std::clamp(config->exploits.fakeDuckPackets, 0, 64);
 	ImGui::Checkbox("Moonwalk", &config->exploits.moonwalk);
 	ImGuiCustom::keyBind("Slowwalk", config->exploits.slowwalk);
+	ImGuiCustom::keyBind("Fastwalk", config->exploits.fastwalk);
 
 	ImGui::Checkbox("Bypass sv_pure", &config->exploits.bypassPure);
-
-	//ImGuiCustom::keyBind("Doubletap", config->exploits.doubletap);
 
 	if (!contentOnly)
 		ImGui::End();
