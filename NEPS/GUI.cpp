@@ -674,7 +674,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Ignore smoke", &config->aimbot[currentWeapon].ignoreSmoke);
 		ImGui::Checkbox("Auto shoot", &config->aimbot[currentWeapon].autoShoot);
 		ImGui::Checkbox("Auto scope", &config->aimbot[currentWeapon].autoScope);
-		ImGui::Checkbox("Auto stop", &config->aimbot[currentWeapon].autoStop);
+		ImGui::Checkbox("Auto slowwalk", &config->aimbot[currentWeapon].autoStop);
 
 		ImGui::SetNextItemWidth(80);
 		ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
@@ -1885,7 +1885,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	}
 
 	ImGui::SliderInt("##fov", &config->visuals.fov, 1, 170, "FOV %ddeg");
-	ImGui::Checkbox("Keep FOV when scoped", &config->visuals.forceFov);
+	ImGui::Checkbox("Maintain FOV when scoped", &config->visuals.forceFov);
 	ImGui::SliderInt("##far_z", &config->visuals.farZ, 0, 2500, "Far Z %d");
 	ImGui::SliderInt("##flash_red", &config->visuals.flashReduction, 0, 100, "Flash reduction %d%%");
 	ImGui::SliderFloat("##brightness", &config->visuals.brightness, 0.0f, 1.0f, "Brightness %.2f");
