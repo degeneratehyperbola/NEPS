@@ -368,6 +368,7 @@ public:
 	NETVAR_OFFSET(isInReload, "CBaseCombatWeapon", "m_iClip1", 65, bool)
 	NETVAR(reserveAmmoCount, "CBaseCombatWeapon", "m_iPrimaryReserveAmmoCount", int)
 	NETVAR(nextPrimaryAttack, "CBaseCombatWeapon", "m_flNextPrimaryAttack", float)
+	NETVAR(nextSecondaryAttack, "CBaseCombatWeapon", "m_flNextSecondaryAttack", float)
 
 	NETVAR(lastShotTime, "CWeaponCSBase", "m_fLastShotTime", float)
 	NETVAR(burstMode, "CWeaponCSBase", "m_bBurstMode", bool)

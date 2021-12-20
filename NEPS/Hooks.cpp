@@ -191,7 +191,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::fastStop(cmd);
 	Misc::autoStrafe(cmd);
 	Misc::bunnyHop(cmd);
-	Misc::prepareRevolver(cmd);
 	Aimbot::predictPeek(cmd);
 	if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk]) Misc::slowwalk(cmd);
 
@@ -225,6 +224,8 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	cmd->sidemove = std::clamp(cmd->sidemove, -450.0f, 450.0f);
 
 	bool fakePitchPerformed = AntiAim::fakePitch(cmd);
+
+	Misc::prepareRevolver(cmd); // :)
 
 	previousViewAngles = cmd->viewangles;
 
