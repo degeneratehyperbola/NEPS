@@ -39,7 +39,7 @@ void Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 
 	if (!memory->input->isCameraInThirdPerson) return;
 
-	if (static auto spawnTime = localPlayer->spawnTime(); !interfaces->engine->isInGame() || spawnTime != localPlayer->spawnTime())
+	if (static auto spawnTime = 0.0f; !interfaces->engine->isInGame() || spawnTime != localPlayer->spawnTime())
 	{
 		memory->createState(desyncedState, localPlayer.get());
 		spawnTime = localPlayer->spawnTime();
