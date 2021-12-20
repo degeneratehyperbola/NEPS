@@ -191,10 +191,10 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 			break;
 		}
 
-		if (cfg.flipKey && GetAsyncKeyState(cfg.flipKey) & 1 || cfg.desync == 4 && lbyUpdate)
+		if (cfg.flipKey && GetAsyncKeyState(cfg.flipKey) & 1 || cfg.desync == 5 && lbyUpdate)
 			flip = !flip;
 
-		if (cfg.desync == 0)
+		if (cfg.desync == 1)
 		{
 			microMovement(cmd);
 
