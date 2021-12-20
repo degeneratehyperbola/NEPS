@@ -63,8 +63,8 @@ void GameData::update() noexcept
 
 	viewMatrix = interfaces->engine->worldToScreenMatrix();
 
-	const auto observerMode = localPlayer->getObserverMode();
-	const auto observerTarget = observerMode != ObsMode::Roaming && observerMode != ObsMode::Deathcam ? localPlayer->getObserverTarget() : nullptr;
+	const auto obsMode = localPlayer->getObserverMode();
+	const auto obsTarget = obsMode != ObsMode::Roaming && obsMode != ObsMode::Deathcam ? localPlayer->getObserverTarget() : nullptr;
 
 	for (int i = 1; i <= interfaces->entityList->getHighestEntityIndex(); ++i)
 	{
@@ -93,7 +93,7 @@ void GameData::update() noexcept
 			{
 				const auto obs = entity->getObserverTarget();
 				if (obs)
-					observerData.emplace_back(entity, obs, obs == localPlayer.get(), obs == observerTarget);
+					observerData.emplace_back(entity, obs, obs == localPlayer.get(), obs == obsTarget);
 			}
 		} else
 		{
@@ -431,7 +431,10 @@ void PlayerData::update(Entity *entity) noexcept
 	if (localPlayer)
 	{
 		enemy = localPlayer->isOtherEnemy(entity);
-		visible = alive && entity->visibleTo(localPlayer.get());
+		if (localPlayer->isAlive() || localPlayer->observerMode() != ObsMode::InEye)
+			visible = alive && entity->visibleTo(localPlayer.get());
+		else if (const auto obs = localPlayer->getObserverTarget(); obs)
+			visible = alive && entity->visibleTo(obs);
 	}
 
 	constexpr auto isEntityAudible = [](int entityIndex) noexcept
