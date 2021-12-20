@@ -68,14 +68,14 @@ void Triggerbot::run(UserCmd *cmd) noexcept
 
 	Trace trace;
 	const int damage = Helpers::findDamage(endPos, localPlayer.get(), trace, cfg.friendlyFire);
-	const auto goesThroughWall = trace.startPos != localPlayer->getEyePosition();
+	const auto occluded = trace.startPos != localPlayer->getEyePosition();
 
 	lastTime = now;
 
 	if (~cfg.hitGroup & (1 << (trace.hitGroup - 1)))
 		return;
 
-	if (cfg.visibleOnly && goesThroughWall)
+	if (cfg.visibleOnly && occluded)
 		return;
 
 	if (!trace.entity || !trace.entity->isPlayer())
@@ -94,7 +94,7 @@ void Triggerbot::run(UserCmd *cmd) noexcept
 			return;
 	}
 
-	auto minDamage = goesThroughWall ?
+	auto minDamage = occluded ?
 		std::min(cfg.minDamageAutoWall, trace.entity->health()) :
 		std::min(cfg.minDamage, trace.entity->health());
 

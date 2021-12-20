@@ -194,25 +194,24 @@ void chooseTarget(UserCmd *cmd) noexcept
 		}
 
 		const Record *backtrackRecord = nullptr;
-		if (config->backtrack.enabled)
+		if (config->backtrack.enabled && enemy)
 		{
-			Trace trace;
-			auto origin = bones[8].origin();
-			int damage = Helpers::findDamage(origin, localPlayer.get(), trace, cfg.friendlyFire);
-			const auto goesThroughWall = trace.startPos != localPlayerEyePosition;
+			const auto &records = Backtrack::getRecords(entity->index());
 
-			if (enemy)
+			if (!Helpers::animDataAuthenticity(entity))
 			{
-				const auto &records = Backtrack::getRecords(entity->index());
+				if (const auto it = std::find_if(records.begin(), records.end(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime) && record.important; }); it != records.end())
+					backtrackRecord = &(*it);
+			} else
+			{
+				if (const auto it = std::find_if(records.rbegin(), records.rend(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.rend())
+					backtrackRecord = &(*it);
 
-				if (!Helpers::animDataAuthenticity(entity))
-					if (const auto it = std::find_if(records.begin(), records.end(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime) && record.important; }); it != records.end())
-						backtrackRecord = &(*it);
-
-				if (!backtrackRecord && goesThroughWall)
-					if (const auto it = std::find_if(records.rbegin(), records.rend(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.rend())
-						backtrackRecord = &(*it);
+				[[maybe_unused]] bool occluded = true;
+				if (Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f) > Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f, backtrackRecord))
+					backtrackRecord = nullptr;
 			}
+
 
 			if (backtrackRecord)
 				std::copy(std::begin(backtrackRecord->bones), std::end(backtrackRecord->bones), bones.begin());
@@ -367,13 +366,13 @@ void chooseTarget(UserCmd *cmd) noexcept
 
 				Trace trace;
 				const auto damage = Helpers::findDamage(point, localPlayer.get(), trace, cfg.friendlyFire, backtrackRecord, hitboxIdx);
-				bool goesThroughWall = trace.startPos != localPlayerEyePosition;
+				bool occluded = trace.startPos != localPlayerEyePosition;
 
-				if (cfg.visibleOnly && goesThroughWall) continue;
+				if (cfg.visibleOnly && occluded) continue;
 
 				if (!backtrackRecord && trace.entity != entity) continue;
 
-				if (!goesThroughWall)
+				if (!occluded)
 				{
 					if (damage <= std::min(minDamage, entity->health()))
 						continue;
