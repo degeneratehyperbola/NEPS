@@ -209,12 +209,12 @@ void ImGuiCustom::keyBind(const char *name, int *key, int *keyMode) noexcept
 		{
 			if (*keyMode == 1)
 			{
-				ImGui:: PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
+				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
 				ImGui::ButtonEx("On", {}, ImGuiButtonFlags_Disabled);
 				ImGui::PopStyleColor();
 			} else if (*keyMode == 0)
 			{
-				ImGui:: PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
+				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
 				ImGui::ButtonEx("Off", {}, ImGuiButtonFlags_Disabled);
 				ImGui::PopStyleColor();
 			} else if (*key)
@@ -227,8 +227,13 @@ void ImGuiCustom::keyBind(const char *name, int *key, int *keyMode) noexcept
 					ImGui::SetActiveID(ImGui::GetID(name), ImGui::GetCurrentWindow());
 			}
 
-			if (ImGui::IsItemHovered() && ImGui::GetIO().MouseClicked[1])
-				ImGui::OpenPopup("##mode");
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Right click for options");
+
+				if (ImGui::GetIO().MouseClicked[1])
+					ImGui::OpenPopup("##mode");
+			}
 
 			if (ImGui::BeginPopup("##mode", ImGuiWindowFlags_AlwaysUseWindowPadding))
 			{
