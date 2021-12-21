@@ -743,7 +743,7 @@ ImVec2 ImGuiCustom::drawProgressBar(ImDrawList *drawList, float fraction, const 
 	size = ImMax(size, {0, 0});
 
 	if (background)
-		drawList->AddRectFilled(pos - ImVec2{1, 1}, pos + size + ImVec2{1, 1}, IM_COL32_A_MASK);
+		drawList->AddRectFilled(pos - ImVec2{1, 1}, pos + size + ImVec2{1, 1}, color & IM_COL32_A_MASK);
 
 	if (border)
 		drawList->AddRect(pos, pos + size, color | IM_COL32_A_MASK);
