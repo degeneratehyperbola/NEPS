@@ -733,3 +733,26 @@ ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec
 
 	return textSize;
 }
+
+ImVec2 ImGuiCustom::drawProgressBar(ImDrawList *drawList, float fraction, const ImVec2 &pos, ImVec2 size, bool vertical, bool reverse, unsigned color, bool background, bool border) noexcept
+{
+	if (!(color & IM_COL32_A_MASK))
+		return;
+
+	fraction = std::clamp(fraction, 0.0f, 1.0f);
+	size = ImMax(size, {0, 0});
+
+	if (background)
+		drawList->AddRectFilled(pos - ImVec2{1, 1}, pos + size + ImVec2{1, 1}, IM_COL32_A_MASK);
+
+	if (border)
+		drawList->AddRect(pos, pos + size, color | IM_COL32_A_MASK);
+
+	const ImVec2 max = reverse ? pos + size : pos + size * (vertical ? ImVec2{1, fraction} : ImVec2{fraction, 1});
+	const ImVec2 min = reverse ? ImLerp(pos, pos + (vertical ? ImVec2{0, max.y} : ImVec2{max.x, 0}), fraction) : pos;
+
+	if (fraction)
+		drawList->AddRectFilled(min, max, color);
+
+	return vertical ? ImVec2{(max.x + min.x) / 2, (reverse ? min.y : max.y)} : ImVec2{(reverse ? min.x : max.x), (max.y + min.y) / 2};
+}

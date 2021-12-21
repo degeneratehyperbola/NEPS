@@ -95,4 +95,5 @@ namespace ImGuiCustom
 
 	void drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned color = 0x88FFFFFF, bool outline = true) noexcept;
 	ImVec2 drawText(ImDrawList *drawList, const char *text, const ImVec2 &pos, unsigned textColor = 0xFFFFFFFF, unsigned outlineColor = IM_COL32_A_MASK, bool centered = true, bool adjustHeight = true) noexcept;
+	ImVec2 drawProgressBar(ImDrawList *drawList, float fraction, const ImVec2 &pos, ImVec2 size, bool vertical = false, bool reverse = false, unsigned color = 0x88FFFFFF, bool background = false, bool border = true) noexcept;
 }
