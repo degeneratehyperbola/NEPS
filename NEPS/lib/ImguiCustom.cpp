@@ -713,7 +713,7 @@ void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos
 		drawList->AddPolyline(trianglePoints, 3, color | IM_COL32_A_MASK, ImDrawFlags_Closed, 1.5f);
 }
 
-ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec2 &pos, unsigned textColor, unsigned outlineColor, bool centered, bool adjustHeight) noexcept
+ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec2 &pos, unsigned textColor, bool outline, unsigned outlineColor, bool centered, bool adjustHeight) noexcept
 {
 	if (!(outlineColor & IM_COL32_A_MASK) && !(textColor & IM_COL32_A_MASK))
 		return {};
@@ -722,7 +722,7 @@ ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec
 	const auto horizontalOffset = centered ? textSize.x / 2 : 0.0f;
 	const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
 
-	if (outlineColor & IM_COL32_A_MASK)
+	if (outline && outlineColor & IM_COL32_A_MASK)
 	{
 		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1}, outlineColor, text);
 		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1}, outlineColor, text);
