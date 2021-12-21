@@ -1121,7 +1121,7 @@ void Misc::visualizeBlockBot(ImDrawList *drawList) noexcept
 	if (draw)
 	{
 		drawList->AddLine(pos, dir, color);
-		ImGuiCustom::drawText(drawList, 0.0f, 0.0f, color, color & IM_COL32_A_MASK, std::to_string(static_cast<int>(target->velocity.length())).c_str(), dir);
+		ImGuiCustom::drawText(drawList, std::to_string(static_cast<int>(target->velocity.length())).c_str(), dir, color, color & IM_COL32_A_MASK);
 	}
 
 	draw = Helpers::worldToScreen(Vector{max.x, max.y, z}, points[0]);
