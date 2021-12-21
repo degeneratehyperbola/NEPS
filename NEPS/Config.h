@@ -343,12 +343,6 @@ public:
 		KeyBind chatNuke;
 		KeyBind chatBasmala;
 
-		struct TeamDamageList
-		{
-			bool enabled = false;
-			bool noTitleBar = false;
-		} teamDamageList;
-
 		struct Blockbot
 		{
 			KeyBind bind;
@@ -426,11 +420,13 @@ public:
 		struct Indicators
 		{
 			bool enabled = false;
+			bool noTitleBar = false;
 		} indicators;
 
 		struct SpectatorList
 		{
 			bool enabled = false;
+			bool noTitleBar = false;
 		} spectatorList;
 
 		struct Watermark
@@ -438,6 +434,12 @@ public:
 			bool enabled = false;
 			int position = 1;
 		} watermark;
+
+		struct TeamDamageList
+		{
+			bool enabled = false;
+			bool noTitleBar = false;
+		} teamDamageList;
 
 		KeyBind prepareRevolver;
 		int quickHealthshotKey = 0;

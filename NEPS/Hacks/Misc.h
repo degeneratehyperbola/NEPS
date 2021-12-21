@@ -46,16 +46,16 @@ namespace Misc
 	void blockBot(UserCmd *cmd, const Vector &) noexcept;
 	void visualizeBlockBot(ImDrawList *drawList) noexcept;
 	void useSpam(UserCmd *cmd) noexcept;
-	void indicators() noexcept;
-	void drawBombTimer() noexcept;
-	void purchaseList(GameEvent *event = nullptr) noexcept;
-	void teamDamageList(GameEvent *event = nullptr);
-	void spectatorList() noexcept;
-	void watermark() noexcept;
-	void velocityGraph() noexcept;
 	void onPlayerVote(GameEvent &event) noexcept;
 	void onVoteChange(UserMessageType type, const void *data = nullptr, int size = 0) noexcept;
 	void forceRelayCluster() noexcept;
 	void runChatSpammer() noexcept;
 	void fakePrime() noexcept;
+	void velocityGraph() noexcept;
+	void purchaseList(GameEvent *event = nullptr) noexcept;
+	void teamDamageList(GameEvent *event = nullptr);
+	void drawBombTimer() noexcept;
+	void indicators() noexcept;
+	void spectatorList() noexcept;
+	void watermark() noexcept;
 }
