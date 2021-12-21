@@ -2940,8 +2940,6 @@ void GUI::renderDebugWindow() noexcept
 		{
 			if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
 				soundprecache->addString(false, soundPath.c_str());
-
-			memory->updatePrecachedSounds();
 		}
 	}
 }
