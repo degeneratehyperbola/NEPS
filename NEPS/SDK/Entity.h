@@ -140,6 +140,7 @@ public:
 	VIRTUAL_METHOD(bool, isAlive, 156, (), (this))
 	VIRTUAL_METHOD(bool, isPlayer, 158, (), (this))
 	VIRTUAL_METHOD(bool, isWeapon, 166, (), (this))
+	VIRTUAL_METHOD(void, updateClientSideAnimation, 224, (), (this))
 	VIRTUAL_METHOD(int, getWeaponSubType, 282, (), (this))
 	VIRTUAL_METHOD(ObsMode, getObserverMode, 294, (), (this))
 	VIRTUAL_METHOD(Entity *, getObserverTarget, 295, (), (this))
@@ -150,7 +151,6 @@ public:
 	VIRTUAL_METHOD(int, getMuzzleAttachmentIndex3rdPerson, 469, (), (this))
 	VIRTUAL_METHOD(float, getInaccuracy, 483, (), (this))
 	VIRTUAL_METHOD(void, updateInaccuracyPenalty, 484, (), (this))
-	VIRTUAL_METHOD(void, updateClientSideAnimation, 224, (), (this))
 
 	Entity *getActiveWeapon() noexcept { return interfaces->entityList->getEntityFromHandle(activeWeapon()); }
 

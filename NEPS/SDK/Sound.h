@@ -29,8 +29,8 @@ struct SoundParams
 	int soundLevel;
 	int flags;
 	int pitch = 100;
-	Vector origin;
-	PAD(3)
+	Vector *origin;
+	PAD(11)
 	bool updatePosition;
 	float soundTime = 0.0f;
 	int speakerEntity = -1;
