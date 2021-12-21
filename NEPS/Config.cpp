@@ -1603,17 +1603,14 @@ bool Config::loadScheduledFonts() noexcept
 
 	for (const auto &fontName : scheduledFonts)
 	{
-		#define FONT_BIG 13.0f
-		#define FONT_MEDIUM 11.0f
-		#define FONT_TINY 9.0f
+		constexpr auto fontBig = 13.0f;
 
 		if (fontName == "Default")
 		{
 			if (fonts.find("Default") == fonts.cend())
 			{
 				Font newFont;
-				newFont.big = gui->getFont();
-				newFont.tiny = newFont.medium = newFont.big;
+				newFont.font = gui->getFont();
 
 				fonts.emplace(fontName, newFont);
 				result = true;
@@ -1633,13 +1630,12 @@ bool Config::loadScheduledFonts() noexcept
 			cfg.FontDataOwnedByAtlas = false;
 			cfg.OversampleH = cfg.OversampleV = 2;
 			cfg.PixelSnapH = false;
-			cfg.SizePixels = FONT_BIG;
+			cfg.SizePixels = fontBig;
 			if (cfg.Name[0] == '\0')
 				std::sprintf(cfg.Name, "ESP %s, %dpx", fontName.c_str(), static_cast<int>(cfg.SizePixels));
 
 			Font newFont;
-			newFont.big = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.get(), fontDataSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
-			newFont.tiny = newFont.medium = newFont.big;
+			newFont.font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.get(), fontDataSize, cfg.SizePixels, &cfg, Helpers::getFontGlyphRanges());
 			fonts.emplace(fontName, newFont);
 			result = true;
 		}

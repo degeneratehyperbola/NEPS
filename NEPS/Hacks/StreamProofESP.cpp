@@ -269,24 +269,12 @@ static void drawSnapline(const Snapline &config, const ImVec2 &min, const ImVec2
 
 struct FontPush
 {
-	FontPush(const std::string &name, float distance)
+	FontPush(const std::string &name)
 	{
 		if (const auto it = config->getFonts().find(name); it != config->getFonts().end())
-		{
-			distance *= GameData::local().fov / 90.0f;
-
-			ImGui::PushFont([](const Config::Font &font, float dist)
-			{
-				if (dist <= 400.0f)
-					return font.big;
-				if (dist <= 1000.0f)
-					return font.medium;
-				return font.tiny;
-			}(it->second, distance));
-		} else
-		{
+			ImGui::PushFont(it->second.font);
+		else
 			ImGui::PushFont(nullptr);
-		}
 	}
 
 	~FontPush()
@@ -330,7 +318,7 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 
 	ImVec2 offsetMins{}, offsetMaxs{};
 
-	FontPush font{config.font.name, playerData.distanceToLocal};
+	FontPush font{config.font.name};
 
 	drawHealthBar(bbox.min - ImVec2{5.0f, 0.0f}, (bbox.max.y - bbox.min.y), playerData.health, config.healthBar, config.health, playerData.distanceToLocal, config.textCullDistance);
 
@@ -402,7 +390,7 @@ static void renderWeaponBox(const WeaponData &weaponData, const Weapon &config) 
 	renderBox(bbox, config.box);
 	drawSnapline(config.snapline, bbox.min, bbox.max);
 
-	FontPush font{config.font.name, weaponData.distanceToLocal};
+	FontPush font{config.font.name};
 
 	if (config.name.enabled && !weaponData.displayName.empty() && !cullText(weaponData.distanceToLocal, config.textCullDistance))
 	{
@@ -428,7 +416,7 @@ static void renderEntityBox(const BaseData &entityData, const char *name, const 
 	renderBox(bbox, config.box);
 	drawSnapline(config.snapline, bbox.min, bbox.max);
 
-	FontPush font{config.font.name, entityData.distanceToLocal};
+	FontPush font{config.font.name};
 
 	if (config.name.enabled && !cullText(entityData.distanceToLocal, config.textCullDistance))
 	{
