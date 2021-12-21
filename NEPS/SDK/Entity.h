@@ -154,7 +154,15 @@ public:
 
 	Entity *getActiveWeapon() noexcept { return interfaces->entityList->getEntityFromHandle(activeWeapon()); }
 
-	Vector getEyePosition() noexcept { return getAbsOrigin() + viewOffset(); }
+	Vector getEyePosition() noexcept
+	{
+		if (this == localPlayer.get())
+			return getAbsOrigin() + viewOffset();
+
+		Vector v;
+		VirtualMethod::call<void, 285>(this, std::ref(v));
+		return v;
+	}
 
 	Vector getAimPunch() noexcept
 	{
