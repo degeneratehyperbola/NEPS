@@ -29,9 +29,7 @@ public:
 
 	struct Font
 	{
-		ImFont *tiny;
-		ImFont *medium;
-		ImFont *big;
+		ImFont *font;
 	};
 
 	struct Aimbot
