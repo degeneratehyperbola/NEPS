@@ -297,28 +297,22 @@ struct FontPush
 
 static void drawHealthBar(const ImVec2 &pos, float height, int health, const Color4OutlineToggle &healthBarConfig, const Color4OutlineToggle &text, float distance, float cull) noexcept
 {
-	const int originalHealth = health;
-	health = std::clamp(health, 0, 100);
-
 	constexpr float width = 3.0f;
 
 	if (healthBarConfig.enabled)
 	{
-		ImVec2 min = pos;
-		ImVec2 max = min + ImVec2{width, height};
-
 		const auto color = Helpers::calculateColor(healthBarConfig);
+		const auto textPos = ImGuiCustom::drawProgressBar(drawList, static_cast<float>(health) / 100, pos, ImVec2{width, height}, healthBarConfig.outline, true, color, true, false);
 
-		if (healthBarConfig.outline)
-			drawList->AddRectFilled(min - ImVec2{1.0f, 1.0f}, max + ImVec2{1.0f, 1.0f}, color & IM_COL32_A_MASK);
-
-		drawList->AddRectFilled(min + ImVec2{0.0f, (100 - health) / 100.0f * height}, max, color);
-	}
-
-	if (text.enabled && !cullText(distance, cull))
+		if (text.enabled && !cullText(distance, cull))
+		{
+			const auto color = Helpers::calculateColor(text);
+			ImGuiCustom::drawText(drawList, std::to_string(health).c_str(), textPos, color, color & IM_COL32_A_MASK, true, false);
+		}
+	} else if (text.enabled && !cullText(distance, cull))
 	{
 		const auto color = Helpers::calculateColor(text);
-		ImGuiCustom::drawText(drawList, std::to_string(originalHealth).c_str(), pos + ImVec2{0.0f, (100 - health) / 100.0f * height}, color, color & IM_COL32_A_MASK, true, false);
+		ImGuiCustom::drawText(drawList, std::to_string(health).c_str(), pos + ImVec2{width / 2, 0}, color, color & IM_COL32_A_MASK, true, false);
 	}
 }
 

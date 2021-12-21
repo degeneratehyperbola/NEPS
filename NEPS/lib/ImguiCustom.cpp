@@ -724,10 +724,10 @@ ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec
 
 	if (outlineColor & IM_COL32_A_MASK)
 	{
-		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f}, outlineColor, text);
-		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f}, outlineColor, text);
-		drawList->AddText({pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset}, outlineColor, text);
-		drawList->AddText({pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset}, outlineColor, text);
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1}, outlineColor, text);
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1}, outlineColor, text);
+		drawList->AddText({pos.x - horizontalOffset - 1, pos.y - verticalOffset}, outlineColor, text);
+		drawList->AddText({pos.x - horizontalOffset + 1, pos.y - verticalOffset}, outlineColor, text);
 	}
 	drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset}, textColor, text);
 
@@ -737,9 +737,9 @@ ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec
 ImVec2 ImGuiCustom::drawProgressBar(ImDrawList *drawList, float fraction, const ImVec2 &pos, ImVec2 size, bool vertical, bool reverse, unsigned color, bool background, bool border) noexcept
 {
 	if (!(color & IM_COL32_A_MASK))
-		return;
+		return {};
 
-	fraction = std::clamp(fraction, 0.0f, 1.0f);
+	fraction = std::clamp(1.0f - fraction, 0.0f, 1.0f);
 	size = ImMax(size, {0, 0});
 
 	if (background)
@@ -749,10 +749,9 @@ ImVec2 ImGuiCustom::drawProgressBar(ImDrawList *drawList, float fraction, const 
 		drawList->AddRect(pos, pos + size, color | IM_COL32_A_MASK);
 
 	const ImVec2 max = reverse ? pos + size : pos + size * (vertical ? ImVec2{1, fraction} : ImVec2{fraction, 1});
-	const ImVec2 min = reverse ? ImLerp(pos, pos + (vertical ? ImVec2{0, max.y} : ImVec2{max.x, 0}), fraction) : pos;
+	const ImVec2 min = reverse ? (vertical ? ImVec2{pos.x, std::lerp(pos.y, max.y, fraction)} : ImVec2{std::lerp(pos.x, max.x, fraction), pos.y}) : pos;
 
-	if (fraction)
-		drawList->AddRectFilled(min, max, color);
+	drawList->AddRectFilled(min, max, color);
 
 	return vertical ? ImVec2{(max.x + min.x) / 2, (reverse ? min.y : max.y)} : ImVec2{(reverse ? min.x : max.x), (max.y + min.y) / 2};
 }
