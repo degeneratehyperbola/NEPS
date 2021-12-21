@@ -684,8 +684,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::NextColumn();
 
 		ImGui::Checkbox("Multipoint", &config->aimbot[currentWeapon].multipoint);
-		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("About 15%% performance loss");
 
 		ImGui::PushItemWidth(-1);
 		ImGui::SliderFloat("##scale", &config->aimbot[currentWeapon].multipointScale, 0.5f, 1.0f, "Multipoint scale %.5f");
@@ -2371,18 +2369,6 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Basmala chat", config->griefing.chatBasmala);
 	ImGuiCustom::keyBind("Nuke chat", config->griefing.chatNuke);
 
-	ImGui::Checkbox("Team damage list", &config->griefing.teamDamageList.enabled);
-	ImGui::SameLine();
-
-	if (ImGui::ArrowButton("team_damage", ImGuiDir_Right))
-		ImGui::OpenPopup("##team_damage");
-
-	if (ImGui::BeginPopup("##team_damage"))
-	{
-		ImGui::Checkbox("No title bar", &config->griefing.teamDamageList.noTitleBar);
-		ImGui::EndPopup();
-	}
-
 	if (!contentOnly)
 		ImGui::End();
 }
@@ -2451,9 +2437,9 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
 	ImGui::SetNextItemWidth(-1);
 	ImGui::SliderFloat("##angle_delta", &config->misc.maxAngleDelta, 0.0f, 255.0f, "Aimstep %.2fdeg");
+
 	ImGui::Checkbox("Preserve killfeed", &config->misc.preserveKillfeed.enabled);
 	ImGui::SameLine();
-
 	if (ImGui::ArrowButton("killfeed", ImGuiDir_Right))
 		ImGui::OpenPopup("##killfeed");
 
@@ -2465,7 +2451,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Purchase list", &config->misc.purchaseList.enabled);
 	ImGui::SameLine();
-
 	if (ImGui::ArrowButton("purchases", ImGuiDir_Right))
 		ImGui::OpenPopup("##purchases");
 
@@ -2483,6 +2468,16 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Indicators", &config->misc.indicators.enabled);
 	ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
 	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);
+	ImGui::Checkbox("Team damage list", &config->misc.teamDamageList.enabled);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("team_damage", ImGuiDir_Right))
+		ImGui::OpenPopup("##team_damage");
+
+	if (ImGui::BeginPopup("##team_damage"))
+	{
+		ImGui::Checkbox("No title bar", &config->misc.teamDamageList.noTitleBar);
+		ImGui::EndPopup();
+	}
 
 	ImGui::Columns(1);
 

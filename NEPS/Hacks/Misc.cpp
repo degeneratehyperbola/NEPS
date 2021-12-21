@@ -1213,17 +1213,30 @@ void Misc::drawBombTimer() noexcept
 	if (!plantedC4.blowTime && !gui->open)
 		return;
 
-	static float windowWidth = 500.0f;
-	ImGui::SetNextWindowPos({(ImGui::GetIO().DisplaySize.x - 500.0f) / 2.0f, 160.0f}, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize({windowWidth, 0}, ImGuiCond_FirstUseEver);
-
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav;
 	if (!gui->open)
-		ImGui::SetNextWindowSize({windowWidth, 0});
+		windowFlags |= ImGuiWindowFlags_NoInputs;
 
+	ImGui::SetNextWindowPos({(ImGui::GetIO().DisplaySize.x - 500.0f) / 2.0f, 160.0f}, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize({500.0f, 0}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
-	ImGui::Begin("Bomb timer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
+	ImGui::Begin("Bomb timer", nullptr, windowFlags | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
 
-	std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currentTime, 0.0f) << " s";
+	constexpr auto bombsite = [](int i)
+	{
+		switch (i)
+		{
+		case 0:
+			return 'A';
+		case 1:
+			return 'B';
+		default:
+			return '?';
+		}
+	};
+
+	std::ostringstream ss;
+	ss << "Bomb on " << bombsite(plantedC4.bombsite) << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currentTime, 0.0f) << " s";
 
 	ImGuiCustom::textUnformattedCentered(ss.str().c_str());
 
@@ -1260,7 +1273,6 @@ void Misc::drawBombTimer() noexcept
 		}
 	}
 
-	windowWidth = ImGui::GetCurrentWindow()->SizeFull.x;
 	ImGui::End();
 }
 
@@ -1327,10 +1339,10 @@ void Misc::purchaseList(GameEvent *event) noexcept
 			return;
 
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-		if (!gui->open)
-			windowFlags |= ImGuiWindowFlags_NoInputs;
 		if (config->misc.purchaseList.noTitleBar)
 			windowFlags |= ImGuiWindowFlags_NoTitleBar;
+		if (!gui->open)
+			windowFlags |= ImGuiWindowFlags_NoInputs;
 
 		ImGui::SetNextWindowSize({200, 200}, ImGuiCond_FirstUseEver);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
@@ -1415,18 +1427,20 @@ void Misc::teamDamageList(GameEvent *event)
 		}
 	} else
 	{
-		if (!config->griefing.teamDamageList.enabled)
+		if (!config->misc.teamDamageList.enabled)
 			return;
 
 		if (!interfaces->engine->isInGame())
-		{
 			damageList.clear();
+
+		if (!gui->open && (damageList.empty() || !interfaces->engine->isInGame()))
 			return;
-		}
 
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-		if (config->griefing.teamDamageList.noTitleBar)
+		if (config->misc.teamDamageList.noTitleBar)
 			windowFlags |= ImGuiWindowFlags_NoTitleBar;
+		if (!gui->open)
+			windowFlags |= ImGuiWindowFlags_NoInputs;
 
 		ImGui::SetNextWindowSize({200, 200}, ImGuiCond_FirstUseEver);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
@@ -1616,10 +1630,14 @@ void Misc::spectatorList() noexcept
 
 	if (!observers.empty() || gui->open)
 	{
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		if (!gui->open)
+			windowFlags |= ImGuiWindowFlags_NoInputs;
+
 		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-		ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
+		ImGui::Begin("Spectators", nullptr, windowFlags);
 		ImGui::PopStyleVar();
 
 		for (auto &observer : observers)
@@ -1634,9 +1652,13 @@ void Misc::watermark() noexcept
 	if (!config->misc.watermark.enabled)
 		return;
 
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+	if (!gui->open)
+		windowFlags |= ImGuiWindowFlags_NoInputs;
+
 	ImGui::SetNextWindowSizeConstraints({160, 0}, {FLT_MAX, FLT_MAX});
 	ImGui::SetNextWindowBgAlpha(0.4f);
-	ImGui::Begin("Watermark", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
+	ImGui::Begin("Watermark", nullptr, windowFlags);
 
 	int &pos = config->misc.watermark.position;
 
@@ -1672,7 +1694,7 @@ void Misc::watermark() noexcept
 		ImGui::EndPopup();
 	}
 
-	constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms", "weave", "legendware", "spirthack", "mutinty"};
+	constexpr std::array otherOnes = {"gamesense", "neverlose", "aimware", "onetap", "advancedaim", "flowhooks", "ratpoison", "osiris", "rifk7", "novoline", "novihacks", "ev0lve", "ezfrags", "pandora", "luckycharms", "weave", "legendware", "spirthack", "mutinty", "monolith"};
 
 	std::ostringstream watermark;
 	watermark << "NEPS > ";

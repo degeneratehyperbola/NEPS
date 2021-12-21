@@ -695,6 +695,7 @@ void BombData::update() noexcept
 			return;
 		}
 	}
+	defuserHandle = bombsite = -1;
 	blowTime = 0.0f;
 }
 

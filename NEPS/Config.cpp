@@ -680,6 +680,12 @@ static void from_json(const json &j, Config::Misc::SpectatorList &sl)
 	read(j, "Enabled", sl.enabled);
 }
 
+static void from_json(const json &j, Config::Misc::TeamDamageList &tdl)
+{
+	read(j, "Enabled", tdl.enabled);
+	read(j, "No Title Bar", tdl.noTitleBar);
+}
+
 static void from_json(const json &j, Config::Misc &m)
 {
 	read(j, "Menu key", m.menuKey);
@@ -714,6 +720,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read<value_t::object>(j, "Bomb timer", m.bombTimer);
 	read<value_t::object>(j, "Watermark", m.watermark);
 	read<value_t::object>(j, "Indicators", m.indicators);
+	read<value_t::object>(j, "Team damage list", m.teamDamageList);
 }
 
 static void from_json(const json &j, Config::Exploits &e)
@@ -745,15 +752,8 @@ static void from_json(const json &j, Config::Griefing &g)
 	read<value_t::object>(j, "Blockbot", g.blockbot);
 	read(j, "Vote reveal", g.revealVotes);
 	read(j, "Spam use", g.spamUse);
-	read<value_t::object>(j, "Team damage list", g.teamDamageList);
 	read<value_t::object>(j, "Nuke chat", g.chatNuke);
 	read<value_t::object>(j, "Basmala chat", g.chatBasmala);
-}
-
-static void from_json(const json &j, Config::Griefing::TeamDamageList &tdl)
-{
-	read(j, "Enabled", tdl.enabled);
-	read(j, "No Title Bar", tdl.noTitleBar);
 }
 
 static void from_json(const json &j, Config::Griefing::Reportbot &r)
@@ -1174,6 +1174,12 @@ static void to_json(json &j, const Config::Misc::SpectatorList &o, const Config:
 	WRITE("Enabled", enabled);
 }
 
+static void to_json(json &j, const Config::Misc::TeamDamageList &o, const  Config::Misc::TeamDamageList &dummy = {})
+{
+	WRITE("Enabled", enabled);
+	WRITE("No Title Bar", noTitleBar);
+}
+
 static void to_json(json &j, const Config::Misc &o)
 {
 	const Config::Misc dummy = {};
@@ -1210,6 +1216,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Bomb timer", bombTimer);
 	WRITE("Watermark", watermark);
 	WRITE("Indicators", indicators);
+	WRITE("Team damage list", teamDamageList);
 }
 
 static void to_json(json &j, const Config::Exploits &o)
@@ -1224,12 +1231,6 @@ static void to_json(json &j, const Config::Exploits &o)
 	WRITE("Slowwalk", slowwalk);
 	WRITE("Fastwalk", fastwalk);
 	WRITE("Bypass sv_pure", bypassPure);
-}
-
-static void to_json(json &j, const Config::Griefing::TeamDamageList &o, const  Config::Griefing::TeamDamageList &dummy = {})
-{
-	WRITE("Enabled", enabled);
-	WRITE("No Title Bar", noTitleBar);
 }
 
 static void to_json(json &j, const Config::Griefing::Reportbot &o, const Config::Griefing::Reportbot &dummy = {})
@@ -1275,7 +1276,6 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Blockbot", blockbot);
 	WRITE("Vote reveal", revealVotes);
 	WRITE("Spam use", spamUse);
-	WRITE("Team damage list", teamDamageList);
 	WRITE("Nuke chat", chatNuke);
 	WRITE("Basmala chat", chatBasmala);
 }
