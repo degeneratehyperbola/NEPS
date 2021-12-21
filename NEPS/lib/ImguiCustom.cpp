@@ -695,7 +695,7 @@ void ImGuiCustom::StyleColors5(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_ModalWindowDimBg] = {0.20f, 0.20f, 0.20f, 0.35f};
 }
 
-void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned int color, bool outline) noexcept
+void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned color, bool outline) noexcept
 {
 	const auto l = std::sqrtf(ImLengthSqr(pos));
 	if (!l) return;
@@ -713,25 +713,21 @@ void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos
 		drawList->AddPolyline(trianglePoints, 3, color | IM_COL32_A_MASK, ImDrawFlags_Closed, 1.5f);
 }
 
-ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, float distance, float cullDistance, unsigned int textColor, unsigned int borderColor, const char *text, const ImVec2 &pos, bool centered, bool adjustHeight) noexcept
+ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec2 &pos, unsigned textColor, unsigned outlineColor, bool centered, bool adjustHeight) noexcept
 {
-	if (!(borderColor & IM_COL32_A_MASK) && !(textColor & IM_COL32_A_MASK))
-
-	if (cullDistance > 0 && distance > cullDistance)
-		return {};
-	else if (cullDistance < 0 && distance < -cullDistance)
+	if (!(outlineColor & IM_COL32_A_MASK) && !(textColor & IM_COL32_A_MASK))
 		return {};
 
 	const auto textSize = ImGui::CalcTextSize(text);
 	const auto horizontalOffset = centered ? textSize.x / 2 : 0.0f;
 	const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
 
-	if (borderColor & IM_COL32_A_MASK)
+	if (outlineColor & IM_COL32_A_MASK)
 	{
-		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f}, borderColor, text);
-		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f}, borderColor, text);
-		drawList->AddText({pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset}, borderColor, text);
-		drawList->AddText({pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset}, borderColor, text);
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1.0f}, outlineColor, text);
+		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1.0f}, outlineColor, text);
+		drawList->AddText({pos.x - horizontalOffset - 1.0f, pos.y - verticalOffset}, outlineColor, text);
+		drawList->AddText({pos.x - horizontalOffset + 1.0f, pos.y - verticalOffset}, outlineColor, text);
 	}
 	drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset}, textColor, text);
 
