@@ -265,8 +265,13 @@ void ImGuiCustom::keyBind(const char *name, int *key, int *keyMode) noexcept
 					ImGui::SetActiveID(ImGui::GetID(name), ImGui::GetCurrentWindow());
 			}
 
-			if (ImGui::IsItemHovered() && ImGui::GetIO().MouseClicked[1])
-				*key = 0;
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Right click to unset");
+
+				if (ImGui::GetIO().MouseClicked[1])
+					*key = 0;
+			}
 		}
 	}
 	ImGui::SameLine();
