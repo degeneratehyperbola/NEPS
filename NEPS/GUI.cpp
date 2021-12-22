@@ -693,9 +693,9 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::InputFloat("Distance", &config->aimbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
 		config->aimbot[currentWeapon].distance = std::max(config->aimbot[currentWeapon].distance, 0.0f);
 
-		ImGui::SliderInt("##mindmg", &config->aimbot[currentWeapon].minDamage, 0, 100, "Min damage %d");
+		ImGui::SliderInt("##mindmg", &config->aimbot[currentWeapon].minDamage, 0, 110, "Min damage %d");
 		config->aimbot[currentWeapon].minDamage = std::max(config->aimbot[currentWeapon].minDamage, 0);
-		ImGui::SliderInt("##mindmg_aw", &config->aimbot[currentWeapon].minDamageAutoWall, 0, 100, "Min damage auto-wall %d");
+		ImGui::SliderInt("##mindmg_aw", &config->aimbot[currentWeapon].minDamageAutoWall, 0, 110, "Min damage auto-wall %d");
 		config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
 
 		ImGuiCustom::keyBind("Override", config->aimbot[currentWeapon].aimbotOverride.bind);
@@ -1169,9 +1169,9 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 		ImGui::SetNextItemWidth(90);
 		ImGui::InputFloat("Distance", &config->triggerbot[currentWeapon].distance, 1.0f, 10.0f, "%.0fu");
 		config->triggerbot[currentWeapon].distance = std::max(config->triggerbot[currentWeapon].distance, 0.0f);
-		ImGui::SliderInt("##mindmg", &config->triggerbot[currentWeapon].minDamage, 0, 100, "Min damage %d");
+		ImGui::SliderInt("##mindmg", &config->triggerbot[currentWeapon].minDamage, 0, 110, "Min damage %d");
 		config->triggerbot[currentWeapon].minDamage = std::max(config->triggerbot[currentWeapon].minDamage, 0);
-		ImGui::SliderInt("##mindmg_aw", &config->triggerbot[currentWeapon].minDamageAutoWall, 0, 100, "Min damage auto-wall %d");
+		ImGui::SliderInt("##mindmg_aw", &config->triggerbot[currentWeapon].minDamageAutoWall, 0, 110, "Min damage auto-wall %d");
 		config->triggerbot[currentWeapon].minDamageAutoWall = std::max(config->triggerbot[currentWeapon].minDamageAutoWall, 0);
 
 		ImGui::SliderFloat("##burst", &config->triggerbot[currentWeapon].burstTime, 0.0f, 1.0f, "Burst time %.3fs");
