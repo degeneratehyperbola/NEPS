@@ -135,6 +135,9 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 	}
 }
 
+#define REAL_OVER_LAG_RECORD_ADVANTAGE 5
+#define DAMAGE_THRESHOLD_FRACTION 0.1f
+
 #ifndef NEPS_DEBUG
 __forceinline
 #endif
@@ -208,7 +211,7 @@ void chooseTarget(UserCmd *cmd) noexcept
 					backtrackRecord = &(*it);
 
 				[[maybe_unused]] bool occluded = true;
-				if (Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f) > Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f, backtrackRecord))
+				if (Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f) > Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f, backtrackRecord) - REAL_OVER_LAG_RECORD_ADVANTAGE)
 					backtrackRecord = nullptr;
 			}
 
@@ -372,17 +375,18 @@ void chooseTarget(UserCmd *cmd) noexcept
 
 				if (!backtrackRecord && trace.entity != entity) continue;
 
+				const int targetHealth = entity->health() + static_cast<int>(entity->health() * DAMAGE_THRESHOLD_FRACTION);
 				if (!occluded)
 				{
-					if (damage <= std::min(minDamage, entity->health()))
+					if (damage <= std::min(minDamage, targetHealth))
 						continue;
-					if (damage <= std::min(bestDamage, entity->health()))
+					if (damage <= std::min(bestDamage, targetHealth))
 						continue;
 				} else
 				{
-					if (damage <= std::min(minDamageAutoWall, entity->health()))
+					if (damage <= std::min(minDamageAutoWall, targetHealth))
 						continue;
-					if (damage <= std::min(bestDamage, entity->health()))
+					if (damage <= std::min(bestDamage, targetHealth))
 						continue;
 				}
 

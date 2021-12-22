@@ -16,6 +16,8 @@
 
 #include "../lib/Helpers.hpp"
 
+#define DAMAGE_THRESHOLD_FRACTION 0.1f
+
 void Triggerbot::run(UserCmd *cmd) noexcept
 {
 	if (!localPlayer) return;
@@ -94,9 +96,10 @@ void Triggerbot::run(UserCmd *cmd) noexcept
 			return;
 	}
 
+	const int targetHealth = trace.entity->health() + static_cast<int>(trace.entity->health() * DAMAGE_THRESHOLD_FRACTION);
 	auto minDamage = occluded ?
-		std::min(cfg.minDamageAutoWall, trace.entity->health()) :
-		std::min(cfg.minDamage, trace.entity->health());
+		std::min(cfg.minDamageAutoWall, targetHealth) :
+		std::min(cfg.minDamage, targetHealth);
 
 	if (damage >= minDamage)
 	{
