@@ -29,4 +29,5 @@ namespace Backtrack
 	const std::deque<Record> &getRecords(std::size_t index) noexcept;
 	float getLerp() noexcept;
 	bool valid(float simTime) noexcept;
+	bool lastShotLagRecord() noexcept;
 }

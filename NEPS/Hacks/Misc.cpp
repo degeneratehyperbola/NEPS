@@ -1,6 +1,8 @@
 ﻿#include "Misc.h"
 
+#include "Aimbot.h"
 #include "Animations.h"
+#include "Backtrack.h"
 #include "EnginePrediction.h"
 
 #include "../SDK/Client.h"
@@ -1167,26 +1169,38 @@ void Misc::useSpam(UserCmd *cmd) noexcept
 
 void Misc::indicators() noexcept
 {
+	if (!config->misc.indicators.enabled)
+		return;
+
 	GameData::Lock lock;
 	const auto &local = GameData::local();
 
-	if (!local.exists || !local.alive)
+	if ((!local.exists || !local.alive) && !gui->open)
 		return;
 
-	if (!config->misc.indicators.enabled)
-		return;
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	if (!gui->open)
+		windowFlags |= ImGuiWindowFlags_NoInputs;
 
 	ImGui::SetNextWindowPos({0, 50}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{200.0f, FLT_MAX});
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
-	ImGui::Begin("Indicators", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
+	ImGui::Begin("Indicators", nullptr, windowFlags);
 	ImGui::PopStyleVar();
 	
+	if (!local.exists)
+	{
+		ImGui::TextWrapped("Shows things like choked packets, height, speed and shot statistics");
+		ImGui::End();
+		return;
+	}
+
 	const auto networkChannel = interfaces->engine->getNetworkChannel();
 	if (networkChannel)
 	{
+		static auto maxChokeVar = interfaces->cvar->findVar("sv_maxusrcmdprocessticks");
 		ImGui::TextUnformatted("Choked packets");
-		ImGuiCustom::progressBarFullWidth(static_cast<float>(networkChannel->chokedPackets) / 16);
+		ImGuiCustom::progressBarFullWidth(static_cast<float>(networkChannel->chokedPackets) / maxChokeVar->getInt());
 	}
 
 	ImGui::TextUnformatted("Height");
@@ -1196,6 +1210,9 @@ void Misc::indicators() noexcept
 
 	if (memory->input->isCameraInThirdPerson)
 		ImGui::TextUnformatted("In thirdperson");
+
+	ImGui::Text("Last shot: %s", Backtrack::lastShotLagRecord() ? "lag record" : "modern record");
+	ImGui::Text("Target misses: %d", Aimbot::getMisses());
 
 	ImGui::End();
 }
