@@ -499,6 +499,9 @@
     <ClInclude Include="SDK\UserMessage.h">
       <Filter>SDK</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\Radar.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\logo.png">

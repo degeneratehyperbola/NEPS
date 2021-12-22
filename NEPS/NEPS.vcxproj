@@ -151,6 +151,7 @@
     <ClInclude Include="SDK\PhysicsSurfaceProps.h" />
     <ClInclude Include="SDK\PlayerResource.h" />
     <ClInclude Include="SDK\Prediction.h" />
+    <ClInclude Include="SDK\Radar.h" />
     <ClInclude Include="SDK\Recv.h" />
     <ClInclude Include="SDK\RenderContext.h" />
     <ClInclude Include="SDK\RenderView.h" />
