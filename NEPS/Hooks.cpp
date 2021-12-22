@@ -339,7 +339,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Visuals::removeGrass(stage);
 		Visuals::modifySmoke(stage);
 		Visuals::modifyFire(stage);
-		Visuals::playerModel(stage);
+		//Visuals::playerModel(stage);
 		Visuals::disablePostProcessing(stage);
 		Visuals::removeVisualRecoil(stage);
 		Misc::tweakPlayerAnimations(stage);
