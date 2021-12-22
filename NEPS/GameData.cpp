@@ -9,6 +9,7 @@
 #include "SDK/ModelRender.h"
 #include "SDK/NetworkChannel.h"
 #include "SDK/PlayerResource.h"
+#include "SDK/Radar.h"
 #include "SDK/Sound.h"
 #include "SDK/UtlVector.h"
 
@@ -32,6 +33,8 @@ static auto playerByHandleWritable(int handle) noexcept
 	const auto it = std::find_if(playerData.begin(), playerData.end(), [handle](const auto &playerData) { return playerData.handle == handle; });
 	return it != playerData.end() ? &(*it) : nullptr;
 }
+
+UtlVector<ActiveSoundInfo> activeSounds;
 
 void GameData::update() noexcept
 {
@@ -155,6 +158,41 @@ void GameData::update() noexcept
 
 				if (classId == ClassId::SmokeGrenadeProjectile && entity->didSmokeEffect())
 					smokeData.emplace_back(entity);
+			}
+		}
+	}
+
+	activeSounds.destructAll();
+	interfaces->engineSound->getActiveSounds(activeSounds);
+
+	for (auto &sound : activeSounds)
+	{
+		if (sound.soundSource < 1 || sound.soundSource > 64)
+			continue;
+
+		if (!sound.origin->notNull())
+			continue;
+
+		if (const auto entity = interfaces->entityList->getEntity(sound.soundSource); entity && entity->isPlayer())
+		{
+			if (auto player = playerByHandleWritable(entity->handle()); player)
+			{
+				player->becameDormant = memory->globalVars->realTime;
+				player->audible = true;
+
+				if (entity->isDormant())
+				{
+					const auto delta = *sound.origin - player->origin;
+					player->coordinateFrame.setOrigin(*sound.origin);
+					player->origin = *sound.origin;
+					player->headMaxs += delta;
+					player->headMins += delta;
+					for (auto &bone : player->bones)
+					{
+						bone.first += delta;
+						bone.second += delta;
+					}
+				}
 			}
 		}
 	}
@@ -294,8 +332,8 @@ void LocalPlayerData::update() noexcept
 		const auto collidable = obs->getCollideable();
 		if (collidable)
 		{
-			colMaxs = collidable->obbMaxs();
-			colMins = collidable->obbMins();
+			obbMaxs = collidable->obbMaxs();
+			obbMins = collidable->obbMins();
 		}
 	} else
 	{
@@ -317,8 +355,8 @@ void LocalPlayerData::update() noexcept
 		const auto collidable = localPlayer->getCollideable();
 		if (collidable)
 		{
-			colMaxs = collidable->obbMaxs();
-			colMins = collidable->obbMins();
+			obbMaxs = collidable->obbMaxs();
+			obbMins = collidable->obbMins();
 		}
 	}
 }
@@ -411,12 +449,12 @@ void PlayerData::update(Entity *entity) noexcept
 	handle = entity->handle();
 	name = entity->getPlayerName();
 	inViewFrustum = !interfaces->engine->cullBox(obbMins + origin, obbMaxs + origin);
+	audible = false;
 
 	if (entity->isDormant())
 	{
 		if (!dormant)
 			becameDormant = memory->globalVars->realTime;
-
 		dormant = true;
 		return;
 	}
@@ -428,24 +466,12 @@ void PlayerData::update(Entity *entity) noexcept
 	velocity = entity->velocity();
 	alive = entity->isAlive();
 
-	if (localPlayer)
-	{
-		enemy = localPlayer->isOtherEnemy(entity);
-		if (localPlayer->isAlive() || localPlayer->observerMode() != ObsMode::InEye)
-			visible = alive && entity->visibleTo(localPlayer.get());
-		else if (const auto obs = localPlayer->getObserverTarget(); obs)
-			visible = alive && entity->visibleTo(obs);
-	}
-
-	constexpr auto isEntityAudible = [](int entityIndex) noexcept
-	{
-		for (int i = 0; i < memory->activeChannels->count; ++i)
-			if (memory->channels[memory->activeChannels->list[i]].soundSource == entityIndex)
-				return true;
-		return false;
-	};
+	enemy = localPlayer->isOtherEnemy(entity);
+	if (localPlayer->isAlive() || localPlayer->observerMode() != ObsMode::InEye)
+		visible = alive && entity->visibleTo(localPlayer.get());
+	else if (const auto obs = localPlayer->getObserverTarget(); obs)
+		visible = alive && entity->visibleTo(obs);
 	
-	audible = isEntityAudible(entity->index());
 	spotted = entity->spotted();
 	health = entity->health();
 	armor = entity->armor();
@@ -478,17 +504,9 @@ void PlayerData::update(Entity *entity) noexcept
 
 	if (const auto weapon = entity->getActiveWeapon())
 	{
-		audible = audible || isEntityAudible(weapon->index());
 		if (const auto weaponInfo = weapon->getWeaponData())
 			activeWeapon = interfaces->localize->findAsUTF8(weaponInfo->name);
 	}
-
-	const auto collidable = entity->getCollideable();
-	if (!collidable)
-		return;
-
-	colMaxs = collidable->obbMaxs();
-	colMins = collidable->obbMins();
 
 	if (!inViewFrustum) return;
 

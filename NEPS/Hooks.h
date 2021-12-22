@@ -40,7 +40,7 @@ public:
 	HookType engine;
 	HookType modelRender;
 	HookType panel;
-	HookType sound;
+	HookType engineSound;
 	HookType surface;
 	HookType viewRender;
 	HookType svCheats;

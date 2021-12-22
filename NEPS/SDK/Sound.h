@@ -3,6 +3,7 @@
 #include "Pad.h"
 #include "VirtualMethod.h"
 #include "Vector.h"
+#include "UtlVector.h"
 
 struct SoundInfo
 {
@@ -30,11 +31,12 @@ struct SoundParams
 	int flags;
 	int pitch = 100;
 	Vector *origin;
-	PAD(11)
+	Vector *direction;
+	UtlVector<Vector> *origins;
 	bool updatePosition;
 	float soundTime = 0.0f;
 	int speakerEntity = -1;
-	PAD(4)
+	void *soundParams;
 };
 
 struct ActiveChannels
@@ -53,14 +55,35 @@ struct Channel
 	PAD(80)
 };
 
+struct ActiveSoundInfo
+{
+	int guid;
+	void *fileNameHandle;
+	int soundSource;
+	int channel;
+	int speakerEntity;
+	float volume;
+	float lastSpatializedVolume;
+	float radius;
+	int pitch;
+	Vector *origin;
+	Vector *direction;
+	bool updatePositions;
+	bool isSentence;
+	bool dryMix;
+	bool speaker;
+	bool fromServer;
+};
+
 class SoundEmitter
 {
 public:
 	VIRTUAL_METHOD(const char *, getSoundName, 46, (int index), (this, index))
 };
 
-class Sound
+class EngineSound
 {
 public:
 	VIRTUAL_METHOD(int, emitSound, 5, (SoundParams data), (this, data))
+	VIRTUAL_METHOD(void, getActiveSounds, 19, (UtlVector<ActiveSoundInfo> &soundList), (this, std::ref(soundList)))
 };

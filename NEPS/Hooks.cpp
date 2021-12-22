@@ -379,7 +379,7 @@ static int __stdcall emitSound(SoundParams params) noexcept
 		ShowWindow(window, SW_RESTORE);
 	}
 	params.volume = std::clamp(params.volume, 0.0f, 1.0f);
-	return hooks->sound.callOriginal<int, 5>(params);
+	return hooks->engineSound.callOriginal<int, 5>(params);
 }
 
 static bool __stdcall shouldDrawFog() noexcept
@@ -479,7 +479,7 @@ static void __stdcall overrideView(ViewSetup *setup) noexcept
 struct RenderableInfo
 {
 	Entity *renderable;
-	std::byte pad[18];
+	PAD(18);
 	uint16_t flags;
 	uint16_t flags2;
 };
@@ -699,8 +699,8 @@ void Hooks::install() noexcept
 	panel.init(interfaces->panel);
 	panel.hookAt(41, paintTraverse);
 
-	sound.init(interfaces->sound);
-	sound.hookAt(5, emitSound);
+	engineSound.init(interfaces->engineSound);
+	engineSound.hookAt(5, emitSound);
 
 	surface.init(interfaces->surface);
 	surface.hookAt(15, setDrawColor);
@@ -772,7 +772,7 @@ void Hooks::uninstall() noexcept
 	clientMode.restore();
 	engine.restore();
 	modelRender.restore();
-	sound.restore();
+	engineSound.restore();
 	surface.restore();
 	svCheats.restore();
 	viewRender.restore();

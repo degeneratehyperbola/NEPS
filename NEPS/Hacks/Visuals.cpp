@@ -745,8 +745,8 @@ void Visuals::playerBounds(ImDrawList *drawList) noexcept
 	if (!local.exists || !local.alive)
 		return;
 
-	Vector max = local.colMaxs + local.origin;
-	Vector min = local.colMins + local.origin;
+	Vector max = local.obbMaxs + local.origin;
+	Vector min = local.obbMins + local.origin;
 	const auto z = local.origin.z;
 
 	ImVec2 points[4];
