@@ -62,6 +62,8 @@ void Backtrack::update(FrameStage stage) noexcept
 	}
 }
 
+static bool backtracked = false;
+
 void Backtrack::run(UserCmd *cmd) noexcept
 {
 	if (!config->backtrack.enabled)
@@ -74,11 +76,9 @@ void Backtrack::run(UserCmd *cmd) noexcept
 		return;
 
 	Entity *bestTarget = interfaces->entityList->getEntityFromHandle(Aimbot::getTargetHandle());
-	const Record *bestRecord = nullptr;
+	const Record *bestRecord = Aimbot::getTargetRecord();
 
-	if (bestTarget)
-		bestRecord = Aimbot::getTargetRecord();
-	else
+	if (!bestTarget)
 	{
 		auto localPlayerEyePosition = localPlayer->getEyePosition();
 		const auto aimPunch = localPlayer->getAimPunch();
@@ -127,11 +127,19 @@ void Backtrack::run(UserCmd *cmd) noexcept
 		}
 	}
 
+	backtracked = false;
+
 	if (bestRecord && bestTarget)
 	{
 		memory->setAbsOrigin(bestTarget, bestRecord->origin);
 		cmd->tickCount = Helpers::timeToTicks(bestRecord->simulationTime + getLerp());
+		backtracked = true;
 	}
+}
+
+bool Backtrack::lastShotLagRecord() noexcept
+{
+	return backtracked;
 }
 
 const std::deque<Record> &Backtrack::getRecords(std::size_t index) noexcept

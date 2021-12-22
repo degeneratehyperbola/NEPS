@@ -840,7 +840,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 
 		ImGui::SetNextItemWidth(90.0f);
 		ImGui::InputInt("Choked packets", &currentConfig.chokedPackets, 1, 5);
-		currentConfig.chokedPackets = std::clamp(currentConfig.chokedPackets, 0, 64);
+		currentConfig.chokedPackets = std::max(currentConfig.chokedPackets, 0);
 		ImGui::SameLine();
 		ImGuiCustom::keyBind("##choke", currentConfig.choke);
 	}
@@ -2270,7 +2270,7 @@ void GUI::renderExploitsWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Fake duck", config->exploits.fakeDuck);
 	ImGui::SetNextItemWidth(-1);
 	ImGui::InputInt("##duck_packets", &config->exploits.fakeDuckPackets, 1, 5);
-	config->exploits.fakeDuckPackets = std::clamp(config->exploits.fakeDuckPackets, 0, 64);
+	config->exploits.fakeDuckPackets = std::max(config->exploits.fakeDuckPackets, 0);
 	ImGui::Checkbox("Moonwalk", &config->exploits.moonwalk);
 	ImGuiCustom::keyBind("Slowwalk", config->exploits.slowwalk);
 	ImGuiCustom::keyBind("Fastwalk", config->exploits.fastwalk);
