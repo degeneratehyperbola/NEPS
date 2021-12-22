@@ -472,17 +472,16 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		if (cfg.scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !cfg.autoScope)
 			return;
 
+		chooseTarget(cmd);
+
 		static auto previousTargetHandle = targetHandle;
 
 		if (previousTargetHandle != targetHandle)
 			resetMissCounter();
 
-		chooseTarget(cmd);
-
 		static Vector aimVelocity = Vector{};
 
-		const auto target = interfaces->entityList->getEntityFromHandle(targetHandle);
-		if (target && targetAngle.notNull())
+		if (targetAngle.notNull())
 		{
 			static Vector lastAngles = cmd->viewangles;
 			static int lastCommand = 0;
