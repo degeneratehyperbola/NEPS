@@ -53,6 +53,26 @@ void Misc::edgeJump(UserCmd *cmd) noexcept
 		cmd->buttons |= UserCmd::Button_Jump;
 }
 
+void Misc::jumpBug(UserCmd* cmd) noexcept
+{
+
+	if (static Helpers::KeyBindState flag; !flag[config->movement.jumpBug])
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
+		return;
+
+	if (localPlayer->flags() & PlayerFlag_OnGround)
+	{
+		cmd->buttons &= ~UserCmd::Button_Jump;
+		if (!(EnginePrediction::getFlags() & PlayerFlag_OnGround))
+			cmd->buttons |= UserCmd::Button_Duck;
+	}
+}
+
 void Misc::slowwalk(UserCmd *cmd) noexcept
 {
 	if (!localPlayer || !localPlayer->isAlive() || ~localPlayer->flags() & PlayerFlag_OnGround || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
@@ -464,9 +484,12 @@ bool Misc::changeName(bool reconnect, const char *newName, float delay) noexcept
 	return false;
 }
 
-void Misc::bunnyHop(UserCmd *cmd) noexcept
+void Misc::bunnyHop(UserCmd* cmd) noexcept
 {
 	if (!localPlayer)
+		return;
+
+	if (static Helpers::KeyBindState flag; flag[config->movement.jumpBug])
 		return;
 
 	static auto wasLastTimeOnGround = localPlayer->flags() & PlayerFlag_OnGround;
@@ -1438,6 +1461,9 @@ void Misc::teamDamageList(GameEvent *event)
 			damageList.clear();
 
 		if (!gui->open && (damageList.empty() || !interfaces->engine->isInGame()))
+			return;
+
+		if (!gui->open)
 			return;
 
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;

@@ -93,11 +93,11 @@ static void drawColorPalette() noexcept
 
 void GUI::render() noexcept
 {
-	#ifdef NEPS_DEBUG
-	static Texture debugNotice = {IDB_PNG2, L"PNG"};
-	if (debugNotice.get())
-		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
-	#endif // NEPS_DEBUG
+	//#ifdef NEPS_DEBUG
+	//static Texture debugNotice = {IDB_PNG2, L"PNG"};
+	//if (debugNotice.get())
+	//	ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
+	//#endif // NEPS_DEBUG
 
 	ImGui::GetIO().FontGlobalScale = config->style.scaling;
 
@@ -2385,6 +2385,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Bunnyhop", &config->movement.bunnyHop);
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
+	ImGuiCustom::keyBind("Jumpbug", config->movement.jumpBug);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
 
 	if (!contentOnly)
