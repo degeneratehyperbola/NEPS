@@ -96,7 +96,7 @@ void GUI::render() noexcept
 	#ifdef NEPS_DEBUG
 	static Texture debugNotice = {IDB_PNG2, L"PNG"};
 	if (debugNotice.get())
-		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0.0f, 0.0f}, {512.0f, 256.0f});
+		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0, 0}, {256, 256});
 	#endif // NEPS_DEBUG
 
 	ImGui::GetIO().FontGlobalScale = config->style.scaling;
