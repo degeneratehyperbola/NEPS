@@ -1106,27 +1106,14 @@ void Misc::visualizeBlockBot(ImDrawList *drawList) noexcept
 	if (!target || target->dormant || !target->alive)
 		return;
 
-	Vector curDir = target->velocity * 0.12f;
-	curDir.z = 0.0f;
 	Vector max = target->obbMaxs + target->origin;
 	Vector min = target->obbMins + target->origin;
 	const auto z = target->origin.z;
 
-	ImVec2 pos, dir;
 	ImVec2 points[4];
-
 	const auto color = Helpers::calculateColor(config->griefing.blockbot.visualize);
 
-	bool draw = Helpers::worldToScreen(target->origin, pos);
-	draw = draw && Helpers::worldToScreen(curDir + target->origin, dir);
-
-	if (draw)
-	{
-		drawList->AddLine(pos, dir, color);
-		ImGuiCustom::drawText(drawList, std::to_string(static_cast<int>(target->velocity.length())).c_str(), dir, color, config->griefing.blockbot.visualize.outline, color & IM_COL32_A_MASK);
-	}
-
-	draw = Helpers::worldToScreen(Vector{max.x, max.y, z}, points[0]);
+	bool draw = Helpers::worldToScreen(Vector{max.x, max.y, z}, points[0]);
 	draw = draw && Helpers::worldToScreen(Vector{max.x, min.y, z}, points[1]);
 	draw = draw && Helpers::worldToScreen(Vector{min.x, min.y, z}, points[2]);
 	draw = draw && Helpers::worldToScreen(Vector{min.x, max.y, z}, points[3]);
