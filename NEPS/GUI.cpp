@@ -2356,12 +2356,12 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 
 	if (ImGui::BeginPopup("##blockbot"))
 	{
-		ImGuiCustom::keyBind("Target", config->griefing.blockbot.target);
+		ImGuiCustom::keyBind("Choose target", config->griefing.blockbot.target);
 		ImGui::PushItemWidth(192.0f);
 		ImGui::SliderFloat("##tfactor", &config->griefing.blockbot.trajectoryFac, 0.0f, 4.0f, "Trajectory factor %.3f");
 		ImGui::SliderFloat("##dfactor", &config->griefing.blockbot.distanceFac, 0.0f, 4.0f, "Distance factor %.3f");
 		ImGui::PopItemWidth();
-		ImGuiCustom::colorPicker("Visualize", config->griefing.blockbot.visualize);
+		ImGuiCustom::colorPicker("Visualize target", config->griefing.blockbot.visualize);
 		ImGui::EndPopup();
 	}
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
