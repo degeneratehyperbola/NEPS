@@ -26,7 +26,7 @@ class PhysicsSurfaceProps;
 class Prediction;
 class RenderView;
 class Surface;
-class Sound;
+class EngineSound;
 class SoundEmitter;
 class StudioRender;
 
@@ -57,7 +57,7 @@ public:
 	GAME_INTERFACE(Prediction, prediction, "client", "VClientPrediction001")
 	GAME_INTERFACE(RenderView, renderView, "engine", "VEngineRenderView014")
 	GAME_INTERFACE(Surface, surface, "vguimatsurface", "VGUI_Surface031")
-	GAME_INTERFACE(Sound, sound, "engine", "IEngineSoundClient003")
+	GAME_INTERFACE(EngineSound, engineSound, "engine", "IEngineSoundClient003")
 	GAME_INTERFACE(SoundEmitter, soundEmitter, "soundemittersystem", "VSoundEmitter003")
 	GAME_INTERFACE(StudioRender, studioRender, "studiorender", "VStudioRender026")
 

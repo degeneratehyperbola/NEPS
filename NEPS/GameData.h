@@ -81,7 +81,7 @@ struct LocalPlayerData
 	Vector inaccuracy;
 	Vector origin;
 	Vector velocity;
-	Vector colMaxs, colMins;
+	Vector obbMaxs, obbMins;
 };
 
 class Entity;
@@ -151,7 +151,6 @@ struct PlayerData : BaseData
 	int health;
 	int armor;
 	Vector headMins, headMaxs;
-	Vector colMins, colMaxs;
 	Vector origin;
 	Vector velocity;
 	Vector lookingAt;

@@ -1106,8 +1106,8 @@ void Misc::visualizeBlockBot(ImDrawList *drawList) noexcept
 
 	Vector curDir = target->velocity * 0.12f;
 	curDir.z = 0.0f;
-	Vector max = target->colMaxs + target->origin;
-	Vector min = target->colMins + target->origin;
+	Vector max = target->obbMaxs + target->origin;
+	Vector min = target->obbMins + target->origin;
 	const auto z = target->origin.z;
 
 	ImVec2 pos, dir;
