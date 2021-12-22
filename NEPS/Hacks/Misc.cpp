@@ -1195,8 +1195,7 @@ void Misc::indicators() noexcept
 
 	ImGui::Text("Speed %.0fu", local.velocity.length2D());
 
-	if (memory->input->isCameraInThirdPerson)
-		ImGui::TextUnformatted("In thirdperson");
+	ImGui::Text("In %s person", memory->input->isCameraInThirdPerson ? "third" : "first");
 
 	ImGui::Text("Last shot: %s", Backtrack::lastShotLagRecord() ? "lag record" : "modern record");
 	ImGui::Text("Target misses: %d", Aimbot::getMisses());
