@@ -346,7 +346,9 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 		if (playerData.reloading)
 			flags << "RLD\n";
 		if (playerData.armor)
-			flags << playerData.armor << "ap\n";
+			flags << "AMR " << playerData.armor << "\n";
+		if (playerData.chokedPackets)
+			flags << "PCKT " << playerData.chokedPackets << "\n";
 
 		if (!flags.str().empty() && !cullText(playerData.distanceToLocal, config.textCullDistance))
 		{

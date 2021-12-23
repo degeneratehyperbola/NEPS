@@ -481,6 +481,7 @@ void PlayerData::update(Entity *entity) noexcept
 	isVip = entity->isVip();
 	hasDefuser = entity->hasDefuser();
 	ducking = entity->flags() & PlayerFlag_Crouched;
+	chokedPackets = entity->getChockedPackets();
 
 	{
 		const Vector start = entity->getEyePosition();
