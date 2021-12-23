@@ -487,9 +487,15 @@ void PlayerData::update(Entity *entity) noexcept
 		previousUpdateTick = memory->globalVars->tickCount;
 		lbyUpdate = entity->lbyUpdate(nextLbyUpdate);
 		if (entity->isChokingPackets())
+		{
+			if (chokedPackets < 0) chokedPackets = 0;
 			chokedPackets++;
+		}
 		else
-			chokedPackets = 0;
+		{
+			if (chokedPackets > 0) chokedPackets = 0;
+			else chokedPackets--;
+		}
 	}
 
 	if (auto state = entity->animState())

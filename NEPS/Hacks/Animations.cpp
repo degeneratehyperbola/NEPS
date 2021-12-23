@@ -138,7 +138,7 @@ void Animations::resolve(Entity *animatable) noexcept
 
 		if (auto playerData = GameData::playerByHandle(animatable->handle()))
 		{
-			if (!playerData->chokedPackets) return true;
+			if (playerData->chokedPackets < -2) return true;
 			if (playerData->lbyUpdate) return true;
 		}
 
