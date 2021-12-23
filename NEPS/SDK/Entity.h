@@ -261,7 +261,25 @@ public:
 
 	VarMap *getVarMap() noexcept { return reinterpret_cast<VarMap *>(this + 0x24); }
 
-	int getChockedPackets() noexcept { return Helpers::timeToTicks(simulationTime() - oldSimulationTime()) - 1; };
+	int isChokingPackets() noexcept { return simulationTime() == oldSimulationTime(); };
+
+	bool lbyUpdate(float &nextUpdate) noexcept
+	{
+		if (!isPlayer())
+			return false;
+
+		const auto time = memory->globalVars->serverTime();
+
+		if (velocity().length2D() > 0.1f || std::fabsf(velocity().z) > 100.0f)
+			nextUpdate = time + 0.22f;
+		else if (time >= nextUpdate)
+		{
+			nextUpdate = time + 1.1f;
+			return true;
+		}
+
+		return false;
+	}
 
 	float getMaxDesyncAngle() noexcept
 	{

@@ -691,27 +691,26 @@ void Misc::antiAfkKick(UserCmd *cmd) noexcept
 		cmd->buttons |= 1 << 27;
 }
 
-void Misc::tweakPlayerAnimations(FrameStage stage) noexcept
+void Misc::tweakPlayerAnimations() noexcept
 {
 	if (!config->misc.fixAnimationLOD && !config->misc.resolveLby)
 		return;
 
-	if (stage == FrameStage::RenderStart)
-		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
+	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
+	{
+		Entity *entity = interfaces->entityList->getEntity(i);
+
+		if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive()) continue;
+
+		if (config->misc.fixAnimationLOD)
 		{
-			Entity *entity = interfaces->entityList->getEntity(i);
-
-			if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive()) continue;
-
-			if (config->misc.fixAnimationLOD)
-			{
-				*reinterpret_cast<int *>(entity + 0xA28) = 0;
-				*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->frameCount;
-			}
-
-			if (config->misc.resolveLby)
-				Animations::resolve(entity);
+			*reinterpret_cast<int *>(entity + 0xA28) = 0;
+			*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->frameCount;
 		}
+
+		if (config->misc.resolveLby)
+			Animations::resolve(entity);
+	}
 }
 
 void Misc::autoPistol(UserCmd *cmd) noexcept

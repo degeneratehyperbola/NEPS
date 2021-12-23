@@ -326,6 +326,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::forceRelayCluster();
+		Misc::tweakPlayerAnimations();
 		break;
 	case FrameStage::RenderEnd:
 		break;
@@ -342,7 +343,6 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		//Visuals::playerModel(stage);
 		Visuals::disablePostProcessing(stage);
 		Visuals::removeVisualRecoil(stage);
-		Misc::tweakPlayerAnimations(stage);
 		Backtrack::update(stage);
 		SkinChanger::run(stage);
 	}

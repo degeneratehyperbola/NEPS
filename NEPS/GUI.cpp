@@ -2759,12 +2759,7 @@ void GUI::renderDebugWindow() noexcept
 		if (entity && entity->isPlayer())
 		{
 			if (ImGui::Button("Resolve selected", {-1, 0}))
-				Animations::resolve(entity); 
-
-			if (Helpers::animDataAuthenticity(entity))
-				ImGui::TextUnformatted("Animations authentic");
-			else
-				ImGui::TextUnformatted("Desync possible");
+				Animations::resolve(entity);
 		}
 
 		if (ImGui::Button("Precache info", {-1, 0}))

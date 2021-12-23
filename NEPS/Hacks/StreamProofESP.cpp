@@ -344,7 +344,7 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 		if (playerData.ducking)
 			flags << "DUCK\n";
 		if (playerData.reloading)
-			flags << "RLD\n";
+			flags << "RELOAD\n";
 		if (playerData.armor)
 			flags << "AMR " << playerData.armor << "\n";
 		if (playerData.chokedPackets)

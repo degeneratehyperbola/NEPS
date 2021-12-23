@@ -151,6 +151,9 @@ struct PlayerData : BaseData
 	float flashDuration;
 	int health;
 	int armor;
+	float nextLbyUpdate;
+	bool lbyUpdate;
+	float originalFeetYaw;
 	Vector headMins, headMaxs;
 	Vector origin;
 	Vector velocity;
@@ -158,6 +161,8 @@ struct PlayerData : BaseData
 	std::string name;
 	std::string activeWeapon;
 	std::vector<std::pair<Vector, Vector>> bones;
+private:
+	int previousUpdateTick;
 };
 
 struct WeaponData : BaseData
