@@ -185,8 +185,6 @@ namespace Helpers
 
 	float approxRadius(const StudioBbox &hitbox, int i) noexcept;
 
-	bool animDataAuthenticity(Entity *animatable) noexcept;
-
 	template <typename T>
 	constexpr std::vector<T> join(const std::vector<T> &first, const std::vector<T> &second) noexcept
 	{
@@ -198,6 +196,4 @@ namespace Helpers
 	}
 
 	std::string decode(std::string) noexcept;
-
-	bool lbyUpdate(Entity *animatable, float &nextUpdate) noexcept;
 }

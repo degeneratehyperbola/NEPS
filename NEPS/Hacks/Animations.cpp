@@ -5,6 +5,8 @@
 #include "Backtrack.h"
 #include "Memory.h"
 
+#include "../GameData.h"
+
 #include "../SDK/Entity.h"
 #include "../SDK/Input.h"
 #include "../SDK/UserCmd.h"
@@ -117,38 +119,35 @@ void Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currentTime);
 }
 
-struct ResolverData
-{
-	std::array<AnimLayer, AnimLayer_Count> previousLayers;
-	float previousFeetYaw;
-	float nextLbyUpdate;
-	int misses;
-};
-
-static std::array<ResolverData, 65> playerResolverData;
-
 void Animations::resolve(Entity *animatable) noexcept
 {
 	auto state = animatable->animState();
 	if (!state)
 		return;
 
-	auto &resolverData = playerResolverData[animatable->index()];
-	const bool lbyUpdate = Helpers::lbyUpdate(animatable, resolverData.nextLbyUpdate);
-	const auto layers = animatable->animLayers();
+	constexpr auto authentic = [](Entity *animatable) noexcept
+	{
+		if (animatable->moveType() == MoveType::Ladder) return true;
+		if (animatable->moveType() == MoveType::Noclip) return true;
+		if (animatable->isBot()) return true;
+		const float simulationTime = animatable->simulationTime();
+		const auto remoteActiveWeapon = animatable->getActiveWeapon();
+		if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime)) return true;
 
-	if (animatable->handle() == Aimbot::getTargetHandle())
-		resolverData.misses = Aimbot::getMisses();
+		GameData::Lock lock;
 
-	animatable->clientAnimations() = true;
-	
-	state->goalFeetYaw = resolverData.previousFeetYaw;
-	animatable->updateClientSideAnimation();
-	resolverData.previousFeetYaw = state->goalFeetYaw;
+		if (auto playerData = GameData::playerByHandle(animatable->handle()))
+		{
+			if (!playerData->chokedPackets) return true;
+			if (playerData->lbyUpdate) return true;
+		}
+
+		return false;
+	};
 
 	const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
 	const float lowDesync = std::fminf(35.0f, maxDesync);
-	if (!Helpers::animDataAuthenticity(animatable) && !lbyUpdate)
+	if (!authentic(animatable))
 	{
 		const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->goalFeetYaw);
 
@@ -159,10 +158,8 @@ void Animations::resolve(Entity *animatable) noexcept
 
 		const auto current = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
 
-		state->goalFeetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + resolverData.misses + 1) % positions.size()]);
+		state->goalFeetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + Aimbot::getMisses() + 1) % positions.size()]);
 	}
-
-	std::copy(layers, layers + animatable->getAnimLayerCount(), resolverData.previousLayers.begin());
 
 	memory->invalidateBoneCache(animatable);
 	animatable->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currentTime);

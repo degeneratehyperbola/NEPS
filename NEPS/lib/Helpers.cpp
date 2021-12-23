@@ -555,25 +555,6 @@ float Helpers::approxRadius(const StudioBbox &hitbox, int i) noexcept
 	return hitbox.capsuleRadius;
 }
 
-bool Helpers::animDataAuthenticity(Entity *animatable) noexcept
-{
-	if (!animatable)
-		return false;
-
-	if (!animatable->isPlayer())
-		return false;
-
-	if (animatable->moveType() == MoveType::Ladder) return true;
-	if (animatable->moveType() == MoveType::Noclip) return true;
-	if (animatable->isBot()) return true;
-	const float simulationTime = animatable->simulationTime();
-	const auto remoteActiveWeapon = animatable->getActiveWeapon();
-	if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime)) return true;
-	if (!animatable->getChockedPackets()) return true;
-
-	return false;
-}
-
 std::string Helpers::decode(std::string in) noexcept
 {
 	std::string out;
@@ -597,25 +578,4 @@ std::string Helpers::decode(std::string in) noexcept
 	}
 
 	return out;
-}
-
-bool Helpers::lbyUpdate(Entity *animatable, float &nextUpdate) noexcept
-{
-	if (!animatable)
-		return false;
-
-	if (!animatable->isPlayer())
-		return false;
-
-	const auto time = memory->globalVars->serverTime();
-
-	if (animatable->velocity().length2D() > 0.1f || std::fabsf(animatable->velocity().z) > 100.0f)
-		nextUpdate = time + 0.22f;
-	else if (time >= nextUpdate)
-	{
-		nextUpdate = time + 1.1f;
-		return true;
-	}
-
-	return false;
 }

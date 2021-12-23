@@ -481,7 +481,28 @@ void PlayerData::update(Entity *entity) noexcept
 	isVip = entity->isVip();
 	hasDefuser = entity->hasDefuser();
 	ducking = entity->flags() & PlayerFlag_Crouched;
-	chokedPackets = entity->getChockedPackets();
+
+	if (previousUpdateTick != memory->globalVars->tickCount)
+	{
+		previousUpdateTick = memory->globalVars->tickCount;
+		lbyUpdate = entity->lbyUpdate(nextLbyUpdate);
+		if (entity->isChokingPackets())
+			chokedPackets++;
+		else
+			chokedPackets = 0;
+	}
+
+	if (auto state = entity->animState())
+	{
+		const auto backupClientAnimations = entity->clientAnimations();
+		entity->clientAnimations() = true;
+
+		state->goalFeetYaw = originalFeetYaw;
+		entity->updateClientSideAnimation();
+		originalFeetYaw = state->goalFeetYaw;
+
+		entity->clientAnimations() = backupClientAnimations;
+	}
 
 	{
 		const Vector start = entity->getEyePosition();

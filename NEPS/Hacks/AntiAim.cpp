@@ -165,7 +165,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& currentViewAngles, bool& sendPacke
 	cmd->viewangles.y += 90.0f * dir;
 
 	static float nextLbyUpdate;
-	const bool lbyUpdate = Helpers::lbyUpdate(localPlayer.get(), nextLbyUpdate);
+	const bool lbyUpdate = localPlayer->lbyUpdate(nextLbyUpdate);
 
 	if (cfg.desync)
 	{
