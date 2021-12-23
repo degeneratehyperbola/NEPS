@@ -15,7 +15,6 @@ struct Record
 	int ownerIdx;
 	Vector origin;
 	float simulationTime;
-	bool important;
 	bool hasHelmet;
 	int armor;
 	Matrix3x4 bones[MAX_STUDIO_BONES];
