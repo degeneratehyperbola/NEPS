@@ -201,20 +201,12 @@ void chooseTarget(UserCmd *cmd) noexcept
 		{
 			const auto &records = Backtrack::getRecords(entity->index());
 
-			if (!Helpers::animDataAuthenticity(entity))
-			{
-				if (const auto it = std::find_if(records.begin(), records.end(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime) && record.important; }); it != records.end())
-					backtrackRecord = &(*it);
-			} else
-			{
-				if (const auto it = std::find_if(records.rbegin(), records.rend(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.rend())
-					backtrackRecord = &(*it);
+			if (const auto it = std::find_if(records.rbegin(), records.rend(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.rend())
+				backtrackRecord = &(*it);
 
-				[[maybe_unused]] bool occluded = true;
-				if (Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f) > Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f, backtrackRecord) - REAL_OVER_LAG_RECORD_ADVANTAGE)
-					backtrackRecord = nullptr;
-			}
-
+			[[maybe_unused]] bool occluded = true;
+			if (Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f) > Helpers::findDamage(localPlayer.get(), entity, occluded, cfg.friendlyFire, 0.0f, backtrackRecord) - REAL_OVER_LAG_RECORD_ADVANTAGE)
+				backtrackRecord = nullptr;
 
 			if (backtrackRecord)
 				std::copy(std::begin(backtrackRecord->bones), std::end(backtrackRecord->bones), bones.begin());
