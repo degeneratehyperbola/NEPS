@@ -130,7 +130,6 @@ struct ProjectileData : BaseData
 struct PlayerData : BaseData
 {
 	void update(Entity *entity) noexcept;
-	void updateLby(Entity *entity) const noexcept;
 
 	int handle;
 	bool dormant;
@@ -154,7 +153,6 @@ struct PlayerData : BaseData
 	int armor;
 	float nextLbyUpdate;
 	bool lbyUpdate;
-	float originalLby;
 	Vector headMins, headMaxs;
 	Vector origin;
 	Vector velocity;

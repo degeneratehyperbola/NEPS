@@ -566,17 +566,6 @@ void PlayerData::update(Entity *entity) noexcept
 	}
 }
 
-void PlayerData::updateLby(Entity *entity) const noexcept
-{
-	if (auto state = entity->animState())
-	{
-		entity->clientAnimations() = true;
-		state->goalFeetYaw = originalLby;
-		entity->updateClientSideAnimation();
-		const_cast<PlayerData *>(this)->originalLby = state->goalFeetYaw;
-	}
-}
-
 WeaponData::WeaponData(Entity *entity) noexcept : BaseData{entity}
 {
 	clip = entity->clip();
