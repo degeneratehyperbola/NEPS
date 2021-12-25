@@ -4,6 +4,7 @@
 
 #include <shared_lib/imgui/imgui.h>
 #include <shared_lib/imgui/imgui_stdlib.h>
+#include <shared_lib/Texture/TextureDX9.h>
 
 #include "lib/ImguiCustom.hpp"
 #include "GUI.h"
@@ -11,14 +12,12 @@
 #include "Interfaces.h"
 #include "Hacks/Misc.h"
 
+#include "resource.h"
 #include "res_defaultfont.h"
 
 #ifdef NEPS_DEBUG
 #include "GameData.h"
-#include "resource.h"
 #include "Hacks/Animations.h"
-
-#include <shared_lib/Texture/TextureDX9.h>
 
 #include "SDK/Client.h"
 #include "SDK/ClientClass.h"
@@ -93,13 +92,23 @@ static void drawColorPalette() noexcept
 
 void GUI::render() noexcept
 {
+	ImGui::GetIO().FontGlobalScale = config->style.scaling;
+
 	#ifdef NEPS_DEBUG
 	static Texture debugNotice = {IDB_PNG2, L"PNG"};
 	if (debugNotice.get())
 		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0, 0}, {256, 256});
 	#endif // NEPS_DEBUG
 
-	ImGui::GetIO().FontGlobalScale = config->style.scaling;
+	static float alpha = 0.0f;
+	static Texture festive = {IDB_PNG4, L"PNG"};
+	if (festive.get())
+		ImGui::GetBackgroundDrawList()->AddImage(festive.get(), {0, 0}, {ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.x / 960 * 174}, {0, 0}, {1, 0.99f}, 0x00FFFFFF | (static_cast<unsigned>(alpha) << IM_COL32_A_SHIFT));
+
+	if (config->misc.goFestive && gui->open)
+		alpha = alpha * 0.9f + 255 * 0.1f;
+	else
+		alpha = alpha * 0.9f;
 
 	if (!open)
 		return;
@@ -154,12 +163,13 @@ void GUI::updateColors() const noexcept
 {
 	switch (config->style.menuColors)
 	{
-	case 0: ImGuiCustom::StyleColorsClassic(); break;
-	case 1: ImGuiCustom::StyleColors1(); break;
-	case 2: ImGuiCustom::StyleColors2(); break;
-	case 3: ImGuiCustom::StyleColors3(); break;
-	case 4: ImGuiCustom::StyleColors4(); break;
-	case 5: ImGuiCustom::StyleColors5(); break;
+	case 1: ImGuiCustom::StyleColorsClassic(); break;
+	case 2: ImGuiCustom::StyleColors1(); break;
+	case 3: ImGuiCustom::StyleColors2(); break;
+	case 4: ImGuiCustom::StyleColors3(); break;
+	case 5: ImGuiCustom::StyleColors4(); break;
+	case 6: ImGuiCustom::StyleColors5(); break;
+	case 7: ImGuiCustom::StyleColors6(); break;
 	}
 }
 
@@ -2424,6 +2434,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Disable extrapolation", &config->misc.noExtrapolate);
 	ImGui::Checkbox("Disable IK", &config->misc.disableIK);
 	ImGui::Checkbox("Resolve LBY", &config->misc.resolveLby);
+	ImGui::Checkbox("NEPSmas (go festive)", &config->misc.goFestive);
 
 	ImGui::NextColumn();
 
@@ -2500,13 +2511,13 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 	ImGui::PushItemWidth(100);
 	//if (ImGui::Combo("Menu style", &config->style.menuStyle, "Classic\0One window\0"))
 	//    window = {};
-	if (ImGui::Combo("Menu colors", &config->style.menuColors, "NEPS\0Alwayslose\0Aimwhen\0Coca-Cola\0Twotap\0Cherry\0Custom\0"))
+	if (ImGui::Combo("Menu colors", &config->style.menuColors, "Custom\0NEPS\0Alwayslose\0Aimwhen\0Coca-Cola\0Twotap\0Cherry\0NEPSmas\0"))
 		updateColors();
 	ImGui::PopItemWidth();
 	ImGui::SetNextItemWidth(90);
 	ImGui::InputFloat("Font scale", &config->style.scaling, 0.1f, 1.0f, "%.2f");
 
-	if (config->style.menuColors == 6)
+	if (config->style.menuColors == 0)
 	{
 		ImGuiStyle &style = ImGui::GetStyle();
 		for (int i = 0; i < ImGuiCol_COUNT; ++i)

@@ -173,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\debug.png" />
+    <Image Include="Resources\festive.png" />
     <Image Include="Resources\logo.png" />
     <Image Include="Resources\vignette.png" />
   </ItemGroup>
