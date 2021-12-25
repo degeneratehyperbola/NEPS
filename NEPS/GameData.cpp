@@ -498,18 +498,6 @@ void PlayerData::update(Entity *entity) noexcept
 		}
 	}
 
-	if (auto state = entity->animState())
-	{
-		const auto backupClientAnimations = entity->clientAnimations();
-		entity->clientAnimations() = true;
-
-		state->goalFeetYaw = originalFeetYaw;
-		entity->updateClientSideAnimation();
-		originalFeetYaw = state->goalFeetYaw;
-
-		entity->clientAnimations() = backupClientAnimations;
-	}
-
 	{
 		const Vector start = entity->getEyePosition();
 		const Vector end = start + Vector::fromAngle(entity->eyeAngles()) * 1000.0f;
@@ -575,6 +563,17 @@ void PlayerData::update(Entity *entity) noexcept
 	{
 		headMins -= headBox->capsuleRadius;
 		headMaxs += headBox->capsuleRadius;
+	}
+}
+
+void PlayerData::updateLby(Entity *entity) const noexcept
+{
+	if (auto state = entity->animState())
+	{
+		entity->clientAnimations() = true;
+		state->goalFeetYaw = originalLby;
+		entity->updateClientSideAnimation();
+		const_cast<PlayerData *>(this)->originalLby = state->goalFeetYaw;
 	}
 }
 
