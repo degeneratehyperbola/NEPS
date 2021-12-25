@@ -513,6 +513,7 @@
     <Image Include="Resources\vignette.png">
       <Filter>Resources</Filter>
     </Image>
+    <Image Include="Resources\festive.png" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NEPS.rc">

@@ -310,7 +310,7 @@ public:
 	struct Style
 	{
 		int menuStyle = 0;
-		int menuColors = 0;
+		int menuColors = 1;
 		float scaling = 1.0f;
 	} style;
 
@@ -454,6 +454,7 @@ public:
 		bool fixTabletSignal = false;
 		bool nadePredict = false;
 		int forceRelayCluster = 0;
+		bool goFestive = true;
 	} misc;
 
 	void scheduleFontLoad(const std::string &name) noexcept;

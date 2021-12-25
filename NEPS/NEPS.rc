@@ -57,6 +57,8 @@ IDB_PNG2                PNG                     "Resources\\debug.png"
 
 IDB_PNG3                PNG                     "Resources\\vignette.png"
 
+IDB_PNG4                PNG                     "Resources\\festive.png"
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

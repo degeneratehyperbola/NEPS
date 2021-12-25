@@ -92,6 +92,7 @@ namespace ImGuiCustom
 	void StyleColors3(ImGuiStyle *dst = nullptr) noexcept;
 	void StyleColors4(ImGuiStyle *dst = nullptr) noexcept;
 	void StyleColors5(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColors6(ImGuiStyle *dst = nullptr) noexcept;
 
 	void drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned color = 0x88FFFFFF, bool outline = true) noexcept;
 	ImVec2 drawText(ImDrawList *drawList, const char *text, const ImVec2 &pos, unsigned textColor = 0xFFFFFFFF, bool outline = true, unsigned outlineColor = IM_COL32_A_MASK, bool centered = true, bool adjustHeight = true) noexcept;
