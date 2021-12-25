@@ -134,7 +134,7 @@ void Animations::resolve(Entity *animatable) noexcept
 		const auto remoteActiveWeapon = animatable->getActiveWeapon();
 		if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime)) return true;
 
-		if (playerData->chokedPackets < -2) return true;
+		if (playerData->chokedPackets < -3) return true;
 		if (playerData->lbyUpdate) return true;
 
 		return false;

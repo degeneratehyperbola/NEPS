@@ -494,7 +494,7 @@ void PlayerData::update(Entity *entity) noexcept
 		else
 		{
 			if (chokedPackets > 0) chokedPackets = 0;
-			else chokedPackets--;
+			chokedPackets--;
 		}
 	}
 
