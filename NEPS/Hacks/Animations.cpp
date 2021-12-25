@@ -125,8 +125,9 @@ void Animations::resolve(Entity *animatable) noexcept
 	if (!state)
 		return;
 
-	constexpr auto authentic = [](Entity *animatable, const PlayerData *playerData) noexcept
+	constexpr auto authentic = [](Entity *animatable) noexcept
 	{
+		#ifndef NEPS_DEBUG
 		if (animatable->moveType() == MoveType::Ladder) return true;
 		if (animatable->moveType() == MoveType::Noclip) return true;
 		if (animatable->isBot()) return true;
@@ -134,32 +135,32 @@ void Animations::resolve(Entity *animatable) noexcept
 		const auto remoteActiveWeapon = animatable->getActiveWeapon();
 		if (remoteActiveWeapon && Helpers::timeToTicks(remoteActiveWeapon->lastShotTime()) == Helpers::timeToTicks(simulationTime)) return true;
 
-		if (playerData->chokedPackets < -3) return true;
-		if (playerData->lbyUpdate) return true;
+		GameData::Lock lock;
+
+		if (auto playerData = GameData::playerByHandle(animatable->handle()))
+		{
+			if (playerData->chokedPackets < -3) return true;
+			if (playerData->lbyUpdate) return true;
+		}
+		#endif // NEPS_DEBUG
 
 		return false;
 	};
 
-	GameData::Lock lock;
-	if (auto playerData = GameData::playerByHandle(animatable->handle()))
+	const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
+	const float lowDesync = std::fminf(35.0f, maxDesync);
+	if (!authentic(animatable))
 	{
-		playerData->updateLby(animatable);
+		const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->goalFeetYaw);
 
-		const float maxDesync = std::fminf(std::fabsf(animatable->getMaxDesyncAngle()), 58.0f);
-		const float lowDesync = std::fminf(35.0f, maxDesync);
-		if (!authentic(animatable, playerData))
-		{
-			const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->goalFeetYaw);
+		const std::array<float, 3U> positions = {-maxDesync, 0.0f, maxDesync};
+		std::vector<float> distances;
+		for (const auto &position : positions)
+			distances.emplace_back(std::fabsf(position - lbyDelta));
 
-			const std::array<float, 3U> positions = {-maxDesync, 0.0f, maxDesync};
-			std::vector<float> distances;
-			for (const auto &position : positions)
-				distances.emplace_back(std::fabsf(position - lbyDelta));
+		const auto current = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
 
-			const auto current = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
-
-			state->goalFeetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + Aimbot::getMisses() + 1) % positions.size()]);
-		}
+		state->goalFeetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + Aimbot::getMisses() + 1) % positions.size()]);
 	}
 
 	memory->invalidateBoneCache(animatable);
