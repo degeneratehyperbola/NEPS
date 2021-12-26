@@ -1219,9 +1219,11 @@ void Misc::drawBombTimer() noexcept
 	if (!gui->open)
 		windowFlags |= ImGuiWindowFlags_NoInputs;
 
+	static float windowWidth = 500.0f;
 	ImGui::SetNextWindowPos({(ImGui::GetIO().DisplaySize.x - 500) / 2, 160}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize({500, 0}, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints({200, 0}, {FLT_MAX, 0});
+	if (!gui->open) ImGui::SetNextWindowSize({windowWidth, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
 	ImGui::Begin("Bomb timer", nullptr, windowFlags | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
 
 	constexpr auto bombsite = [](int i)
@@ -1275,6 +1277,7 @@ void Misc::drawBombTimer() noexcept
 		}
 	}
 
+	windowWidth = ImGui::GetCurrentWindow()->SizeFull.x;
 	ImGui::End();
 }
 
