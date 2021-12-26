@@ -40,6 +40,7 @@ constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 GUI::GUI() noexcept
 {
 	ImGuiCustom::StyleColorsClassic();
+	ImGuiCustom::StyleSizesRounded();
 
 	ImGuiIO &io = ImGui::GetIO();
 	// We do be wanting to save window positions
