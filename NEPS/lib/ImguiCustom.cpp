@@ -156,7 +156,7 @@ void ImGuiCustom::progressBarFullWidth(float fraction, float height) noexcept
 	const ImGuiStyle &style = g.Style;
 
 	ImVec2 pos = window->DC.CursorPos;
-	ImVec2 size = ImGui::CalcItemSize(ImVec2{-1, 0}, ImGui::CalcItemWidth(), std::max(height, style.FrameRounding * 2.0f));
+	ImVec2 size = ImGui::CalcItemSize(ImVec2{-1, 0}, ImGui::CalcItemWidth(), std::max(height, style.FrameRounding * 2));
 	ImRect bb(pos, pos + size);
 	ImGui::ItemSize(size, style.FramePadding.y);
 	if (!ImGui::ItemAdd(bb, 0))
@@ -759,6 +759,51 @@ void ImGuiCustom::StyleColors6(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_NavWindowingHighlight] = {1.00f, 1.00f, 1.00f, 0.70f};
 	colors[ImGuiCol_NavWindowingDimBg] = {0.80f, 0.80f, 0.80f, 0.20f};
 	colors[ImGuiCol_ModalWindowDimBg] = {0.20f, 0.20f, 0.20f, 0.35f};
+}
+
+void ImGuiCustom::StyleSizesRounded(ImGuiStyle *dst)
+{
+	ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();
+
+	style->WindowPadding = ImVec2(4, 4);
+	style->FramePadding = ImVec2(3, 2);
+	style->CellPadding = ImVec2(4, 2);
+	style->TouchExtraPadding = ImVec2(0, 0);
+	style->DisplayWindowPadding = ImVec2(19, 19);
+	style->DisplaySafeAreaPadding = ImVec2(2, 2);
+	style->ItemSpacing = ImVec2(4, 3);
+	style->ItemInnerSpacing = ImVec2(3, 2);
+	style->WindowMinSize = ImVec2(32, 32);
+	style->WindowTitleAlign = ImVec2(0.0f, 0.5f);
+	style->ButtonTextAlign = ImVec2(0.5f, 0.5f);
+	style->SelectableTextAlign = ImVec2(0.0f, 0.0f);
+	style->WindowMenuButtonPosition = ImGuiDir_Left;
+	style->ColorButtonPosition = ImGuiDir_Right;
+	style->Alpha = 1.0f;
+	style->WindowRounding = 8.0f;
+	style->ChildRounding = 4.0f;
+	style->PopupRounding = 4.0f;
+	style->FrameRounding = 4.0f;
+	style->GrabRounding = 2.0f;
+	style->TabRounding = 4.0f;
+	style->ScrollbarRounding = 4.0f;
+	style->WindowBorderSize = 1.0f;
+	style->ChildBorderSize = 1.0f;
+	style->PopupBorderSize = 1.0f;
+	style->FrameBorderSize = 1.0f;
+	style->TabBorderSize = 1.0f;
+	style->IndentSpacing = 21.0f;
+	style->ColumnsMinSpacing = 6.0f;
+	style->ScrollbarSize = 10.0f;
+	style->GrabMinSize = 5.0f;
+	style->LogSliderDeadzone = 4.0f;
+	style->TabMinWidthForCloseButton = 0.0f;
+	style->MouseCursorScale = 1.0f;
+	style->AntiAliasedLines = true;
+	style->AntiAliasedLinesUseTex = true;
+	style->AntiAliasedFill = true;
+	style->CurveTessellationTol = 1.25f;
+	style->CircleTessellationMaxError = 0.30f;
 }
 
 void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos, unsigned color, bool outline) noexcept
