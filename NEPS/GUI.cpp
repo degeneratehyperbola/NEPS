@@ -2429,7 +2429,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fix animation LOD", &config->misc.fixAnimationLOD);
 	ImGui::Checkbox("Fix bone matrices", &config->misc.fixBoneMatrices);
 	ImGui::Checkbox("Fix movement", &config->misc.fixMovement);
-	ImGui::Checkbox("Fix local animations", &config->misc.fixAnimation);
+	ImGui::Checkbox("Fix local animations", &config->misc.fixLocalAnimations);
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
 	ImGui::Checkbox("Disable extrapolation", &config->misc.noExtrapolate);
 	ImGui::Checkbox("Disable IK", &config->misc.disableIK);
@@ -2770,7 +2770,7 @@ void GUI::renderDebugWindow() noexcept
 		if (entity && entity->isPlayer())
 		{
 			if (ImGui::Button("Resolve selected", {-1, 0}))
-				Animations::resolve(entity);
+				Animations::resolveDesync(entity);
 		}
 
 		if (ImGui::Button("Precache info", {-1, 0}))

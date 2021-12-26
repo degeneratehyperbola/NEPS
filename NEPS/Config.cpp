@@ -695,7 +695,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fix animation LOD", m.fixAnimationLOD);
 	read(j, "Fix bone matrix", m.fixBoneMatrices);
 	read(j, "Fix movement", m.fixMovement);
-	read(j, "Fix animations", m.fixAnimation);
+	read(j, "Fix animations", m.fixLocalAnimations);
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
 	read(j, "Disable extrapolation", m.noExtrapolate);
 	read(j, "Disable IK", m.disableIK);
@@ -1192,7 +1192,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix animation LOD", fixAnimationLOD);
 	WRITE("Fix bone matrix", fixBoneMatrices);
 	WRITE("Fix movement", fixMovement);
-	WRITE("Fix animations", fixAnimation);
+	WRITE("Fix animations", fixLocalAnimations);
 	WRITE("Disable model occlusion", disableModelOcclusion);
 	WRITE("Disable extrapolation", noExtrapolate);
 	WRITE("Disable IK", disableIK);

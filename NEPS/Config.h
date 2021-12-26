@@ -383,7 +383,7 @@ public:
 		bool fixAnimationLOD = true;
 		bool fixBoneMatrices = true;
 		bool fixMovement = true;
-		bool fixAnimation = true;
+		bool fixLocalAnimations = true;
 		bool disableModelOcclusion = true;
 		bool noExtrapolate = true;
 		bool disableIK = false;
