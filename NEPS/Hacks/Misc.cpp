@@ -1366,7 +1366,7 @@ void Misc::purchaseList(GameEvent *event) noexcept
 				{
 					if (purchasedItem.second > 1)
 						s += std::to_string(purchasedItem.second) + "x ";
-					s += purchasedItem.first + ", ";
+					s += purchasedItem.first + "; ";
 				}
 
 				if (s.length() >= 2)
@@ -1375,20 +1375,20 @@ void Misc::purchaseList(GameEvent *event) noexcept
 				if (const auto player = GameData::playerByHandle(handle))
 				{
 					if (config->misc.purchaseList.showPrices)
-						ImGui::TextWrapped("%s $%d: %s", player->name.c_str(), purchases.totalCost, s.c_str());
+						ImGui::TextWrapped("%s -> $%d %s", player->name.c_str(), purchases.totalCost, s.c_str());
 					else
-						ImGui::TextWrapped("%s: %s", player->name.c_str(), s.c_str());
+						ImGui::TextWrapped("%s -> %s", player->name.c_str(), s.c_str());
 				}
 			}
 		} else if (config->misc.purchaseList.mode == Config::Misc::PurchaseList::Summary)
 		{
 			for (const auto &purchase : purchaseTotal)
-				ImGui::TextWrapped("%d x %s", purchase.second, purchase.first.c_str());
+				ImGui::TextWrapped("%dx %s", purchase.second, purchase.first.c_str());
 
 			if (config->misc.purchaseList.showPrices && totalCost > 0)
 			{
 				ImGui::Separator();
-				ImGui::TextWrapped("Total: $%d", totalCost);
+				ImGui::TextWrapped("Total -> $%d", totalCost);
 			}
 		}
 		ImGui::End();
@@ -1457,9 +1457,12 @@ void Misc::teamDamageList(GameEvent *event)
 		for (const auto &[handle, info] : damageList)
 		{
 			if (const auto player = GameData::playerByHandle(handle))
-				ImGui::Text("%s -> %idp, %ikills", player->name.c_str(), info.first, info.second);
+				ImGui::Text("%s -> %idmg %i%s", player->name.c_str(), info.first, info.second, info.second == 1 ? "kill" : "kills");
 			else if (GameData::local().handle == handle)
-				ImGui::TextColored({1.0f, 0.7f, 0.2f, 1.0f}, "YOU -> %idp, %ikills", info.first, info.second);
+				ImGui::TextColored({1.0f, 0.7f, 0.2f, 1.0f}, "YOU -> %idmg %i%s", info.first, info.second, info.second == 1 ? "kill" : "kills");
+
+			ImGuiCustom::progressBarFullWidth(static_cast<float>(info.first) / 300);
+			ImGuiCustom::progressBarFullWidth(static_cast<float>(info.second) / 3);
 		}
 
 		ImGui::End();
