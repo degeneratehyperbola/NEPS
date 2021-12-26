@@ -145,7 +145,7 @@ void Chams::renderPlayer(Entity* player) noexcept
 	{
 		{
 			Matrix3x4 fakeBones[MAX_STUDIO_BONES];
-			Animations::getDesyncedBones(fakeBones);
+			Animations::getDesyncedBoneMatrices(fakeBones);
 			const auto &origin = localPlayer->getRenderOrigin();
 
 			for (auto &m : fakeBones)

@@ -709,7 +709,7 @@ void Misc::tweakPlayerAnimations() noexcept
 		}
 
 		if (config->misc.resolveLby)
-			Animations::resolve(entity);
+			Animations::resolveDesync(entity);
 	}
 }
 
@@ -1219,9 +1219,9 @@ void Misc::drawBombTimer() noexcept
 	if (!gui->open)
 		windowFlags |= ImGuiWindowFlags_NoInputs;
 
-	ImGui::SetNextWindowPos({(ImGui::GetIO().DisplaySize.x - 500.0f) / 2.0f, 160.0f}, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize({500.0f, 0}, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints({200, -1}, {FLT_MAX, -1});
+	ImGui::SetNextWindowPos({(ImGui::GetIO().DisplaySize.x - 500) / 2, 160}, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize({500, 0}, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSizeConstraints({200, 0}, {FLT_MAX, 0});
 	ImGui::Begin("Bomb timer", nullptr, windowFlags | (gui->open ? 0 : ImGuiWindowFlags_NoInputs));
 
 	constexpr auto bombsite = [](int i)
@@ -1238,7 +1238,7 @@ void Misc::drawBombTimer() noexcept
 	};
 
 	std::ostringstream ss;
-	ss << "Bomb on " << bombsite(plantedC4.bombsite) << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currentTime, 0.0f) << " s";
+	ss << "Bomb on " << bombsite(plantedC4.bombsite) << " " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currentTime, 0.0f) << "s";
 
 	ImGuiCustom::textUnformattedCentered(ss.str().c_str());
 
@@ -1250,12 +1250,12 @@ void Misc::drawBombTimer() noexcept
 
 		if (plantedC4.defuserHandle == GameData::local().handle)
 		{
-			std::ostringstream ss; ss << "Defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currentTime, 0.0f) << " s";
+			std::ostringstream ss; ss << "Defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currentTime, 0.0f) << "s";
 
 			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
 		} else if (auto playerData = GameData::playerByHandle(plantedC4.defuserHandle))
 		{
-			std::ostringstream ss; ss << playerData->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currentTime, 0.0f) << " s";
+			std::ostringstream ss; ss << playerData->name << " is defusing... " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currentTime, 0.0f) << "s";
 
 			ImGuiCustom::textUnformattedCentered(ss.str().c_str());
 		}
@@ -1636,8 +1636,8 @@ void Misc::spectatorList() noexcept
 		if (!gui->open)
 			windowFlags |= ImGuiWindowFlags_NoInputs;
 
-		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200.0f, ImGui::GetIO().DisplaySize.y / 2 - 20.0f}, ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSizeConstraints(ImVec2{200.0f, 0.0f}, ImVec2{FLT_MAX, FLT_MAX});
+		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200, ImGui::GetIO().DisplaySize.y / 2 - 20}, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSizeConstraints({200, 0}, ImVec2{FLT_MAX, FLT_MAX});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 		ImGui::Begin("Spectators", nullptr, windowFlags);
 		ImGui::PopStyleVar();
@@ -1667,16 +1667,16 @@ void Misc::watermark() noexcept
 	switch (pos)
 	{
 	case 0:
-		ImGui::SetWindowPos(ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
+		ImGui::SetWindowPos({10, 10}, ImGuiCond_Always);
 		break;
 	case 1:
-		ImGui::SetWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - ImGui::GetWindowSize().x - 10.0f, 10.0f}, ImGuiCond_Always);
+		ImGui::SetWindowPos({ImGui::GetIO().DisplaySize.x - ImGui::GetWindowSize().x - 10, 10}, ImGuiCond_Always);
 		break;
 	case 2:
-		ImGui::SetWindowPos(ImGui::GetIO().DisplaySize - ImGui::GetWindowSize() - ImVec2{10.0f, 10.0f}, ImGuiCond_Always);
+		ImGui::SetWindowPos(ImGui::GetIO().DisplaySize - ImGui::GetWindowSize() - ImVec2{10, 10}, ImGuiCond_Always);
 		break;
 	case 3:
-		ImGui::SetWindowPos(ImVec2{10.0f, ImGui::GetIO().DisplaySize.y - ImGui::GetWindowSize().y - 10.0f}, ImGuiCond_Always);
+		ImGui::SetWindowPos({10.0f, ImGui::GetIO().DisplaySize.y - ImGui::GetWindowSize().y - 10}, ImGuiCond_Always);
 		break;
 	}
 

@@ -23,12 +23,12 @@ void Animations::releaseState() noexcept
 		localPlayer->clientAnimations() = true;
 }
 
-void Animations::getDesyncedBones(Matrix3x4 *out) noexcept
+void Animations::getDesyncedBoneMatrices(Matrix3x4 *out) noexcept
 {
 	if (out) std::copy(desyncedBones.begin(), desyncedBones.end(), out);
 }
 
-void Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcept
+void Animations::computeDesync(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	assert(desyncedState);
 
@@ -72,11 +72,11 @@ void Animations::desyncedAnimations(const UserCmd &cmd, bool sendPacket) noexcep
 	}
 }
 
-void Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
+void Animations::syncLocal(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	if (!localPlayer) return;
 
-	if (!config->misc.fixAnimation || !localPlayer->isAlive() || !memory->input->isCameraInThirdPerson)
+	if (!config->misc.fixLocalAnimations || !localPlayer->isAlive() || !memory->input->isCameraInThirdPerson)
 	{
 		localPlayer->clientAnimations() = true;
 		localPlayer->updateClientSideAnimation();
@@ -119,7 +119,7 @@ void Animations::fixAnimation(const UserCmd &cmd, bool sendPacket) noexcept
 	localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currentTime);
 }
 
-void Animations::resolve(Entity *animatable) noexcept
+void Animations::resolveDesync(Entity *animatable) noexcept
 {
 	auto state = animatable->animState();
 	if (!state)
