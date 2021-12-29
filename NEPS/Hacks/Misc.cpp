@@ -1461,8 +1461,11 @@ void Misc::teamDamageList(GameEvent *event)
 			else if (GameData::local().handle == handle)
 				ImGui::TextColored({1.0f, 0.7f, 0.2f, 1.0f}, "YOU -> %idmg %i%s", info.first, info.second, info.second == 1 ? "kill" : "kills");
 
-			ImGuiCustom::progressBarFullWidth(static_cast<float>(info.first) / 300);
-			ImGuiCustom::progressBarFullWidth(static_cast<float>(info.second) / 3);
+			if (config->misc.teamDamageList.progressBars)
+			{
+				ImGuiCustom::progressBarFullWidth(static_cast<float>(info.first) / 300);
+				ImGuiCustom::progressBarFullWidth(static_cast<float>(info.second) / 3);
+			}
 		}
 
 		ImGui::End();
