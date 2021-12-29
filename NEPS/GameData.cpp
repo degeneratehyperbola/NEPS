@@ -485,7 +485,7 @@ void PlayerData::update(Entity *entity) noexcept
 	if (previousUpdateTick != memory->globalVars->tickCount)
 	{
 		previousUpdateTick = memory->globalVars->tickCount;
-		lbyUpdate = entity->lbyUpdate(nextLbyUpdate);
+		lbyUpdate = entity->trackLbyUpdate(nextLbyUpdate);
 		if (entity->isChokingPackets())
 		{
 			if (chokedPackets < 0) chokedPackets = 0;
