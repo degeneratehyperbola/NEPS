@@ -2488,6 +2488,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	if (ImGui::BeginPopup("##team_damage"))
 	{
 		ImGui::Checkbox("No title bar", &config->misc.teamDamageList.noTitleBar);
+		ImGui::Checkbox("Show ban progress", &config->misc.teamDamageList.progressBars);
 		ImGui::EndPopup();
 	}
 

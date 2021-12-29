@@ -684,6 +684,7 @@ static void from_json(const json &j, Config::Misc::TeamDamageList &tdl)
 {
 	read(j, "Enabled", tdl.enabled);
 	read(j, "No Title Bar", tdl.noTitleBar);
+	read(j, "Progress Bars", tdl.progressBars);
 }
 
 static void from_json(const json &j, Config::Misc &m)
@@ -1179,6 +1180,7 @@ static void to_json(json &j, const Config::Misc::TeamDamageList &o, const  Confi
 {
 	WRITE("Enabled", enabled);
 	WRITE("No Title Bar", noTitleBar);
+	WRITE("Progress Bars", progressBars);
 }
 
 static void to_json(json &j, const Config::Misc &o)
