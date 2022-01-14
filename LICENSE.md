@@ -1,6 +1,6 @@
 BSD 3-Clause Modified License
 
-Copyright (c) 2021 River Hyperbola
+Copyright (c) 2022 River Hyperbola
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
