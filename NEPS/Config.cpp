@@ -785,6 +785,8 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Bunny hop", m.bunnyHop);
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
+	read<value_t::object>(j, "Edge Bug", m.edgebug);
+	read(j, "Edge Bug Ticks", m.edgebug_ticks);
 	read(j, "Fast stop", m.fastStop);
 }
 
@@ -1291,6 +1293,8 @@ static void to_json(json &j, const Config::Movement &o)
 	WRITE("Bunny hop", bunnyHop);
 	WRITE("Auto strafe", autoStrafe);
 	WRITE("Edge jump", edgeJump);
+	WRITE("Edge Bug", edgebug);
+	WRITE("Edge Bug Ticks", edgebug_ticks);
 	WRITE("Fast stop", fastStop);
 }
 

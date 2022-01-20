@@ -53,6 +53,64 @@ void Misc::edgeJump(UserCmd *cmd) noexcept
 		cmd->buttons |= UserCmd::Button_Jump;
 }
 
+void Misc::edgebug(UserCmd *cmd) noexcept
+{
+	if (static Helpers::KeyBindState flag; flag[config->movement.edgebug])
+	{
+		interfaces->cvar->findVar("sv_min_jump_landing_sound")->setValue("63464578");
+	}
+	else
+	{
+		interfaces->cvar->findVar("sv_min_jump_landing_sound")->setValue("260");
+	}
+
+	if (static Helpers::KeyBindState flag; !flag[config->movement.edgebug])
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	static bool edgebugging = false;
+	static int edgebugging_tick = 0;
+	if (!edgebugging)
+	{
+		int flags = localPlayer->flags();
+		float z_velocity = floor(localPlayer->velocity().z);
+
+		for (int i = 0; i < config->movement.edgebug_ticks; i++)
+		{
+			EnginePrediction::start(cmd);
+			{
+				if (z_velocity < -7 && floor(localPlayer->velocity().z) == -7 && !(flags & PlayerFlag_OnGround) && localPlayer->moveType() != MoveType::Noclip)
+				{
+					edgebugging = true;
+					edgebugging_tick = cmd->tickCount + i;
+					break;
+				}
+				else
+				{
+					z_velocity = floor(localPlayer->velocity().z);
+					flags = localPlayer->flags();
+				}
+			}
+			EnginePrediction::end(cmd);
+		}
+	}
+	else
+	{
+		cmd->sidemove = 0.f;
+		cmd->forwardmove = 0.f;
+		cmd->upmove = 0.f;
+		cmd->mousedx = 0.f;
+
+		if (cmd->tickCount > edgebugging_tick)
+		{
+			edgebugging = false;
+			edgebugging_tick = 0;
+		}
+	}
+}
+
 void Misc::slowwalk(UserCmd *cmd) noexcept
 {
 	if (!localPlayer || !localPlayer->isAlive() || ~localPlayer->flags() & PlayerFlag_OnGround || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)

@@ -191,6 +191,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::fastStop(cmd);
 	Misc::autoStrafe(cmd);
 	Misc::bunnyHop(cmd);
+	Misc::edgebug(cmd);
 	Aimbot::predictPeek(cmd);
 	if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk]) Misc::slowwalk(cmd);
 

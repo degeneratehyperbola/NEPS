@@ -12,6 +12,8 @@
 #include "EnginePrediction.h"
 
 static int localPlayerFlags;
+float m_oldCurrenttime;
+float m_oldFrametime;
 
 void EnginePrediction::run(UserCmd* cmd) noexcept
 {
@@ -38,6 +40,38 @@ void EnginePrediction::run(UserCmd* cmd) noexcept
 
     memory->globalVars->currentTime = oldCurrenttime;
     memory->globalVars->frameTime = oldFrametime;
+}
+
+void EnginePrediction::start(UserCmd* cmd) noexcept
+{
+	if (!localPlayer)
+		return;
+
+	*memory->predictionRandomSeed = 0;
+
+	m_oldCurrenttime = memory->globalVars->currentTime;
+	m_oldFrametime = memory->globalVars->frameTime;
+
+	memory->globalVars->currentTime = memory->globalVars->serverTime();
+	memory->globalVars->frameTime = memory->globalVars->intervalPerTick;
+
+	memory->moveHelper->setHost(localPlayer.get());
+	interfaces->prediction->setupMove(localPlayer.get(), cmd, memory->moveHelper, memory->moveData);
+	interfaces->gameMovement->processMovement(localPlayer.get(), memory->moveData);
+	interfaces->prediction->finishMove(localPlayer.get(), cmd, memory->moveData);
+}
+
+void EnginePrediction::end(UserCmd* cmd) noexcept
+{
+	if (!localPlayer)
+		return;
+
+	memory->moveHelper->setHost(nullptr);
+
+	*memory->predictionRandomSeed = -1;
+
+	memory->globalVars->currentTime = m_oldCurrenttime;
+	memory->globalVars->frameTime = m_oldFrametime;
 }
 
 int EnginePrediction::getFlags() noexcept

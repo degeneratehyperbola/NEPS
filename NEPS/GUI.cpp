@@ -2396,6 +2396,8 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Bunnyhop", &config->movement.bunnyHop);
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
+	ImGuiCustom::keyBind("Edge Bug", config->movement.edgebug);
+	ImGui::SliderInt("Edge Bug Ticks", &config->movement.edgebug_ticks, 0, 128, "%d ticks");
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
 
 	if (!contentOnly)
