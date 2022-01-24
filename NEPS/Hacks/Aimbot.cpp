@@ -122,6 +122,8 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		if (const auto it = std::find_if(records.rbegin(), records.rend(), [](const Record &record) noexcept { return Backtrack::valid(record.simulationTime); }); it != records.rend())
 			damage = std::max(damage, Helpers::findDamage(localPlayer.get(), entity, occludedBacktrack, cfg.friendlyFire, predictionFactor, &(*it)));
 
+		if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;
+		
 		if (damage > 0 && (!cfg.visibleOnly || !occluded || !occludedBacktrack))
 		{
 			if (cfg.autoScope && !localPlayer->isScoped() && activeWeapon->isSniperRifle())
