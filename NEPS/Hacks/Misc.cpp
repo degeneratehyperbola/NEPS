@@ -1,4 +1,4 @@
-﻿#include "Misc.h"
+#include "Misc.h"
 
 #include "Aimbot.h"
 #include "Animations.h"
@@ -1849,13 +1849,11 @@ void Misc::fakePrime() noexcept
 	{
 		lastState = config->griefing.fakePrime;
 
-		#ifdef _WIN32
 		if (DWORD oldProtect; VirtualProtect(memory->fakePrime, 4, PAGE_EXECUTE_READWRITE, &oldProtect))
 		{
 			constexpr uint8_t patch[]{0x31, 0xC0, 0x40, 0xC3};
 			std::memcpy(memory->fakePrime, patch, 4);
 			VirtualProtect(memory->fakePrime, 4, oldProtect, nullptr);
 		}
-		#endif
 	}
 }
