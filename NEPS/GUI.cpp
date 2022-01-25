@@ -3,6 +3,7 @@
 #include <shellapi.h>
 
 #include <shared_lib/imgui/imgui.h>
+#include <shared_lib/imgui/imgui_internal.h>
 #include <shared_lib/imgui/imgui_stdlib.h>
 #include <shared_lib/Texture/TextureDX9.h>
 
@@ -33,6 +34,13 @@
 #include "SDK/Surface.h"
 #endif // NEPS_DEBUG
 #include "SDK/Engine.h"
+
+#define DRAGNDROP_HINT(l) \
+{ \
+	ImGui::ButtonEx("cfg", {}, ImGuiButtonFlags_Disabled); \
+	ImGui::SameLine(); \
+	ImGui::TextUnformatted(l); \
+}
 
 constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
@@ -387,7 +395,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 			if (ImGui::BeginDragDropSource())
 			{
 				ImGui::SetDragDropPayload("Aimbot", &cfg, sizeof(Config::Aimbot), ImGuiCond_Once);
-				ImGui::TextUnformatted("Aimbot config");
+				DRAGNDROP_HINT("Aimbot")
 				ImGui::EndDragDropSource();
 			}
 
@@ -645,7 +653,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			if (ImGui::BeginDragDropSource())
 			{
 				ImGui::SetDragDropPayload("Anti-aim", &config->antiAim[categories[i]], sizeof(Config::AntiAim), ImGuiCond_Once);
-				ImGui::TextUnformatted("Anti-aim config");
+				DRAGNDROP_HINT("Anti-aim")
 				ImGui::EndDragDropSource();
 			}
 
@@ -744,7 +752,7 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 			if (ImGui::BeginDragDropSource())
 			{
 				ImGui::SetDragDropPayload("Triggerbot", &cfg, sizeof(Config::Triggerbot), ImGuiCond_Once);
-				ImGui::TextUnformatted("Triggerbot config");
+				DRAGNDROP_HINT("Triggerbot")
 				ImGui::EndDragDropSource();
 			}
 
@@ -1122,7 +1130,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 				case 3: ImGui::SetDragDropPayload("Projectile", &config->esp.projectiles["All"], sizeof(Projectile), ImGuiCond_Once); break;
 				default: ImGui::SetDragDropPayload("Entity", &getConfigShared(i, "All"), sizeof(Shared), ImGuiCond_Once); break;
 				}
-				ImGui::TextUnformatted("ESP config");
+				DRAGNDROP_HINT("ESP")
 				ImGui::EndDragDropSource();
 			}
 
@@ -1222,7 +1230,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 						case 3: ImGui::SetDragDropPayload("Projectile", &config->esp.projectiles[items[j]], sizeof(Projectile), ImGuiCond_Once); break;
 						default: ImGui::SetDragDropPayload("Entity", &getConfigShared(i, items[j]), sizeof(Shared), ImGuiCond_Once); break;
 						}
-						ImGui::TextUnformatted("ESP config");
+						DRAGNDROP_HINT("ESP")
 						ImGui::EndDragDropSource();
 					}
 
@@ -1323,7 +1331,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 					if (ImGui::BeginDragDropSource())
 					{
 						ImGui::SetDragDropPayload("Weapon", &subItemConfig, sizeof(Weapon), ImGuiCond_Once);
-						ImGui::TextUnformatted("ESP config");
+						DRAGNDROP_HINT("ESP")
 						ImGui::EndDragDropSource();
 					}
 
