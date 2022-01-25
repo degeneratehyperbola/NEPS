@@ -49,30 +49,28 @@ void ImGuiCustom::colorPicker(const char *name, float color[3], float *alpha, bo
 		if (alpha)
 		{
 			float col[] = {color[0], color[1], color[2], *alpha};
-			ImGui::ColorPicker4("##picker", col, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_Float);
+			ImGui::ColorPicker4("##picker", col, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayHex);
 			color[0] = col[0];
 			color[1] = col[1];
 			color[2] = col[2];
 			*alpha = col[3];
 		} else
 		{
-			ImGui::ColorPicker3("##picker", color, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_Float);
+			ImGui::ColorPicker3("##picker", color, ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayHex);
 		}
 
-		if (rainbow || rainbowSpeed || thickness || rounding)
+		ImGui::SameLine();
+
+		if (rainbow || rounding || thickness || outline)
 		{
-			ImGui::SameLine();
-			if (ImGui::BeginChild("##child", {86.0f, 0.0f}))
+			if (ImGui::BeginChild("##child", { 86.0f, 0.0f }))
 			{
-				if (rainbow)
-				{
-					ImGui::Checkbox("Rainbow", rainbow);
-				}
 				ImGui::PushItemWidth(85.0f);
+
+				if (rainbow)
+					ImGui::Checkbox("Rainbow", rainbow);
 				if (rainbowSpeed)
-				{
 					ImGui::DragFloat("##speed", rainbowSpeed, 0.1f, -100.0f, 100.0f, "Speed %.1f");
-				}
 				if (rounding)
 				{
 					ImGui::DragFloat("##rounding", rounding, 0.1f, 0.0f, 100.0f, "Corner %.1f");
@@ -84,15 +82,13 @@ void ImGuiCustom::colorPicker(const char *name, float color[3], float *alpha, bo
 					*thickness = std::max(*thickness, 1.0f);
 				}
 				if (outline)
-				{
 					ImGui::Checkbox("Outline", outline);
-				}
 
 				ImGui::PopItemWidth();
 			}
-
 			ImGui::EndChild();
 		}
+
 		ImGui::EndPopup();
 	}
 	ImGui::PopID();
