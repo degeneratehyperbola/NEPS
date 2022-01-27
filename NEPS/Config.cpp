@@ -374,6 +374,7 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Recoil reduction H", a.recoilReductionH);
 	read(j, "Recoil reduction V", a.recoilReductionV);
 	read(j, "Between shots", a.betweenShots);
+	read<value_t::object>(j, "Quick Peek Key", a.QuickPeekKey);
 }
 
 static void from_json(const json &j, Config::Triggerbot &t)
@@ -1029,6 +1030,7 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Recoil reduction H", recoilReductionH);
 	WRITE("Recoil reduction V", recoilReductionV);
 	WRITE("Between shots", betweenShots);
+	WRITE("QuickPeekKey", QuickPeekKey);
 }
 
 static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerbot &dummy = {})
