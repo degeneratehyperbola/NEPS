@@ -315,19 +315,6 @@ void LocalPlayerData::update() noexcept
 
 		origin = obs->getAbsOrigin();
 		velocity = obs->velocity();
-		eyePosition = obs->getEyePosition();
-		// Calling Entity::getAimPunch() not on the local player sometimes causes crashing
-		//aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + obs->getAimPunch()) * 1000;
-
-		if (const auto activeWeapon = obs->getActiveWeapon(); activeWeapon && obs->isAlive())
-		{
-			//inaccuracy = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + Vector{Helpers::radiansToDegrees(activeWeapon->getInaccuracy() + activeWeapon->getSpread()), 0.0f, 0.0f}) * 1000;
-			shooting = obs->shotsFired() > 1;
-			reloading = activeWeapon->isInReload();
-			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), obs->nextAttack());
-			drawingScope = (activeWeapon->isSniperRifle() || !config->visuals.noWeapons) && obs->isScoped();
-			drawingCrosshair = (!activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && config->visuals.forceCrosshair != 2;
-		}
 
 		const auto collidable = obs->getCollideable();
 		if (collidable)
@@ -335,10 +322,34 @@ void LocalPlayerData::update() noexcept
 			obbMaxs = collidable->obbMaxs();
 			obbMins = collidable->obbMins();
 		}
+
+		//if (!obs->isPlayer())
+			return;
+
+		eyePosition = obs->getEyePosition();
+		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + obs->getAimPunch()) * 1000;
+
+		if (const auto activeWeapon = obs->getActiveWeapon(); activeWeapon && obs->isAlive())
+		{
+			inaccuracy = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + Vector{Helpers::radiansToDegrees(activeWeapon->getInaccuracy() + activeWeapon->getSpread()), 0.0f, 0.0f}) * 1000;
+			shooting = obs->shotsFired() > 1;
+			reloading = activeWeapon->isInReload();
+			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), obs->nextAttack());
+			drawingScope = (activeWeapon->isSniperRifle() || !config->visuals.noWeapons) && obs->isScoped();
+			drawingCrosshair = (!activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && config->visuals.forceCrosshair != 2;
+		}
 	} else
 	{
 		origin = localPlayer->getAbsOrigin();
 		velocity = localPlayer->velocity();
+
+		const auto collidable = localPlayer->getCollideable();
+		if (collidable)
+		{
+			obbMaxs = collidable->obbMaxs();
+			obbMins = collidable->obbMins();
+		}
+
 		eyePosition = localPlayer->getEyePosition();
 		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + localPlayer->getAimPunch()) * 1000;
 
@@ -350,13 +361,6 @@ void LocalPlayerData::update() noexcept
 			nextAttack = std::fmaxf(activeWeapon->nextPrimaryAttack(), localPlayer->nextAttack());
 			drawingScope = (activeWeapon->isSniperRifle() || !config->visuals.noWeapons) && localPlayer->isScoped();
 			drawingCrosshair = (!activeWeapon->isSniperRifle() || config->visuals.forceCrosshair == 1) && config->visuals.forceCrosshair != 2;
-		}
-
-		const auto collidable = localPlayer->getCollideable();
-		if (collidable)
-		{
-			obbMaxs = collidable->obbMaxs();
-			obbMins = collidable->obbMins();
 		}
 	}
 }
