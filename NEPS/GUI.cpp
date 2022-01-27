@@ -3,6 +3,7 @@
 #include <shellapi.h>
 
 #include <shared_lib/imgui/imgui.h>
+#include <shared_lib/imgui/imgui_internal.h>
 #include <shared_lib/imgui/imgui_stdlib.h>
 #include <shared_lib/Texture/TextureDX9.h>
 
@@ -33,6 +34,13 @@
 #include "SDK/Surface.h"
 #endif // NEPS_DEBUG
 #include "SDK/Engine.h"
+
+#define DRAGNDROP_HINT(l) \
+{ \
+	ImGui::ButtonEx("cfg", {}, ImGuiButtonFlags_Disabled); \
+	ImGui::SameLine(); \
+	ImGui::TextUnformatted(l); \
+}
 
 constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
@@ -382,7 +390,28 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 	if (ImGui::BeginListBox("##category", {140, 260}))
 	{
-		constexpr std::array categories = {"All", "Pistols", "Heavy", "SMG", "Rifles", "Zeus x27"};
+		constexpr auto dragDrop = [](Config::Aimbot& cfg) noexcept
+		{
+			if (ImGui::BeginDragDropSource())
+			{
+				ImGui::SetDragDropPayload("Aimbot", &cfg, sizeof(Config::Aimbot), ImGuiCond_Once);
+				DRAGNDROP_HINT("Aimbot")
+				ImGui::EndDragDropSource();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Aimbot"))
+				{
+					const auto& data = *(Config::Aimbot*)payload->Data;
+					cfg = data;
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+		};
+
+		constexpr std::array categories = {"All (Other)", "Pistols", "Heavy", "SMG", "Rifles", "Zeus x27"};
 
 		for (std::size_t i = 0; i < categories.size(); ++i)
 		{
@@ -392,276 +421,118 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 				if (ImGui::Selectable(categories[i], currentWeapon == 0))
 					currentWeapon = 0;
 
-				if (ImGui::BeginDragDropSource())
-				{
-					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[0], sizeof(Config::Aimbot), ImGuiCond_Once);
-					ImGui::EndDragDropSource();
-				}
+				dragDrop(config->aimbot[0]);
 
-				if (ImGui::BeginDragDropTarget())
-				{
-					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-					{
-						const auto &data = *(Config::Aimbot *)payload->Data;
-						config->aimbot[0] = data;
-					}
-
-					ImGui::EndDragDropTarget();
-				}
-
-				ImGui::Indent();
 				break;
 			case 5:
-			if (!config->aimbot[0].bind.keyMode || config->aimbot[39].bind.keyMode)
-			{
 				if (ImGui::Selectable(categories[i], currentWeapon == 39))
 					currentWeapon = 39;
 
-				if (ImGui::BeginDragDropSource())
-				{
-					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[39], sizeof(Config::Aimbot), ImGuiCond_Once);
-					ImGui::EndDragDropSource();
-				}
+				dragDrop(config->aimbot[39]);
 
-				if (ImGui::BeginDragDropTarget())
-				{
-					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-					{
-						const auto &data = *(Config::Aimbot *)payload->Data;
-						config->aimbot[39] = data;
-					}
-
-					ImGui::EndDragDropTarget();
-				}
-			}
-			break;
+				break;
 			case 1:
-			if (!config->aimbot[0].bind.keyMode || config->aimbot[35].bind.keyMode)
-			{
 				if (ImGui::Selectable(categories[i], currentWeapon == 35))
 					currentWeapon = 35;
 
-				if (ImGui::BeginDragDropSource())
+				dragDrop(config->aimbot[35]);
+				
 				{
-					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[35], sizeof(Config::Aimbot), ImGuiCond_Once);
-					ImGui::EndDragDropSource();
-				}
+					constexpr std::array pistols = {"Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-SeveN", "CZ-75", "Desert Eagle", "R8 Revolver"};
 
-				if (ImGui::BeginDragDropTarget())
-				{
-					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					ImGui::Indent();
+
+					for (std::size_t j = 0; j < pistols.size(); ++j)
 					{
-						const auto &data = *(Config::Aimbot *)payload->Data;
-						config->aimbot[35] = data;
+						if (config->aimbot[35].bind.keyMode && !config->aimbot[j + 1].bind.keyMode)
+							continue;
+
+						if (ImGui::Selectable(pistols[j], currentWeapon == j + 1))
+							currentWeapon = j + 1;
+
+						dragDrop(config->aimbot[j + 1]);
 					}
 
-					ImGui::EndDragDropTarget();
+					ImGui::Unindent();
 				}
-
-				constexpr std::array pistols = {"Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-SeveN", "CZ-75", "Desert Eagle", "R8 Revolver"};
-
-				ImGui::Indent();
-
-				for (std::size_t j = 0; j < pistols.size(); ++j)
-				{
-					if (config->aimbot[35].bind.keyMode && !config->aimbot[j + 1].bind.keyMode)
-						continue;
-
-					if (ImGui::Selectable(pistols[j], currentWeapon == j + 1))
-						currentWeapon = j + 1;
-
-					if (ImGui::BeginDragDropSource())
-					{
-						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 1], sizeof(Config::Aimbot), ImGuiCond_Once);
-						ImGui::EndDragDropSource();
-					}
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-						{
-							const auto &data = *(Config::Aimbot *)payload->Data;
-							config->aimbot[j + 1] = data;
-						}
-
-						ImGui::EndDragDropTarget();
-					}
-				}
-
-				ImGui::Unindent();
-			}
-			break;
+				break;
 			case 2:
-			if (!config->aimbot[0].bind.keyMode || config->aimbot[36].bind.keyMode)
-			{
 				if (ImGui::Selectable(categories[i], currentWeapon == 36))
 					currentWeapon = 36;
 
-				if (ImGui::BeginDragDropSource())
-				{
-					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[36], sizeof(Config::Aimbot), ImGuiCond_Once);
-					ImGui::EndDragDropSource();
-				}
+				dragDrop(config->aimbot[36]);
 
-				if (ImGui::BeginDragDropTarget())
 				{
-					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					constexpr std::array heavies = {"Nova", "XM1014", "Sawed-Off", "MAG-7", "M249", "Negev"};
+
+					ImGui::Indent();
+
+					for (std::size_t j = 0; j < heavies.size(); ++j)
 					{
-						const auto &data = *(Config::Aimbot *)payload->Data;
-						config->aimbot[36] = data;
+						if (config->aimbot[36].bind.keyMode && !config->aimbot[j + 11].bind.keyMode)
+							continue;
+
+						if (ImGui::Selectable(heavies[j], currentWeapon == j + 11))
+							currentWeapon = j + 11;
+
+						dragDrop(config->aimbot[j + 11]);
 					}
 
-					ImGui::EndDragDropTarget();
+					ImGui::Unindent();
 				}
-
-				constexpr std::array heavies = {"Nova", "XM1014", "Sawed-Off", "MAG-7", "M249", "Negev"};
-
-				ImGui::Indent();
-
-				for (std::size_t j = 0; j < heavies.size(); ++j)
-				{
-					if (config->aimbot[36].bind.keyMode && !config->aimbot[j + 11].bind.keyMode)
-						continue;
-
-					if (ImGui::Selectable(heavies[j], currentWeapon == j + 11))
-						currentWeapon = j + 11;
-
-					if (ImGui::BeginDragDropSource())
-					{
-						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 11], sizeof(Config::Aimbot), ImGuiCond_Once);
-						ImGui::EndDragDropSource();
-					}
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-						{
-							const auto &data = *(Config::Aimbot *)payload->Data;
-							config->aimbot[j + 11] = data;
-						}
-
-						ImGui::EndDragDropTarget();
-					}
-				}
-
-				ImGui::Unindent();
-			}
-			break;
+				break;
 			case 3:
-			if (!config->aimbot[0].bind.keyMode || config->aimbot[37].bind.keyMode)
-			{
 				if (ImGui::Selectable(categories[i], currentWeapon == 37))
 					currentWeapon = 37;
 
-				if (ImGui::BeginDragDropSource())
-				{
-					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[37], sizeof(Config::Aimbot), ImGuiCond_Once);
-					ImGui::EndDragDropSource();
-				}
+				dragDrop(config->aimbot[37]);
 
-				if (ImGui::BeginDragDropTarget())
 				{
-					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					constexpr std::array smgs = {"Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon"};
+
+					ImGui::Indent();
+
+					for (std::size_t j = 0; j < smgs.size(); ++j)
 					{
-						const auto &data = *(Config::Aimbot *)payload->Data;
-						config->aimbot[37] = data;
+						if (config->aimbot[37].bind.keyMode && !config->aimbot[j + 17].bind.keyMode)
+							continue;
+
+						if (ImGui::Selectable(smgs[j], currentWeapon == j + 17))
+							currentWeapon = j + 17;
+
+						dragDrop(config->aimbot[j + 17]);
 					}
 
-					ImGui::EndDragDropTarget();
+					ImGui::Unindent();
 				}
-
-				constexpr std::array smgs = {"Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon"};
-
-				ImGui::Indent();
-
-				for (std::size_t j = 0; j < smgs.size(); ++j)
-				{
-					if (config->aimbot[37].bind.keyMode && !config->aimbot[j + 17].bind.keyMode)
-						continue;
-
-					if (ImGui::Selectable(smgs[j], currentWeapon == j + 17))
-						currentWeapon = j + 17;
-
-					if (ImGui::BeginDragDropSource())
-					{
-						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 17], sizeof(Config::Aimbot), ImGuiCond_Once);
-						ImGui::EndDragDropSource();
-					}
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-						{
-							const auto &data = *(Config::Aimbot *)payload->Data;
-							config->aimbot[j + 17] = data;
-						}
-
-						ImGui::EndDragDropTarget();
-					}
-				}
-
-				ImGui::Unindent();
-			}
-			break;
+				break;
 			case 4:
-			if (!config->aimbot[0].bind.keyMode || config->aimbot[38].bind.keyMode)
-			{
 				if (ImGui::Selectable(categories[i], currentWeapon == 38))
 					currentWeapon = 38;
 
-				if (ImGui::BeginDragDropSource())
-				{
-					ImGui::SetDragDropPayload("Aimbot", &config->aimbot[38], sizeof(Config::Aimbot), ImGuiCond_Once);
-					ImGui::EndDragDropSource();
-				}
+				dragDrop(config->aimbot[38]);
 
-				if (ImGui::BeginDragDropTarget())
 				{
-					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
+					constexpr std::array rifles = {"Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20"};
+
+					ImGui::Indent();
+
+					for (std::size_t j = 0; j < rifles.size(); ++j)
 					{
-						const auto &data = *(Config::Aimbot *)payload->Data;
-						config->aimbot[38] = data;
+						if (config->aimbot[38].bind.keyMode && !config->aimbot[j + 24].bind.keyMode)
+							continue;
+
+						if (ImGui::Selectable(rifles[j], currentWeapon == j + 24))
+							currentWeapon = j + 24;
+
+						dragDrop(config->aimbot[j + 24]);
 					}
 
-					ImGui::EndDragDropTarget();
+					ImGui::Unindent();
 				}
-
-				constexpr std::array rifles = {"Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20"};
-
-				ImGui::Indent();
-
-				for (std::size_t j = 0; j < rifles.size(); ++j)
-				{
-					if (config->aimbot[38].bind.keyMode && !config->aimbot[j + 24].bind.keyMode)
-						continue;
-
-					if (ImGui::Selectable(rifles[j], currentWeapon == j + 24))
-						currentWeapon = j + 24;
-
-					if (ImGui::BeginDragDropSource())
-					{
-						ImGui::SetDragDropPayload("Aimbot", &config->aimbot[j + 24], sizeof(Config::Aimbot), ImGuiCond_Once);
-						ImGui::EndDragDropSource();
-					}
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-						{
-							const auto &data = *(Config::Aimbot *)payload->Data;
-							config->aimbot[j + 24] = data;
-						}
-
-						ImGui::EndDragDropTarget();
-					}
-				}
-
-				ImGui::Unindent();
-			}
-			break;
+				break;
 			}
 		}
-		ImGui::Unindent();
 
 		ImGui::EndListBox();
 	}
@@ -785,6 +656,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 			if (ImGui::BeginDragDropSource())
 			{
 				ImGui::SetDragDropPayload("Anti-aim", &config->antiAim[categories[i]], sizeof(Config::AntiAim), ImGuiCond_Once);
+				DRAGNDROP_HINT("Anti-aim")
 				ImGui::EndDragDropSource();
 			}
 
@@ -878,7 +750,28 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 
 	if (ImGui::BeginListBox("##category", {140, 260}))
 	{
-		constexpr std::array categories = {"All", "Pistols", "Heavy", "SMG", "Rifles", "Zeus x27"};
+		constexpr auto dragDrop = [](Config::Triggerbot& cfg) noexcept
+		{
+			if (ImGui::BeginDragDropSource())
+			{
+				ImGui::SetDragDropPayload("Triggerbot", &cfg, sizeof(Config::Triggerbot), ImGuiCond_Once);
+				DRAGNDROP_HINT("Triggerbot")
+				ImGui::EndDragDropSource();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Triggerbot"))
+				{
+					const auto& data = *(Config::Triggerbot*)payload->Data;
+					cfg = data;
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+		};
+
+		constexpr std::array categories = {"All (Other)", "Pistols", "Heavy", "SMG", "Rifles", "Zeus x27"};
 
 		for (std::size_t i = 0; i < categories.size(); ++i)
 		{
@@ -888,73 +781,24 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 				if (ImGui::Selectable(categories[i], currentWeapon == 0))
 					currentWeapon = 0;
 
-				if (ImGui::BeginDragDropSource())
-				{
-					ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[0], sizeof(Config::Triggerbot), ImGuiCond_Once);
-					ImGui::EndDragDropSource();
-				}
+				dragDrop(config->triggerbot[0]);
 
-				if (ImGui::BeginDragDropTarget())
-				{
-					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-					{
-						const auto &data = *(Config::Triggerbot *)payload->Data;
-						config->triggerbot[0] = data;
-					}
-
-					ImGui::EndDragDropTarget();
-				}
-
-				ImGui::Indent();
 				break;
 			case 5:
-				if (!config->triggerbot[0].bind.keyMode || config->triggerbot[39].bind.keyMode)
-				{
-					if (ImGui::Selectable(categories[i], currentWeapon == 39))
-						currentWeapon = 39;
+				if (ImGui::Selectable(categories[i], currentWeapon == 39))
+					currentWeapon = 39;
 
-					if (ImGui::BeginDragDropSource())
-					{
-						ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[39], sizeof(Config::Triggerbot), ImGuiCond_Once);
-						ImGui::EndDragDropSource();
-					}
+				dragDrop(config->triggerbot[39]);
 
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-						{
-							const auto &data = *(Config::Triggerbot *)payload->Data;
-							config->triggerbot[39] = data;
-						}
-
-						ImGui::EndDragDropTarget();
-					}
-				}
 				break;
 			case 1:
-				if (!config->triggerbot[0].bind.keyMode || config->triggerbot[35].bind.keyMode)
+				if (ImGui::Selectable(categories[i], currentWeapon == 35))
+					currentWeapon = 35;
+
+				dragDrop(config->triggerbot[35]);
+
 				{
-					if (ImGui::Selectable(categories[i], currentWeapon == 35))
-						currentWeapon = 35;
-
-					if (ImGui::BeginDragDropSource())
-					{
-						ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[35], sizeof(Config::Triggerbot), ImGuiCond_Once);
-						ImGui::EndDragDropSource();
-					}
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-						{
-							const auto &data = *(Config::Triggerbot *)payload->Data;
-							config->triggerbot[35] = data;
-						}
-
-						ImGui::EndDragDropTarget();
-					}
-
-					constexpr std::array pistols = {"Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-SeveN", "CZ-75", "Desert Eagle", "R8 Revolver"};
+					constexpr std::array pistols = { "Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-SeveN", "CZ-75", "Desert Eagle", "R8 Revolver" };
 
 					ImGui::Indent();
 
@@ -966,51 +810,20 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 						if (ImGui::Selectable(pistols[j], currentWeapon == j + 1))
 							currentWeapon = j + 1;
 
-						if (ImGui::BeginDragDropSource())
-						{
-							ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[j + 1], sizeof(Config::Triggerbot), ImGuiCond_Once);
-							ImGui::EndDragDropSource();
-						}
-
-						if (ImGui::BeginDragDropTarget())
-						{
-							if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-							{
-								const auto &data = *(Config::Triggerbot *)payload->Data;
-								config->triggerbot[j + 1] = data;
-							}
-
-							ImGui::EndDragDropTarget();
-						}
+						dragDrop(config->triggerbot[j + 1]);
 					}
 
 					ImGui::Unindent();
 				}
 				break;
 			case 2:
-				if (!config->triggerbot[0].bind.keyMode || config->triggerbot[36].bind.keyMode)
+				if (ImGui::Selectable(categories[i], currentWeapon == 36))
+					currentWeapon = 36;
+
+				dragDrop(config->triggerbot[36]);
+
 				{
-					if (ImGui::Selectable(categories[i], currentWeapon == 36))
-						currentWeapon = 36;
-
-					if (ImGui::BeginDragDropSource())
-					{
-						ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[36], sizeof(Config::Triggerbot), ImGuiCond_Once);
-						ImGui::EndDragDropSource();
-					}
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-						{
-							const auto &data = *(Config::Triggerbot *)payload->Data;
-							config->triggerbot[36] = data;
-						}
-
-						ImGui::EndDragDropTarget();
-					}
-
-					constexpr std::array heavies = {"Nova", "XM1014", "Sawed-Off", "MAG-7", "M249", "Negev"};
+					constexpr std::array heavies = { "Nova", "XM1014", "Sawed-Off", "MAG-7", "M249", "Negev" };
 
 					ImGui::Indent();
 
@@ -1022,51 +835,20 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 						if (ImGui::Selectable(heavies[j], currentWeapon == j + 11))
 							currentWeapon = j + 11;
 
-						if (ImGui::BeginDragDropSource())
-						{
-							ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[j + 11], sizeof(Config::Triggerbot), ImGuiCond_Once);
-							ImGui::EndDragDropSource();
-						}
-
-						if (ImGui::BeginDragDropTarget())
-						{
-							if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-							{
-								const auto &data = *(Config::Triggerbot *)payload->Data;
-								config->triggerbot[j + 11] = data;
-							}
-
-							ImGui::EndDragDropTarget();
-						}
+						dragDrop(config->triggerbot[j + 11]);
 					}
 
 					ImGui::Unindent();
 				}
 				break;
 			case 3:
-				if (!config->triggerbot[0].bind.keyMode || config->triggerbot[37].bind.keyMode)
+				if (ImGui::Selectable(categories[i], currentWeapon == 37))
+					currentWeapon = 37;
+
+				dragDrop(config->triggerbot[37]);
+
 				{
-					if (ImGui::Selectable(categories[i], currentWeapon == 37))
-						currentWeapon = 37;
-
-					if (ImGui::BeginDragDropSource())
-					{
-						ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[37], sizeof(Config::Triggerbot), ImGuiCond_Once);
-						ImGui::EndDragDropSource();
-					}
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-						{
-							const auto &data = *(Config::Triggerbot *)payload->Data;
-							config->triggerbot[37] = data;
-						}
-
-						ImGui::EndDragDropTarget();
-					}
-
-					constexpr std::array smgs = {"Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon"};
+					constexpr std::array smgs = { "Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon" };
 
 					ImGui::Indent();
 
@@ -1078,51 +860,20 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 						if (ImGui::Selectable(smgs[j], currentWeapon == j + 17))
 							currentWeapon = j + 17;
 
-						if (ImGui::BeginDragDropSource())
-						{
-							ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[j + 17], sizeof(Config::Triggerbot), ImGuiCond_Once);
-							ImGui::EndDragDropSource();
-						}
-
-						if (ImGui::BeginDragDropTarget())
-						{
-							if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-							{
-								const auto &data = *(Config::Triggerbot *)payload->Data;
-								config->triggerbot[j + 17] = data;
-							}
-
-							ImGui::EndDragDropTarget();
-						}
+						dragDrop(config->triggerbot[j + 17]);
 					}
 
 					ImGui::Unindent();
 				}
 				break;
 			case 4:
-				if (!config->triggerbot[0].bind.keyMode || config->triggerbot[38].bind.keyMode)
+				if (ImGui::Selectable(categories[i], currentWeapon == 38))
+					currentWeapon = 38;
+
+				dragDrop(config->triggerbot[38]);
+
 				{
-					if (ImGui::Selectable(categories[i], currentWeapon == 38))
-						currentWeapon = 38;
-
-					if (ImGui::BeginDragDropSource())
-					{
-						ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[38], sizeof(Config::Triggerbot), ImGuiCond_Once);
-						ImGui::EndDragDropSource();
-					}
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-						{
-							const auto &data = *(Config::Triggerbot *)payload->Data;
-							config->triggerbot[38] = data;
-						}
-
-						ImGui::EndDragDropTarget();
-					}
-
-					constexpr std::array rifles = {"Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20"};
+					constexpr std::array rifles = { "Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20" };
 
 					ImGui::Indent();
 
@@ -1134,22 +885,7 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 						if (ImGui::Selectable(rifles[j], currentWeapon == j + 24))
 							currentWeapon = j + 24;
 
-						if (ImGui::BeginDragDropSource())
-						{
-							ImGui::SetDragDropPayload("Aimbot", &config->triggerbot[j + 24], sizeof(Config::Triggerbot), ImGuiCond_Once);
-							ImGui::EndDragDropSource();
-						}
-
-						if (ImGui::BeginDragDropTarget())
-						{
-							if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("Aimbot"))
-							{
-								const auto &data = *(Config::Triggerbot *)payload->Data;
-								config->triggerbot[j + 24] = data;
-							}
-
-							ImGui::EndDragDropTarget();
-						}
+						dragDrop(config->triggerbot[j + 24]);
 					}
 
 					ImGui::Unindent();
@@ -1157,7 +893,6 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 				break;
 			}
 		}
-		ImGui::Unindent();
 		
 		ImGui::EndListBox();
 	}
@@ -1398,6 +1133,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 				case 3: ImGui::SetDragDropPayload("Projectile", &config->esp.projectiles["All"], sizeof(Projectile), ImGuiCond_Once); break;
 				default: ImGui::SetDragDropPayload("Entity", &getConfigShared(i, "All"), sizeof(Shared), ImGuiCond_Once); break;
 				}
+				DRAGNDROP_HINT("ESP")
 				ImGui::EndDragDropSource();
 			}
 
@@ -1497,6 +1233,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 						case 3: ImGui::SetDragDropPayload("Projectile", &config->esp.projectiles[items[j]], sizeof(Projectile), ImGuiCond_Once); break;
 						default: ImGui::SetDragDropPayload("Entity", &getConfigShared(i, items[j]), sizeof(Shared), ImGuiCond_Once); break;
 						}
+						DRAGNDROP_HINT("ESP")
 						ImGui::EndDragDropSource();
 					}
 
@@ -1597,6 +1334,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 					if (ImGui::BeginDragDropSource())
 					{
 						ImGui::SetDragDropPayload("Weapon", &subItemConfig, sizeof(Weapon), ImGuiCond_Once);
+						DRAGNDROP_HINT("ESP")
 						ImGui::EndDragDropSource();
 					}
 

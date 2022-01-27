@@ -48,7 +48,7 @@ Memory::Memory() noexcept
 	doProceduralFootPlant = reinterpret_cast<int *>(MemorySearch::findPattern("client", "\xF3\x0F\x11\x44\x24?\xE8????\xF6\x86") + 7);
 	viewRender = **reinterpret_cast<ViewRender ***>(MemorySearch::findPattern("client", "\x8B\x0D????\xFF\x75\x0C\x8B\x45\x08") + 2);
 	drawScreenEffectMaterial = relativeToAbsolute<uintptr_t>(MemorySearch::findPattern("client", "\xE8????\x83\xC4\x0C\x8D\x4D\xF8") + 1);
-	fakePrime = reinterpret_cast<std::uint8_t *>(MemorySearch::findPattern("client", "\x8B\x0D????\x85\xC9\x75\x04\x33\xC0\xEB\x1E"));
+	fakePrime = reinterpret_cast<std::uint8_t *>(MemorySearch::findPattern("client", "??????\x85\xC9\x75\x04\x33\xC0\xEB\x1E"));
 	submitReport = reinterpret_cast<decltype(submitReport)>(MemorySearch::findPattern("client", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x28\x8B\x4D\x08"));
 
 	const auto tier0 = GetModuleHandleW(L"tier0");
