@@ -1860,17 +1860,22 @@ void Misc::fakePrime() noexcept
 	}
 }
 
-void Misc::drawStartPos(ImDrawList* dl, Vector& quickpeekstartpos) noexcept {
+void Misc::drawStartPos(ImDrawList *drawList, Vector& quickpeekstartpos) noexcept
+{
+	if (!localPlayer || !localPlayer->isAlive()) 
+		return;
+
 	if (quickpeekstartpos != Vector{ 0, 0, 0 }) {
 		ImVec2 startpos;
 		if (Helpers::worldToScreen(quickpeekstartpos, startpos))
-			dl->AddCircleFilled(startpos, 10, ImColor(1.f, 1.f, 1.f, 1.f), 32);
+			drawList->AddCircleFilled(startpos, 10, ImColor(1.f, 1.f, 1.f, 1.f), 32);
 	}
 }
 
-void gotoStart(UserCmd* cmd, Vector& quickpeekstartpos) noexcept {
+void gotoStart(UserCmd* cmd, Vector& quickpeekstartpos) noexcept 
+{
 
-	if (!localPlayer || localPlayer->isDormant() || !localPlayer->isAlive()) return;
+	if (!localPlayer || !localPlayer->isAlive()) return;
 	Vector playerLoc = localPlayer->getAbsOrigin();
 
 	float yaw = cmd->viewangles.y;
@@ -1888,10 +1893,6 @@ void gotoStart(UserCmd* cmd, Vector& quickpeekstartpos) noexcept {
 
 void Misc::quickpeek(UserCmd* cmd, Vector& quickpeekstartpos) noexcept 
 {
-
-	if (!localPlayer || !localPlayer->isAlive())
-	return;
-
 	auto* const activeWeapon = localPlayer->getActiveWeapon();
 	int currentWeapon = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
 
@@ -1900,6 +1901,8 @@ void Misc::quickpeek(UserCmd* cmd, Vector& quickpeekstartpos) noexcept
 
 	if (static Helpers::KeyBindState flag; flag[config->aimbot[currentWeapon].QuickPeekKey])
 	{
+		if (!localPlayer || !localPlayer->isAlive())
+			return;
 		if (!quickpeekstartpos.notNull()) {
 			quickpeekstartpos = localPlayer->getAbsOrigin();		}
 		else
