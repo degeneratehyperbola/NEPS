@@ -60,6 +60,7 @@ public:
 		float acceleration = 0.6f;
 		float friction = 2.0f;
 		bool betweenShots = true;
+		KeyBind QuickPeekKey;
 		struct AimbotOverride
 		{
 			KeyBind bind;
@@ -76,6 +77,9 @@ public:
 		float recoilReductionV = 100.0f;
 	};
 	std::array<Aimbot, 40> aimbot;
+
+
+	bool QuickPeekHasShot = false; // dynamic, do not persist
 
 	struct Triggerbot
 	{

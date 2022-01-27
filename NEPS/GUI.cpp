@@ -686,6 +686,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Auto shoot", &config->aimbot[currentWeapon].autoShoot);
 		ImGui::Checkbox("Auto scope", &config->aimbot[currentWeapon].autoScope);
 		ImGui::Checkbox("Auto slowwalk", &config->aimbot[currentWeapon].autoStop);
+		ImGuiCustom::keyBind("Quick Peek Key", config->aimbot[currentWeapon].QuickPeekKey);
+
 
 		ImGui::SetNextItemWidth(80);
 		ImGui::Combo("Targeting", &config->aimbot[currentWeapon].targeting, "FOV\0Damage\0Hitchance\0Distance\0");
@@ -731,6 +733,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 			config->aimbot[currentWeapon].aimbotOverride.minDamage = std::max(config->aimbot[currentWeapon].aimbotOverride.minDamage, 0);
 			ImGui::SliderInt("##mindmg_aw", &config->aimbot[currentWeapon].aimbotOverride.minDamageAutoWall, 0, 100, "Min damage auto-wall %d");
 			config->aimbot[currentWeapon].aimbotOverride.minDamageAutoWall = std::max(config->aimbot[currentWeapon].aimbotOverride.minDamageAutoWall, 0);
+
 			ImGui::EndPopup();
 		}
 
