@@ -60,7 +60,6 @@ public:
 		float acceleration = 0.6f;
 		float friction = 2.0f;
 		bool betweenShots = true;
-		KeyBind QuickPeekKey;
 		struct AimbotOverride
 		{
 			KeyBind bind;
@@ -78,8 +77,6 @@ public:
 	};
 	std::array<Aimbot, 40> aimbot;
 
-
-	bool QuickPeekHasShot = false; // dynamic, do not persist
 
 	struct Triggerbot
 	{
@@ -376,6 +373,9 @@ public:
 		bool autoStrafe = false;
 		KeyBind edgeJump;
 		bool fastStop = false;
+		KeyBind QuickPeekKey;
+		Color4ToggleThickness QuickPeekColor = { 0.5f, 0.5f, 0.5f, 0.3f };
+
 	} movement;
 
 	struct Misc

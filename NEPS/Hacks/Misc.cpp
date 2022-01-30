@@ -38,6 +38,17 @@
 
 #include <numeric>
 
+struct custom_cmd
+{
+	float			viewangles;
+	float			forwardmove;
+	float			sidemove;
+	float			upmove;
+};
+bool hasShot;
+int qp_count;
+std::vector<custom_cmd>usercmds_for_quickpeek;
+
 void Misc::edgeJump(UserCmd *cmd) noexcept
 {
 	if (static Helpers::KeyBindState flag; !flag[config->movement.edgeJump])
@@ -1860,64 +1871,74 @@ void Misc::fakePrime() noexcept
 	}
 }
 
-void Misc::drawStartPos(ImDrawList *drawList, Vector& quickpeekstartpos) noexcept
+void Misc::drawStartPos(ImDrawList* drawList, Vector& quickpeekstartpos) noexcept
 {
-	if (!localPlayer || !localPlayer->isAlive()) 
+	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
 	if (quickpeekstartpos != Vector{ 0, 0, 0 }) {
 		ImVec2 startpos;
 		if (Helpers::worldToScreen(quickpeekstartpos, startpos))
-			drawList->AddCircleFilled(startpos, 10, ImColor(1.f, 1.f, 1.f, 1.f), 32);
+			drawList->AddCircleFilled(startpos, 25, ImColor(1.f, 1.f, 1.f, 1.f), 32);
 	}
 }
 
-void gotoStart(UserCmd* cmd, Vector& quickpeekstartpos) noexcept 
+void gotoStart(UserCmd * cmd) noexcept
 {
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
-	if (!localPlayer || !localPlayer->isAlive()) return;
-	Vector playerLoc = localPlayer->getAbsOrigin();
+	if (usercmds_for_quickpeek.empty())
+		return;
 
-	float yaw = cmd->viewangles.y;
-	Vector VecForward = playerLoc - quickpeekstartpos;
-
-	Vector translatedVelocity = Vector{
-		(float)(VecForward.x * cos(yaw / 180 * (float)M_PI) + VecForward.y * sin(yaw / 180 * (float)M_PI)),
-		(float)(VecForward.y * cos(yaw / 180 * (float)M_PI) - VecForward.x * sin(yaw / 180 * (float)M_PI)),
-		VecForward.z
-	};
-
-	cmd->forwardmove = -translatedVelocity.x * 20.f;
-	cmd->sidemove = translatedVelocity.y * 20.f;
-}
-
-void Misc::quickpeek(UserCmd* cmd, Vector& quickpeekstartpos) noexcept 
-{
-	auto* const activeWeapon = localPlayer->getActiveWeapon();
-	int currentWeapon = getWeaponIndex(activeWeapon->itemDefinitionIndex2());
-
-	if (!currentWeapon)
-	return;
-
-	if (static Helpers::KeyBindState flag; flag[config->aimbot[currentWeapon].QuickPeekKey])
+	if (hasShot)
 	{
-		if (!localPlayer || !localPlayer->isAlive())
-			return;
-		if (!quickpeekstartpos.notNull()) {
-			quickpeekstartpos = localPlayer->getAbsOrigin();		}
-		else
+		if (qp_count > 0)
 		{
-			if (cmd->buttons & UserCmd::Button_Attack) {
-				config->QuickPeekHasShot = true;
-			}
-			if (config->QuickPeekHasShot) {
-				gotoStart(cmd, quickpeekstartpos);
-			}
+			cmd->upmove = -usercmds_for_quickpeek.at(qp_count).upmove;
+			cmd->sidemove = -usercmds_for_quickpeek.at(qp_count).sidemove;
+			cmd->forwardmove = -usercmds_for_quickpeek.at(qp_count).forwardmove;
+			//cmd->viewangles = usercmds_for_quickpeek.at(qp_count).viewAngles;
+			//g_EngineClient->SetViewAngles(&cmd->viewangles);
+			qp_count--;
 		}
-
 	}
-	else {
-		config->QuickPeekHasShot = false;
+	else
+	{
+		qp_count = usercmds_for_quickpeek.size();
+	}
+}
+
+void Misc::quickpeek(UserCmd* cmd, Vector& quickpeekstartpos) noexcept
+{
+	if (!localPlayer || localPlayer->isDormant() || !localPlayer->isAlive())
+		return;
+
+	if (static Helpers::KeyBindState flag; flag[config->movement.QuickPeekKey])
+	{
+	if (!quickpeekstartpos.notNull())
+	{
+		quickpeekstartpos = localPlayer->getAbsOrigin();
+	}
+	else
+	{
+		custom_cmd tempCmd = {};
+		tempCmd.forwardmove = cmd->forwardmove;
+		tempCmd.sidemove = cmd->sidemove;
+		tempCmd.upmove = cmd->upmove;
+		//tempCmd.viewAngles = cmd->viewangles;
+
+		if (cmd->buttons & UserCmd::Button_Attack) hasShot = true;
+		gotoStart(cmd);
+
+		if (!hasShot)
+			usercmds_for_quickpeek.push_back(tempCmd);
+	}
+	}
+	else
+	{
+		hasShot = false;
 		quickpeekstartpos = Vector{ 0, 0, 0 };
+		usercmds_for_quickpeek.clear();
 	}
 }

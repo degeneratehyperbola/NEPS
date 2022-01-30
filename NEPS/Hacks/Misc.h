@@ -59,5 +59,5 @@ namespace Misc
 	void spectatorList() noexcept;
 	void watermark() noexcept;
 	void drawStartPos(ImDrawList *dl, Vector& quickpeekstartpos) noexcept;
-	void quickpeek(UserCmd *cmd, Vector& quickpeekstartpos) noexcept;
+	void quickpeek(UserCmd* cmd, Vector& quickpeekstartpos) noexcept;
 }
