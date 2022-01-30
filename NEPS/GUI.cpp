@@ -2138,7 +2138,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
 	ImGuiCustom::keyBind("Quick Peek Key", config->movement.QuickPeekKey);
-	ImGuiCustom::colorPicker("Quick Peek Color", config->movement.QuickPeekColor);
+	//ImGuiCustom::colorPicker("Quick Peek Color", config->movement.QuickPeekColor); //Later i will add better visuals
 
 	if (!contentOnly)
 		ImGui::End();

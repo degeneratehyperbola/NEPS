@@ -787,7 +787,7 @@ static void from_json(const json &j, Config::Movement &m)
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
 	read(j, "Fast stop", m.fastStop);
 	read<value_t::object>(j, "Quick Peek Key", m.QuickPeekKey);
-	read<value_t::object>(j, "Quick Peek Color", m.QuickPeekColor);
+	//read<value_t::object>(j, "Quick Peek Color", m.QuickPeekColor); //Later i will add better visuals
 }
 
 bool Config::load(const char8_t *name, bool incremental) noexcept
@@ -1295,7 +1295,7 @@ static void to_json(json &j, const Config::Movement &o)
 	WRITE("Edge jump", edgeJump);
 	WRITE("Fast stop", fastStop);
 	WRITE("QuickPeekKey", QuickPeekKey);
-	WRITE("Quick Peek Color", QuickPeekColor);
+	//WRITE("Quick Peek Color", QuickPeekColor); //Later i will add better visuals
 }
 
 static void to_json(json &j, const Config::Visuals::ColorCorrection &o, const Config::Visuals::ColorCorrection &dummy)
