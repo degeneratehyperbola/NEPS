@@ -374,7 +374,7 @@ public:
 		KeyBind edgeJump;
 		bool fastStop = false;
 		KeyBind QuickPeekKey;
-		Color4ToggleThickness QuickPeekColor = { 0.5f, 0.5f, 0.5f, 0.3f };
+		//Color4ToggleThickness QuickPeekColor = { 0.5f, 0.5f, 0.5f, 0.3f }; //Later i will add better visuals
 
 	} movement;
 
