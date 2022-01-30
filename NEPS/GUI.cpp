@@ -557,7 +557,6 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Auto shoot", &config->aimbot[currentWeapon].autoShoot);
 		ImGui::Checkbox("Auto scope", &config->aimbot[currentWeapon].autoScope);
 		ImGui::Checkbox("Auto slowwalk", &config->aimbot[currentWeapon].autoStop);
-		ImGuiCustom::keyBind("Quick Peek Key", config->aimbot[currentWeapon].QuickPeekKey);
 
 
 		ImGui::SetNextItemWidth(80);
@@ -2138,6 +2137,8 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
+	ImGuiCustom::keyBind("Quick Peek Key", config->movement.QuickPeekKey);
+	ImGuiCustom::colorPicker("Quick Peek Color", config->movement.QuickPeekColor);
 
 	if (!contentOnly)
 		ImGui::End();

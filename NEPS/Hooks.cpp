@@ -38,6 +38,8 @@
 #include "SDK/UserMessage.h"
 #include "SDK/ViewSetup.h"
 
+Vector quickPeekVector = { 0, 0, 0 };
+
 #define FRAME_ADDRESS ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))
 #define RETURN_ADDRESS std::uintptr_t(_ReturnAddress())
 
@@ -117,6 +119,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::visualizeInaccuracy(ImGui::GetBackgroundDrawList());
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
+	Misc::drawStartPos(ImGui::GetBackgroundDrawList(), quickPeekVector);
 
 	Misc::velocityGraph();
 	Misc::purchaseList();
@@ -192,6 +195,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::autoStrafe(cmd);
 	Misc::bunnyHop(cmd);
 	Aimbot::predictPeek(cmd);
+	
 	if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk]) Misc::slowwalk(cmd);
 
 	EnginePrediction::run(cmd);
@@ -201,6 +205,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Triggerbot::run(cmd);
 	Misc::edgeJump(cmd);
 	Misc::blockBot(cmd, currentViewAngles);
+	Misc::quickpeek(cmd, quickPeekVector);
 	Misc::fastPlant(cmd);
 
 	AntiAim::run(cmd, currentViewAngles, sendPacket);

@@ -374,7 +374,6 @@ static void from_json(const json &j, Config::Aimbot &a)
 	read(j, "Recoil reduction H", a.recoilReductionH);
 	read(j, "Recoil reduction V", a.recoilReductionV);
 	read(j, "Between shots", a.betweenShots);
-	read<value_t::object>(j, "Quick Peek Key", a.QuickPeekKey);
 }
 
 static void from_json(const json &j, Config::Triggerbot &t)
@@ -787,6 +786,8 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
 	read(j, "Fast stop", m.fastStop);
+	read<value_t::object>(j, "Quick Peek Key", m.QuickPeekKey);
+	read<value_t::object>(j, "Quick Peek Color", m.QuickPeekColor);
 }
 
 bool Config::load(const char8_t *name, bool incremental) noexcept
@@ -1030,7 +1031,6 @@ static void to_json(json &j, const Config::Aimbot &o, const Config::Aimbot &dumm
 	WRITE("Recoil reduction H", recoilReductionH);
 	WRITE("Recoil reduction V", recoilReductionV);
 	WRITE("Between shots", betweenShots);
-	WRITE("QuickPeekKey", QuickPeekKey);
 }
 
 static void to_json(json &j, const Config::Triggerbot &o, const Config::Triggerbot &dummy = {})
@@ -1294,6 +1294,8 @@ static void to_json(json &j, const Config::Movement &o)
 	WRITE("Auto strafe", autoStrafe);
 	WRITE("Edge jump", edgeJump);
 	WRITE("Fast stop", fastStop);
+	WRITE("QuickPeekKey", QuickPeekKey);
+	WRITE("Quick Peek Color", QuickPeekColor);
 }
 
 static void to_json(json &j, const Config::Visuals::ColorCorrection &o, const Config::Visuals::ColorCorrection &dummy)
