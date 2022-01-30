@@ -89,7 +89,7 @@ static void drawColorPalette() noexcept
 	}
 
 	ImGui::End();
-	ImGui::PopStyleVar(2);
+	ImGui::PopStyleVar();
 }
 
 void GUI::render() noexcept
