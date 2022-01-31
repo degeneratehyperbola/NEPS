@@ -786,7 +786,7 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
 	read(j, "Fast stop", m.fastStop);
-	read<value_t::object>(j, "Quick Peek Key", m.QuickPeekKey);
+	read<value_t::object>(j, "QuickPeekKey", m.QuickPeekKey);
 	//read<value_t::object>(j, "Quick Peek Color", m.QuickPeekColor); //Later i will add better visuals
 }
 

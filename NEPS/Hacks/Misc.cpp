@@ -45,9 +45,9 @@ struct custom_cmd
 	float			sidemove;
 	float			upmove;
 };
-bool hasShot;
-int qp_count;
-std::vector<custom_cmd>usercmds_for_quickpeek;
+static bool hasShot;
+static int qp_count;
+static std::vector<custom_cmd>usercmds_for_quickpeek;
 
 void Misc::edgeJump(UserCmd *cmd) noexcept
 {
