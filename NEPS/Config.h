@@ -459,7 +459,7 @@ public:
 		bool fixTabletSignal = false;
 		bool nadePredict = false;
 		int forceRelayCluster = 0;
-		bool goFestive = true;
+		bool goFestive = false;
 	} misc;
 
 	void scheduleFontLoad(const std::string &name) noexcept;

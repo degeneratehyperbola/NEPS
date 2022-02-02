@@ -75,17 +75,10 @@ GUI::GUI() noexcept
 
 static void drawColorPalette() noexcept
 {
-	static float windowAlpha = 0.4f;
 	static std::array<Color4, 5U> palette;
 
-	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, windowAlpha);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 	ImGui::Begin("Color palette", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
-
-	if (const auto payload = ImGui::GetDragDropPayload(); ImGui::IsWindowHovered(ImGuiHoveredFlags_RectOnly) || payload && (payload->IsDataType(IMGUI_PAYLOAD_TYPE_COLOR_3F) || payload->IsDataType(IMGUI_PAYLOAD_TYPE_COLOR_4F)))
-		windowAlpha = windowAlpha * 0.9f + 0.1f;
-	else
-		windowAlpha = windowAlpha * 0.9f + 0.04f;
 
 	ImGui::SetWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - ImGui::GetWindowSize().x - 10.0f, ImGui::GetIO().DisplaySize.y / 2 - ImGui::GetWindowSize().y}, ImGuiCond_Always);
 
@@ -96,7 +89,7 @@ static void drawColorPalette() noexcept
 	}
 
 	ImGui::End();
-	ImGui::PopStyleVar(2);
+	ImGui::PopStyleVar();
 }
 
 void GUI::render() noexcept
