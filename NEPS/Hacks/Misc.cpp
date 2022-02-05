@@ -38,17 +38,6 @@
 
 #include <numeric>
 
-struct custom_cmd
-{
-	float			viewangles;
-	float			forwardmove;
-	float			sidemove;
-	float			upmove;
-};
-static bool hasShot;
-static int qp_count;
-static std::vector<custom_cmd>usercmds_for_quickpeek;
-
 void Misc::edgeJump(UserCmd *cmd) noexcept
 {
 	if (static Helpers::KeyBindState flag; !flag[config->movement.edgeJump])
@@ -1871,15 +1860,39 @@ void Misc::fakePrime() noexcept
 	}
 }
 
+struct custom_cmd
+{
+	float			forwardmove;
+	float			sidemove;
+	float			upmove;
+};
+static bool hasShot;
+static int qp_count;
+static std::vector<custom_cmd>usercmds_for_quickpeek;
+
 void Misc::drawStartPos(ImDrawList* drawList, Vector& quickpeekstartpos) noexcept
 {
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (quickpeekstartpos != Vector{ 0, 0, 0 }) {
-		ImVec2 startpos;
-		if (Helpers::worldToScreen(quickpeekstartpos, startpos))
-			drawList->AddCircleFilled(startpos, 25, ImColor(1.f, 1.f, 1.f, 1.f), 32);
+	if (quickpeekstartpos.notNull())
+	{
+		constexpr float step = M_PI * 2.0f / 20.0f;
+		std::vector<ImVec2> points;
+		for (float lat = 0.f; lat <= M_PI * 2.0f; lat += step)
+		{
+			const auto& point3d = Vector{ std::sin(lat), std::cos(lat), 0.f } *15.f;
+			ImVec2 point2d;
+			if (Helpers::worldToScreen(quickpeekstartpos + point3d, point2d))
+				points.push_back(point2d);
+		}
+
+		const ImU32 color = (Helpers::calculateColor({ config->movement.quickpeek.color }));
+		auto flags_backup = drawList->Flags;
+		drawList->Flags |= ImDrawListFlags_AntiAliasedFill;
+		drawList->AddConvexPolyFilled(points.data(), points.size(), color);
+		drawList->AddPolyline(points.data(), points.size(), color, true, 2.f);
+		drawList->Flags = flags_backup;
 	}
 }
 
@@ -1898,8 +1911,6 @@ void gotoStart(UserCmd * cmd) noexcept
 			cmd->upmove = -usercmds_for_quickpeek.at(qp_count).upmove;
 			cmd->sidemove = -usercmds_for_quickpeek.at(qp_count).sidemove;
 			cmd->forwardmove = -usercmds_for_quickpeek.at(qp_count).forwardmove;
-			//cmd->viewangles = usercmds_for_quickpeek.at(qp_count).viewAngles;
-			//g_EngineClient->SetViewAngles(&cmd->viewangles);
 			qp_count--;
 		}
 	}
@@ -1914,7 +1925,7 @@ void Misc::quickpeek(UserCmd* cmd, Vector& quickpeekstartpos) noexcept
 	if (!localPlayer || localPlayer->isDormant() || !localPlayer->isAlive())
 		return;
 
-	if (static Helpers::KeyBindState flag; flag[config->movement.QuickPeekKey])
+	if (static Helpers::KeyBindState flag; flag[config->movement.quickpeek.bind])
 	{
 	if (!quickpeekstartpos.notNull())
 	{
@@ -1926,7 +1937,6 @@ void Misc::quickpeek(UserCmd* cmd, Vector& quickpeekstartpos) noexcept
 		tempCmd.forwardmove = cmd->forwardmove;
 		tempCmd.sidemove = cmd->sidemove;
 		tempCmd.upmove = cmd->upmove;
-		//tempCmd.viewAngles = cmd->viewangles;
 
 		if (cmd->buttons & UserCmd::Button_Attack) hasShot = true;
 		gotoStart(cmd);

@@ -2130,8 +2130,18 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
-	ImGuiCustom::keyBind("Quick Peek Key", config->movement.QuickPeekKey);
-	//ImGuiCustom::colorPicker("Quick Peek Color", config->movement.QuickPeekColor); //Later i will add better visuals
+
+	ImGuiCustom::keyBind("Quick Peek", config->movement.quickpeek.bind);
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("quickpeek", ImGuiDir_Right))
+		ImGui::OpenPopup("##quickpeek");
+
+	if (ImGui::BeginPopup("##quickpeek"))
+	{
+		ImGuiCustom::colorPicker("Draw Quick Peek", config->movement.quickpeek.color);
+
+		ImGui::EndPopup();
+	}
 
 	if (!contentOnly)
 		ImGui::End();
