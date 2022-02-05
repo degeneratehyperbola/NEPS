@@ -2139,6 +2139,8 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	if (ImGui::BeginPopup("##quickpeek"))
 	{
 		ImGuiCustom::colorPicker("Draw Quick Peek", config->movement.quickpeek.color);
+		ImGui::SetNextItemWidth(100.0f);
+		//ImGui::Combo("Mode", &config->movement.quickpeek.mode, "Direct\0Backstep\0"); meh going to do this when ppl ask for it
 
 		ImGui::EndPopup();
 	}
