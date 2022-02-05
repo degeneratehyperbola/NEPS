@@ -1860,24 +1860,29 @@ void Misc::fakePrime() noexcept
 	}
 }
 
-struct custom_cmd
+struct customCmd
 {
-	float			forwardmove;
-	float			sidemove;
-	float			upmove;
+	float forwardmove;
+	float sidemove;
+	float upmove;
 };
-static bool hasShot;
-static int qp_count;
-static std::vector<custom_cmd>usercmds_for_quickpeek;
 
-void Misc::drawStartPos(ImDrawList* drawList, Vector& quickpeekstartpos) noexcept
+static Vector quickpeekstartpos{};
+
+
+void Misc::drawStartPos(ImDrawList* drawList) noexcept
 {
+	static Helpers::KeyBindState flag;
+	auto keyBind = flag[config->movement.quickpeek.bind];
+	if (!keyBind || !config->movement.quickpeek.color.enabled)
+		return;
+
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
 	if (quickpeekstartpos.notNull())
 	{
-		constexpr float step = M_PI * 2.0f / 20.0f;
+		constexpr float step = M_PI * 0.5f / 20.0f;
 		std::vector<ImVec2> points;
 		for (float lat = 0.f; lat <= M_PI * 2.0f; lat += step)
 		{
@@ -1896,59 +1901,71 @@ void Misc::drawStartPos(ImDrawList* drawList, Vector& quickpeekstartpos) noexcep
 	}
 }
 
-void gotoStart(UserCmd * cmd) noexcept
+
+void Misc::quickPeek(UserCmd* cmd) noexcept
 {
-	if (!localPlayer || !localPlayer->isAlive())
-		return;
+	static bool hasShot = false;
 
-	if (usercmds_for_quickpeek.empty())
-		return;
+	static Helpers::KeyBindState flag;
+	auto keyBind = flag[config->movement.quickpeek.bind];
+	static auto reset = false;
 
-	if (hasShot)
+	if (!keyBind || reset)
 	{
-		if (qp_count > 0)
+		hasShot = false;
+		quickpeekstartpos = Vector{};
+		reset = false;
+		return;
+	}
+
+	if (!localPlayer)
+		return;
+
+	if (!localPlayer->isAlive())
+	{
+		hasShot = false;
+		quickpeekstartpos = Vector{};
+		return;
+	}
+
+	if (const auto mt = localPlayer->moveType(); mt == MoveType::Ladder || mt == MoveType::Noclip || !(localPlayer->flags() & 1))
+		return;
+
+	if (keyBind)
+	{
+		if (!quickpeekstartpos.notNull())
+			quickpeekstartpos = localPlayer->getRenderOrigin();
+
+		if (cmd->buttons & UserCmd::Button_Attack)
+			hasShot = true;
+
+		if (hasShot)
 		{
-			cmd->upmove = -usercmds_for_quickpeek.at(qp_count).upmove;
-			cmd->sidemove = -usercmds_for_quickpeek.at(qp_count).sidemove;
-			cmd->forwardmove = -usercmds_for_quickpeek.at(qp_count).forwardmove;
-			qp_count--;
+			const float yaw = cmd->viewangles.y;
+			const auto difference = localPlayer->getRenderOrigin() - quickpeekstartpos;
+
+			if (difference.length2D() > 5.0f)
+			{
+				const auto velocity = Vector{
+					difference.x * std::cos(yaw / 180.0f * 3.141592654f) + difference.y * std::sin(yaw / 180.0f * 3.141592654f),
+					difference.y * std::cos(yaw / 180.0f * 3.141592654f) - difference.x * std::sin(yaw / 180.0f * 3.141592654f),
+					difference.z };
+
+				cmd->forwardmove = -velocity.x * 20.f;
+				cmd->sidemove = velocity.y * 20.f;
+			}
+			else
+			{
+				hasShot = false;
+				quickpeekstartpos = Vector{};
+				reset = true;
+			}
 		}
 	}
 	else
 	{
-		qp_count = usercmds_for_quickpeek.size();
-	}
-}
-
-void Misc::quickpeek(UserCmd* cmd, Vector& quickpeekstartpos) noexcept
-{
-	if (!localPlayer || localPlayer->isDormant() || !localPlayer->isAlive())
-		return;
-
-	if (static Helpers::KeyBindState flag; flag[config->movement.quickpeek.bind])
-	{
-	if (!quickpeekstartpos.notNull())
-	{
-		quickpeekstartpos = localPlayer->getAbsOrigin();
-	}
-	else
-	{
-		custom_cmd tempCmd = {};
-		tempCmd.forwardmove = cmd->forwardmove;
-		tempCmd.sidemove = cmd->sidemove;
-		tempCmd.upmove = cmd->upmove;
-
-		if (cmd->buttons & UserCmd::Button_Attack) hasShot = true;
-		gotoStart(cmd);
-
-		if (!hasShot)
-			usercmds_for_quickpeek.push_back(tempCmd);
-	}
-	}
-	else
-	{
 		hasShot = false;
-		quickpeekstartpos = Vector{ 0, 0, 0 };
-		usercmds_for_quickpeek.clear();
+		quickpeekstartpos = Vector{};
+		reset = true;
 	}
 }
