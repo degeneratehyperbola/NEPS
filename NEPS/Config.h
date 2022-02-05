@@ -373,8 +373,12 @@ public:
 		bool autoStrafe = false;
 		KeyBind edgeJump;
 		bool fastStop = false;
-		KeyBind QuickPeekKey;
-		//Color4ToggleThickness QuickPeekColor = { 0.5f, 0.5f, 0.5f, 0.3f }; //Later i will add better visuals
+
+		struct QuickPeek
+		{
+			KeyBind bind;
+			Color4Toggle color;
+		}quickpeek;
 
 	} movement;
 
