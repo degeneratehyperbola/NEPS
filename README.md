@@ -49,9 +49,9 @@ Currently, weekly builds are available to Patreon supporters only. Builds for pa
 [![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
 
 ## NEPS dependencies
-- Visual Studio 2019
+- Visual Studio 2022
 - Windows SDK 10.0.X.X
-- Platform Toolset v142
+- Platform Toolset v143
 
 # Acknowledgments
 - [Daniel Krupiński](https://github.com/danielkrupinski) for [Osiris](https://github.com/danielkrupinski/Osiris) - an amazing fundament for a CS:GO cheat
