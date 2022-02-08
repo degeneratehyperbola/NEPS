@@ -6,7 +6,7 @@ struct ImDrawList;
 
 namespace AntiAim
 {
-	void run(UserCmd *, const Vector &, bool &) noexcept;
-	bool fakePitch(UserCmd *) noexcept;
-	void visualize(ImDrawList *) noexcept;
+	void run(UserCmd *cmd, const Vector & currentViewAngles, bool & sendPacket) noexcept;
+	bool fakePitch(UserCmd *cmd) noexcept;
+	void visualize(ImDrawList *drawList) noexcept;
 }

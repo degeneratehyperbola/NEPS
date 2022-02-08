@@ -2129,17 +2129,14 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
 
-	ImGuiCustom::keyBind("Quick Peek", config->movement.quickpeek.bind);
+	ImGuiCustom::keyBind("Quick peek", config->movement.quickPeek.bind);
 	ImGui::SameLine();
-	if (ImGui::ArrowButton("quickpeek", ImGuiDir_Right))
-		ImGui::OpenPopup("##quickpeek");
+	if (ImGui::ArrowButton("quick_peek", ImGuiDir_Right))
+		ImGui::OpenPopup("##quick_peek");
 
-	if (ImGui::BeginPopup("##quickpeek"))
+	if (ImGui::BeginPopup("##quick_peek"))
 	{
-		ImGuiCustom::colorPicker("Draw Quick Peek", config->movement.quickpeek.color);
-		ImGui::SetNextItemWidth(100.0f);
-		//ImGui::Combo("Mode", &config->movement.quickpeek.mode, "Direct\0Backstep\0"); meh going to do this when ppl ask for it
-
+		ImGuiCustom::colorPicker("Visualize", config->movement.quickPeek.visualize);
 		ImGui::EndPopup();
 	}
 

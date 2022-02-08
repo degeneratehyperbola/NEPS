@@ -350,7 +350,7 @@ public:
 			KeyBind target;
 			float trajectoryFac = 1.0f;
 			float distanceFac = 2.0f;
-			Color4ToggleThickness visualize = {1.0f, 0.5f, 0.0f, 1.0f};
+			Color4ToggleThickness visualize = {0.0f, 1.0f, 0.0f, 0.7f};
 		} blockbot;
 
 		struct Reportbot
@@ -377,8 +377,8 @@ public:
 		struct QuickPeek
 		{
 			KeyBind bind;
-			Color4Toggle color;
-		}quickpeek;
+			Color4Toggle visualize;
+		} quickPeek;
 
 	} movement;
 

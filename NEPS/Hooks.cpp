@@ -105,6 +105,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 
 	Visuals::drawSmokeHull(ImGui::GetBackgroundDrawList());
 	Visuals::drawMolotovHull(ImGui::GetBackgroundDrawList());
+	Misc::visualizeQuickPeek(ImGui::GetBackgroundDrawList());
 	Visuals::playerBounds(ImGui::GetBackgroundDrawList());
 	Visuals::playerVelocity(ImGui::GetBackgroundDrawList());
 	Misc::visualizeBlockBot(ImGui::GetBackgroundDrawList());
@@ -117,7 +118,6 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::visualizeInaccuracy(ImGui::GetBackgroundDrawList());
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
-	Misc::drawStartPos(ImGui::GetBackgroundDrawList());
 
 	Misc::velocityGraph();
 	Misc::purchaseList();
