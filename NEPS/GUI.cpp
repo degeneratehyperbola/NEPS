@@ -2015,7 +2015,6 @@ void GUI::renderExploitsWindow(bool contentOnly) noexcept
 	config->exploits.fakeDuckPackets = std::max(config->exploits.fakeDuckPackets, 0);
 	ImGui::Checkbox("Moonwalk", &config->exploits.moonwalk);
 	ImGuiCustom::keyBind("Slowwalk", config->exploits.slowwalk);
-	ImGuiCustom::keyBind("Fastwalk", config->exploits.fastwalk);
 
 	ImGui::Checkbox("Bypass sv_pure", &config->exploits.bypassPure);
 

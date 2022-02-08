@@ -320,7 +320,6 @@ public:
 		KeyBind fakeDuck;
 		int fakeDuckPackets = 0;
 		KeyBind slowwalk;
-		KeyBind fastwalk;
 		bool moonwalk = false;
 		bool antiAfkKick = false;
 		bool fastDuck = false;
