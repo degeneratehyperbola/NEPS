@@ -335,6 +335,21 @@ void ImGuiCustom::boolCombo(const char *name, bool &value, const char *items) no
 	}
 }
 
+bool ImGuiCustom::arrowButtonPopup(const char *id) noexcept
+{
+	ImGui::PushID(id);
+
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("btn", ImGuiDir_Right))
+		ImGui::OpenPopup("##popup");	
+
+	bool result = ImGui::BeginPopup("##popup", ImGuiWindowFlags_NoMove);
+
+	ImGui::PopID();
+
+	return result;
+}
+
 void ImGuiCustom::StyleColorsClassic(ImGuiStyle *dst) noexcept
 {
 	ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();

@@ -574,11 +574,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		config->aimbot[currentWeapon].minDamageAutoWall = std::max(config->aimbot[currentWeapon].minDamageAutoWall, 0);
 
 		ImGuiCustom::keyBind("Override", config->aimbot[currentWeapon].aimbotOverride.bind);
-		ImGui::SameLine();
-		if (ImGui::ArrowButton("override_popup", ImGuiDir_Right))
-			ImGui::OpenPopup("##override_popup");
-
-		if (ImGui::BeginPopup("##override_popup"))
+		if (ImGuiCustom::arrowButtonPopup("override"))
 		{
 			ImGui::SetNextItemWidth(80);
 			ImGui::Combo("Targeting", &config->aimbot[currentWeapon].aimbotOverride.targeting, "FOV\0Damage\0Hitchance\0Distance\0");
@@ -599,12 +595,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		}
 
 		ImGui::SetNextItemWidth(100);
-		ImGui::Checkbox("Humanize", &config->aimbot[currentWeapon].humanize);
-		ImGui::SameLine();
-		if (ImGui::ArrowButton("humanize", ImGuiDir_Right))
-			ImGui::OpenPopup("##humanize");
-
-		if (ImGui::BeginPopup("##humanize"))
+		ImGui::Checkbox("Mimic mouse movement", &config->aimbot[currentWeapon].humanize);
+		if (ImGuiCustom::arrowButtonPopup("humanize"))
 		{
 			ImGui::SliderFloat("##acceleration", &config->aimbot[currentWeapon].acceleration, 0.0f, 5.0f, "Acceleration %.4fdeg/tick^2", ImGuiSliderFlags_Logarithmic);
 			ImGui::SliderFloat("##friction", &config->aimbot[currentWeapon].friction, 1.0f, 5.0f, "Friction %.4f", ImGuiSliderFlags_Logarithmic);
@@ -684,10 +676,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Look at enemies", &currentConfig.lookAtEnemies);
 		ImGui::Combo("Direction", &currentConfig.direction, "Off\0Auto\0Manual\0");
 		ImGui::SameLine();
-		if (ImGui::ArrowButton("yaw_directions", ImGuiDir_Right))
-			ImGui::OpenPopup("##yaw_dir");
-
-		if (ImGui::BeginPopup("##yaw_dir"))
+		if (ImGuiCustom::arrowButtonPopup("direction"))
 		{
 			ImGuiCustom::keyBind("Manual right", &currentConfig.rightKey);
 			ImGuiCustom::keyBind("Manual back", &currentConfig.backKey);
@@ -698,10 +687,7 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 
 		ImGui::Combo("Desync", &currentConfig.desync, "None\0Micro movement\0Opposite\0Interchanged\0Fake desync\0Sway\0");
 		ImGui::SameLine();
-		if (ImGui::ArrowButton("desync_advanced", ImGuiDir_Right))
-			ImGui::OpenPopup("##desync");
-
-		if (ImGui::BeginPopup("##desync"))
+		if (ImGuiCustom::arrowButtonPopup("desync"))
 		{
 			ImGuiCustom::keyBind("Flip key", &currentConfig.flipKey);
 			ImGuiCustom::colorPicker("Visualize", currentConfig.visualizeSide);
@@ -1088,18 +1074,14 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 
 	constexpr auto boxPopup = [](const char *id, Box &config) noexcept
 	{
-		if (ImGui::BeginPopup(id))
-		{
-			ImGui::SetNextItemWidth(95.0f);
-			ImGui::Combo("Type", &config.type, "2D\0Corner 2D\0" "3D\0Corner 3D\0");
-			ImGui::SetNextItemWidth(275.0f);
-			ImGui::SliderFloat3("Scale", config.scale.data(), 0.0f, 0.50f, "%.2f");
-			ImGuiCustom::colorPicker("##secondary", config.secondaryColor);
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(85.0f);
-			ImGui::Combo("##secondary_type", &config.secondary, "None\0Outline\0Fill\0");
-			ImGui::EndPopup();
-		}
+		ImGui::SetNextItemWidth(95.0f);
+		ImGui::Combo("Type", &config.type, "2D\0Corner 2D\0" "3D\0Corner 3D\0");
+		ImGui::SetNextItemWidth(275.0f);
+		ImGui::SliderFloat3("Scale", config.scale.data(), 0.0f, 0.50f, "%.2f");
+		ImGuiCustom::colorPicker("##secondary", config.secondaryColor);
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(85.0f);
+		ImGui::Combo("##secondary_type", &config.secondary, "None\0Outline\0Fill\0");
 	};
 
 	if (ImGui::BeginListBox("##list", {140, 250}))
@@ -1400,12 +1382,11 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 		ImGui::Combo("##snapline", &sharedConfig.snapline.type, "Bottom\0Top\0Crosshair\0");
 		ImGui::SameLine(spacing);
 		ImGuiCustom::colorPicker("Box", sharedConfig.box);
-		ImGui::SameLine();
-
-		if (ImGui::ArrowButton("espbox", ImGuiDir_Right))
-			ImGui::OpenPopup("##box");
-
-		boxPopup("##box", sharedConfig.box);
+		if (ImGuiCustom::arrowButtonPopup("box"))
+		{
+			boxPopup("##box", sharedConfig.box);
+			ImGui::EndPopup();
+		}
 
 		ImGuiCustom::colorPicker("Name", sharedConfig.name);
 		ImGui::SameLine(spacing);
@@ -1423,12 +1404,11 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			ImGui::Checkbox("Spotted", &playerConfig.spottedOnly);
 
 			ImGuiCustom::colorPicker("Head box", playerConfig.headBox);
-			ImGui::SameLine();
-
-			if (ImGui::ArrowButton("headbox", ImGuiDir_Right))
-				ImGui::OpenPopup("##head_box");
-
-			boxPopup("##head_box", playerConfig.headBox);
+			if (ImGuiCustom::arrowButtonPopup("head_box"))
+			{
+				boxPopup("##head_box", playerConfig.headBox);
+				ImGui::EndPopup();
+			}
 
 			ImGui::SameLine(spacing);
 			ImGuiCustom::colorPicker("Health", playerConfig.health);
@@ -1447,12 +1427,7 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 			auto &trails = config->esp.projectiles[currentItem].trails;
 
 			ImGui::Checkbox("Trails", &trails.enabled);
-			ImGui::SameLine();
-
-			if (ImGui::ArrowButton("esptrails", ImGuiDir_Right))
-				ImGui::OpenPopup("##trails");
-
-			if (ImGui::BeginPopup("##trails"))
+			if (ImGuiCustom::arrowButtonPopup("esp_trails"))
 			{
 				constexpr auto trailPicker = [](const char *name, Trail &trail) noexcept
 				{
@@ -1538,55 +1513,51 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	//ImGui::SameLine(130);
 	ImGuiCustom::colorPicker("Player velocity", config->visuals.playerVelocity);
 
-	constexpr auto beamPopup = [](const char *id, Config::Visuals::Beams &config) noexcept
+	constexpr auto beamPopup = [](Config::Visuals::Beams &config) noexcept
 	{
-		if (ImGui::BeginPopup(id))
+		ImGui::SetNextItemWidth(100.0f);
+		ImGui::Combo("Sprite", &config.sprite, "Phys beam\0Solid\0Laser\0Laser beam\0");
+		ImGui::PushItemWidth(255.0f);
+		ImGui::SliderFloat("##width", &config.width, 0.0f, 5.0f, "Thickness %.3f");
+		ImGui::SliderFloat("##life", &config.life, 0.0f, 10.0f, "Duration %.3fs");
+		ImGui::PopItemWidth();
+		ImGui::SetNextItemWidth(85.0f);
+		ImGui::Combo("Type", &config.type, "Line\0Noise\0Spiral");
+		ImGui::SetNextItemWidth(255.0f);
+		switch (config.type)
 		{
-			ImGui::SetNextItemWidth(100.0f);
-			ImGui::Combo("Sprite", &config.sprite, "Phys beam\0Solid\0Laser\0Laser beam\0");
-			ImGui::PushItemWidth(255.0f);
-			ImGui::SliderFloat("##width", &config.width, 0.0f, 5.0f, "Thickness %.3f");
-			ImGui::SliderFloat("##life", &config.life, 0.0f, 10.0f, "Duration %.3fs");
-			ImGui::PopItemWidth();
-			ImGui::SetNextItemWidth(85.0f);
-			ImGui::Combo("Type", &config.type, "Line\0Noise\0Spiral");
-			ImGui::SetNextItemWidth(255.0f);
-			switch (config.type)
-			{
-			case 1:
-				ImGui::SliderFloat("##amplitude", &config.amplitude, 0.0f, 10.0f, "Noise %.3f");
-				ImGui::Checkbox("Do noise once", &config.noiseOnce);
-				break;
-			case 2:
-				ImGui::SliderFloat("##amplitude", &config.amplitude, 0.0f, 10.0f, "Radius %.3f");
-				break;
-			default:
-				break;
-			}
-			ImGui::EndPopup();
+		case 1:
+			ImGui::SliderFloat("##amplitude", &config.amplitude, 0.0f, 10.0f, "Noise %.3f");
+			ImGui::Checkbox("Do noise once", &config.noiseOnce);
+			break;
+		case 2:
+			ImGui::SliderFloat("##amplitude", &config.amplitude, 0.0f, 10.0f, "Radius %.3f");
+			break;
+		default:
+			break;
 		}
 	};
 
 	ImGuiCustom::colorPicker("Own beams", config->visuals.selfBeams.color.data(), &config->visuals.selfBeams.color[3], nullptr, nullptr, &config->visuals.selfBeams.enabled);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("bself", ImGuiDir_Right))
-		ImGui::OpenPopup("##bself");
-
-	beamPopup("##bself", config->visuals.selfBeams);
+	if (ImGuiCustom::arrowButtonPopup("beams_own"))
+	{
+		beamPopup(config->visuals.selfBeams);
+		ImGui::EndPopup();
+	}
 
 	ImGuiCustom::colorPicker("Ally beams", config->visuals.allyBeams.color.data(), &config->visuals.allyBeams.color[3], nullptr, nullptr, &config->visuals.allyBeams.enabled);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("bally", ImGuiDir_Right))
-		ImGui::OpenPopup("##bally");
-
-	beamPopup("##bally", config->visuals.allyBeams);
+	if (ImGuiCustom::arrowButtonPopup("beams_ally"))
+	{
+		beamPopup(config->visuals.allyBeams);
+		ImGui::EndPopup();
+	}
 
 	ImGuiCustom::colorPicker("Enemy beams", config->visuals.enemyBeams.color.data(), &config->visuals.enemyBeams.color[3], nullptr, nullptr, &config->visuals.enemyBeams.enabled);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("benemy", ImGuiDir_Right))
-		ImGui::OpenPopup("##benemy");
-
-	beamPopup("##benemy", config->visuals.enemyBeams);
+	if (ImGuiCustom::arrowButtonPopup("beams_enemy"))
+	{
+		beamPopup(config->visuals.enemyBeams);
+		ImGui::EndPopup();
+	}
 
 	ImGui::PushItemWidth(100);
 	ImGui::Combo("Bullet impacts", &config->visuals.bulletImpacts, "None\0All\0Client\0Server\0");
@@ -1600,11 +1571,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::SliderInt("##zoom", &config->visuals.zoomFac, 0, 99, "Zoom factor %d%%");
 
 	ImGuiCustom::keyBind("Thirdperson", config->visuals.thirdPerson);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("tp", ImGuiDir_Right))
-		ImGui::OpenPopup("##tp_edit");
-
-	if (ImGui::BeginPopup("##tp_edit"))
+	if (ImGuiCustom::arrowButtonPopup("thirdperson"))
 	{
 		ImGui::SliderInt("##distance", &config->visuals.thirdpersonDistance, 0, 500, "Distance %du");
 		ImGui::Checkbox("Camera collision", &config->visuals.thirdpersonCollision);
@@ -1612,11 +1579,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	}
 
 	ImGuiCustom::keyBind("Flashlight", config->visuals.flashlight);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("flashlight", ImGuiDir_Right))
-		ImGui::OpenPopup("##flashlight_edit");
-
-	if (ImGui::BeginPopup("##flashlight_edit"))
+	if (ImGuiCustom::arrowButtonPopup("flashlight"))
 	{
 		ImGui::SliderFloat("##bright", &config->visuals.flashlightBrightness, 0.0f, 3.0f, "Brightness %.3f");
 		ImGui::SliderInt("##distance", &config->visuals.flashlightDistance, 0, 1000, "Distance %du");
@@ -1643,33 +1606,21 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::Combo("Screen effect", &config->visuals.screenEffect, "None\0Drone cam\0Noisy drone\0Underwater\0Healthboost\0Dangerzone\0");
 
 	ImGui::Combo("Hit effect", &config->visuals.hitEffect, "None\0Drone cam\0Noisy drone\0Underwater\0Healthboost\0Dangerzone\0");
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("hit_effect", ImGuiDir_Right))
-		ImGui::OpenPopup("##hit_effect");
-
-	if (ImGui::BeginPopup("##hit_effect"))
+	if (ImGuiCustom::arrowButtonPopup("hit_effect"))
 	{
 		ImGui::SliderFloat("##time", &config->visuals.hitEffectTime, 0.1f, 1.5f, "Time %.2fs");
 		ImGui::EndPopup();
 	}
 
 	ImGui::Combo("Kill effect", &config->visuals.killEffect, "None\0Drone cam\0Noisy drone\0Underwater\0Healthboost\0Dangerzone\0");
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("kill_effect", ImGuiDir_Right))
-		ImGui::OpenPopup("##kill_effect");
-
-	if (ImGui::BeginPopup("##kill_effect"))
+	if (ImGuiCustom::arrowButtonPopup("kill_effect"))
 	{
 		ImGui::SliderFloat("##time", &config->visuals.killEffectTime, 0.1f, 1.5f, "Time %.2fs");
 		ImGui::EndPopup();
 	}
 
 	ImGui::Combo("Hit marker", &config->visuals.hitMarker, "None\0Cross\0Circle\0");
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("hit_marker", ImGuiDir_Right))
-		ImGui::OpenPopup("##hit_marker");
-
-	if (ImGui::BeginPopup("##hit_marker"))
+	if (ImGuiCustom::arrowButtonPopup("hit_marker"))
 	{
 		ImGui::SliderFloat("##time", &config->visuals.hitMarkerTime, 0.1f, 1.5f, "Time %.2fs");
 		ImGui::EndPopup();
@@ -1679,11 +1630,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::SliderFloat("##aspect_ratio", &config->visuals.aspectratio, 0.0f, 5.0f, "Aspect ratio %.2f");
 
 	ImGui::Checkbox("Post processing", &config->visuals.colorCorrection.enabled);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("post", ImGuiDir_Right))
-		ImGui::OpenPopup("##post");
-
-	if (ImGui::BeginPopup("##post"))
+	if (ImGuiCustom::arrowButtonPopup("post"))
 	{
 		ImGui::VSliderFloat("##1", {40.0f, 160.0f}, &config->visuals.colorCorrection.blue, 0.0f, 1.0f, "Blue\n%.3f"); ImGui::SameLine();
 		ImGui::VSliderFloat("##2", {40.0f, 160.0f}, &config->visuals.colorCorrection.red, 0.0f, 1.0f, "Red\n%.3f"); ImGui::SameLine();
@@ -1696,11 +1643,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	}
 
 	ImGui::Checkbox("Viewmodel", &config->visuals.viewmodel.enabled);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("viewmodel", ImGuiDir_Right))
-		ImGui::OpenPopup("##viewmodel");
-
-	if (ImGui::BeginPopup("##viewmodel"))
+	if (ImGuiCustom::arrowButtonPopup("viewmodel"))
 	{
 		ImGui::PushItemWidth(290.0f);
 		ImGui::SliderFloat("##x", &config->visuals.viewmodel.x, -20.0f, 20.0f, "X: %.4f");
@@ -2058,7 +2001,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 		ImGui::SetNextItemWidth(100.0f);
 		ImGui::Combo("Animation", &config->griefing.animatedClanTag, "None\0Scroll\0");
 	}
-
+	
 	ImGui::Checkbox("Kill message", &config->griefing.killMessage);
 	if (config->griefing.killMessage)
 	{
@@ -2067,11 +2010,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	}
 
 	ImGui::Checkbox("Reportbot", &config->griefing.reportbot.enabled);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("reportbot", ImGuiDir_Right))
-		ImGui::OpenPopup("##reportbot");
-
-	if (ImGui::BeginPopup("##reportbot"))
+	if (ImGuiCustom::arrowButtonPopup("reportbot"))
 	{
 		ImGui::PushItemWidth(80.0f);
 		ImGui::Combo("Target", &config->griefing.reportbot.target, "Enemies\0Allies\0All\0");
@@ -2091,11 +2030,7 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	}
 
 	ImGuiCustom::keyBind("Blockbot", config->griefing.blockbot.bind);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("blockbot", ImGuiDir_Right))
-		ImGui::OpenPopup("##blockbot");
-
-	if (ImGui::BeginPopup("##blockbot"))
+	if (ImGuiCustom::arrowButtonPopup("blockbot"))
 	{
 		ImGuiCustom::keyBind("Choose target", config->griefing.blockbot.target);
 		ImGui::PushItemWidth(192.0f);
@@ -2129,11 +2064,7 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
 
 	ImGuiCustom::keyBind("Quick peek", config->movement.quickPeek.bind);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("quick_peek", ImGuiDir_Right))
-		ImGui::OpenPopup("##quick_peek");
-
-	if (ImGui::BeginPopup("##quick_peek"))
+	if (ImGuiCustom::arrowButtonPopup("quick_peek"))
 	{
 		ImGui::TextUnformatted("Visualize");
 		ImGui::Indent();
@@ -2196,22 +2127,14 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::SliderFloat("##angle_delta", &config->misc.maxAngleDelta, 0.0f, 255.0f, "Aimstep %.2fdeg");
 
 	ImGui::Checkbox("Preserve killfeed", &config->misc.preserveKillfeed.enabled);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("killfeed", ImGuiDir_Right))
-		ImGui::OpenPopup("##killfeed");
-
-	if (ImGui::BeginPopup("##killfeed"))
+	if (ImGuiCustom::arrowButtonPopup("killfeed"))
 	{
 		ImGui::Checkbox("Only headshots", &config->misc.preserveKillfeed.onlyHeadshots);
 		ImGui::EndPopup();
 	}
 
 	ImGui::Checkbox("Purchase list", &config->misc.purchaseList.enabled);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("purchases", ImGuiDir_Right))
-		ImGui::OpenPopup("##purchases");
-
-	if (ImGui::BeginPopup("##purchases"))
+	if (ImGuiCustom::arrowButtonPopup("purchase_list"))
 	{
 		ImGui::SetNextItemWidth(75);
 		ImGui::Combo("Mode", &config->misc.purchaseList.mode, "Details\0Summary\0");
@@ -2226,11 +2149,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
 	ImGui::Checkbox("Watermark", &config->misc.watermark.enabled);
 	ImGui::Checkbox("Team damage list", &config->misc.teamDamageList.enabled);
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("team_damage", ImGuiDir_Right))
-		ImGui::OpenPopup("##team_damage");
-
-	if (ImGui::BeginPopup("##team_damage"))
+	if (ImGuiCustom::arrowButtonPopup("team_dmg_list"))
 	{
 		ImGui::Checkbox("No title bar", &config->misc.teamDamageList.noTitleBar);
 		ImGui::Checkbox("Show ban progress", &config->misc.teamDamageList.progressBars);
