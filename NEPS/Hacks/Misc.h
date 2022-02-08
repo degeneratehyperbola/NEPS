@@ -58,4 +58,6 @@ namespace Misc
 	void indicators() noexcept;
 	void spectatorList() noexcept;
 	void watermark() noexcept;
+	void drawStartPos(ImDrawList *dl) noexcept;
+	void quickPeek(UserCmd* cmd) noexcept;
 }
