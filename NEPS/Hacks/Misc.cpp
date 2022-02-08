@@ -112,7 +112,7 @@ void Misc::quickPeek(UserCmd *cmd) noexcept
 	if (!quickPeekStartPos.notNull())
 		quickPeekStartPos = localPlayer->getAbsOrigin();
 
-	if (cmd->buttons & UserCmd::Button_Attack)
+	if (Helpers::attacking(cmd->buttons & UserCmd::Button_Attack, cmd->buttons & UserCmd::Button_Attack2))
 		quickPeekReturning = true;
 
 	if (quickPeekReturning)
@@ -144,6 +144,7 @@ void Misc::visualizeQuickPeek(ImDrawList *drawList) noexcept
 		return;
 
 	if (quickPeekReturning ? !config->movement.quickPeek.visualizeActive.enabled : !config->movement.quickPeek.visualizeIdle.enabled)
+		return;
 
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
