@@ -787,7 +787,7 @@ void Visuals::playerVelocity(ImDrawList *drawList) noexcept
 	{
 		const auto color = Helpers::calculateColor(config->visuals.playerVelocity);
 		drawList->AddLine(pos, dir, color, config->visuals.playerVelocity.thickness);
-		ImGuiCustom::drawText(drawList, std::to_string(static_cast<int>(local.velocity.length())).c_str(), dir, color, config->visuals.playerVelocity.outline, color & IM_COL32_A_MASK);
+		ImGuiCustom::drawText(drawList, std::to_string(static_cast<int>(local.velocity.length())).c_str(), dir, config->visuals.playerVelocity, config->visuals.playerVelocity.outline, color & IM_COL32_A_MASK);
 	}
 }
 
