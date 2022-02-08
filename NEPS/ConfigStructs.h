@@ -20,6 +20,17 @@ struct Color3Toggle : public Color3
 #pragma pack(push, 1)
 struct Color4
 {
+	operator Color3()
+	{
+		Color3 newColor;
+		newColor.color[0] = color[0];
+		newColor.color[1] = color[1];
+		newColor.color[2] = color[2];
+		newColor.rainbowSpeed = rainbowSpeed;
+		newColor.rainbow = rainbow;
+		return newColor;
+	}
+
 	std::array<float, 4> color = {1.0f, 1.0f, 1.0f, 1.0f};
 	float rainbowSpeed = 0.6f;
 	bool rainbow = false;

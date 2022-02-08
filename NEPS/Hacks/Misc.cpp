@@ -77,8 +77,7 @@ void Misc::slowwalk(UserCmd *cmd) noexcept
 		const auto negatedDirection = Vector::fromAngle2D(direction) * -450;
 		cmd->forwardmove = negatedDirection.x;
 		cmd->sidemove = negatedDirection.y;
-	}
-	else if (cmd->forwardmove && cmd->sidemove)
+	} else if (cmd->forwardmove && cmd->sidemove)
 	{
 		const float maxSpeedRoot = maxSpeed * static_cast<float>(M_SQRT1_2);
 		cmd->forwardmove = cmd->forwardmove < 0.0f ? -maxSpeedRoot : maxSpeedRoot;
@@ -89,6 +88,109 @@ void Misc::slowwalk(UserCmd *cmd) noexcept
 	} else if (cmd->sidemove)
 	{
 		cmd->sidemove = cmd->sidemove < 0.0f ? -maxSpeed : maxSpeed;
+	}
+}
+
+static Vector quickPeekStartPos;
+
+void Misc::quickPeek(UserCmd *cmd) noexcept
+{
+	static bool hasShot = false;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder || ~localPlayer->flags() & PlayerFlag_OnGround)
+		return;
+
+	if (static Helpers::KeyBindState flag; !flag[config->movement.quickPeek.bind])
+	{
+		hasShot = false;
+		quickPeekStartPos = Vector{};
+		return;
+	}
+
+	if (!quickPeekStartPos.notNull())
+		quickPeekStartPos = localPlayer->getAbsOrigin();
+
+	if (cmd->buttons & UserCmd::Button_Attack)
+		hasShot = true;
+
+	if (hasShot)
+	{
+		const float yaw = cmd->viewangles.y;
+		const auto delta = quickPeekStartPos - localPlayer->getAbsOrigin();
+
+		if (delta.length2D() > 5.0f)
+		{
+			Vector fwd = Vector::fromAngle2D(cmd->viewangles.y);
+			Vector side = fwd.crossProduct(Vector::up());
+			Vector move = Vector{fwd.dotProduct2D(delta), side.dotProduct2D(delta), 0.0f};
+			move *= 45.0f;
+
+			const float l = move.length2D();
+			if (l > 450.0f)
+				move *= 450.0f / l;
+
+			cmd->forwardmove = move.x;
+			cmd->sidemove = move.y;
+		} else
+		{
+			hasShot = false;
+			quickPeekStartPos = Vector{};
+		}
+	}
+}
+
+void Misc::visualizeQuickPeek(ImDrawList *drawList) noexcept
+{
+	if (static Helpers::KeyBindState flag; !flag[config->movement.quickPeek.bind] || !config->movement.quickPeek.visualize.enabled)
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	if (quickPeekStartPos.notNull())
+	{
+		static const auto circumference = []
+		{
+			std::array<Vector, 32> points;
+			for (std::size_t i = 0; i < points.size(); ++i)
+			{
+				constexpr auto radius = 25.0f;
+				points[i] = Vector{radius * std::cos(Helpers::degreesToRadians(i * (360.0f / points.size()))),
+					radius * std::sin(Helpers::degreesToRadians(i * (360.0f / points.size()))),
+					0.0f};
+			}
+			return points;
+		}();
+
+		std::array<ImVec2, circumference.size()> screenPoints;
+		std::size_t count = 0;
+
+		for (const auto &point : circumference)
+		{
+			if (Helpers::worldToScreen(quickPeekStartPos + point, screenPoints[count]))
+				++count;
+		}
+
+		if (count < 1)
+			return;
+
+		std::swap(screenPoints[0], *std::min_element(screenPoints.begin(), screenPoints.begin() + count, [](const auto &a, const auto &b) { return a.y < b.y || (a.y == b.y && a.x < b.x); }));
+
+		constexpr auto orientation = [](const ImVec2 &a, const ImVec2 &b, const ImVec2 &c)
+		{
+			return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+		};
+		std::sort(screenPoints.begin() + 1, screenPoints.begin() + count, [&](const auto &a, const auto &b) { return orientation(screenPoints[0], a, b) > 0.0f; });
+
+		const auto color = Helpers::calculateColor(config->movement.quickPeek.visualize);
+		const auto color2 = Helpers::calculateColor(Color3(config->movement.quickPeek.visualize));
+
+		drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
+		if (config->visuals.smokeHull.color[3] != 1.0f)
+			drawList->AddPolyline(screenPoints.data(), count, color2, true, config->visuals.smokeHull.thickness);
 	}
 }
 
@@ -221,7 +323,7 @@ void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 
 	GameData::Lock lock;
 	const auto &local = GameData::local();
-	
+
 	if (!local.exists || !local.alive)
 		return;
 
@@ -266,7 +368,7 @@ void Misc::prepareRevolver(UserCmd *cmd) noexcept
 		return;
 
 	if (!localPlayer) return;
-	
+
 	if (cmd->buttons & UserCmd::Button_Attack)
 		return;
 
@@ -1173,7 +1275,7 @@ void Misc::indicators() noexcept
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 	ImGui::Begin("Indicators", nullptr, windowFlags);
 	ImGui::PopStyleVar();
-	
+
 	if (!local.exists)
 	{
 		ImGui::TextWrapped("Shows things like choked packets, height, speed and shot statistics");
@@ -1805,7 +1907,7 @@ void Misc::onVoteChange(UserMessageType type, const void *data, int size) noexce
 
 		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 %s started a vote for\x1 %s", isLocal ? "\x10YOU\x8" : entity->getPlayerName().c_str(), voteName(voteType));
 	}
-		break;
+	break;
 	case UserMessageType::VotePass:
 		memory->clientMode->getHudChat()->printf(0, " \x1[NEPS]\x8 Vote\x4 PASSED\x1");
 		break;
@@ -1849,123 +1951,13 @@ void Misc::fakePrime() noexcept
 	{
 		lastState = config->griefing.fakePrime;
 
-		#ifdef _WIN32
+#ifdef _WIN32
 		if (DWORD oldProtect; VirtualProtect(memory->fakePrime, 4, PAGE_EXECUTE_READWRITE, &oldProtect))
 		{
 			constexpr uint8_t patch[]{0x31, 0xC0, 0x40, 0xC3};
 			std::memcpy(memory->fakePrime, patch, 4);
 			VirtualProtect(memory->fakePrime, 4, oldProtect, nullptr);
 		}
-		#endif
-	}
-}
-
-struct customCmd
-{
-	float forwardmove;
-	float sidemove;
-	float upmove;
-};
-
-static Vector quickpeekstartpos{};
-
-
-void Misc::drawStartPos(ImDrawList* drawList) noexcept
-{
-	static Helpers::KeyBindState flag;
-	auto keyBind = flag[config->movement.quickpeek.bind];
-	if (!keyBind || !config->movement.quickpeek.color.enabled)
-		return;
-
-	if (!localPlayer || !localPlayer->isAlive())
-		return;
-
-	if (quickpeekstartpos.notNull())
-	{
-		constexpr float step = M_PI * 0.5f / 20.0f;
-		std::vector<ImVec2> points;
-		for (float lat = 0.f; lat <= M_PI * 2.0f; lat += step)
-		{
-			const auto& point3d = Vector{ std::sin(lat), std::cos(lat), 0.f } *15.f;
-			ImVec2 point2d;
-			if (Helpers::worldToScreen(quickpeekstartpos + point3d, point2d))
-				points.push_back(point2d);
-		}
-
-		const ImU32 color = (Helpers::calculateColor({ config->movement.quickpeek.color }));
-		auto flags_backup = drawList->Flags;
-		drawList->Flags |= ImDrawListFlags_AntiAliasedFill;
-		drawList->AddConvexPolyFilled(points.data(), points.size(), color);
-		drawList->AddPolyline(points.data(), points.size(), color, true, 2.f);
-		drawList->Flags = flags_backup;
-	}
-}
-
-
-void Misc::quickPeek(UserCmd* cmd) noexcept
-{
-	static bool hasShot = false;
-
-	static Helpers::KeyBindState flag;
-	auto keyBind = flag[config->movement.quickpeek.bind];
-	static auto reset = false;
-
-	if (!keyBind || reset)
-	{
-		hasShot = false;
-		quickpeekstartpos = Vector{};
-		reset = false;
-		return;
-	}
-
-	if (!localPlayer)
-		return;
-
-	if (!localPlayer->isAlive())
-	{
-		hasShot = false;
-		quickpeekstartpos = Vector{};
-		return;
-	}
-
-	if (const auto mt = localPlayer->moveType(); mt == MoveType::Ladder || mt == MoveType::Noclip || !(localPlayer->flags() & 1))
-		return;
-
-	if (keyBind)
-	{
-		if (!quickpeekstartpos.notNull())
-			quickpeekstartpos = localPlayer->getRenderOrigin();
-
-		if (cmd->buttons & UserCmd::Button_Attack)
-			hasShot = true;
-
-		if (hasShot)
-		{
-			const float yaw = cmd->viewangles.y;
-			const auto difference = localPlayer->getRenderOrigin() - quickpeekstartpos;
-
-			if (difference.length2D() > 5.0f)
-			{
-				const auto velocity = Vector{
-					difference.x * std::cos(yaw / 180.0f * 3.141592654f) + difference.y * std::sin(yaw / 180.0f * 3.141592654f),
-					difference.y * std::cos(yaw / 180.0f * 3.141592654f) - difference.x * std::sin(yaw / 180.0f * 3.141592654f),
-					difference.z };
-
-				cmd->forwardmove = -velocity.x * 20.f;
-				cmd->sidemove = velocity.y * 20.f;
-			}
-			else
-			{
-				hasShot = false;
-				quickpeekstartpos = Vector{};
-				reset = true;
-			}
-		}
-	}
-	else
-	{
-		hasShot = false;
-		quickpeekstartpos = Vector{};
-		reset = true;
+#endif
 	}
 }

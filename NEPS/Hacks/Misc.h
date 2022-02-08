@@ -11,6 +11,8 @@ namespace Misc
 {
 	void edgeJump(UserCmd *cmd) noexcept;
 	void slowwalk(UserCmd *cmd) noexcept;
+	void quickPeek(UserCmd* cmd) noexcept;
+	void visualizeQuickPeek(ImDrawList *drawlist) noexcept;
 	void updateClanTag() noexcept;
 	void overlayCrosshair(ImDrawList *drawlist) noexcept;
 	void recoilCrosshair(ImDrawList *drawList) noexcept;
@@ -58,6 +60,4 @@ namespace Misc
 	void indicators() noexcept;
 	void spectatorList() noexcept;
 	void watermark() noexcept;
-	void drawStartPos(ImDrawList *dl) noexcept;
-	void quickPeek(UserCmd* cmd) noexcept;
 }
