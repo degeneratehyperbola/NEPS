@@ -2136,7 +2136,11 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 
 	if (ImGui::BeginPopup("##quick_peek"))
 	{
-		ImGuiCustom::colorPicker("Visualize", config->movement.quickPeek.visualize);
+		ImGui::TextUnformatted("Visualize");
+		ImGui::Indent();
+		ImGuiCustom::colorPicker("Awaiting shot", config->movement.quickPeek.visualizeIdle);
+		ImGuiCustom::colorPicker("Returning", config->movement.quickPeek.visualizeActive);
+		ImGui::Unindent();
 		ImGui::EndPopup();
 	}
 
