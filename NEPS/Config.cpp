@@ -786,6 +786,13 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
 	read(j, "Fast stop", m.fastStop);
+	read<value_t::object>(j, "QuickPeek", m.quickpeek);
+}
+
+static void from_json(const json &j, Config::Movement::QuickPeek &qp)
+{
+	read<value_t::object>(j, "Bind", qp.bind);
+	read<value_t::object>(j, "Color", qp.color);
 }
 
 bool Config::load(const char8_t *name, bool incremental) noexcept
@@ -1284,6 +1291,12 @@ static void to_json(json &j, const Config::Griefing &o)
 	WRITE("Basmala chat", chatBasmala);
 }
 
+static void to_json(json& j, const Config::Movement::QuickPeek& o, const Config::Movement::QuickPeek& dummy = {})
+{
+	WRITE("Bind", bind);
+	WRITE("Color", color);
+}
+
 static void to_json(json &j, const Config::Movement &o)
 {
 	const Config::Movement dummy;
@@ -1292,6 +1305,7 @@ static void to_json(json &j, const Config::Movement &o)
 	WRITE("Auto strafe", autoStrafe);
 	WRITE("Edge jump", edgeJump);
 	WRITE("Fast stop", fastStop);
+	WRITE("QuickPeek", quickpeek);
 }
 
 static void to_json(json &j, const Config::Visuals::ColorCorrection &o, const Config::Visuals::ColorCorrection &dummy)

@@ -117,6 +117,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::visualizeInaccuracy(ImGui::GetBackgroundDrawList());
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
+	Misc::drawStartPos(ImGui::GetBackgroundDrawList());
 
 	Misc::velocityGraph();
 	Misc::purchaseList();
@@ -192,6 +193,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::autoStrafe(cmd);
 	Misc::bunnyHop(cmd);
 	Aimbot::predictPeek(cmd);
+	
 	if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk]) Misc::slowwalk(cmd);
 
 	EnginePrediction::run(cmd);
@@ -201,6 +203,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Triggerbot::run(cmd);
 	Misc::edgeJump(cmd);
 	Misc::blockBot(cmd, currentViewAngles);
+	Misc::quickPeek(cmd);
 	Misc::fastPlant(cmd);
 
 	AntiAim::run(cmd, currentViewAngles, sendPacket);

@@ -77,6 +77,7 @@ public:
 	};
 	std::array<Aimbot, 40> aimbot;
 
+
 	struct Triggerbot
 	{
 		static Triggerbot &getRelevantConfig() noexcept;
@@ -372,6 +373,13 @@ public:
 		bool autoStrafe = false;
 		KeyBind edgeJump;
 		bool fastStop = false;
+
+		struct QuickPeek
+		{
+			KeyBind bind;
+			Color4Toggle color;
+		}quickpeek;
+
 	} movement;
 
 	struct Misc

@@ -1859,3 +1859,113 @@ void Misc::fakePrime() noexcept
 		#endif
 	}
 }
+
+struct customCmd
+{
+	float forwardmove;
+	float sidemove;
+	float upmove;
+};
+
+static Vector quickpeekstartpos{};
+
+
+void Misc::drawStartPos(ImDrawList* drawList) noexcept
+{
+	static Helpers::KeyBindState flag;
+	auto keyBind = flag[config->movement.quickpeek.bind];
+	if (!keyBind || !config->movement.quickpeek.color.enabled)
+		return;
+
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
+
+	if (quickpeekstartpos.notNull())
+	{
+		constexpr float step = M_PI * 0.5f / 20.0f;
+		std::vector<ImVec2> points;
+		for (float lat = 0.f; lat <= M_PI * 2.0f; lat += step)
+		{
+			const auto& point3d = Vector{ std::sin(lat), std::cos(lat), 0.f } *15.f;
+			ImVec2 point2d;
+			if (Helpers::worldToScreen(quickpeekstartpos + point3d, point2d))
+				points.push_back(point2d);
+		}
+
+		const ImU32 color = (Helpers::calculateColor({ config->movement.quickpeek.color }));
+		auto flags_backup = drawList->Flags;
+		drawList->Flags |= ImDrawListFlags_AntiAliasedFill;
+		drawList->AddConvexPolyFilled(points.data(), points.size(), color);
+		drawList->AddPolyline(points.data(), points.size(), color, true, 2.f);
+		drawList->Flags = flags_backup;
+	}
+}
+
+
+void Misc::quickPeek(UserCmd* cmd) noexcept
+{
+	static bool hasShot = false;
+
+	static Helpers::KeyBindState flag;
+	auto keyBind = flag[config->movement.quickpeek.bind];
+	static auto reset = false;
+
+	if (!keyBind || reset)
+	{
+		hasShot = false;
+		quickpeekstartpos = Vector{};
+		reset = false;
+		return;
+	}
+
+	if (!localPlayer)
+		return;
+
+	if (!localPlayer->isAlive())
+	{
+		hasShot = false;
+		quickpeekstartpos = Vector{};
+		return;
+	}
+
+	if (const auto mt = localPlayer->moveType(); mt == MoveType::Ladder || mt == MoveType::Noclip || !(localPlayer->flags() & 1))
+		return;
+
+	if (keyBind)
+	{
+		if (!quickpeekstartpos.notNull())
+			quickpeekstartpos = localPlayer->getRenderOrigin();
+
+		if (cmd->buttons & UserCmd::Button_Attack)
+			hasShot = true;
+
+		if (hasShot)
+		{
+			const float yaw = cmd->viewangles.y;
+			const auto difference = localPlayer->getRenderOrigin() - quickpeekstartpos;
+
+			if (difference.length2D() > 5.0f)
+			{
+				const auto velocity = Vector{
+					difference.x * std::cos(yaw / 180.0f * 3.141592654f) + difference.y * std::sin(yaw / 180.0f * 3.141592654f),
+					difference.y * std::cos(yaw / 180.0f * 3.141592654f) - difference.x * std::sin(yaw / 180.0f * 3.141592654f),
+					difference.z };
+
+				cmd->forwardmove = -velocity.x * 20.f;
+				cmd->sidemove = velocity.y * 20.f;
+			}
+			else
+			{
+				hasShot = false;
+				quickpeekstartpos = Vector{};
+				reset = true;
+			}
+		}
+	}
+	else
+	{
+		hasShot = false;
+		quickpeekstartpos = Vector{};
+		reset = true;
+	}
+}
