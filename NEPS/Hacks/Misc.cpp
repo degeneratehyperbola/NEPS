@@ -581,7 +581,7 @@ void Misc::bunnyHop(UserCmd *cmd) noexcept
 void Misc::fakeBan() noexcept
 {
 	if (interfaces->engine->isInGame())
-		interfaces->engine->clientCmdUnrestricted(("playerchatwheel . \"Cheer! \xe2\x80\xa8" + std::string{static_cast<char>(config->griefing.banColor + 1)} + config->griefing.banText + "\"").c_str());
+		interfaces->engine->clientCmdUnrestricted(("playerchatwheel . \"Cheer! \xE2\x80\xA8" + std::string{static_cast<char>(config->griefing.banColor + 1)} + config->griefing.banText + "\"").c_str());
 }
 
 void Misc::changeConVarsTick() noexcept
@@ -1925,21 +1925,26 @@ void Misc::forceRelayCluster() noexcept
 	*memory->relayCluster = dataCentersList[config->misc.forceRelayCluster];
 }
 
-void Misc::runChatSpammer() noexcept
+void Misc::runChatSpammer(unsigned char test) noexcept
 {
-	static float previousTime = memory->globalVars->realTime;
+	static float previousTime = 0.0f;
 	if (memory->globalVars->realTime < previousTime + 0.1f)
 		return;
-	previousTime = memory->globalVars->realTime;
 
 	constexpr auto nuke = "say \xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9";
 	constexpr auto basmala = "say \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD \uFDFD";
 
-	if (static Helpers::KeyBindState flag; flag[config->griefing.chatNuke])
+	if (static Helpers::KeyBindState flag; flag[config->griefing.chatNuke] || test == 1)
+	{
 		interfaces->engine->clientCmdUnrestricted(nuke);
+		previousTime = memory->globalVars->realTime;
+	}
 
-	if (static Helpers::KeyBindState flag; flag[config->griefing.chatBasmala])
+	if (static Helpers::KeyBindState flag; flag[config->griefing.chatBasmala] || test == 2)
+	{
 		interfaces->engine->clientCmdUnrestricted(basmala);
+		previousTime = memory->globalVars->realTime;
+	}
 }
 
 void Misc::fakePrime() noexcept

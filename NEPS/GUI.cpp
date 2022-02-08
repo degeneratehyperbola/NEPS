@@ -598,8 +598,8 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 		ImGui::Checkbox("Mimic mouse movement", &config->aimbot[currentWeapon].humanize);
 		if (ImGuiCustom::arrowButtonPopup("humanize"))
 		{
-			ImGui::SliderFloat("##acceleration", &config->aimbot[currentWeapon].acceleration, 0.0f, 5.0f, "Acceleration %.4fdeg/tick^2", ImGuiSliderFlags_Logarithmic);
-			ImGui::SliderFloat("##friction", &config->aimbot[currentWeapon].friction, 1.0f, 5.0f, "Friction %.4f", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##acceleration", &config->aimbot[currentWeapon].acceleration, 0.0f, 5.0f, "Acceleration %.3fdeg/tick^2", ImGuiSliderFlags_Logarithmic);
+			ImGui::SliderFloat("##friction", &config->aimbot[currentWeapon].friction, 1.0f, 5.0f, "Friction %.3f", ImGuiSliderFlags_Logarithmic);
 			config->aimbot[currentWeapon].friction = std::fmaxf(1.0f, config->aimbot[currentWeapon].friction);
 			ImGui::EndPopup();
 		}
@@ -1646,11 +1646,11 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	if (ImGuiCustom::arrowButtonPopup("viewmodel"))
 	{
 		ImGui::PushItemWidth(290.0f);
-		ImGui::SliderFloat("##x", &config->visuals.viewmodel.x, -20.0f, 20.0f, "X: %.4f");
-		ImGui::SliderFloat("##y", &config->visuals.viewmodel.y, -20.0f, 20.0f, "Y: %.4f");
-		ImGui::SliderFloat("##z", &config->visuals.viewmodel.z, -20.0f, 20.0f, "Z: %.4f");
-		ImGui::SliderInt("##vmfov", &config->visuals.viewmodel.fov, -60, 60, "Viewmodel FOV: %d");
-		ImGui::SliderFloat("##roll", &config->visuals.viewmodel.roll, -90.0f, 90.0f, "Viewmodel roll: %.2f");
+		ImGui::SliderFloat("##x", &config->visuals.viewmodel.x, -20.0f, 20.0f, "X %.3f");
+		ImGui::SliderFloat("##y", &config->visuals.viewmodel.y, -20.0f, 20.0f, "Y %.3f");
+		ImGui::SliderFloat("##z", &config->visuals.viewmodel.z, -20.0f, 20.0f, "Z %.3f");
+		ImGui::SliderInt("##fov", &config->visuals.viewmodel.fov, -60, 60, "FOV %d");
+		ImGui::SliderFloat("##roll", &config->visuals.viewmodel.roll, -90.0f, 90.0f, "Roll %.1f");
 		ImGui::PopItemWidth();
 		ImGui::EndPopup();
 	}
@@ -1983,16 +1983,17 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	ImGui::SetNextItemWidth(192.0f);
 	ImGui::InputText("##ban", &config->griefing.banText);
 	ImGui::SetNextItemWidth(112.0f);
-	ImGui::Combo("##ban_color", &config->griefing.banColor, "White\0Red\0Purple\0Green\0Light green\0Turquoise\0Light red\0Gray\0Yellow\0Gray 2\0Light blue\0Gray/Purple\0Blue\0Pink\0Dark orange\0Orange\0");
+	ImGui::Combo("##ban_color", &config->griefing.banColor, "White\0Red\0Light Canary\0Green\0Light Green\0Lime\0Rose\0Light Gray\0Yellow\0??? (broken)\0Light Blue\0Blue\0Cold Gray\0Magenta\0Fire Orange\0Canary\0");
 	ImGui::SameLine();
 	if (ImGui::Button("Fake ban", {-1, 0}))
 		Misc::fakeBan();
 
 	ImGui::Checkbox("Vote reveal", &config->griefing.revealVotes);
+	ImGui::SameLine(90.0f);
 	ImGui::Checkbox("Name stealer", &config->griefing.nameStealer);
-	ImGui::Checkbox("Fake Prime status", &config->griefing.fakePrime);
-	ImGui::Checkbox("Clock tag", &config->griefing.clocktag);
 
+	ImGui::Checkbox("Clock tag", &config->griefing.clocktag);
+	ImGui::SameLine(90.0f);
 	ImGui::Checkbox("Custom clantag", &config->griefing.customClanTag);
 	if (config->griefing.customClanTag)
 	{
@@ -2040,10 +2041,20 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 		ImGuiCustom::colorPicker("Visualize target", config->griefing.blockbot.visualize);
 		ImGui::EndPopup();
 	}
+
 	ImGui::Checkbox("Spam use", &config->griefing.spamUse);
+	ImGui::SameLine(80.0f);
+	ImGui::Checkbox("Fake Prime status", &config->griefing.fakePrime);
 
 	ImGuiCustom::keyBind("Basmala chat", config->griefing.chatBasmala);
+	ImGui::SameLine(125.0f);
+	if (ImGui::Button("Test##basmala", {-1, 0}))
+		Misc::runChatSpammer(2);
+
 	ImGuiCustom::keyBind("Nuke chat", config->griefing.chatNuke);
+	ImGui::SameLine(125.0f);
+	if (ImGui::Button("Test##nuke", {-1, 0}))
+		Misc::runChatSpammer(1);
 
 	if (!contentOnly)
 		ImGui::End();
