@@ -2,6 +2,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <shared_lib/imgui/imgui_internal.h>
 
+#include "Helpers.hpp"
 #include "ImguiCustom.hpp"
 #include "../Interfaces.h"
 #include "../SDK/InputSystem.h"
@@ -835,16 +836,16 @@ void ImGuiCustom::drawTriangleFromCenter(ImDrawList *drawList, const ImVec2 &pos
 		drawList->AddPolyline(trianglePoints, 3, color | IM_COL32_A_MASK, ImDrawFlags_Closed, 1.5f);
 }
 
-ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec2 &pos, unsigned textColor, bool outline, unsigned outlineColor, bool centered, bool adjustHeight) noexcept
+ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec2 &pos, Color4 color, bool outline, bool centered, bool adjustHeight) noexcept
 {
-	if (!(outlineColor & IM_COL32_A_MASK) && !(textColor & IM_COL32_A_MASK))
-		return {};
+	const auto textColor = Helpers::calculateColor(color);
+	const auto outlineColor = Helpers::calculateColor(0.0f, 0.0f, 0.0f, color.color[3]);
 
 	const auto textSize = ImGui::CalcTextSize(text);
 	const auto horizontalOffset = centered ? textSize.x / 2 : 0.0f;
 	const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
 
-	if (outline && outlineColor & IM_COL32_A_MASK)
+	if (outline)
 	{
 		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1}, outlineColor, text);
 		drawList->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1}, outlineColor, text);
@@ -856,24 +857,24 @@ ImVec2 ImGuiCustom::drawText(ImDrawList *drawList, const char *text, const ImVec
 	return textSize;
 }
 
-ImVec2 ImGuiCustom::drawProgressBar(ImDrawList *drawList, float fraction, const ImVec2 &pos, ImVec2 size, bool vertical, bool reverse, unsigned color, bool background, bool border) noexcept
+ImVec2 ImGuiCustom::drawProgressBar(ImDrawList *drawList, float fraction, const ImVec2 &pos, ImVec2 size, bool vertical, bool reverse, Color4 color, bool background, bool border) noexcept
 {
-	if (!(color & IM_COL32_A_MASK))
-		return {};
+	const auto fillColor = Helpers::calculateColor(color);
+	const auto borderColor = Helpers::calculateColor(Color3(color));
 
 	fraction = std::clamp(1.0f - fraction, 0.0f, 1.0f);
 	size = ImMax(size, {0, 0});
 
 	if (background)
-		drawList->AddRectFilled(pos - ImVec2{1, 1}, pos + size + ImVec2{1, 1}, color & IM_COL32_A_MASK);
+		drawList->AddRectFilled(pos - ImVec2{1, 1}, pos + size + ImVec2{1, 1}, fillColor & IM_COL32_A_MASK);
 
 	if (border)
-		drawList->AddRect(pos, pos + size, color | IM_COL32_A_MASK);
+		drawList->AddRect(pos, pos + size, borderColor);
 
 	const ImVec2 max = reverse ? pos + size : pos + size * (vertical ? ImVec2{1, fraction} : ImVec2{fraction, 1});
 	const ImVec2 min = reverse ? (vertical ? ImVec2{pos.x, std::lerp(pos.y, max.y, fraction)} : ImVec2{std::lerp(pos.x, max.x, fraction), pos.y}) : pos;
 
-	drawList->AddRectFilled(min, max, color);
+	drawList->AddRectFilled(min, max, fillColor);
 
 	return vertical ? ImVec2{(max.x + min.x) / 2, (reverse ? min.y : max.y)} : ImVec2{(reverse ? min.x : max.x), (max.y + min.y) / 2};
 }
