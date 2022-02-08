@@ -92,11 +92,10 @@ void Misc::slowwalk(UserCmd *cmd) noexcept
 }
 
 static Vector quickPeekStartPos;
+static bool quickPeekReturning = false;
 
 void Misc::quickPeek(UserCmd *cmd) noexcept
 {
-	static bool hasShot = false;
-
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
@@ -105,7 +104,7 @@ void Misc::quickPeek(UserCmd *cmd) noexcept
 
 	if (static Helpers::KeyBindState flag; !flag[config->movement.quickPeek.bind])
 	{
-		hasShot = false;
+		quickPeekReturning = false;
 		quickPeekStartPos = Vector{};
 		return;
 	}
@@ -114,9 +113,9 @@ void Misc::quickPeek(UserCmd *cmd) noexcept
 		quickPeekStartPos = localPlayer->getAbsOrigin();
 
 	if (cmd->buttons & UserCmd::Button_Attack)
-		hasShot = true;
+		quickPeekReturning = true;
 
-	if (hasShot)
+	if (quickPeekReturning)
 	{
 		const float yaw = cmd->viewangles.y;
 		const auto delta = quickPeekStartPos - localPlayer->getAbsOrigin();
@@ -135,17 +134,16 @@ void Misc::quickPeek(UserCmd *cmd) noexcept
 			cmd->forwardmove = move.x;
 			cmd->sidemove = move.y;
 		} else
-		{
-			hasShot = false;
-			quickPeekStartPos = Vector{};
-		}
+			quickPeekReturning = false;
 	}
 }
 
 void Misc::visualizeQuickPeek(ImDrawList *drawList) noexcept
 {
-	if (static Helpers::KeyBindState flag; !flag[config->movement.quickPeek.bind] || !config->movement.quickPeek.visualize.enabled)
+	if (static Helpers::KeyBindState flag; !flag[config->movement.quickPeek.bind])
 		return;
+
+	if (quickPeekReturning ? !config->movement.quickPeek.visualizeActive.enabled : !config->movement.quickPeek.visualizeIdle.enabled)
 
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
@@ -185,8 +183,8 @@ void Misc::visualizeQuickPeek(ImDrawList *drawList) noexcept
 		};
 		std::sort(screenPoints.begin() + 1, screenPoints.begin() + count, [&](const auto &a, const auto &b) { return orientation(screenPoints[0], a, b) > 0.0f; });
 
-		const auto color = Helpers::calculateColor(config->movement.quickPeek.visualize);
-		const auto color2 = Helpers::calculateColor(Color3(config->movement.quickPeek.visualize));
+		const auto color = Helpers::calculateColor(quickPeekReturning ? config->movement.quickPeek.visualizeActive : config->movement.quickPeek.visualizeIdle);
+		const auto color2 = Helpers::calculateColor(Color3(quickPeekReturning ? config->movement.quickPeek.visualizeActive : config->movement.quickPeek.visualizeIdle));
 
 		drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
 		if (config->visuals.smokeHull.color[3] != 1.0f)

@@ -377,7 +377,8 @@ public:
 		struct QuickPeek
 		{
 			KeyBind bind;
-			Color4Toggle visualize;
+			Color4Toggle visualizeIdle;
+			Color4Toggle visualizeActive;
 		} quickPeek;
 
 	} movement;

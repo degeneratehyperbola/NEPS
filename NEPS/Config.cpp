@@ -792,7 +792,8 @@ static void from_json(const json &j, Config::Movement &m)
 static void from_json(const json &j, Config::Movement::QuickPeek &qp)
 {
 	read<value_t::object>(j, "Bind", qp.bind);
-	read<value_t::object>(j, "Visualize", qp.visualize);
+	read<value_t::object>(j, "Visualize idle", qp.visualizeIdle);
+	read<value_t::object>(j, "Visualize active", qp.visualizeActive);
 }
 
 bool Config::load(const char8_t *name, bool incremental) noexcept
@@ -1294,7 +1295,8 @@ static void to_json(json &j, const Config::Griefing &o)
 static void to_json(json& j, const Config::Movement::QuickPeek& o, const Config::Movement::QuickPeek& dummy = {})
 {
 	WRITE("Bind", bind);
-	WRITE("Visualize", visualize);
+	WRITE("Visualize idle", visualizeIdle);
+	WRITE("Visualize active", visualizeActive);
 }
 
 static void to_json(json &j, const Config::Movement &o)
