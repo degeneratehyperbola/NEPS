@@ -86,6 +86,8 @@ namespace ImGuiCustom
 
 	void boolCombo(const char *name, bool &value, const char *items) noexcept;
 
+	bool arrowButtonPopup(const char *id) noexcept;
+
 	void StyleColorsClassic(ImGuiStyle *dst = nullptr) noexcept;
 	void StyleColors1(ImGuiStyle *dst = nullptr) noexcept;
 	void StyleColors2(ImGuiStyle *dst = nullptr) noexcept;
