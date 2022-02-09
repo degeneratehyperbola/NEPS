@@ -203,7 +203,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Triggerbot::run(cmd);
 	Misc::edgeJump(cmd);
 	Misc::blockBot(cmd, currentViewAngles);
-	Misc::quickPeek(cmd);
+	Misc::autoPeek(cmd);
 	Misc::fastPlant(cmd);
 
 	AntiAim::run(cmd, currentViewAngles, sendPacket);

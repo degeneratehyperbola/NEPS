@@ -91,10 +91,10 @@ void Misc::slowwalk(UserCmd *cmd) noexcept
 	}
 }
 
-static Vector quickPeekStartPos;
-static bool quickPeekReturning = false;
+static Vector autoPeekStartPos;
+static bool autoPeekReturning = false;
 
-void Misc::quickPeek(UserCmd *cmd) noexcept
+void Misc::autoPeek(UserCmd *cmd) noexcept
 {
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
@@ -102,23 +102,23 @@ void Misc::quickPeek(UserCmd *cmd) noexcept
 	if (localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder || ~localPlayer->flags() & PlayerFlag_OnGround)
 		return;
 
-	if (static Helpers::KeyBindState flag; !flag[config->movement.quickPeek.bind])
+	if (static Helpers::KeyBindState flag; !flag[config->movement.autoPeek.bind])
 	{
-		quickPeekReturning = false;
-		quickPeekStartPos = Vector{};
+		autoPeekReturning = false;
+		autoPeekStartPos = Vector{};
 		return;
 	}
 
-	if (!quickPeekStartPos.notNull())
-		quickPeekStartPos = localPlayer->getAbsOrigin();
+	if (!autoPeekStartPos.notNull())
+		autoPeekStartPos = localPlayer->getAbsOrigin();
 
 	if (Helpers::attacking(cmd->buttons & UserCmd::Button_Attack, cmd->buttons & UserCmd::Button_Attack2))
-		quickPeekReturning = true;
+		autoPeekReturning = true;
 
-	if (quickPeekReturning)
+	if (autoPeekReturning)
 	{
 		const float yaw = cmd->viewangles.y;
-		const auto delta = quickPeekStartPos - localPlayer->getAbsOrigin();
+		const auto delta = autoPeekStartPos - localPlayer->getAbsOrigin();
 
 		if (delta.length2D() > 5.0f)
 		{
@@ -134,22 +134,22 @@ void Misc::quickPeek(UserCmd *cmd) noexcept
 			cmd->forwardmove = move.x;
 			cmd->sidemove = move.y;
 		} else
-			quickPeekReturning = false;
+			autoPeekReturning = false;
 	}
 }
 
 void Misc::visualizeQuickPeek(ImDrawList *drawList) noexcept
 {
-	if (static Helpers::KeyBindState flag; !flag[config->movement.quickPeek.bind])
+	if (static Helpers::KeyBindState flag; !flag[config->movement.autoPeek.bind])
 		return;
 
-	if (quickPeekReturning ? !config->movement.quickPeek.visualizeActive.enabled : !config->movement.quickPeek.visualizeIdle.enabled)
+	if (autoPeekReturning ? !config->movement.autoPeek.visualizeActive.enabled : !config->movement.autoPeek.visualizeIdle.enabled)
 		return;
 
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (quickPeekStartPos.notNull())
+	if (autoPeekStartPos.notNull())
 	{
 		static const auto circumference = []
 		{
@@ -169,7 +169,7 @@ void Misc::visualizeQuickPeek(ImDrawList *drawList) noexcept
 
 		for (const auto &point : circumference)
 		{
-			if (Helpers::worldToScreen(quickPeekStartPos + point, screenPoints[count]))
+			if (Helpers::worldToScreen(autoPeekStartPos + point, screenPoints[count]))
 				++count;
 		}
 
@@ -184,8 +184,8 @@ void Misc::visualizeQuickPeek(ImDrawList *drawList) noexcept
 		};
 		std::sort(screenPoints.begin() + 1, screenPoints.begin() + count, [&](const auto &a, const auto &b) { return orientation(screenPoints[0], a, b) > 0.0f; });
 
-		const auto color = Helpers::calculateColor(quickPeekReturning ? config->movement.quickPeek.visualizeActive : config->movement.quickPeek.visualizeIdle);
-		const auto color2 = Helpers::calculateColor(Color3(quickPeekReturning ? config->movement.quickPeek.visualizeActive : config->movement.quickPeek.visualizeIdle));
+		const auto color = Helpers::calculateColor(autoPeekReturning ? config->movement.autoPeek.visualizeActive : config->movement.autoPeek.visualizeIdle);
+		const auto color2 = Helpers::calculateColor(Color3(autoPeekReturning ? config->movement.autoPeek.visualizeActive : config->movement.autoPeek.visualizeIdle));
 
 		drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
 		if (config->visuals.smokeHull.color[3] != 1.0f)
