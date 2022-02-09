@@ -2074,13 +2074,13 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Edge jump", config->movement.edgeJump);
 	ImGui::Checkbox("Fast stop", &config->movement.fastStop);
 
-	ImGuiCustom::keyBind("Quick peek", config->movement.quickPeek.bind);
-	if (ImGuiCustom::arrowButtonPopup("quick_peek"))
+	ImGuiCustom::keyBind("Auto peek", config->movement.autoPeek.bind);
+	if (ImGuiCustom::arrowButtonPopup("auto_peek"))
 	{
 		ImGui::TextUnformatted("Visualize");
 		ImGui::Indent();
-		ImGuiCustom::colorPicker("Awaiting shot", config->movement.quickPeek.visualizeIdle);
-		ImGuiCustom::colorPicker("Returning", config->movement.quickPeek.visualizeActive);
+		ImGuiCustom::colorPicker("Awaiting shot", config->movement.autoPeek.visualizeIdle);
+		ImGuiCustom::colorPicker("Returning", config->movement.autoPeek.visualizeActive);
 		ImGui::Unindent();
 		ImGui::EndPopup();
 	}

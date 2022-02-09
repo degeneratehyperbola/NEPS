@@ -785,7 +785,7 @@ static void from_json(const json &j, Config::Movement &m)
 	read(j, "Auto strafe", m.autoStrafe);
 	read<value_t::object>(j, "Edge jump", m.edgeJump);
 	read(j, "Fast stop", m.fastStop);
-	read<value_t::object>(j, "Quick peek", m.quickPeek);
+	read<value_t::object>(j, "Quick peek", m.autoPeek);
 }
 
 static void from_json(const json &j, Config::Movement::QuickPeek &qp)
@@ -1305,7 +1305,7 @@ static void to_json(json &j, const Config::Movement &o)
 	WRITE("Auto strafe", autoStrafe);
 	WRITE("Edge jump", edgeJump);
 	WRITE("Fast stop", fastStop);
-	WRITE("Quick peek", quickPeek);
+	WRITE("Quick peek", autoPeek);
 }
 
 static void to_json(json &j, const Config::Visuals::ColorCorrection &o, const Config::Visuals::ColorCorrection &dummy)
