@@ -107,10 +107,9 @@ void GUI::render() noexcept
 	if (festive.get())
 		ImGui::GetBackgroundDrawList()->AddImage(festive.get(), {0, 0}, {ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.x / 960 * 174}, {0, 0}, {1, 0.99f}, 0x00FFFFFF | (static_cast<unsigned>(alpha) << IM_COL32_A_SHIFT));
 
-	if (config->misc.goFestive && gui->open)
-		alpha = alpha * 0.9f + 255 * 0.1f;
-	else
-		alpha = alpha * 0.9f;
+	alpha = config->misc.goFestive && gui->open ?
+		Helpers::approachValSmooth(255.0f, alpha, memory->globalVars->frameTime * 20.0f) :
+		Helpers::approachValSmooth(0.0f, alpha, memory->globalVars->frameTime * 20.0f);
 
 	if (!open)
 		return;
