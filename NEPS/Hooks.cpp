@@ -168,7 +168,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	if (!cmd->commandNumber)
 		return result;
 
-	bool &sendPacket = *reinterpret_cast<bool *>(*reinterpret_cast<std::uintptr_t *>(FRAME_ADDRESS) - 0x1C);
+	bool &sendPacket = *reinterpret_cast<bool *>(*reinterpret_cast<std::uintptr_t *>(FRAME_ADDRESS) - 0x34);
 
 	static auto previousViewAngles = cmd->viewangles;
 	const auto currentViewAngles = cmd->viewangles;
