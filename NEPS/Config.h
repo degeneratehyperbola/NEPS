@@ -346,7 +346,6 @@ public:
 		struct Blockbot
 		{
 			KeyBind bind;
-			KeyBind target;
 			float trajectoryFac = 1.0f;
 			float distanceFac = 2.0f;
 			Color4ToggleThickness visualize = {0.0f, 1.0f, 0.0f, 0.7f};

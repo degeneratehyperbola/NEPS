@@ -2032,7 +2032,6 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	ImGuiCustom::keyBind("Blockbot", config->griefing.blockbot.bind);
 	if (ImGuiCustom::arrowButtonPopup("blockbot"))
 	{
-		ImGuiCustom::keyBind("Choose target", config->griefing.blockbot.target);
 		ImGui::PushItemWidth(192.0f);
 		ImGui::SliderFloat("##tfactor", &config->griefing.blockbot.trajectoryFac, 0.0f, 4.0f, "Trajectory factor %.3f");
 		ImGui::SliderFloat("##dfactor", &config->griefing.blockbot.distanceFac, 0.0f, 4.0f, "Distance factor %.3f");
