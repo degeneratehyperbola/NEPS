@@ -115,7 +115,7 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	AntiAim::visualize(ImGui::GetBackgroundDrawList());
 	Visuals::hitMarker(nullptr, ImGui::GetBackgroundDrawList());
 	Visuals::penetrationCrosshair(ImGui::GetBackgroundDrawList());
-	Misc::visualizeInaccuracy(ImGui::GetBackgroundDrawList());
+	Misc::visualizeAccuracy(ImGui::GetBackgroundDrawList());
 	Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
 	Misc::overlayCrosshair(ImGui::GetBackgroundDrawList());
 
@@ -621,7 +621,7 @@ static void __stdcall renderSmokeOverlay(bool update) noexcept
 
 static bool __stdcall isConnected() noexcept
 {
-	if (config->misc.unlockInvertory && RETURN_ADDRESS == memory->invertoryBlock)
+	if (config->misc.unlockInventory && RETURN_ADDRESS == memory->inventoryBlock)
 		return false;
 
 	return hooks->engine.callOriginal<bool, 27>();
