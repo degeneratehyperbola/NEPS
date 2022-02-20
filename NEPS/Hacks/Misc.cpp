@@ -1129,8 +1129,14 @@ void Misc::blockBot(UserCmd *cmd, const Vector &currentViewAngles) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	float best = 255.0f;
-	if (static Helpers::KeyBindState flag; flag[config->griefing.blockbot.target])
+	if (static Helpers::KeyBindState flag; !flag[config->griefing.blockbot.bind])
+	{
+		blockTargetHandle = 0;
+		return;
+	}
+
+	float best = 1024.0f;
+	if (!blockTargetHandle)
 	{
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
 		{
@@ -1139,18 +1145,14 @@ void Misc::blockBot(UserCmd *cmd, const Vector &currentViewAngles) noexcept
 			if (!entity || !entity->isPlayer() || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive())
 				continue;
 
-			const auto angle = Helpers::calculateRelativeAngle(localPlayer->getEyePosition(), entity->getEyePosition(), currentViewAngles);
-			const auto fov = std::hypot(angle.x, angle.y);
-
-			if (fov < best)
+			const auto distance = entity->getAbsOrigin().distTo(localPlayer->getAbsOrigin());
+			if (distance < best)
 			{
-				best = fov;
+				best = distance;
 				blockTargetHandle = entity->handle();
 			}
 		}
 	}
-
-	if (static Helpers::KeyBindState flag; !flag[config->griefing.blockbot.bind]) return;
 
 	const auto target = interfaces->entityList->getEntityFromHandle(blockTargetHandle);
 	if (target && target->isPlayer() && target != localPlayer.get() && !target->isDormant() && target->isAlive())
