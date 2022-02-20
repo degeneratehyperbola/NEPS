@@ -701,7 +701,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Disable extrapolation", m.noExtrapolate);
 	read(j, "Disable IK", m.disableIK);
 	read(j, "Resolve LBY", m.resolveLby);
-	read(j, "Unlock invertory", m.unlockInvertory);
+	read(j, "Unlock inventory", m.unlockInvertory);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
 	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
 	read(j, "Quick healthshot key", m.quickHealthshotKey);
@@ -1206,7 +1206,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Disable extrapolation", noExtrapolate);
 	WRITE("Disable IK", disableIK);
 	WRITE("Resolve LBY", resolveLby);
-	WRITE("Unlock invertory", unlockInvertory);
+	WRITE("Unlock inventory", unlockInvertory);
 	WRITE("Disable HUD blur", disablePanoramablur);
 	WRITE("Prepare revolver", prepareRevolver);
 	WRITE("Quick healthshot key", quickHealthshotKey);

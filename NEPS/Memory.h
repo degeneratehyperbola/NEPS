@@ -54,7 +54,7 @@ public:
 	std::add_pointer_t<void __fastcall(const char *)> loadSky;
 	std::add_pointer_t<void __fastcall(const char *, const char *)> setClanTag;
 	uintptr_t cameraThink;
-	uintptr_t invertoryBlock;
+	uintptr_t inventoryBlock;
 	std::add_pointer_t<bool __stdcall(const char *)> acceptMatch;
 	std::add_pointer_t<bool __cdecl(Vector, Vector, short)> lineGoesThroughSmoke;
 	int(__thiscall *getSequenceActivity)(void *, int);

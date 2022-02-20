@@ -1504,7 +1504,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 	ImGui::Combo("Recoil crosshair", &config->visuals.recoilCrosshairType, "None\0Circle dot\0Dot\0Cross\0Empty cross\0");
 	ImGui::PopItemWidth();
 
-	ImGuiCustom::colorPicker("Inaccuracy circle", config->visuals.inaccuracyCircle);
+	ImGuiCustom::colorPicker("Accuracy circle", config->visuals.accuracyCircle);
 	ImGuiCustom::colorPicker("Molotov radius", config->visuals.molotovHull);
 	ImGui::SameLine(130);
 	ImGuiCustom::colorPicker("Smoke radius", config->visuals.smokeHull);
@@ -2127,7 +2127,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Fix tablet signal", &config->misc.fixTabletSignal);
 	ImGui::Checkbox("Radar hack", &config->misc.radarHack);
-	ImGui::Checkbox("Unlock invertory", &config->misc.unlockInvertory);
+	ImGui::Checkbox("Unlock inventory", &config->misc.unlockInventory);
 	ImGui::Checkbox("Reveal ranks", &config->misc.revealRanks);
 	ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
 	ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);

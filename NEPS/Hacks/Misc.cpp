@@ -335,9 +335,9 @@ void Misc::recoilCrosshair(ImDrawList *drawList) noexcept
 	}
 }
 
-void Misc::visualizeInaccuracy(ImDrawList *drawList) noexcept
+void Misc::visualizeAccuracy(ImDrawList *drawList) noexcept
 {
-	if (!config->visuals.inaccuracyCircle.enabled)
+	if (!config->visuals.accuracyCircle.enabled)
 		return;
 
 	GameData::Lock lock;
@@ -354,9 +354,9 @@ void Misc::visualizeInaccuracy(ImDrawList *drawList) noexcept
 		if (radius > displaySize.x || radius > displaySize.y)
 			return;
 
-		const auto color = Helpers::calculateColor(config->visuals.inaccuracyCircle);
+		const auto color = Helpers::calculateColor(config->visuals.accuracyCircle);
 		drawList->AddCircleFilled(displaySize / 2, radius, color);
-		if (config->visuals.inaccuracyCircle.outline)
+		if (config->visuals.accuracyCircle.outline)
 			drawList->AddCircle(displaySize / 2, radius, color | IM_COL32_A_MASK);
 	}
 }
