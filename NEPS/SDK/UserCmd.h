@@ -36,4 +36,5 @@ struct UserCmd
 	short mousedx;
 	short mousedy;
 	bool hasBeenPredicted;
+	PAD(24)
 };
