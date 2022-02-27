@@ -50,7 +50,6 @@ public:
 	UtlVector<Entity *> *plantedC4s;
 
 	bool *disablePostProcessing;
-
 	std::add_pointer_t<void __fastcall(const char *)> loadSky;
 	std::add_pointer_t<void __fastcall(const char *, const char *)> setClanTag;
 	uintptr_t cameraThink;
