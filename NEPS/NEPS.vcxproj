@@ -59,7 +59,9 @@
     <ClCompile Include="SDK\CRC.cpp" />
     <ClCompile Include="SDK\Entity.cpp" />
     <ClCompile Include="SDK\GlobalVars.cpp" />
+    <ClCompile Include="SDK\Input.cpp" />
     <ClCompile Include="SDK\KeyValues.cpp" />
+    <ClCompile Include="SDK\UserCmd.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared_lib\imgui\imconfig.h" />

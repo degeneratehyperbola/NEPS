@@ -173,6 +173,12 @@
     <ClCompile Include="..\shared_lib\stb\stb.cpp">
       <Filter>lib\stb</Filter>
     </ClCompile>
+    <ClCompile Include="SDK\Input.cpp">
+      <Filter>SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\UserCmd.cpp">
+      <Filter>SDK</Filter>
+    </ClCompile>
     <ClCompile Include="SDK\CRC.cpp">
       <Filter>SDK</Filter>
     </ClCompile>

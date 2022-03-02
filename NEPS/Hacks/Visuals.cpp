@@ -235,7 +235,7 @@ void Visuals::thirdperson() noexcept
 	if (localPlayer->isAlive())
 		memory->input->isCameraInThirdPerson = thirdPerson[config->visuals.thirdPerson];
 	else if (localPlayer->getObserverTarget() && (localPlayer->observerMode() == ObsMode::InEye || localPlayer->observerMode() == ObsMode::Chase))
-	{ 
+	{
 		memory->input->isCameraInThirdPerson = false;
 		localPlayer->observerMode() = thirdPerson[config->visuals.thirdPerson] ? ObsMode::InEye : ObsMode::Chase;
 	}
@@ -243,41 +243,43 @@ void Visuals::thirdperson() noexcept
 
 void Visuals::removeVisualRecoil(FrameStage stage) noexcept
 {
-    if (!localPlayer || !localPlayer->isAlive())
-        return;
+	if (!localPlayer || !localPlayer->isAlive())
+		return;
 
-    static Vector aimPunch;
-    static Vector viewPunch;
+	static Vector aimPunch;
+	static Vector viewPunch;
 
-    if (stage == FrameStage::RenderStart) {
-        aimPunch = localPlayer->aimPunchAngle();
-        viewPunch = localPlayer->viewPunchAngle();
+	if (stage == FrameStage::RenderStart)
+	{
+		aimPunch = localPlayer->aimPunchAngle();
+		viewPunch = localPlayer->viewPunchAngle();
 
-        if (config->visuals.noAimPunch)
-            localPlayer->aimPunchAngle() = Vector{ };
+		if (config->visuals.noAimPunch)
+			localPlayer->aimPunchAngle() = Vector{ };
 
-        if (config->visuals.noViewPunch)
-            localPlayer->viewPunchAngle() = Vector{ };
+		if (config->visuals.noViewPunch)
+			localPlayer->viewPunchAngle() = Vector{ };
 
-    } else if (stage == FrameStage::RenderEnd) {
-        localPlayer->aimPunchAngle() = aimPunch;
-        localPlayer->viewPunchAngle() = viewPunch;
-    }
+	} else if (stage == FrameStage::RenderEnd)
+	{
+		localPlayer->aimPunchAngle() = aimPunch;
+		localPlayer->viewPunchAngle() = viewPunch;
+	}
 }
 
 void Visuals::removeBlur(FrameStage stage) noexcept
 {
-    if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
-        return;
+	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
+		return;
 
-    static auto blur = interfaces->materialSystem->findMaterial("dev/scope_bluroverlay");
-    blur->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RenderStart && config->visuals.noBlur);
+	static auto blur = interfaces->materialSystem->findMaterial("dev/scope_bluroverlay");
+	blur->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RenderStart && config->visuals.noBlur);
 }
 
 void Visuals::removeGrass(FrameStage stage) noexcept
 {
-    if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
-        return;
+	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
+		return;
 
 	constexpr auto getGrassMaterialName = []() noexcept -> const char *
 	{
@@ -293,8 +295,8 @@ void Visuals::removeGrass(FrameStage stage) noexcept
 		}
 	};
 
-    if (const auto grassMaterialName = getGrassMaterialName())
-        interfaces->materialSystem->findMaterial(grassMaterialName)->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RenderStart && config->visuals.noGrass);
+	if (const auto grassMaterialName = getGrassMaterialName())
+		interfaces->materialSystem->findMaterial(grassMaterialName)->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RenderStart && config->visuals.noGrass);
 }
 
 #define DRAW_SCREEN_EFFECT(material) \
@@ -302,84 +304,86 @@ void Visuals::removeGrass(FrameStage stage) noexcept
     const auto drawFunction = memory->drawScreenEffectMaterial; \
     int w, h; \
     interfaces->surface->getScreenSize(w, h); \
-    __asm { \
-        __asm push h \
-        __asm push w \
-        __asm push 0 \
-        __asm xor edx, edx \
-        __asm mov ecx, material \
-        __asm call drawFunction \
-        __asm add esp, 12 \
-    } \
+	__asm push h \
+	__asm push w \
+    __asm push 0 \
+    __asm xor edx, edx \
+    __asm mov ecx, material \
+    __asm call drawFunction \
+    __asm add esp, 12 \
 }
 
 void Visuals::applyScreenEffects() noexcept
 {
-    if (!config->visuals.screenEffect)
-        return;
+	if (!config->visuals.screenEffect)
+		return;
 
-    const auto material = interfaces->materialSystem->findMaterial([] {
-        constexpr std::array effects{
-            "effects/dronecam",
-            "effects/underwater_overlay",
-            "effects/healthboost",
-            "effects/dangerzone_screen"
-        };
+	const auto material = interfaces->materialSystem->findMaterial([]
+		{
+			constexpr std::array effects{
+				"effects/dronecam",
+				"effects/underwater_overlay",
+				"effects/healthboost",
+				"effects/dangerzone_screen"
+			};
 
-        if (config->visuals.screenEffect <= 2 || static_cast<std::size_t>(config->visuals.screenEffect - 2) >= effects.size())
-            return effects[0];
-        return effects[config->visuals.screenEffect - 2];
-    }());
+			if (config->visuals.screenEffect <= 2 || static_cast<std::size_t>(config->visuals.screenEffect - 2) >= effects.size())
+				return effects[0];
+			return effects[config->visuals.screenEffect - 2];
+		}());
 
-    if (config->visuals.screenEffect == 1)
-        material->findVar("$c0_x")->setValue(0.0f);
-    else if (config->visuals.screenEffect == 2)
-        material->findVar("$c0_x")->setValue(0.1f);
-    else if (config->visuals.screenEffect >= 4)
-        material->findVar("$c0_x")->setValue(1.0f);
+	if (config->visuals.screenEffect == 1)
+		material->findVar("$c0_x")->setValue(0.0f);
+	else if (config->visuals.screenEffect == 2)
+		material->findVar("$c0_x")->setValue(0.1f);
+	else if (config->visuals.screenEffect >= 4)
+		material->findVar("$c0_x")->setValue(1.0f);
 
-    DRAW_SCREEN_EFFECT(material)
+	DRAW_SCREEN_EFFECT(material)
 }
 
-void Visuals::hitEffect(GameEvent* event) noexcept
+void Visuals::hitEffect(GameEvent *event) noexcept
 {
-    if (config->visuals.hitEffect && localPlayer) {
-        static float lastHitTime = 0.0f;
+	if (config->visuals.hitEffect && localPlayer)
+	{
+		static float lastHitTime = 0.0f;
 
-        if (event && interfaces->engine->getPlayerFromUserID(event->getInt("attacker")) == localPlayer->index()) {
-            lastHitTime = memory->globalVars->realTime;
-            return;
-        }
+		if (event && interfaces->engine->getPlayerFromUserID(event->getInt("attacker")) == localPlayer->index())
+		{
+			lastHitTime = memory->globalVars->realTime;
+			return;
+		}
 
 		const auto timeSinceHit = memory->globalVars->realTime - lastHitTime;
 
 		if (timeSinceHit > config->visuals.hitEffectTime)
 			return;
 
-        constexpr auto getEffectMaterial = [] {
-            static constexpr const char* effects[]{
-            "effects/dronecam",
-            "effects/underwater_overlay",
-            "effects/healthboost",
-            "effects/dangerzone_screen"
-            };
+		constexpr auto getEffectMaterial = []
+		{
+			static constexpr const char *effects[]{
+			"effects/dronecam",
+			"effects/underwater_overlay",
+			"effects/healthboost",
+			"effects/dangerzone_screen"
+			};
 
-            if (config->visuals.hitEffect <= 2)
-                return effects[0];
-            return effects[config->visuals.hitEffect - 2];
-        };
+			if (config->visuals.hitEffect <= 2)
+				return effects[0];
+			return effects[config->visuals.hitEffect - 2];
+		};
 
-           
-        auto material = interfaces->materialSystem->findMaterial(getEffectMaterial());
-        if (config->visuals.hitEffect == 1)
-            material->findVar("$c0_x")->setValue(0.0f);
-        else if (config->visuals.hitEffect == 2)
-            material->findVar("$c0_x")->setValue(1.0f - timeSinceHit / config->visuals.hitEffectTime * 0.1f);
-        else if (config->visuals.hitEffect >= 4)
-            material->findVar("$c0_x")->setValue(1.0f - timeSinceHit / config->visuals.hitEffectTime);
 
-        DRAW_SCREEN_EFFECT(material)
-    }
+		auto material = interfaces->materialSystem->findMaterial(getEffectMaterial());
+		if (config->visuals.hitEffect == 1)
+			material->findVar("$c0_x")->setValue(0.0f);
+		else if (config->visuals.hitEffect == 2)
+			material->findVar("$c0_x")->setValue(1.0f - timeSinceHit / config->visuals.hitEffectTime * 0.1f);
+		else if (config->visuals.hitEffect >= 4)
+			material->findVar("$c0_x")->setValue(1.0f - timeSinceHit / config->visuals.hitEffectTime);
+
+		DRAW_SCREEN_EFFECT(material)
+	}
 }
 
 void Visuals::killEffect(GameEvent *event) noexcept
@@ -469,46 +473,48 @@ void Visuals::hitMarker(GameEvent *event, ImDrawList *drawList) noexcept
 
 void Visuals::disablePostProcessing(FrameStage stage) noexcept
 {
-    if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
-        return;
+	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
+		return;
 
-    *memory->disablePostProcessing = stage == FrameStage::RenderStart && config->visuals.disablePostProcessing;
+	*memory->disablePostProcessing = stage == FrameStage::RenderStart && config->visuals.disablePostProcessing;
 }
 
 void Visuals::reduceFlashEffect() noexcept
 {
-    if (localPlayer)
-        localPlayer->flashMaxAlpha() = 255.0f - config->visuals.flashReduction * 2.55f;
+	if (localPlayer)
+		localPlayer->flashMaxAlpha() = 255.0f - config->visuals.flashReduction * 2.55f;
 }
 
-bool Visuals::removeHands(const char* modelName) noexcept
+bool Visuals::removeHands(const char *modelName) noexcept
 {
-    return config->visuals.noHands && std::strstr(modelName, "arms") && !std::strstr(modelName, "sleeve");
+	return config->visuals.noHands && std::strstr(modelName, "arms") && !std::strstr(modelName, "sleeve");
 }
 
-bool Visuals::removeSleeves(const char* modelName) noexcept
+bool Visuals::removeSleeves(const char *modelName) noexcept
 {
-    return config->visuals.noSleeves && std::strstr(modelName, "sleeve");
+	return config->visuals.noSleeves && std::strstr(modelName, "sleeve");
 }
 
-bool Visuals::removeWeapons(const char* modelName) noexcept
+bool Visuals::removeWeapons(const char *modelName) noexcept
 {
-    return config->visuals.noWeapons && std::strstr(modelName, "models/weapons/v_")
-        && !std::strstr(modelName, "arms") && !std::strstr(modelName, "tablet")
-        && !std::strstr(modelName, "parachute") && !std::strstr(modelName, "fists");
+	return config->visuals.noWeapons && std::strstr(modelName, "models/weapons/v_")
+		&& !std::strstr(modelName, "arms") && !std::strstr(modelName, "tablet")
+		&& !std::strstr(modelName, "parachute") && !std::strstr(modelName, "fists");
 }
 
 void Visuals::skybox(FrameStage stage) noexcept
 {
-    if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
-        return;
+	if (stage != FrameStage::RenderStart && stage != FrameStage::RenderEnd)
+		return;
 
-    if (const auto& skyboxes = Helpers::skyboxList; stage == FrameStage::RenderStart && config->visuals.skybox > 0 && static_cast<std::size_t>(config->visuals.skybox) < skyboxes.size()) {
-        memory->loadSky(skyboxes[config->visuals.skybox]);
-    } else {
-        static const auto skyNameVar = interfaces->cvar->findVar("sv_skyname");
-        memory->loadSky(skyNameVar->string);
-    }
+	if (const auto &skyboxes = Helpers::skyboxList; stage == FrameStage::RenderStart && config->visuals.skybox > 0 && static_cast<std::size_t>(config->visuals.skybox) < skyboxes.size())
+	{
+		memory->loadSky(skyboxes[config->visuals.skybox]);
+	} else
+	{
+		static const auto skyNameVar = interfaces->cvar->findVar("sv_skyname");
+		memory->loadSky(skyNameVar->string);
+	}
 }
 
 void Visuals::bulletBeams(GameEvent *event)
@@ -667,7 +673,7 @@ void Visuals::drawMolotovHull(ImDrawList *drawList) noexcept
 	}
 }
 
-void Visuals::drawSmokeHull(ImDrawList* drawList) noexcept
+void Visuals::drawSmokeHull(ImDrawList *drawList) noexcept
 {
 	if (!config->visuals.smokeHull.enabled)
 		return;

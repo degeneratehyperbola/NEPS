@@ -37,4 +37,18 @@ struct UserCmd
 	short mousedy;
 	bool hasBeenPredicted;
 	PAD(24)
+
+	uint32_t computeCRC() const noexcept;
+};
+
+struct VerifiedUserCmd
+{
+	VerifiedUserCmd(const UserCmd *cmd) noexcept
+	{
+		this->cmd = *cmd;
+		this->crc = cmd->computeCRC();
+	}
+
+	UserCmd cmd;
+	uint32_t crc;
 };
