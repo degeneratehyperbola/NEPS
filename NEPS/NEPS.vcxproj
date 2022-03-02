@@ -56,6 +56,7 @@
     <ClCompile Include="Hacks\Misc.cpp" />
     <ClCompile Include="Hooks.cpp" />
     <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="SDK\CRC.cpp" />
     <ClCompile Include="SDK\Entity.cpp" />
     <ClCompile Include="SDK\GlobalVars.cpp" />
     <ClCompile Include="SDK\KeyValues.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="SDK\Client.h" />
     <ClInclude Include="SDK\ClientMode.h" />
     <ClInclude Include="SDK\ConVar.h" />
+    <ClInclude Include="SDK\CRC.h" />
     <ClInclude Include="SDK\Effects.h" />
     <ClInclude Include="SDK\EngineTrace.h" />
     <ClInclude Include="SDK\Entity.h" />
