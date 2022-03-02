@@ -324,9 +324,6 @@ void LocalPlayerData::update() noexcept
 			obbMins = collidable->obbMins();
 		}
 
-		//if (!obs->isPlayer())
-			return;
-
 		eyePosition = obs->getEyePosition();
 		aimPunch = eyePosition + Vector::fromAngle(interfaces->engine->getViewAngles() + obs->getAimPunch()) * 1000;
 
