@@ -135,6 +135,7 @@ void GUI::render() noexcept
 		renderStyleWindow();
 		renderExploitsWindow();
 		renderGriefingWindow();
+		renderPlayersWindow();
 		renderMovementWindow();
 		renderMiscWindow();
 		renderConfigWindow();
@@ -254,6 +255,11 @@ void GUI::renderGuiStyle2() noexcept
 			renderGriefingWindow(true);
 			ImGui::EndTabItem();
 		}
+		if (ImGui::BeginTabItem("Players"))
+		{
+			renderPlayersWindow(true);
+			ImGui::EndTabItem();
+		}
 		if (ImGui::BeginTabItem("Movement"))
 		{
 			renderMovementWindow(true);
@@ -311,6 +317,7 @@ void GUI::renderMenuBar() noexcept
 		menuBarItem("Visuals", window.visuals);
 		menuBarItem("Skin changer", window.skinChanger);
 		menuBarItem("Sound", window.sound);
+		menuBarItem("Players", window.players);
 		menuBarItem("Griefing", window.griefing);
 		menuBarItem("Exploits", window.exploits);
 		menuBarItem("Movement", window.movement);
@@ -367,6 +374,53 @@ void GUI::renderMenuBar() noexcept
 
 		ImGui::EndMainMenuBar();
 	}
+}
+
+void GUI::renderPlayersWindow(bool contentOnly) noexcept {
+	if (!contentOnly)
+	{
+		if (!window.players)
+			return;
+		ImGui::Begin("Players", &window.antiAim, windowFlags);
+	}
+
+	ImGui::Checkbox("Enabled", &config->players.enabled);
+
+	ImGui::Separator();
+
+	constexpr std::array testItems = { "Joe", "Player 1", "Cum Guzzler", "c*ntDestroyer" };
+	static std::size_t currentItem;
+
+	if (ImGui::BeginListBox("##list", { 70, 120 }))
+	{
+		for (std::size_t i = 0; i < testItems.size(); ++i)
+		{
+			if (ImGui::Selectable(testItems[i], currentItem == i))
+				currentItem = i;
+
+			if (ImGui::BeginDragDropSource())
+			{
+				// todo: replace this with player settings
+				ImGui::SetDragDropPayload("PlayerCFG", &config->antiAim[testItems[i]], sizeof(Config::AntiAim), ImGuiCond_Once);
+				DRAGNDROP_HINT("PlayerCFG")
+					ImGui::EndDragDropSource();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("PlayerCFG"))
+				{
+					//const auto& data = *(Config::AntiAim*)payload->Data;
+					//config->antiAim[testItems[i]] = data;
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+		}
+		ImGui::EndListBox();
+	}
+
+	ImGui::SameLine();
 }
 
 void GUI::renderAimbotWindow(bool contentOnly) noexcept

@@ -21,6 +21,7 @@ private:
 	void renderContextMenu() noexcept;
 	void renderMenuBar() noexcept;
 	void renderDebugWindow() noexcept;
+	void renderPlayersWindow(bool contentOnly = false) noexcept;
 	void renderAimbotWindow(bool contentOnly = false) noexcept;
 	void renderAntiAimWindow(bool contentOnly = false) noexcept;
 	void renderTriggerbotWindow(bool contentOnly = false) noexcept;
@@ -50,6 +51,7 @@ private:
 		bool visuals = false;
 		bool skinChanger = false;
 		bool sound = false;
+		bool players = false;
 		bool griefing = false;
 		bool exploits = false;
 		bool movement = false;

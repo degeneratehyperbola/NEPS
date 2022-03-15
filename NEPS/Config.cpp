@@ -618,6 +618,11 @@ static void from_json(const json &j, Config::Sound &s)
 	read<value_t::string>(j, "Custom death sound", s.customDeathSound);
 }
 
+static void from_json(const json& j, Config::Players& p)
+{
+	read(j, "Enabled", p.enabled);
+}
+
 static void from_json(const json &j, Config::Style &s)
 {
 	read(j, "Menu style", s.menuStyle);
@@ -818,6 +823,7 @@ bool Config::load(const char8_t *name, bool incremental) noexcept
 	read<value_t::object>(j, "Visuals", visuals);
 	read(j, "Skin changer", skinChanger);
 	read<value_t::object>(j, "Sound", sound);
+	read<value_t::object>(j, "Players", players);
 	read<value_t::object>(j, "Style", style);
 	read<value_t::object>(j, "Misc", misc);
 	read<value_t::object>(j, "Exploits", exploits);
@@ -1144,6 +1150,12 @@ static void to_json(json &j, const Config::Sound &o)
 	WRITE("Custom hit sound", customHitSound);
 	WRITE("Custom kill sound", customKillSound);
 	WRITE("Custom death sound", customDeathSound);
+}
+
+static void to_json(json& j, const Config::Players& o)
+{
+	const Config::Players dummy;
+	WRITE("Enabled", enabled);
 }
 
 static void to_json(json &j, const Config::Misc::PurchaseList &o, const Config::Misc::PurchaseList &dummy = {})
@@ -1498,6 +1510,7 @@ void Config::save(size_t id) const noexcept
 		j["Chams"] = chams;
 		j["ESP"] = esp;
 		j["Sound"] = sound;
+		j["Players"] = players;
 		j["Visuals"] = visuals;
 		j["Misc"] = misc;
 		j["Style"] = style;
@@ -1546,6 +1559,7 @@ void Config::reset() noexcept
 	visuals = {};
 	skinChanger = {};
 	sound = {};
+	players = {};
 	style = {};
 	exploits = {};
 	griefing = {};

@@ -308,6 +308,10 @@ public:
 		std::string customDeathSound;
 	} sound;
 
+	struct Players {
+		bool enabled = false;
+	} players;
+
 	struct Style
 	{
 		int menuStyle = 0;
