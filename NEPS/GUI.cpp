@@ -385,7 +385,7 @@ void GUI::renderPlayersWindow(bool contentOnly) noexcept {
 		ImGui::Begin("Players", &window.players, windowFlags);
 	}
 
-	ImGui::Checkbox("Per Player Enabled", &config->players.enabled);
+	ImGui::Checkbox("Per Player", &config->players.enabled);
 	ImGui::SameLine(90.0f);
 	ImGui::Checkbox("Filter if Spectated", &config->players.spectatorFilter);
 	if (ImGui::IsItemHovered())
