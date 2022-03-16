@@ -106,10 +106,6 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || entity->gunGameImmunity())
 			continue;
 
-		// if the players feature and aim filter is enabled, and the player was not flagged as a target, then don't target them
-		if (config->players.enabled && config->players.filterAim && !Players::players[i].flagged)
-			continue;
-
 		const auto enemy = localPlayer->isOtherEnemy(entity);
 		if (!cfg.friendlyFire && !enemy)
 			continue;
@@ -128,6 +124,13 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 			damage = std::max(damage, Helpers::findDamage(localPlayer.get(), entity, occludedBacktrack, cfg.friendlyFire, predictionFactor, &(*it)));
 
 		if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;
+
+		if (config->players.spectatorFilter && config->players.filterAim && !Players::noSpectators)
+			return;
+
+		// if the players feature and aim filter is enabled, and the player was not flagged as a target, then don't target them
+		if (config->players.enabled && config->players.filterAim && !Players::players[i].flagged)
+			continue;
 		
 		if (damage > 0 && (!cfg.visibleOnly || !occluded || !occludedBacktrack))
 		{
@@ -463,6 +466,9 @@ void Aimbot::run(UserCmd *cmd) noexcept
 		return;
 
 	if (static Helpers::KeyBindState flag; !flag[cfg.bind]) return;
+
+	if (config->players.spectatorFilter && config->players.filterAim && !Players::noSpectators)
+		return;
 
     if (!cfg.betweenShots && activeWeapon->nextPrimaryAttack() > time && (!activeWeapon->burstMode() || activeWeapon->nextBurstShot() > time))
         return;

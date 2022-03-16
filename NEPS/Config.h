@@ -314,6 +314,7 @@ public:
 		bool filterESP = false;
 		bool filterChams = false;
 		bool filterGlow = false;
+		bool spectatorFilter = false;
 	} players;
 
 	struct Style

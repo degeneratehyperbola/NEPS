@@ -625,6 +625,7 @@ static void from_json(const json& j, Config::Players& p)
 	read(j, "Filter ESP", p.filterESP);
 	read(j, "Filter chams", p.filterChams);
 	read(j, "Filter glow", p.filterGlow);
+	read(j, "Filter spectators", p.spectatorFilter);
 }
 
 static void from_json(const json &j, Config::Style &s)
@@ -1164,6 +1165,7 @@ static void to_json(json& j, const Config::Players& o)
 	WRITE("Filter ESP", filterESP);
 	WRITE("Filter chams", filterChams);
 	WRITE("Filter glow", filterGlow);
+	WRITE("Filter spectators", spectatorFilter);
 }
 
 static void to_json(json &j, const Config::Misc::PurchaseList &o, const Config::Misc::PurchaseList &dummy = {})

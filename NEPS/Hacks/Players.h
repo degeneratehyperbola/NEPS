@@ -12,7 +12,9 @@ namespace Players
 	};
 
 	void updatePlayerList() noexcept;
+	void spectatorFilter() noexcept;
 
+	inline bool noSpectators = false;
 	inline std::array<PlayerData, 65> players{};
 	inline PlayerData invalidData{};
 }

@@ -1,6 +1,7 @@
 #include "Players.h"
 
 #include "../Config.h"
+#include "../GUI.h"
 #include "../Interfaces.h"
 #include "../Memory.h"
 #include "../GameData.h"
@@ -36,4 +37,24 @@ void Players::updatePlayerList() noexcept {
             player->name = entity->getPlayerName();
         }
     }
+}
+
+void Players::spectatorFilter() noexcept
+{
+	if (!config->players.spectatorFilter)
+		return;
+
+	if (!localPlayer)
+		return;
+
+	std::vector<const char*> observers;
+
+	GameData::Lock lock;
+	for (auto& observer : GameData::observers())
+	{
+		if ((observer.targetIsObservedByLocalPlayer || observer.targetIsLocalPlayer) && strcmp(observer.name, "BOT GOTV") != 0)
+			observers.emplace_back(observer.name);
+	}
+
+    Players::noSpectators = observers.empty();
 }

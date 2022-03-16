@@ -180,6 +180,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::changeConVarsTick();
 
 	Players::updatePlayerList();
+	Players::spectatorFilter();
 	Misc::runChatSpammer();
 	Misc::runReportbot();
 	Misc::antiAfkKick(cmd);

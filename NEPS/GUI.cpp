@@ -385,7 +385,11 @@ void GUI::renderPlayersWindow(bool contentOnly) noexcept {
 		ImGui::Begin("Players", &window.players, windowFlags);
 	}
 
-	ImGui::Checkbox("Enabled", &config->players.enabled);
+	ImGui::Checkbox("Per Player Enabled", &config->players.enabled);
+	ImGui::SameLine(90.0f);
+	ImGui::Checkbox("Filter if Spectated", &config->players.spectatorFilter);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("If enabled, the selected filters will block cheats if you are spectated.");
 	ImGui::Checkbox("Filter Aim", &config->players.filterAim);
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Will only run aimbot on flagged players.");

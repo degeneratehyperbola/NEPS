@@ -601,6 +601,9 @@ static void renderProjectileEsp(const ProjectileData &projectileData, const Proj
 
 void StreamProofESP::render() noexcept
 {
+	if (config->players.spectatorFilter && config->players.filterESP && !Players::noSpectators)
+		return;
+
 	drawList = ImGui::GetBackgroundDrawList();
 
 	GameData::Lock lock;

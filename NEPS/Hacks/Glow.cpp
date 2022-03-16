@@ -16,6 +16,9 @@ void Glow::render() noexcept
     if (!localPlayer)
 		return;
 
+	if (config->players.spectatorFilter && config->players.filterGlow && !Players::noSpectators)
+		return;
+
 	const auto &glow = config->glow;
 
 	Glow::clearCustomObjects();
