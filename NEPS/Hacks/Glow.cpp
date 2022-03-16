@@ -1,5 +1,6 @@
 #include "../Config.h"
 #include "Glow.h"
+#include "Players.h"
 #include "../Interfaces.h"
 #include "../Memory.h"
 #include "../SDK/Entity.h"
@@ -24,6 +25,10 @@ void Glow::render() noexcept
 	{
 		const auto entity = interfaces->entityList->getEntity(i);
 		if (!entity || entity->isDormant())
+			continue;
+
+		// if the players feature and aim filter is enabled, and the player was not flagged as a target, then don't target them
+		if (config->players.enabled && config->players.filterGlow && !Players::players[i].flagged)
 			continue;
 
 		switch (entity->getClientClass()->classId)

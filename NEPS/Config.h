@@ -310,6 +310,10 @@ public:
 
 	struct Players {
 		bool enabled = false;
+		bool filterAim = false;
+		bool filterESP = false;
+		bool filterChams = false;
+		bool filterGlow = false;
 	} players;
 
 	struct Style

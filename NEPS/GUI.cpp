@@ -12,6 +12,7 @@
 #include "Hooks.h"
 #include "Interfaces.h"
 #include "Hacks/Misc.h"
+#include "Hacks/Players.h"
 
 #include "resource.h"
 #include "res_defaultfont.h"
@@ -381,46 +382,76 @@ void GUI::renderPlayersWindow(bool contentOnly) noexcept {
 	{
 		if (!window.players)
 			return;
-		ImGui::Begin("Players", &window.antiAim, windowFlags);
+		ImGui::Begin("Players", &window.players, windowFlags);
 	}
 
 	ImGui::Checkbox("Enabled", &config->players.enabled);
+	ImGui::Checkbox("Filter Aim", &config->players.filterAim);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("Will only run aimbot on flagged players.");
+	ImGui::SameLine(90.0f);
+	ImGui::Checkbox("Filter ESP", &config->players.filterESP);
+	ImGui::Checkbox("Filter Chams", &config->players.filterChams);
+	ImGui::SameLine(90.0f);
+	ImGui::Checkbox("Filter Glow", &config->players.filterGlow);
 
-	ImGui::Separator();
+	if (config->players.enabled) {
 
-	constexpr std::array testItems = { "Joe", "Player 1", "Cum Guzzler", "c*ntDestroyer" };
-	static std::size_t currentItem;
+		ImGui::Separator();
 
-	if (ImGui::BeginListBox("##list", { 70, 120 }))
-	{
-		for (std::size_t i = 0; i < testItems.size(); ++i)
+		constexpr std::array testItems = { "Joe", "Player 1", "Cum Guzzler", "c*ntDestroyer" };
+		static std::size_t currentItem;
+
+		if (ImGui::BeginListBox("##list", { 80, 120 }))
 		{
-			if (ImGui::Selectable(testItems[i], currentItem == i))
-				currentItem = i;
-
-			if (ImGui::BeginDragDropSource())
-			{
-				// todo: replace this with player settings
-				ImGui::SetDragDropPayload("PlayerCFG", &config->antiAim[testItems[i]], sizeof(Config::AntiAim), ImGuiCond_Once);
-				DRAGNDROP_HINT("PlayerCFG")
-					ImGui::EndDragDropSource();
+			for (std::size_t i = 0; i < Players::players.size(); ++i) {
+				if (Players::players[i].invalid) continue;
+				if (ImGui::Selectable(Players::players[i].name.c_str(), currentItem == i))
+					currentItem = i;
 			}
+			//for (std::size_t i = 0; i < testItems.size(); ++i)
+			//{
+			//	if (ImGui::Selectable(testItems[i], currentItem == i))
+			//		currentItem = i;
 
-			if (ImGui::BeginDragDropTarget())
-			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("PlayerCFG"))
-				{
-					//const auto& data = *(Config::AntiAim*)payload->Data;
-					//config->antiAim[testItems[i]] = data;
-				}
+			//	if (ImGui::BeginDragDropSource())
+			//	{
+			//		// todo: replace this with player settings
+			//		ImGui::SetDragDropPayload("PlayerCFG", &config->antiAim[testItems[i]], sizeof(Config::AntiAim), ImGuiCond_Once);
+			//		DRAGNDROP_HINT("PlayerCFG")
+			//			ImGui::EndDragDropSource();
+			//	}
 
-				ImGui::EndDragDropTarget();
-			}
+			//	if (ImGui::BeginDragDropTarget())
+			//	{
+			//		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("PlayerCFG"))
+			//		{
+			//			//const auto& data = *(Config::AntiAim*)payload->Data;
+			//			//config->antiAim[testItems[i]] = data;
+			//		}
+
+			//		ImGui::EndDragDropTarget();
+			//	}
+			//}
+			ImGui::EndListBox();
 		}
-		ImGui::EndListBox();
+
+		ImGui::SameLine();
+
+		if (ImGui::BeginChild("##child", { 80, 0 }, false, ImGuiWindowFlags_NoScrollbar))
+		{
+			auto& currentPlayer = Players::players[currentItem];
+
+			ImGui::Checkbox("Flagged", &currentPlayer.flagged);
+			if (ImGui::Button("Steal name", { -1, 0 }))
+				Misc::changeName(false, (currentPlayer.name + "\x1").c_str(), 5.0f);
+		}
+		ImGui::EndChild();
+
 	}
 
-	ImGui::SameLine();
+	if (!contentOnly)
+		ImGui::End();
 }
 
 void GUI::renderAimbotWindow(bool contentOnly) noexcept

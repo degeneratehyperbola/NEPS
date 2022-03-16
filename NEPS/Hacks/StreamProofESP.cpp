@@ -1,4 +1,5 @@
 #include "StreamProofESP.h"
+#include "Players.h"
 
 #include <shared_lib/imgui/imgui.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -623,6 +624,10 @@ void StreamProofESP::render() noexcept
 	{
 		if (!player.alive) continue;
 		if (player.handle == GameData::local().observerTargetHandle) continue;
+
+		//// not quite sure how to get the entity index within this context. Kill me please.
+		//if (config->players.enabled && config->players.filterESP && !Players::players[player.index].flagged)
+		//	continue;
 
 		auto &playerConfig = player.enemy ? config->esp.enemies : config->esp.allies;
 

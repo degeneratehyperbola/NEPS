@@ -1,6 +1,7 @@
 #include "Aimbot.h"
 #include "Misc.h"
 #include "Backtrack.h"
+#include "Players.h"
 
 #include "../Config.h"
 #include "../Interfaces.h"
@@ -105,6 +106,10 @@ void Aimbot::predictPeek(UserCmd *cmd) noexcept
 		if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || entity->gunGameImmunity())
 			continue;
 
+		// if the players feature and aim filter is enabled, and the player was not flagged as a target, then don't target them
+		if (config->players.enabled && config->players.filterAim && !Players::players[i].flagged)
+			continue;
+
 		const auto enemy = localPlayer->isOtherEnemy(entity);
 		if (!cfg.friendlyFire && !enemy)
 			continue;
@@ -182,6 +187,10 @@ void chooseTarget(UserCmd *cmd) noexcept
 		auto entity = interfaces->entityList->getEntity(i);
 
 		if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || entity->gunGameImmunity())
+			continue;
+
+		// if the players feature and aim filter is enabled, and the player was not flagged as a target, then don't target them
+		if (config->players.enabled && config->players.filterAim && !Players::players[i].flagged)
 			continue;
 
 		const auto enemy = localPlayer->isOtherEnemy(entity);
