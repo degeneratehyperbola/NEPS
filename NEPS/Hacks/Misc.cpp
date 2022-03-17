@@ -1544,13 +1544,14 @@ void Misc::teamDamageList(GameEvent *event)
 		if (!gui->open && (damageList.empty() || !interfaces->engine->isInGame()))
 			return;
 
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		if (config->misc.teamDamageList.noTitleBar)
 			windowFlags |= ImGuiWindowFlags_NoTitleBar;
 		if (!gui->open)
 			windowFlags |= ImGuiWindowFlags_NoInputs;
 
-		ImGui::SetNextWindowSize({200, 200}, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2{ImGui::GetIO().DisplaySize.x - 200, ImGui::GetIO().DisplaySize.y / 2 - 60}, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSizeConstraints({200, 0}, ImVec2{FLT_MAX, FLT_MAX});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, {0.5f, 0.5f});
 		ImGui::Begin("Team damage list", nullptr, windowFlags);
 		ImGui::PopStyleVar();
