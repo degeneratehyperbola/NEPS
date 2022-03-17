@@ -186,7 +186,6 @@ void createMoveCallback(UserCmd *cmd, bool &sendPacket) noexcept
 	Misc::fixTabletSignal();
 	Misc::removeCrouchCooldown(cmd);
 	Misc::fastStop(cmd);
-	Misc::autoStrafe(cmd);
 	Misc::bunnyHop(cmd);
 	Aimbot::predictPeek(cmd);
 
@@ -201,6 +200,7 @@ void createMoveCallback(UserCmd *cmd, bool &sendPacket) noexcept
 	Misc::blockBot(cmd, currentViewAngles);
 	Misc::autoPeek(cmd);
 	Misc::fastPlant(cmd);
+	Misc::autoStrafe(cmd);
 
 	AntiAim::run(cmd, currentViewAngles, sendPacket);
 
