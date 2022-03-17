@@ -197,7 +197,45 @@ void GameData::update() noexcept
 			}
 		}
 	}
+	const auto radar_base = std::uintptr_t(memory->findHudElement(memory->hud, "CCSGO_HudRadar"));
+	HudRadar* hud_radar = (HudRadar*)(radar_base - 20);
+	if (radar_base && hud_radar)
+	{
+		for (int i = 0; i <= 64; i++)
+		{
+			const RadarPlayer& radar_player = hud_radar->radarInfo[i];
+			if (!radar_player.entityIndex)
+				continue;
 
+			if (!radar_player.origin.notNull())
+			{
+				continue;
+			}
+			if (const auto entity = interfaces->entityList->getEntity(radar_player.entityIndex); entity && entity->isPlayer())
+			{
+				if (auto player = playerByHandleWritable(entity->handle()); player)
+				{
+					player->becameDormant = memory->globalVars->realTime;
+					player->spotted = radar_player.spotted;
+					player->health = radar_player.health;
+					if (entity->isDormant())
+					{
+						player->dormant = true;
+						const auto delta = radar_player.origin - player->origin;
+						player->coordinateFrame.setOrigin(radar_player.origin);
+						player->origin = radar_player.origin;
+						player->headMaxs += delta;
+						player->headMins += delta;
+						for (auto& bone : player->bones)
+						{
+							bone.first += delta;
+							bone.second += delta;
+						}
+					}
+				}
+			}
+		}
+	}
 	std::sort(playerData.begin(), playerData.end());
 	std::sort(weaponData.begin(), weaponData.end());
 	std::sort(entityData.begin(), entityData.end());
