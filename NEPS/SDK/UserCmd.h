@@ -43,10 +43,10 @@ struct UserCmd
 
 struct VerifiedUserCmd
 {
-	VerifiedUserCmd(const UserCmd *cmd) noexcept
+	VerifiedUserCmd(const UserCmd &cmd) noexcept
 	{
-		this->cmd = *cmd;
-		this->crc = cmd->computeCRC();
+		this->cmd = cmd;
+		this->crc = cmd.computeCRC();
 	}
 
 	UserCmd cmd;

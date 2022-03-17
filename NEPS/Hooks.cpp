@@ -41,7 +41,7 @@
 #define FRAME_ADDRESS ((std::uintptr_t)_AddressOfReturnAddress() - sizeof(std::uintptr_t))
 #define RETURN_ADDRESS std::uintptr_t(_ReturnAddress())
 
-static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	[[maybe_unused]] static const auto initGlobal = [](HWND window) noexcept
 	{
@@ -58,7 +58,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 
 		gui->updateColors();
 		SkinChanger::scheduleHudUpdate();
-		
+
 		std::ostringstream welcomeMsg;
 		welcomeMsg << "Let's get started!\n";
 		welcomeMsg << "To open GUI press \"";
@@ -92,7 +92,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 	return CallWindowProcW(hooks->originalWndProc, window, msg, wParam, lParam);
 }
 
-static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, const RECT *dest, HWND windowOverride, const RGNDATA *dirtyRegion) noexcept
+HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, const RECT *dest, HWND windowOverride, const RGNDATA *dirtyRegion) noexcept
 {
 	[[maybe_unused]] static const bool imguiInit = ImGui_ImplDX9_Init(device);
 
@@ -125,10 +125,10 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	Misc::drawBombTimer();
 	Misc::indicators();
 
-	#ifndef LEGACY_WATERMARK
+#ifndef LEGACY_WATERMARK
 	Misc::spectatorList();
 	Misc::watermark();
-	#endif // !LEGACY_WATERMARK
+#endif // !LEGACY_WATERMARK
 
 	gui->render();
 
@@ -144,13 +144,13 @@ static HRESULT __stdcall present(IDirect3DDevice9 *device, const RECT *src, cons
 	return hooks->originalPresent(device, src, dest, windowOverride, dirtyRegion);
 }
 
-static HRESULT __stdcall reset(IDirect3DDevice9 *device, D3DPRESENT_PARAMETERS *params) noexcept
+HRESULT __stdcall reset(IDirect3DDevice9 *device, D3DPRESENT_PARAMETERS *params) noexcept
 {
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 	return hooks->originalReset(device, params);
 }
 
-static void __fastcall checkFileCRC() noexcept
+void __fastcall checkFileCRC() noexcept
 {
 	if (config->exploits.bypassPure)
 		return;
@@ -158,20 +158,14 @@ static void __fastcall checkFileCRC() noexcept
 	hooks->originalCheckFileCRC();
 }
 
-static bool previousSendPacket;
 static UserCmd previousCmd;
+static bool previousSendPacket;
 
-static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
+#ifndef NEPS_DEBUG
+__forceinline
+#endif
+void createMoveCallback(UserCmd *cmd, bool &sendPacket) noexcept
 {
-	auto result = hooks->clientMode.callOriginal<bool, 24>(inputSampleTime, cmd);
-
-	if (!cmd->commandNumber)
-		return result;
-
-	// Since 19.02.2022 sendPacket is no longer on stack
-	//bool &sendPacket = *reinterpret_cast<bool *>(*reinterpret_cast<std::uintptr_t *>(FRAME_ADDRESS) - 0x1C);
-	bool sendPacket = true;
-
 	static auto previousViewAngles = cmd->viewangles;
 	const auto currentViewAngles = cmd->viewangles;
 
@@ -195,7 +189,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 	Misc::autoStrafe(cmd);
 	Misc::bunnyHop(cmd);
 	Aimbot::predictPeek(cmd);
-	
+
 	if (static Helpers::KeyBindState flag; flag[config->exploits.slowwalk]) Misc::slowwalk(cmd);
 
 	EnginePrediction::run(cmd);
@@ -234,18 +228,52 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd *cmd) noexcept
 
 	previousViewAngles = cmd->viewangles;
 
-	previousSendPacket = sendPacket;
 	previousCmd = *cmd;
 
 	if (fakePitchPerformed)
 		cmd->viewangles.x = -89.0f; // Fake pitch visualization
 	Animations::computeDesync(*cmd, sendPacket);
-	cmd->viewangles.x = previousViewAngles.x; // Restore view angles after visualizing fake pitch
-
-	return false;
+	cmd->viewangles.x = previousViewAngles.x; // Restore view angles after we're done
 }
 
-static int __stdcall doPostScreenEffects(int param) noexcept
+void __stdcall createMove(int sequenceNumber, float inputSampleTime, bool active, bool *sendPacket) noexcept
+{
+	hooks->client.callOriginal<void, 22>(sequenceNumber, inputSampleTime, active);
+
+	if (!sendPacket) return;
+
+	UserCmd *cmd = memory->input->getUserCmd(0, sequenceNumber);
+	if (!cmd || !cmd->commandNumber)
+		return;
+
+	createMoveCallback(cmd, *sendPacket);
+	previousSendPacket = sendPacket;
+
+	VerifiedUserCmd *verified = memory->input->getVerifiedUserCmd(sequenceNumber);
+	if (verified)
+		*verified = VerifiedUserCmd(*cmd);
+}
+
+__declspec(naked) void __stdcall createMoveProxy(int sequenceNumber, float inputSampleTime, bool active) noexcept
+{
+	__asm {
+		push ebp
+		mov ebp, esp
+		push ebx
+		lea ecx, [esp]
+		push ecx
+		movzx edx, active
+		push edx
+		push inputSampleTime
+		push sequenceNumber
+		call createMove
+		pop ebx
+		pop ebp
+		ret 12
+	}
+}
+
+int __stdcall doPostScreenEffects(int param) noexcept
 {
 	if (interfaces->engine->isInGame())
 	{
@@ -256,7 +284,7 @@ static int __stdcall doPostScreenEffects(int param) noexcept
 	return hooks->clientMode.callOriginal<int, 44>(param);
 }
 
-static float __stdcall getViewModelFov() noexcept
+float __stdcall getViewModelFov() noexcept
 {
 	float additionalFov = static_cast<float>(config->visuals.viewmodel.fov);
 	if (localPlayer)
@@ -268,7 +296,7 @@ static float __stdcall getViewModelFov() noexcept
 	return hooks->clientMode.callOriginal<float, 35>() + additionalFov;
 }
 
-static void __stdcall drawModelExecute(void *context, void *state, const ModelRenderInfo &info, Matrix3x4 *customBoneToWorld) noexcept
+void __stdcall drawModelExecute(void *context, void *state, const ModelRenderInfo &info, Matrix3x4 *customBoneToWorld) noexcept
 {
 	if (interfaces->studioRender->isForcedMaterialOverride())
 		return hooks->modelRender.callOriginal<void, 21>(context, state, std::cref(info), customBoneToWorld);
@@ -282,7 +310,7 @@ static void __stdcall drawModelExecute(void *context, void *state, const ModelRe
 	interfaces->studioRender->forcedMaterialOverride(nullptr);
 }
 
-static bool __fastcall svCheatsGetBool(void *thisptr) noexcept
+bool __fastcall svCheatsGetBool(void *thisptr) noexcept
 {
 	if (RETURN_ADDRESS == memory->cameraThink && config->visuals.thirdPerson.keyMode)
 		return true;
@@ -290,20 +318,20 @@ static bool __fastcall svCheatsGetBool(void *thisptr) noexcept
 	return hooks->svCheats.getOriginal<bool, 13>()(thisptr);
 }
 
-static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept
+void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept
 {
 	if (interfaces->panel->getName(panel) == "MatSystemTopPanel")
 	{
-		#ifdef LEGACY_WATERMARK
+#ifdef LEGACY_WATERMARK
 		Misc::spectatorList();
 		Misc::watermark();
-		#endif // LEGACY_WATERMARK
+#endif // LEGACY_WATERMARK
 	}
 
 	hooks->panel.callOriginal<void, 41>(panel, forceRepaint, allowForce);
 }
 
-static void __stdcall frameStageNotify(FrameStage stage) noexcept
+void __stdcall frameStageNotify(FrameStage stage) noexcept
 {
 	if (interfaces->engine->isConnected() && !interfaces->engine->isInGame())
 		Misc::changeName(true, nullptr, 0.0f);
@@ -355,7 +383,7 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 	hooks->client.callOriginal<void, 37>(stage);
 }
 
-static int __stdcall emitSound(SoundParams params) noexcept
+int __stdcall emitSound(SoundParams params) noexcept
 {
 	auto modulateVolume = [&params](int(*get)(int))
 	{
@@ -387,18 +415,18 @@ static int __stdcall emitSound(SoundParams params) noexcept
 	return hooks->engineSound.callOriginal<int, 5>(params);
 }
 
-static bool __stdcall shouldDrawFog() noexcept
+bool __stdcall shouldDrawFog() noexcept
 {
 	if constexpr (std::is_same_v<HookType, MinHook>)
 	{
-		#ifdef NEPS_DEBUG
+#ifdef NEPS_DEBUG
 		// Check if we always get the same return address
 		if (*static_cast<std::uint32_t *>(_ReturnAddress()) == 0x6274C084)
 		{
 			static const auto returnAddress = RETURN_ADDRESS;
 			assert(returnAddress == RETURN_ADDRESS);
 		}
-		#endif // NEPS_DEBUG
+#endif // NEPS_DEBUG
 
 		if (*static_cast<std::uint32_t *>(_ReturnAddress()) != 0x6274C084)
 			return hooks->clientMode.callOriginal<bool, 17>();
@@ -407,21 +435,21 @@ static bool __stdcall shouldDrawFog() noexcept
 	return !config->visuals.noFog;
 }
 
-static bool __stdcall shouldDrawViewModel() noexcept
+bool __stdcall shouldDrawViewModel() noexcept
 {
 	if (localPlayer && localPlayer->fov() < 45 && localPlayer->fovStart() < 45)
 		return false;
 	return hooks->clientMode.callOriginal<bool, 27>();
 }
 
-static void __stdcall lockCursor() noexcept
+void __stdcall lockCursor() noexcept
 {
 	if (gui->open)
 		return interfaces->surface->unlockCursor();
 	return hooks->surface.callOriginal<void, 67>();
 }
 
-static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
+void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 {
 	if (config->visuals.noScopeOverlay && (RETURN_ADDRESS == memory->scopeDust || RETURN_ADDRESS == memory->scopeArc))
 		a = 0;
@@ -429,7 +457,7 @@ static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 	hooks->surface.callOriginal<void, 15>(r, g, b, a);
 }
 
-static void __stdcall overrideView(ViewSetup *setup) noexcept
+void __stdcall overrideView(ViewSetup *setup) noexcept
 {
 	const float fov = static_cast<float>(config->visuals.fov);
 	const float zoomFov = fov * (1.0f - (static_cast<float>(config->visuals.zoomFac) / 100.0f));
@@ -489,7 +517,7 @@ struct RenderableInfo
 	uint16_t flags2;
 };
 
-static int __stdcall listLeavesInBox(const Vector &mins, const Vector &maxs, unsigned short *list, int listMax) noexcept
+int __stdcall listLeavesInBox(const Vector &mins, const Vector &maxs, unsigned short *list, int listMax) noexcept
 {
 	if (RETURN_ADDRESS == memory->listLeaves)
 	{
@@ -515,7 +543,7 @@ static int __stdcall listLeavesInBox(const Vector &mins, const Vector &maxs, uns
 	return hooks->bspQuery.callOriginal<int, 6>(std::cref(mins), std::cref(maxs), list, listMax);
 }
 
-static int __fastcall dispatchSound(SoundInfo &soundInfo) noexcept
+int __fastcall dispatchSound(SoundInfo &soundInfo) noexcept
 {
 	if (const char *soundName = interfaces->soundEmitter->getSoundName(soundInfo.soundIndex))
 	{
@@ -545,7 +573,7 @@ static int __fastcall dispatchSound(SoundInfo &soundInfo) noexcept
 	return hooks->originalDispatchSound(soundInfo);
 }
 
-static int __stdcall render2dEffectsPreHud(int param) noexcept
+int __stdcall render2dEffectsPreHud(int param) noexcept
 {
 	Visuals::applyScreenEffects();
 	Visuals::hitEffect();
@@ -553,18 +581,18 @@ static int __stdcall render2dEffectsPreHud(int param) noexcept
 	return hooks->viewRender.callOriginal<int, 39>(param);
 }
 
-static const DemoPlaybackParameters *__stdcall getDemoPlaybackParameters() noexcept
+const DemoPlaybackParameters *__stdcall getDemoPlaybackParameters() noexcept
 {
 	const auto params = hooks->engine.callOriginal<const DemoPlaybackParameters *, 218>();
 
-	#ifdef NEPS_DEBUG
+#ifdef NEPS_DEBUG
 	// Check if we always get the same return address
 	if (*static_cast<std::uint64_t *>(_ReturnAddress()) == 0x79801F74C985C88B)
 	{
 		static const auto returnAddress = RETURN_ADDRESS;
 		assert(returnAddress == RETURN_ADDRESS);
 	}
-	#endif // NEPS_DEBUG
+#endif // NEPS_DEBUG
 
 	if (params && config->misc.revealSuspect && *static_cast<std::uint64_t *>(_ReturnAddress()) != 0x79801F74C985C88B) // client.dll : 8B C8 85 C9 74 1F 80 79 10 00 , there game decides whether to show overwatch panel
 	{
@@ -577,7 +605,7 @@ static const DemoPlaybackParameters *__stdcall getDemoPlaybackParameters() noexc
 	return params;
 }
 
-static bool __stdcall isPlayingDemo() noexcept
+bool __stdcall isPlayingDemo() noexcept
 {
 	if (config->misc.revealMoney && RETURN_ADDRESS == memory->demoOrHLTV && *reinterpret_cast<std::uintptr_t *>(FRAME_ADDRESS + 8) == memory->money)
 		return true;
@@ -585,7 +613,7 @@ static bool __stdcall isPlayingDemo() noexcept
 	return hooks->engine.callOriginal<bool, 82>();
 }
 
-static void __stdcall updateColorCorrectionWeights() noexcept
+void __stdcall updateColorCorrectionWeights() noexcept
 {
 	hooks->clientMode.callOriginal<void, 58>();
 
@@ -604,14 +632,14 @@ static void __stdcall updateColorCorrectionWeights() noexcept
 		*memory->vignette = 0.0f;
 }
 
-static float __stdcall getScreenAspectRatio(int width, int height) noexcept
+float __stdcall getScreenAspectRatio(int width, int height) noexcept
 {
 	if (config->visuals.aspectratio)
 		return config->visuals.aspectratio;
 	return hooks->engine.callOriginal<float, 101>(width, height);
 }
 
-static void __stdcall renderSmokeOverlay(bool update) noexcept
+void __stdcall renderSmokeOverlay(bool update) noexcept
 {
 	if (config->visuals.smoke)
 		*reinterpret_cast<float *>(std::uintptr_t(memory->viewRender) + 0x588) = 0.0f;
@@ -619,7 +647,7 @@ static void __stdcall renderSmokeOverlay(bool update) noexcept
 		hooks->viewRender.callOriginal<void, 41>(update);
 }
 
-static bool __stdcall isConnected() noexcept
+bool __stdcall isConnected() noexcept
 {
 	if (config->misc.unlockInventory && RETURN_ADDRESS == memory->inventoryBlock)
 		return false;
@@ -627,7 +655,7 @@ static bool __stdcall isConnected() noexcept
 	return hooks->engine.callOriginal<bool, 27>();
 }
 
-static void __fastcall doProceduralFootPlant(void *thisptr, void *edx, void *boneToWorld, void *leftFootChain, void *rightFootChain, void *bone) noexcept
+void __fastcall doProceduralFootPlant(void *thisptr, void *edx, void *boneToWorld, void *leftFootChain, void *rightFootChain, void *bone) noexcept
 {
 	if (config->misc.disableIK)
 		return;
@@ -635,7 +663,7 @@ static void __fastcall doProceduralFootPlant(void *thisptr, void *edx, void *bon
 	hooks->originalDoProceduralFootPlant(thisptr, edx, boneToWorld, leftFootChain, rightFootChain, bone);
 }
 
-static bool __stdcall dispatchUserMessage(UserMessageType type, int passthroughFlags, int size, const void *data) noexcept
+bool __stdcall dispatchUserMessage(UserMessageType type, int passthroughFlags, int size, const void *data) noexcept
 {
 	switch (type)
 	{
@@ -653,17 +681,17 @@ static bool __stdcall dispatchUserMessage(UserMessageType type, int passthroughF
 
 Hooks::Hooks(HMODULE moduleHandle) noexcept
 {
-    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-    _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
 
-    this->moduleHandle = moduleHandle;
+	this->moduleHandle = moduleHandle;
 
-    // Interfaces and memory shouldn't be initialized in wndProc because they show MessageBox on error which would cause deadlock
-    interfaces = std::make_unique<const Interfaces>();
-    memory = std::make_unique<const Memory>();
+	// Interfaces and memory shouldn't be initialized in wndProc because they show MessageBox on error which would cause deadlock
+	interfaces = std::make_unique<const Interfaces>();
+	memory = std::make_unique<const Memory>();
 
-    window = FindWindowW(L"Valve001", nullptr);
-    originalWndProc = WNDPROC(SetWindowLongPtrW(window, GWLP_WNDPROC, LONG_PTR(wndProc)));
+	window = FindWindowW(L"Valve001", nullptr);
+	originalWndProc = WNDPROC(SetWindowLongPtrW(window, GWLP_WNDPROC, LONG_PTR(wndProc)));
 }
 
 void Hooks::install() noexcept
@@ -680,13 +708,13 @@ void Hooks::install() noexcept
 	bspQuery.hookAt(6, listLeavesInBox);
 
 	client.init(interfaces->client);
+	client.hookAt(22, createMoveProxy);
 	client.hookAt(37, frameStageNotify);
 	client.hookAt(38, dispatchUserMessage);
 
 	clientMode.init(memory->clientMode);
 	clientMode.hookAt(17, shouldDrawFog);
 	clientMode.hookAt(18, overrideView);
-	clientMode.hookAt(24, createMove);
 	clientMode.hookAt(27, shouldDrawViewModel);
 	clientMode.hookAt(35, getViewModelFov);
 	clientMode.hookAt(44, doPostScreenEffects);
@@ -745,7 +773,7 @@ void Hooks::install() noexcept
 
 extern "C" BOOL WINAPI _CRT_INIT(HMODULE moduleHandle, DWORD reason, LPVOID reserved);
 
-static DWORD WINAPI unload(HMODULE moduleHandle) noexcept
+DWORD WINAPI unload(HMODULE moduleHandle) noexcept
 {
 	Sleep(100);
 
