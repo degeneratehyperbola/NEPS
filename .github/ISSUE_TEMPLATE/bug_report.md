@@ -23,8 +23,8 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - Version of NEPS [e.g. 1.1]
+**NEPS version (please complete the following information):**
+ - Full commit ID of NEPS version [e.g. ce5686990b5f8b71347092fa412072cb69327fc5]
 
 **Additional context**
 Add any other context about the problem here.
