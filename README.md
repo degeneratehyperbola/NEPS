@@ -4,7 +4,7 @@
 <div align="center">
 
 [![ISSUES](https://img.shields.io/github/issues/degeneratehyperbola/NEPS?color=orange&label=Issues&style=plastic)](https://github.com/degeneratehyperbola/NEPS/issues)
-[![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)
+<!--[![VERSION](https://img.shields.io/github/v/release/degeneratehyperbola/NEPS?color=orange&label=Version&style=plastic)](https://github.com/degeneratehyperbola/NEPS/releases/latest)-->
 [![LICENSE](https://img.shields.io/badge/License-BSD%203--Clause%20Modified-orange?style=plastic)](https://github.com/degeneratehyperbola/NEPS/blob/master/LICENSE.md)
 [![PATREON](https://img.shields.io/badge/%20-Patreon-orange?style=plastic&logo=patreon&logoColor=444)](https://www.patreon.com/hyperbola)
 [![PAYPAL](https://img.shields.io/badge/%20-PayPal-orange?style=plastic&logo=paypal&logoColor=444)](https://www.paypal.me/ivanhudikov)
