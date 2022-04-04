@@ -221,16 +221,16 @@ void GameData::update() noexcept
 					if (entity->isDormant())
 					{
 						player->dormant = true;
-						const auto delta = radar_player.origin - player->origin;
-						player->coordinateFrame.setOrigin(radar_player.origin);
+						//const auto delta = radar_player.origin - player->origin;
+						//player->coordinateFrame.setOrigin(radar_player.origin);
 						player->origin = radar_player.origin;
-						player->headMaxs += delta;
-						player->headMins += delta;
-						for (auto& bone : player->bones)
-						{
-							bone.first += delta;
-							bone.second += delta;
-						}
+						//player->headMaxs += delta;
+						//player->headMins += delta;
+						//for (auto& bone : player->bones)
+						//{
+						//	bone.first += delta;
+						//	bone.second += delta;
+						//}
 					}
 				}
 			}
