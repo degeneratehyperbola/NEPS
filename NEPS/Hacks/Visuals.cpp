@@ -209,9 +209,16 @@ void Visuals::modifyFire(FrameStage stage) noexcept
 
 	constexpr std::array fireMaterials = {
 		"decals/molotovscorch",
-		"particle/fire_explosion_1/fire_explosion_1_oriented",
-		"particle/fire_burning_character/fire_env_fire_depthblend",
 		"particle/fire_burning_character/fire_env_fire",
+		"particle/fire_burning_character/fire_env_fire_depthblend",
+		"particle/particle_flares/particle_flare_001",
+		"particle/particle_flares/particle_flare_004",
+		"particle/particle_flares/particle_flare_004b_mod_ob",
+		"particle/particle_flares/particle_flare_004b_mod_z",
+		"particle/fire_explosion_1/fire_explosion_1_bright",
+		"particle/fire_explosion_1/fire_explosion_1b",
+		"particle/fire_particle_4/fire_particle_4",
+		"particle/fire_explosion_1/fire_explosion_1_oriented",
 		"particle/vistasmokev1/vistasmokev1_nearcull_nodepth"
 	};
 
