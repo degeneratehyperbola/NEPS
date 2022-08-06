@@ -565,12 +565,6 @@ bool Misc::changeName(bool reconnect, const char *newName, float delay) noexcept
 	return false;
 }
 
-void Misc::fakeBan() noexcept
-{
-	if (interfaces->engine->isInGame())
-		interfaces->engine->clientCmdUnrestricted(("playerchatwheel . \"Cheer! \xE2\x80\xA8" + std::string{static_cast<char>(config->griefing.banColor + 1)} + config->griefing.banText + "\"").c_str());
-}
-
 void Misc::changeConVarsTick() noexcept
 {
 	static auto tracerVar = interfaces->cvar->findVar("cl_weapon_debug_show_accuracy");
