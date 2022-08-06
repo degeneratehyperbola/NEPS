@@ -1979,14 +1979,6 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	if (ImGui::Button("Change name", {-1, 0}))
 		Misc::changeName(false, (playerName + "\x1").c_str(), 5.0f);
 
-	ImGui::SetNextItemWidth(192.0f);
-	ImGui::InputText("##ban", &config->griefing.banText);
-	ImGui::SetNextItemWidth(112.0f);
-	ImGui::Combo("##ban_color", &config->griefing.banColor, "White\0Red\0Light Canary\0Green\0Light Green\0Lime\0Rose\0Light Gray\0Yellow\0??? (broken)\0Light Blue\0Blue\0Cold Gray\0Magenta\0Fire Orange\0Canary\0");
-	ImGui::SameLine();
-	if (ImGui::Button("Fake ban", {-1, 0}))
-		Misc::fakeBan();
-
 	ImGui::Checkbox("Vote reveal", &config->griefing.revealVotes);
 	ImGui::SameLine(90.0f);
 	ImGui::Checkbox("Name stealer", &config->griefing.nameStealer);
