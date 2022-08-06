@@ -837,7 +837,7 @@ void Misc::autoStrafe(UserCmd *cmd) noexcept
 	if (!config->movement.autoStrafe)
 		return;
 
-	if (!localPlayer || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
+	if (!localPlayer || !localPlayer->isAlive() || localPlayer->moveType() == MoveType::Noclip || localPlayer->moveType() == MoveType::Ladder)
 		return;
 
 	if ((EnginePrediction::getFlags() & PlayerFlag_OnGround) && (localPlayer->flags() & PlayerFlag_OnGround))
