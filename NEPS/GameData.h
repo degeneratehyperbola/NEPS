@@ -152,6 +152,7 @@ struct PlayerData : BaseData
 	int armor;
 	float nextLbyUpdate;
 	bool lbyUpdate;
+	bool justTeleported;
 	Vector headMins, headMaxs;
 	Vector origin;
 	Vector velocity;
