@@ -2107,7 +2107,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Disable model occlusion", &config->misc.disableModelOcclusion);
 	ImGui::Checkbox("Disable extrapolation", &config->misc.noExtrapolate);
 	ImGui::Checkbox("Disable IK", &config->misc.disableIK);
-	ImGui::Checkbox("Resolve LBY", &config->misc.resolveLby);
+	ImGui::Checkbox("Resolver (poopsolver)", &config->misc.resolveEnemyAnimations);
 
 	ImGui::NextColumn();
 

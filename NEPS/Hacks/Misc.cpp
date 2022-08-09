@@ -775,7 +775,7 @@ void Misc::antiAfkKick(UserCmd *cmd) noexcept
 
 void Misc::tweakPlayerAnimations() noexcept
 {
-	if (!config->misc.fixAnimationLOD && !config->misc.resolveLby)
+	if (!config->misc.fixAnimationLOD && !config->misc.resolveEnemyAnimations)
 		return;
 
 	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
@@ -790,7 +790,7 @@ void Misc::tweakPlayerAnimations() noexcept
 			*reinterpret_cast<int *>(entity + 0xA30) = memory->globalVars->frameCount;
 		}
 
-		if (config->misc.resolveLby)
+		if (config->misc.resolveEnemyAnimations)
 			Animations::resolveAnimations(entity);
 	}
 }

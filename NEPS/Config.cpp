@@ -700,7 +700,7 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Disable model occlusion", m.disableModelOcclusion);
 	read(j, "Disable extrapolation", m.noExtrapolate);
 	read(j, "Disable IK", m.disableIK);
-	read(j, "Resolve LBY", m.resolveLby);
+	read(j, "Resolve LBY", m.resolveEnemyAnimations);
 	read(j, "Unlock inventory", m.unlockInventory);
 	read(j, "Disable HUD blur", m.disablePanoramablur);
 	read<value_t::object>(j, "Prepare revolver", m.prepareRevolver);
@@ -1201,7 +1201,7 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Disable model occlusion", disableModelOcclusion);
 	WRITE("Disable extrapolation", noExtrapolate);
 	WRITE("Disable IK", disableIK);
-	WRITE("Resolve LBY", resolveLby);
+	WRITE("Resolve LBY", resolveEnemyAnimations);
 	WRITE("Unlock inventory", unlockInventory);
 	WRITE("Disable HUD blur", disablePanoramablur);
 	WRITE("Prepare revolver", prepareRevolver);

@@ -392,7 +392,7 @@ public:
 		bool disableModelOcclusion = true;
 		bool noExtrapolate = true;
 		bool disableIK = false;
-		bool resolveLby = false;
+		bool resolveEnemyAnimations = false;
 		bool unlockInventory = false;
 		bool disablePanoramablur = false;
 
