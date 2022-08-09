@@ -714,7 +714,6 @@ static void from_json(const json &j, Config::Misc &m)
 	read(j, "Fix tablet signal", m.fixTabletSignal);
 	read(j, "Grenade predict", m.nadePredict);
 	read(j, "Force relay cluster", m.forceRelayCluster);
-	read(j, "NEPSmas", m.goFestive);
 	read(j, "Aimstep", m.maxAngleDelta);
 	read<value_t::object>(j, "Preserve killfeed", m.preserveKillfeed);
 	read<value_t::object>(j, "Purchase list", m.purchaseList);
@@ -1216,7 +1215,6 @@ static void to_json(json &j, const Config::Misc &o)
 	WRITE("Fix tablet signal", fixTabletSignal);
 	WRITE("Grenade predict", nadePredict);
 	WRITE("Force relay cluster", forceRelayCluster);
-	WRITE("NEPSmas", goFestive);
 	WRITE("Aimstep", maxAngleDelta);
 	WRITE("Preserve killfeed", preserveKillfeed);
 	WRITE("Purchase list", purchaseList);

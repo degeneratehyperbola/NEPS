@@ -102,22 +102,18 @@ void GUI::render() noexcept
 		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), {0, 0}, {256, 256});
 	#endif // NEPS_DEBUG
 
-	static float alpha = 0.0f;
-	static Texture festive = {IDB_PNG4, L"PNG"};
-	if (festive.get())
-		ImGui::GetBackgroundDrawList()->AddImage(festive.get(), {0, 0}, {ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.x / 960 * 174}, {0, 0}, {1, 0.99f}, 0x00FFFFFF | (static_cast<unsigned>(alpha) << IM_COL32_A_SHIFT));
+	// ?Que? I don't know why, but apparently 2048x2048 texture is too much for DX9 ¯\_(ツ)_/¯
+	//static float alpha = 0.0f;
+	//static Texture vignette = {IDB_PNG3, L"PNG"};
+	//if (vignette.get())
+	//	ImGui::GetBackgroundDrawList()->AddImage(vignette.get(), {0.0f, 0.0f}, ImGui::GetIO().DisplaySize, {0, 0}, {1, 1}, 0x00FFFFFF | (static_cast<unsigned>(alpha) << IM_COL32_A_SHIFT));
 
-	alpha = config->misc.goFestive && gui->open ?
-		Helpers::approachValSmooth(255.0f, alpha, memory->globalVars->frameTime * 20.0f) :
-		Helpers::approachValSmooth(0.0f, alpha, memory->globalVars->frameTime * 20.0f);
+	//alpha = gui->open ?
+	//	Helpers::approachValSmooth(255.0f, alpha, memory->globalVars->frameTime * 20.0f) :
+	//	Helpers::approachValSmooth(0.0f, alpha, memory->globalVars->frameTime * 20.0f);
 
 	if (!open)
 		return;
-
-	// ?Que? I don't know why, but apparently 2048x2048 texture is too much for DX9 ¯\_(ツ)_/¯
-	//static Texture vignette = {IDB_PNG3, L"PNG"};
-	//if (vignette.get())
-	//	ImGui::GetBackgroundDrawList()->AddImage(vignette.get(), {0.0f, 0.0f}, ImGui::GetIO().DisplaySize);
 
 	if (!config->style.menuStyle)
 	{
@@ -2112,7 +2108,6 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::Checkbox("Disable extrapolation", &config->misc.noExtrapolate);
 	ImGui::Checkbox("Disable IK", &config->misc.disableIK);
 	ImGui::Checkbox("Resolve LBY", &config->misc.resolveLby);
-	ImGui::Checkbox("NEPSmas (go festive)", &config->misc.goFestive);
 
 	ImGui::NextColumn();
 
