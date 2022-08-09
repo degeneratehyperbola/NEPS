@@ -463,6 +463,13 @@ void PlayerData::update(Entity *entity) noexcept
 
 	dormant = false;
 
+	if (previousUpdateTick != memory->globalVars->tickCount)
+	{
+		previousUpdateTick = memory->globalVars->tickCount;
+		lbyUpdate = entity->trackLbyUpdate(nextLbyUpdate);
+		justTeleported = origin.distTo(entity->getAbsOrigin()) > 64.0f ? true : false;
+	}
+
 	static_cast<BaseData &>(*this) = {entity};
 	origin = entity->getAbsOrigin();
 	velocity = entity->velocity();
@@ -483,12 +490,6 @@ void PlayerData::update(Entity *entity) noexcept
 	isVip = entity->isVip();
 	hasDefuser = entity->hasDefuser();
 	ducking = entity->flags() & PlayerFlag_Crouched;
-
-	if (previousUpdateTick != memory->globalVars->tickCount)
-	{
-		previousUpdateTick = memory->globalVars->tickCount;
-		lbyUpdate = entity->trackLbyUpdate(nextLbyUpdate);
-	}
 
 	{
 		const Vector start = entity->getEyePosition();
