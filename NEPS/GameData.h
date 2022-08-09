@@ -147,7 +147,6 @@ struct PlayerData : BaseData
 	bool isVip;
 	bool hasDefuser;
 	bool ducking;
-	int chokedPackets;
 	float flashDuration;
 	int health;
 	int armor;
