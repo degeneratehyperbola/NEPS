@@ -232,7 +232,7 @@ void createMoveCallback(UserCmd *cmd, bool &sendPacket) noexcept
 
 	if (fakePitchPerformed)
 		cmd->viewangles.x = -89.0f; // Fake pitch visualization
-	Animations::computeDesync(*cmd, sendPacket);
+	Animations::localComputeDesync(*cmd, sendPacket);
 	cmd->viewangles.x = previousViewAngles.x; // Restore view angles after we're done
 }
 
@@ -355,7 +355,7 @@ void __stdcall frameStageNotify(FrameStage stage) noexcept
 		break;
 	case FrameStage::RenderStart:
 		Misc::fakePrime();
-		Animations::syncLocal(previousCmd, previousSendPacket);
+		Animations::localAnimationFix(previousCmd, previousSendPacket);
 		Misc::preserveKillfeed();
 		Visuals::colorWorld();
 		Misc::forceRelayCluster();

@@ -2437,7 +2437,7 @@ void GUI::renderDebugWindow() noexcept
 		if (entity && entity->isPlayer())
 		{
 			if (ImGui::Button("Resolve selected", {-1, 0}))
-				Animations::resolveDesync(entity);
+				Animations::resolveAnimations(entity);
 		}
 
 		if (ImGui::Button("Precache info", {-1, 0}))

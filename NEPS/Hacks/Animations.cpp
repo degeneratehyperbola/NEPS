@@ -28,7 +28,7 @@ void Animations::getDesyncedBoneMatrices(Matrix3x4 *out) noexcept
 	if (out) std::copy(desyncedBones.begin(), desyncedBones.end(), out);
 }
 
-void Animations::computeDesync(const UserCmd &cmd, bool sendPacket) noexcept
+void Animations::localComputeDesync(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	assert(desyncedState);
 
@@ -72,7 +72,7 @@ void Animations::computeDesync(const UserCmd &cmd, bool sendPacket) noexcept
 	}
 }
 
-void Animations::syncLocal(const UserCmd &cmd, bool sendPacket) noexcept
+void Animations::localAnimationFix(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	if (!localPlayer) return;
 
@@ -110,16 +110,16 @@ void Animations::syncLocal(const UserCmd &cmd, bool sendPacket) noexcept
 			networkedYaw = state->goalFeetYaw;
 		}
 	}
-	
+
 	memory->setAbsAngle(localPlayer.get(), {0.0f, networkedYaw, 0.0f});
 	std::copy(networkedLayers.begin(), networkedLayers.end(), layers);
 	std::copy(networkedPoseParams.begin(), networkedPoseParams.end(), poseParams.begin());
-
+	
 	memory->invalidateBoneCache(localPlayer.get());
 	localPlayer->setupBones(nullptr, MAX_STUDIO_BONES, BONE_USED_BY_ANYTHING, memory->globalVars->currentTime);
 }
 
-void Animations::resolveDesync(Entity *animatable) noexcept
+void Animations::resolveAnimations(Entity *animatable) noexcept
 {
 	auto state = animatable->animState();
 	if (!state)
