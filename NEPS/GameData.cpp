@@ -488,16 +488,6 @@ void PlayerData::update(Entity *entity) noexcept
 	{
 		previousUpdateTick = memory->globalVars->tickCount;
 		lbyUpdate = entity->trackLbyUpdate(nextLbyUpdate);
-		if (entity->isChokingPackets())
-		{
-			if (chokedPackets < 0) chokedPackets = 0;
-			chokedPackets++;
-		}
-		else
-		{
-			if (chokedPackets > 0) chokedPackets = 0;
-			chokedPackets--;
-		}
 	}
 
 	{

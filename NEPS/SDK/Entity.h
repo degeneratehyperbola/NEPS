@@ -268,7 +268,7 @@ public:
 
 	VarMap *getVarMap() noexcept { return reinterpret_cast<VarMap *>(this + 0x24); }
 
-	int isChokingPackets() noexcept { return simulationTime() == oldSimulationTime(); };
+	int isChokingPackets() noexcept { return simulationTime() == oldSimulationTime(); }; // Probably completely wrong
 
 	bool trackLbyUpdate(float &nextUpdate) noexcept
 	{

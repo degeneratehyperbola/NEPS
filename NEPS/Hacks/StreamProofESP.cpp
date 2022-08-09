@@ -325,11 +325,6 @@ static void renderPlayerBox(const PlayerData &playerData, const Player &config) 
 	{
 		std::ostringstream flags;
 
-		#ifdef NEPS_DEBUG
-		if (playerData.chokedPackets)
-			flags << "CHK " << playerData.chokedPackets << "\n";
-		#endif // NEPS_DEBUG
-
 		if (playerData.isBot)
 			flags << "BOT\n";
 		if (playerData.hasBomb)
