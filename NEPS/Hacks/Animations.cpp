@@ -153,13 +153,6 @@ void Animations::resolveAnimations(Entity *animatable) noexcept
 		const float lbyDelta = Helpers::angleDiffDeg(animatable->eyeAngles().y, state->goalFeetYaw);
 
 		const std::array<float, 3U> positions = {-maxDesync, 0.0f, maxDesync};
-		//std::vector<float> distances;
-		//for (const auto &position : positions)
-		//	distances.emplace_back(std::fabsf(position - lbyDelta));
-
-		//const auto current = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
-
-		//state->goalFeetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[(current + Aimbot::getMisses() + 1) % positions.size()]);
 		state->goalFeetYaw = Helpers::normalizeDeg(animatable->eyeAngles().y + positions[Aimbot::getMisses() % positions.size()]);
 	}
 
