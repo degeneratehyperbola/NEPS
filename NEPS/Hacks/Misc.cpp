@@ -791,7 +791,7 @@ void Misc::tweakPlayerAnimations() noexcept
 		}
 
 		if (config->misc.resolveLby)
-			Animations::resolveDesync(entity);
+			Animations::resolveAnimations(entity);
 	}
 }
 
