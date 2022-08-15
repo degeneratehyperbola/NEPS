@@ -249,7 +249,7 @@ void __stdcall createMove(int sequenceNumber, float inputSampleTime, bool active
 		return;
 
 	createMoveCallback(cmd, *sendPacket);
-	previousSendPacket = sendPacket;
+	previousSendPacket = *sendPacket;
 
 	VerifiedUserCmd *verified = memory->input->getVerifiedUserCmd(sequenceNumber);
 	if (verified)
