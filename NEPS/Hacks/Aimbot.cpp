@@ -500,8 +500,7 @@ void Aimbot::run(UserCmd *cmd) noexcept
 				else
 					aimVelocity += targetAngle;
 			}
-
-			if (targetAngle.notNull() && !cfg.humanize)
+			else if (targetAngle.notNull())
 			{
 				cmd->viewangles += targetAngle;
 
