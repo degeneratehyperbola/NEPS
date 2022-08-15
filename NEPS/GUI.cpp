@@ -2594,6 +2594,8 @@ void GUI::renderDebugWindow() noexcept
 
 				ImGui::EndTable();
 			}
+
+			ImGui::Text("PoseParam_BodyYaw = %.4f", localPlayer->poseParams()[PoseParam_BodyYaw]);
 		}
 
 		static std::string soundPath;
