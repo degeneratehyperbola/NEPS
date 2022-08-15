@@ -59,6 +59,7 @@ LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) n
 		gui->updateColors();
 		SkinChanger::scheduleHudUpdate();
 
+#ifndef NEPS_DEBUG
 		std::ostringstream welcomeMsg;
 		welcomeMsg << "Let's get started!\n";
 		welcomeMsg << "To open GUI press \"";
@@ -69,6 +70,7 @@ LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) n
 		welcomeMsg << (loaded ? "loaded successfuly." : "not found.");
 
 		interfaces->gameUI->createCommandMsgBox("Welcome to NEPS", welcomeMsg.str().c_str());
+#endif // !NEPS_DEBUG
 
 		return true;
 	}(window);
