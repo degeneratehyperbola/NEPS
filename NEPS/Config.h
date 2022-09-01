@@ -308,6 +308,15 @@ public:
 		std::string customDeathSound;
 	} sound;
 
+	struct Players {
+		bool enabled = false;
+		bool filterAim = false;
+		bool filterESP = false;
+		bool filterChams = false;
+		bool filterGlow = false;
+		bool spectatorFilter = false;
+	} players;
+
 	struct Style
 	{
 		int menuStyle = 0;

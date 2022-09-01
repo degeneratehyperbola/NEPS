@@ -22,6 +22,7 @@
 #include "Hacks/Misc.h"
 #include "Hacks/Triggerbot.h"
 #include "Hacks/Visuals.h"
+#include "Hacks/Players.h"
 
 #include "SDK/ClientClass.h"
 #include "SDK/Cvar.h"
@@ -174,6 +175,8 @@ void createMoveCallback(UserCmd *cmd, bool &sendPacket) noexcept
 	memory->globalVars->serverTime(cmd);
 	Misc::changeConVarsTick();
 
+	Players::updatePlayerList();
+	Players::spectatorFilter();
 	Misc::runChatSpammer();
 	Misc::runReportbot();
 	Misc::antiAfkKick(cmd);

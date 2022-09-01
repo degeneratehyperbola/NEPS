@@ -3,6 +3,7 @@
 #include "Chams.h"
 #include "Animations.h"
 #include "Backtrack.h"
+#include "Players.h"
 
 #include "../Config.h"
 #include "../GameData.h"
@@ -161,6 +162,13 @@ void Chams::renderPlayer(Entity* player) noexcept
 		if (!appliedChams) hooks->modelRender.callOriginal<void, 21>(ctx, state, info, customBoneToWorld);
     } else if (localPlayer->isOtherEnemy(player))
 	{
+		// if the players feature and aim filter is enabled, and the player was not flagged as a target, then don't target them
+		if (config->players.enabled && config->players.filterChams && !Players::players[player->index()].flagged)
+			return;
+
+		if (config->players.spectatorFilter && config->players.filterChams && !Players::noSpectators)
+			return;
+
 		if (config->backtrack.enabled)
 		{
 			const auto &records = Backtrack::getRecords(player->index());
