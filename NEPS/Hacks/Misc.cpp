@@ -37,6 +37,7 @@
 #include "../lib/ImguiCustom.hpp"
 
 #include <numeric>
+#include <mmsystem.h>
 
 void Misc::edgeJump(UserCmd *cmd) noexcept
 {
@@ -936,10 +937,15 @@ void Misc::playHitSound(GameEvent &event) noexcept
 		interfaces->surface->playSound(hitSounds[config->sound.hitSound - 1]);
 	} else if (config->sound.hitSound == 5)
 	{
-		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
-			soundprecache->addString(false, config->sound.customHitSound.c_str());
+		if (std::filesystem::exists(config->sound.customHitSound))
+			PlaySoundA(config->sound.customHitSound.c_str(), nullptr, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+		else
+		{
+			if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+				soundprecache->addString(false, config->sound.customHitSound.c_str());
 
-		interfaces->surface->playSound(config->sound.customHitSound.c_str());
+			interfaces->surface->playSound(config->sound.customHitSound.c_str());
+		}
 	}
 }
 
@@ -969,10 +975,15 @@ void Misc::playKillSound(GameEvent &event) noexcept
 		interfaces->surface->playSound(killSounds[config->sound.killSound - 1]);
 	} else if (config->sound.killSound == 5)
 	{
-		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
-			soundprecache->addString(false, config->sound.customKillSound.c_str());
+		if (std::filesystem::exists(config->sound.customKillSound))
+			PlaySoundA(config->sound.customKillSound.c_str(), nullptr, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+		else
+		{
+			if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+				soundprecache->addString(false, config->sound.customKillSound.c_str());
 
-		interfaces->surface->playSound(config->sound.customKillSound.c_str());
+			interfaces->surface->playSound(config->sound.customKillSound.c_str());
+		}
 	}
 }
 
@@ -1002,10 +1013,15 @@ void Misc::playDeathSound(GameEvent &event) noexcept
 		interfaces->surface->playSound(killSounds[config->sound.deathSound - 1]);
 	} else if (config->sound.deathSound == 5)
 	{
-		if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
-			soundprecache->addString(false, config->sound.customDeathSound.c_str());
+		if (std::filesystem::exists(config->sound.customDeathSound))
+			PlaySoundA(config->sound.customDeathSound.c_str(), nullptr, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+		else
+		{
+			if (const auto soundprecache = interfaces->networkStringTableContainer->findTable("soundprecache"))
+				soundprecache->addString(false, config->sound.customDeathSound.c_str());
 
-		interfaces->surface->playSound(config->sound.customDeathSound.c_str());
+			interfaces->surface->playSound(config->sound.customDeathSound.c_str());
+		}
 	}
 }
 
