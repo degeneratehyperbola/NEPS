@@ -1905,6 +1905,7 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 		ImGui::Combo(label, &sound, "None\0Metal\0Switch press\0Bell\0Glass\0Custom\0");
 		if (sound == 5)
 		{
+			ImGui::SetNextItemWidth(-1);
 			ImGui::InputTextWithHint("##path", "Full or resource path", &path);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Audio file must exist in the filesystem or be a part of in-game resources");
