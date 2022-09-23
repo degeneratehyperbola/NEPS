@@ -512,7 +512,7 @@ bool Helpers::attacking(bool cmdAttack, bool cmdAttack2) noexcept
 				return false;
 
 			if (activeWeapon->isGrenade())
-				return !activeWeapon->pinPulled() && activeWeapon->throwTime() > 0.0f && activeWeapon->throwTime() <= time;
+				return !activeWeapon->pinPulled() && activeWeapon->throwTime() > 0.0f && activeWeapon->throwTime() - memory->globalVars->intervalPerTick * 6 <= time;
 
 			if (activeWeapon->burstMode() && activeWeapon->nextBurstShot() > 0.0f && activeWeapon->nextBurstShot() <= time)
 				return true;
