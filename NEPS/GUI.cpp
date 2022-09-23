@@ -147,16 +147,6 @@ void GUI::updateColors() const noexcept
 	}
 }
 
-static void menuBarItem(const char *name, bool &enabled) noexcept
-{
-	if (ImGui::MenuItem(name))
-	{
-		enabled = !enabled;
-		if (enabled)
-			ImGui::SetWindowFocus(name);
-	}
-}
-
 void GUI::renderGuiStyle2() noexcept
 {
 	ImGui::Begin("NEPS.PP", nullptr, windowFlags | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
@@ -260,6 +250,16 @@ void GUI::renderContextMenu() noexcept
 
 	if (ImGui::MenuItem("Unload"))
 		hooks->uninstall();
+}
+
+static void menuBarItem(const char *label, bool &enabled) noexcept
+{
+	if (ImGui::Selectable(label, enabled, ImGuiSelectableFlags_None, { ImGui::CalcTextSize(label, nullptr, true).x + ImGui::GetStyle().FramePadding.x, 0}))
+	{
+		enabled = !enabled;
+		if (enabled)
+			ImGui::SetWindowFocus(label);
+	}
 }
 
 void GUI::renderMenuBar() noexcept
