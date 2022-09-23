@@ -95,29 +95,23 @@ void GUI::render() noexcept
 	if (!open)
 		return;
 
-	if (!config->style.menuStyle)
-	{
-		renderMenuBar();
-		renderAimbotWindow();
-		renderAntiAimWindow();
-		renderTriggerbotWindow();
-		renderBacktrackWindow();
-		renderGlowWindow();
-		renderChamsWindow();
-		renderESPWindow();
-		renderVisualsWindow();
-		renderSkinChangerWindow();
-		renderSoundWindow();
-		renderStyleWindow();
-		renderExploitsWindow();
-		renderGriefingWindow();
-		renderMovementWindow();
-		renderMiscWindow();
-		renderConfigWindow();
-	} else
-	{
-		renderGuiStyle2();
-	}
+	renderMenuBar();
+	renderAimbotWindow();
+	renderAntiAimWindow();
+	renderTriggerbotWindow();
+	renderBacktrackWindow();
+	renderGlowWindow();
+	renderChamsWindow();
+	renderESPWindow();
+	renderVisualsWindow();
+	renderSkinChangerWindow();
+	renderSoundWindow();
+	renderStyleWindow();
+	renderExploitsWindow();
+	renderGriefingWindow();
+	renderMovementWindow();
+	renderMiscWindow();
+	renderConfigWindow();
 
 	if (!ImGui::GetIO().WantCaptureMouse && ImGui::GetIO().MouseClicked[1])
 		ImGui::OpenPopup("##context_menu");
@@ -145,96 +139,6 @@ void GUI::updateColors() const noexcept
 	case 6: ImGuiCustom::StyleColors5(); break;
 	case 7: ImGuiCustom::StyleColors6(); break;
 	}
-}
-
-void GUI::renderGuiStyle2() noexcept
-{
-	ImGui::Begin("NEPS.PP", nullptr, windowFlags | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
-	if (ImGui::BeginTabBar("TabBar", ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_NoTooltip))
-	{
-		if (ImGui::BeginTabItem("Aimbot"))
-		{
-			renderAimbotWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Anti aim"))
-		{
-			renderAntiAimWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Triggerbot"))
-		{
-			renderTriggerbotWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Backtrack"))
-		{
-			renderBacktrackWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Glow"))
-		{
-			renderGlowWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Chams"))
-		{
-			renderChamsWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Extrasensory perception"))
-		{
-			renderESPWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Visuals"))
-		{
-			renderVisualsWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Skin changer"))
-		{
-			renderSkinChangerWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Sound"))
-		{
-			renderSoundWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Style"))
-		{
-			renderStyleWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Exploits"))
-		{
-			renderExploitsWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Social engineering"))
-		{
-			renderGriefingWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Movement"))
-		{
-			renderMovementWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Miscellaneous"))
-		{
-			renderMiscWindow(true);
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Configuration"))
-		{
-			renderConfigWindow(true);
-			ImGui::EndTabItem();
-		}
-		ImGui::EndTabBar();
-	}
-	ImGui::End();
 }
 
 void GUI::renderContextMenu() noexcept
@@ -337,14 +241,11 @@ void GUI::renderMenuBar() noexcept
 	}
 }
 
-void GUI::renderAimbotWindow(bool contentOnly) noexcept
+void GUI::renderAimbotWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.aimbot)
-			return;
-		ImGui::Begin("Aimbot", &window.aimbot, windowFlags);
-	}
+	if (!window.aimbot)
+		return;
+	ImGui::Begin("Aimbot", &window.aimbot, windowFlags);
 
 	static int currentWeapon = 0;
 
@@ -579,18 +480,14 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
 
 	ImGui::EndChild();
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderAntiAimWindow(bool contentOnly) noexcept
+void GUI::renderAntiAimWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.antiAim)
-			return;
-		ImGui::Begin("Anti-aim", &window.antiAim, windowFlags);
-	}
+	if (!window.antiAim)
+		return;
+	ImGui::Begin("Anti-aim", &window.antiAim, windowFlags);
 
 	constexpr std::array categories = {"Freestand", "Slowwalk", "Run", "Airborne"};
 	static std::size_t currentCategory;
@@ -676,18 +573,14 @@ void GUI::renderAntiAimWindow(bool contentOnly) noexcept
 
 	ImGui::EndChild();
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
+void GUI::renderTriggerbotWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.triggerbot)
-			return;
-		ImGui::Begin("Triggerbot", &window.triggerbot, windowFlags);
-	}
+	if (!window.triggerbot)
+		return;
+	ImGui::Begin("Triggerbot", &window.triggerbot, windowFlags);
 
 	static int currentWeapon = 0;
 
@@ -871,18 +764,15 @@ void GUI::renderTriggerbotWindow(bool contentOnly) noexcept
 
 	ImGui::EndChild();
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderBacktrackWindow(bool contentOnly) noexcept
+void GUI::renderBacktrackWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.backtrack)
-			return;
-		ImGui::Begin("Backtrack", &window.backtrack, windowFlags);
-	}
+	if (!window.backtrack)
+		return;
+	ImGui::Begin("Backtrack", &window.backtrack, windowFlags);
+
 	ImGui::Checkbox("Enabled", &config->backtrack.enabled);
 	ImGui::SameLine(90);
 	ImGui::Checkbox("Ignore smoke", &config->backtrack.ignoreSmoke);
@@ -890,19 +780,16 @@ void GUI::renderBacktrackWindow(bool contentOnly) noexcept
 	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 200, "Time limit %dms");
 
 	ImGui::PopItemWidth();
-	if (!contentOnly)
-		ImGui::End();
+
+	ImGui::End();
 }
 
-void GUI::renderGlowWindow(bool contentOnly) noexcept
+void GUI::renderGlowWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.glow)
-			return;
-		ImGui::SetNextWindowContentSize({280, 0});
-		ImGui::Begin("Glow", &window.glow, windowFlags);
-	}
+	if (!window.glow)
+		return;
+	ImGui::SetNextWindowContentSize({280, 0});
+	ImGui::Begin("Glow", &window.glow, windowFlags);
 
 	static int currentCategory = 0;
 
@@ -938,18 +825,14 @@ void GUI::renderGlowWindow(bool contentOnly) noexcept
 	if (!config->glow[currentItem].style)
 		ImGui::Checkbox("Full bloom", &config->glow[currentItem].full);
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderChamsWindow(bool contentOnly) noexcept
+void GUI::renderChamsWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.chams)
-			return;
-		ImGui::Begin("Chams", &window.chams, windowFlags);
-	}
+	if (!window.chams)
+		return;
+	ImGui::Begin("Chams", &window.chams, windowFlags);
 
 	static int currentCategory = 0;
 	static int layer = 1;
@@ -999,20 +882,14 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
 		if (ImGui::Button("Fix desync chams", {-1, 25}))
 			SkinChanger::scheduleHudUpdate();
 
-	if (!contentOnly)
-	{
-		ImGui::End();
-	}
+	ImGui::End();
 }
 
-void GUI::renderESPWindow(bool contentOnly) noexcept
+void GUI::renderESPWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.streamProofESP)
-			return;
-		ImGui::Begin("ESP", &window.streamProofESP, windowFlags);
-	}
+	if (!window.streamProofESP)
+		return;
+	ImGui::Begin("ESP", &window.streamProofESP, windowFlags);
 
 	static std::size_t currentCategory;
 	static auto currentItem = "All";
@@ -1423,19 +1300,15 @@ void GUI::renderESPWindow(bool contentOnly) noexcept
 
 	ImGui::EndChild();
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderVisualsWindow(bool contentOnly) noexcept
+void GUI::renderVisualsWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.visuals)
-			return;
-		ImGui::SetNextWindowContentSize({480, 0});
-		ImGui::Begin("Visuals", &window.visuals, windowFlags);
-	}
+	if (!window.visuals)
+		return;
+	ImGui::SetNextWindowContentSize({480, 0});
+	ImGui::Begin("Visuals", &window.visuals, windowFlags);
 
 	ImGui::Columns(2, nullptr, false);
 
@@ -1624,18 +1497,14 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
 
 	ImGui::PopItemWidth();
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
+void GUI::renderSkinChangerWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.skinChanger)
-			return;
-		ImGui::Begin("Skin changer", &window.skinChanger, windowFlags);
-	}
+	if (!window.skinChanger)
+		return;
+	ImGui::Begin("Skin changer", &window.skinChanger, windowFlags);
 
 	static auto itemIndex = 0;
 	static auto lastItemIndex = itemIndex;
@@ -1856,18 +1725,14 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
 
 	lastItemIndex = itemIndex;
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderSoundWindow(bool contentOnly) noexcept
+void GUI::renderSoundWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.sound)
-			return;
-		ImGui::Begin("Sound", &window.sound, windowFlags);
-	}
+	if (!window.sound)
+		return;
+	ImGui::Begin("Sound", &window.sound, windowFlags);
 
 	constexpr auto soundUi = [](const char *label, int &sound, std::string &path) noexcept
 	{
@@ -1905,18 +1770,14 @@ void GUI::renderSoundWindow(bool contentOnly) noexcept
 	ImGui::SliderInt("##footstep", &config->sound.players[currentCategory].footstepVolume, 0, 200, "Footstep volume %d%%");
 	ImGui::PopItemWidth();
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderExploitsWindow(bool contentOnly) noexcept
+void GUI::renderExploitsWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.exploits)
-			return;
-		ImGui::Begin("Exploits", &window.exploits, windowFlags);
-	}
+	if (!window.exploits)
+		return;
+	ImGui::Begin("Exploits", &window.exploits, windowFlags);
 
 	ImGui::Checkbox("Anti AFK kick", &config->exploits.antiAfkKick);
 	ImGui::Checkbox("Fast duck", &config->exploits.fastDuck);
@@ -1929,18 +1790,14 @@ void GUI::renderExploitsWindow(bool contentOnly) noexcept
 
 	ImGui::Checkbox("Bypass sv_pure", &config->exploits.bypassPure);
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderGriefingWindow(bool contentOnly) noexcept
+void GUI::renderGriefingWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.griefing)
-			return;
-		ImGui::Begin("Griefing", &window.griefing, windowFlags);
-	}
+	if (!window.griefing)
+		return;
+	ImGui::Begin("Griefing", &window.griefing, windowFlags);
 
 	static std::string playerName;
 	ImGui::SetNextItemWidth(192.0f);
@@ -2015,18 +1872,14 @@ void GUI::renderGriefingWindow(bool contentOnly) noexcept
 	if (ImGui::Button("Test##nuke", {-1, 0}))
 		Misc::runChatSpammer(1);
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderMovementWindow(bool contentOnly) noexcept
+void GUI::renderMovementWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.movement)
-			return;
-		ImGui::Begin("Movement", &window.movement, windowFlags);
-	}
+	if (!window.movement)
+		return;
+	ImGui::Begin("Movement", &window.movement, windowFlags);
 
 	ImGui::Checkbox("Bunnyhop", &config->movement.bunnyHop);
 	ImGui::Checkbox("Autostrafe", &config->movement.autoStrafe);
@@ -2044,19 +1897,15 @@ void GUI::renderMovementWindow(bool contentOnly) noexcept
 		ImGui::EndPopup();
 	}
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderMiscWindow(bool contentOnly) noexcept
+void GUI::renderMiscWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.misc)
-			return;
-		ImGui::SetNextWindowContentSize({320, 0});
-		ImGui::Begin("Misc", &window.misc, windowFlags);
-	}
+	if (!window.misc)
+		return;
+	ImGui::SetNextWindowContentSize({320, 0});
+	ImGui::Begin("Misc", &window.misc, windowFlags);
 
 	ImGui::Columns(2, nullptr, false);
 
@@ -2130,25 +1979,18 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
 	ImGui::SetNextItemWidth(140);
 	ImGui::Combo("Force region", &config->misc.forceRelayCluster, "Off\0Australia\0Austria\0Brazil\0Chile\0Dubai\0France\0Germany\0Hong Kong\0India (Chennai)\0India (Mumbai)\0Japan\0Luxembourg\0Netherlands\0Peru\0Philipines\0Poland\0Singapore\0South Africa\0Spain\0Sweden\0UK\0USA (Atlanta)\0USA (Seattle)\0USA (Chicago)\0USA (Los Angeles)\0USA (Moses Lake)\0USA (Oklahoma)\0USA (Seattle)\0USA (Washington DC)\0");
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderStyleWindow(bool contentOnly) noexcept
+void GUI::renderStyleWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.style)
-			return;
-		ImGui::Begin("Style", &window.style, windowFlags);
-	}
+	if (!window.style)
+		return;
+	ImGui::Begin("Style", &window.style, windowFlags);
 
-	ImGui::PushItemWidth(100);
-	//if (ImGui::Combo("Menu style", &config->style.menuStyle, "Classic\0One window\0"))
-	//    window = {};
 	if (ImGui::Combo("Menu colors", &config->style.menuColors, "Custom\0NEPS\0Alwayslose\0Aimwhen\0Coca-Cola\0Twotap\0Cherry\0NEPSmas\0"))
+	ImGui::SetNextItemWidth(110);
 		updateColors();
-	ImGui::PopItemWidth();
 	ImGui::SetNextItemWidth(90);
 	ImGui::InputFloat("Font scale", &config->style.scaling, 0.1f, 1.0f, "%.2f");
 
@@ -2163,19 +2005,15 @@ void GUI::renderStyleWindow(bool contentOnly) noexcept
 		}
 	}
 
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }
 
-void GUI::renderConfigWindow(bool contentOnly) noexcept
+void GUI::renderConfigWindow() noexcept
 {
-	if (!contentOnly)
-	{
-		if (!window.config)
-			return;
-		ImGui::SetNextWindowContentSize({250, 0});
-		ImGui::Begin("Config", &window.config, windowFlags);
-	}
+	if (!window.config)
+		return;
+	ImGui::SetNextWindowContentSize({250, 0});
+	ImGui::Begin("Config", &window.config, windowFlags);
 
 	ImGui::Columns(2, nullptr, false);
 	ImGui::SetColumnWidth(0, 150);
@@ -2300,6 +2138,5 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 		}
 	}
 	
-	if (!contentOnly)
-		ImGui::End();
+	ImGui::End();
 }

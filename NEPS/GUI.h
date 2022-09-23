@@ -17,26 +17,24 @@ public:
 	const auto &getFont() noexcept { return font; };
 	void updateColors() const noexcept;
 private:
-	void renderGuiStyle2() noexcept;
 	void renderContextMenu() noexcept;
 	void renderMenuBar() noexcept;
-	void renderDebugWindow() noexcept;
-	void renderAimbotWindow(bool contentOnly = false) noexcept;
-	void renderAntiAimWindow(bool contentOnly = false) noexcept;
-	void renderTriggerbotWindow(bool contentOnly = false) noexcept;
-	void renderBacktrackWindow(bool contentOnly = false) noexcept;
-	void renderGlowWindow(bool contentOnly = false) noexcept;
-	void renderChamsWindow(bool contentOnly = false) noexcept;
-	void renderESPWindow(bool contentOnly = false) noexcept;
-	void renderVisualsWindow(bool contentOnly = false) noexcept;
-	void renderSkinChangerWindow(bool contentOnly = false) noexcept;
-	void renderSoundWindow(bool contentOnly = false) noexcept;
-	void renderExploitsWindow(bool contentOnly = false) noexcept;
-	void renderGriefingWindow(bool contentOnly = false) noexcept;
-	void renderMovementWindow(bool contentOnly = false) noexcept;
-	void renderMiscWindow(bool contentOnly = false) noexcept;
-	void renderStyleWindow(bool contentOnly = false) noexcept;
-	void renderConfigWindow(bool contentOnly = false) noexcept;
+	void renderAimbotWindow() noexcept;
+	void renderAntiAimWindow() noexcept;
+	void renderTriggerbotWindow() noexcept;
+	void renderBacktrackWindow() noexcept;
+	void renderGlowWindow() noexcept;
+	void renderChamsWindow() noexcept;
+	void renderESPWindow() noexcept;
+	void renderVisualsWindow() noexcept;
+	void renderSkinChangerWindow() noexcept;
+	void renderSoundWindow() noexcept;
+	void renderExploitsWindow() noexcept;
+	void renderGriefingWindow() noexcept;
+	void renderMovementWindow() noexcept;
+	void renderMiscWindow() noexcept;
+	void renderStyleWindow() noexcept;
+	void renderConfigWindow() noexcept;
 
 	struct
 	{

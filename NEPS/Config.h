@@ -77,7 +77,6 @@ public:
 	};
 	std::array<Aimbot, 40> aimbot;
 
-
 	struct Triggerbot
 	{
 		static Triggerbot &getRelevantConfig() noexcept;
@@ -310,7 +309,6 @@ public:
 
 	struct Style
 	{
-		int menuStyle = 0;
 		int menuColors = 1;
 		float scaling = 1.0f;
 	} style;
