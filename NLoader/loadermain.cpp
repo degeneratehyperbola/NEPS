@@ -55,7 +55,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR cmdLine
 						#ifndef NEPS_DEBUG
 						else
 							MessageBoxA(0, "Success! NEPS is now loaded.", "NEPS", MB_OK | MB_ICONINFORMATION);
-						#endif // NEPS_DEBUG
+						#endif // !NEPS_DEBUG
 					}
 		
 					FreeResource(resource);
