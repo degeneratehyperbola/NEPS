@@ -22,6 +22,7 @@
     <ClCompile Include="..\shared_lib\stb\stb.cpp" />
     <ClCompile Include="..\shared_lib\Texture\TextureDX9.cpp" />
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="EventListener.cpp" />
     <ClCompile Include="GameData.cpp" />
     <ClCompile Include="Hacks\Aimbot.cpp" />
@@ -78,6 +79,7 @@
     <ClInclude Include="..\shared_lib\Texture\TextureDX9.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="ConfigStructs.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="EventListener.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="Hacks\Aimbot.h" />
@@ -177,7 +179,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\debug.png" />
-    <Image Include="Resources\festive.png" />
     <Image Include="Resources\logo.png" />
     <Image Include="Resources\vignette.png" />
   </ItemGroup>

@@ -182,6 +182,9 @@
     <ClCompile Include="SDK\CRC.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.h">
@@ -514,6 +517,9 @@
     <ClInclude Include="SDK\CRC.h">
       <Filter>SDK</Filter>
     </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\logo.png">
@@ -525,7 +531,6 @@
     <Image Include="Resources\vignette.png">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="Resources\festive.png" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NEPS.rc">
