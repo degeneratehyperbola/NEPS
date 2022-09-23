@@ -1991,7 +1991,9 @@ void GUI::renderStyleWindow() noexcept
 	if (ImGui::Combo("Menu colors", &config->style.menuColors, "Custom\0NEPS\0Alwayslose\0Aimwhen\0Coca-Cola\0Twotap\0Cherry\0"))
 		updateColors();
 	ImGui::SetNextItemWidth(90);
-	ImGui::InputFloat("Font scale", &config->style.scaling, 0.1f, 1.0f, "%.2f");
+	ImGui::InputFloat("Global scale", &config->style.scaling, 0.1f, 1.0f, "%.2f");
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("GUI scaling is very broken right now. Maybe it'll be fixed someday");
 
 	if (config->style.menuColors == 0)
 	{
