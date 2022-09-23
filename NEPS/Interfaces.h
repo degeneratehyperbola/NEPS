@@ -65,9 +65,7 @@ public:
 private:
 	static void *find(const char *moduleName, const char *name) noexcept
 	{
-		if (const auto createInterface = reinterpret_cast<std::add_pointer_t<void *__cdecl(const char *name, int *returnCode)>>(
-			GetProcAddress(GetModuleHandleA(moduleName), "CreateInterface")
-			))
+		if (const auto createInterface = reinterpret_cast<std::add_pointer_t<void *__cdecl(const char *name, int *returnCode)>>(GetProcAddress(GetModuleHandleA(moduleName), "CreateInterface")))
 		{
 			if (void *foundInterface = createInterface(name, nullptr))
 				return foundInterface;
