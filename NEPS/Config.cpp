@@ -620,7 +620,6 @@ static void from_json(const json &j, Config::Sound &s)
 
 static void from_json(const json &j, Config::Style &s)
 {
-	read(j, "Menu style", s.menuStyle);
 	read(j, "Menu colors", s.menuColors);
 
 	if (j.contains("Colors") && j["Colors"].is_object())
@@ -1424,7 +1423,6 @@ static void to_json(json &j, const Config::Style &o)
 {
 	const Config::Style dummy;
 
-	WRITE("Menu style", menuStyle);
 	WRITE("Menu colors", menuColors);
 
 	auto &colors = j["Colors"];
