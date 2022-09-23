@@ -351,7 +351,7 @@ bool ImGuiCustom::arrowButtonPopup(const char *id) noexcept
 	return result;
 }
 
-void ImGuiCustom::StyleColorsClassic(ImGuiStyle *dst) noexcept
+void ImGuiCustom::StyleColorsNEPS(ImGuiStyle *dst) noexcept
 {
 	ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();
 	ImVec4 *colors = style->Colors;
@@ -412,7 +412,7 @@ void ImGuiCustom::StyleColorsClassic(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_ModalWindowDimBg] = {0.20f, 0.20f, 0.20f, 0.35f};
 }
 
-void ImGuiCustom::StyleColors1(ImGuiStyle *dst) noexcept
+void ImGuiCustom::StyleColorsAlwayslose(ImGuiStyle *dst) noexcept
 {
 	ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();
 	ImVec4 *colors = style->Colors;
@@ -473,7 +473,7 @@ void ImGuiCustom::StyleColors1(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_ModalWindowDimBg] = {0.80f, 0.80f, 0.80f, 0.35f};
 }
 
-void ImGuiCustom::StyleColors2(ImGuiStyle *dst) noexcept
+void ImGuiCustom::StyleColorsAimwhen(ImGuiStyle *dst) noexcept
 {
 	ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();
 	ImVec4 *colors = style->Colors;
@@ -529,7 +529,7 @@ void ImGuiCustom::StyleColors2(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_ModalWindowDimBg] = {0.20f, 0.20f, 0.20f, 0.35f};
 }
 
-void ImGuiCustom::StyleColors3(ImGuiStyle *dst) noexcept
+void ImGuiCustom::StyleColorsCocaCola(ImGuiStyle *dst) noexcept
 {
 	ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();
 	ImVec4 *colors = style->Colors;
@@ -590,7 +590,7 @@ void ImGuiCustom::StyleColors3(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_ModalWindowDimBg] = {0.20f, 0.20f, 0.20f, 0.35f};
 }
 
-void ImGuiCustom::StyleColors4(ImGuiStyle *dst) noexcept
+void ImGuiCustom::StyleColorsTwotap(ImGuiStyle *dst) noexcept
 {
 	ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();
 	ImVec4 *colors = style->Colors;
@@ -651,7 +651,7 @@ void ImGuiCustom::StyleColors4(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_ModalWindowDimBg] = {0.20f, 0.20f, 0.20f, 0.35f};
 }
 
-void ImGuiCustom::StyleColors5(ImGuiStyle *dst) noexcept
+void ImGuiCustom::StyleColorsCherry(ImGuiStyle *dst) noexcept
 {
 	ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();
 	ImVec4 *colors = style->Colors;
@@ -706,67 +706,6 @@ void ImGuiCustom::StyleColors5(ImGuiStyle *dst) noexcept
 	colors[ImGuiCol_TableRowBgAlt] = {0.00f, 0.00f, 0.00f, 0.00f};
 	colors[ImGuiCol_TextSelectedBg] = {0.86f, 0.97f, 1.00f, 0.17f};
 	colors[ImGuiCol_DragDropTarget] = {1.00f, 0.00f, 0.37f, 1.00f};
-	colors[ImGuiCol_NavHighlight] = {0.45f, 0.45f, 0.90f, 0.80f};
-	colors[ImGuiCol_NavWindowingHighlight] = {1.00f, 1.00f, 1.00f, 0.70f};
-	colors[ImGuiCol_NavWindowingDimBg] = {0.80f, 0.80f, 0.80f, 0.20f};
-	colors[ImGuiCol_ModalWindowDimBg] = {0.20f, 0.20f, 0.20f, 0.35f};
-}
-
-void ImGuiCustom::StyleColors6(ImGuiStyle *dst) noexcept
-{
-	ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();
-	ImVec4 *colors = style->Colors;
-
-	colors[ImGuiCol_Text] = {1.00f, 1.00f, 1.00f, 1.00f};
-	colors[ImGuiCol_TextTitle] = {1.00f, 1.00f, 1.00f, 1.00f};
-	colors[ImGuiCol_TextDisabled] = {1.00f, 1.00f, 1.00f, 0.37f};
-	colors[ImGuiCol_WindowBg] = {0.14f, 0.25f, 0.08f, 0.92f};
-	colors[ImGuiCol_ChildBg] = {0.00f, 0.00f, 0.00f, 0.00f};
-	colors[ImGuiCol_PopupBg] = {0.14f, 0.25f, 0.08f, 0.92f};
-	colors[ImGuiCol_Border] = {1.00f, 0.98f, 0.00f, 0.40f};
-	colors[ImGuiCol_BorderShadow] = {0.00f, 0.00f, 0.00f, 0.28f};
-	colors[ImGuiCol_FrameBg] = {1.00f, 0.16f, 0.06f, 0.47f};
-	colors[ImGuiCol_FrameBgHovered] = {1.00f, 0.42f, 0.06f, 0.65f};
-	colors[ImGuiCol_FrameBgActive] = {1.00f, 0.42f, 0.06f, 1.00f};
-	colors[ImGuiCol_TitleBg] = {1.00f, 0.16f, 0.06f, 0.47f};
-	colors[ImGuiCol_TitleBgActive] = {1.00f, 0.16f, 0.06f, 1.00f};
-	colors[ImGuiCol_TitleBgCollapsed] = {1.00f, 0.16f, 0.06f, 0.47f};
-	colors[ImGuiCol_MenuBarBg] = {0.29f, 0.03f, 0.00f, 1.00f};
-	colors[ImGuiCol_ScrollbarBg] = {1.00f, 0.42f, 0.06f, 0.41f};
-	colors[ImGuiCol_ScrollbarGrab] = {1.00f, 0.81f, 0.06f, 0.38f};
-	colors[ImGuiCol_ScrollbarGrabHovered] = {1.00f, 0.81f, 0.06f, 0.68f};
-	colors[ImGuiCol_ScrollbarGrabActive] = {1.00f, 0.81f, 0.06f, 1.00f};
-	colors[ImGuiCol_CheckMark] = {1.00f, 0.81f, 0.06f, 1.00f};
-	colors[ImGuiCol_SliderGrab] = {1.00f, 0.81f, 0.06f, 0.38f};
-	colors[ImGuiCol_SliderGrabActive] = {1.00f, 0.81f, 0.06f, 1.00f};
-	colors[ImGuiCol_Button] = {1.00f, 0.16f, 0.06f, 0.47f};
-	colors[ImGuiCol_ButtonHovered] = {1.00f, 0.42f, 0.06f, 0.65f};
-	colors[ImGuiCol_ButtonActive] = {1.00f, 0.81f, 0.06f, 1.00f};
-	colors[ImGuiCol_Header] = {1.00f, 0.16f, 0.06f, 0.47f};
-	colors[ImGuiCol_HeaderHovered] = {1.00f, 0.42f, 0.06f, 0.65f};
-	colors[ImGuiCol_HeaderActive] = {1.00f, 0.81f, 0.06f, 0.68f};
-	colors[ImGuiCol_Separator] = {0.00f, 0.00f, 0.00f, 0.23f};
-	colors[ImGuiCol_SeparatorHovered] = {1.00f, 1.00f, 1.00f, 1.00f};
-	colors[ImGuiCol_SeparatorActive] = {0.67f, 0.67f, 0.67f, 1.00f};
-	colors[ImGuiCol_ResizeGrip] = {1.00f, 0.16f, 0.06f, 0.47f};
-	colors[ImGuiCol_ResizeGripHovered] = {1.00f, 0.42f, 0.06f, 0.65f};
-	colors[ImGuiCol_ResizeGripActive] = {1.00f, 0.81f, 0.06f, 1.00f};
-	colors[ImGuiCol_Tab] = {0.34f, 0.34f, 0.68f, 0.79f};
-	colors[ImGuiCol_TabHovered] = {0.45f, 0.45f, 0.90f, 0.80f};
-	colors[ImGuiCol_TabActive] = {0.40f, 0.40f, 0.73f, 0.84f};
-	colors[ImGuiCol_TabUnfocused] = {0.28f, 0.28f, 0.57f, 0.82f};
-	colors[ImGuiCol_TabUnfocusedActive] = {0.35f, 0.35f, 0.65f, 0.84f};
-	colors[ImGuiCol_PlotLines] = {1.00f, 0.00f, 0.00f, 1.00f};
-	colors[ImGuiCol_PlotLinesHovered] = {1.00f, 0.00f, 0.00f, 1.00f};
-	colors[ImGuiCol_PlotHistogram] = {1.00f, 0.81f, 0.06f, 1.00f};
-	colors[ImGuiCol_PlotHistogramHovered] = {1.00f, 0.00f, 0.00f, 1.00f};
-	colors[ImGuiCol_TableHeaderBg] = {0.00f, 0.00f, 0.00f, 0.00f};
-	colors[ImGuiCol_TableBorderStrong] = {0.00f, 0.00f, 0.00f, 0.00f};
-	colors[ImGuiCol_TableBorderLight] = {0.00f, 0.00f, 0.00f, 0.00f};
-	colors[ImGuiCol_TableRowBg] = {0.00f, 0.00f, 0.00f, 0.00f};
-	colors[ImGuiCol_TableRowBgAlt] = {0.00f, 0.00f, 0.00f, 0.00f};
-	colors[ImGuiCol_TextSelectedBg] = {0.06f, 0.17f, 0.00f, 0.79f};
-	colors[ImGuiCol_DragDropTarget] = {1.00f, 0.81f, 0.06f, 1.00f};
 	colors[ImGuiCol_NavHighlight] = {0.45f, 0.45f, 0.90f, 0.80f};
 	colors[ImGuiCol_NavWindowingHighlight] = {1.00f, 1.00f, 1.00f, 0.70f};
 	colors[ImGuiCol_NavWindowingDimBg] = {0.80f, 0.80f, 0.80f, 0.20f};

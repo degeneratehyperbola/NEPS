@@ -31,7 +31,7 @@ constexpr auto windowFlags = ImGuiWindowFlags_NoResize
 
 GUI::GUI() noexcept
 {
-	ImGuiCustom::StyleColorsClassic();
+	ImGuiCustom::StyleColorsNEPS();
 	ImGuiCustom::StyleSizesRounded();
 
 	ImGuiIO &io = ImGui::GetIO();
@@ -131,13 +131,12 @@ void GUI::updateColors() const noexcept
 {
 	switch (config->style.menuColors)
 	{
-	case 1: ImGuiCustom::StyleColorsClassic(); break;
-	case 2: ImGuiCustom::StyleColors1(); break;
-	case 3: ImGuiCustom::StyleColors2(); break;
-	case 4: ImGuiCustom::StyleColors3(); break;
-	case 5: ImGuiCustom::StyleColors4(); break;
-	case 6: ImGuiCustom::StyleColors5(); break;
-	case 7: ImGuiCustom::StyleColors6(); break;
+	case 1: ImGuiCustom::StyleColorsNEPS(); break;
+	case 2: ImGuiCustom::StyleColorsAlwayslose(); break;
+	case 3: ImGuiCustom::StyleColorsAimwhen(); break;
+	case 4: ImGuiCustom::StyleColorsCocaCola(); break;
+	case 5: ImGuiCustom::StyleColorsTwotap(); break;
+	case 6: ImGuiCustom::StyleColorsCherry(); break;
 	}
 }
 
@@ -1988,8 +1987,8 @@ void GUI::renderStyleWindow() noexcept
 		return;
 	ImGui::Begin("Style", &window.style, windowFlags);
 
-	if (ImGui::Combo("Menu colors", &config->style.menuColors, "Custom\0NEPS\0Alwayslose\0Aimwhen\0Coca-Cola\0Twotap\0Cherry\0NEPSmas\0"))
 	ImGui::SetNextItemWidth(110);
+	if (ImGui::Combo("Menu colors", &config->style.menuColors, "Custom\0NEPS\0Alwayslose\0Aimwhen\0Coca-Cola\0Twotap\0Cherry\0"))
 		updateColors();
 	ImGui::SetNextItemWidth(90);
 	ImGui::InputFloat("Font scale", &config->style.scaling, 0.1f, 1.0f, "%.2f");

@@ -88,13 +88,12 @@ namespace ImGuiCustom
 
 	bool arrowButtonPopup(const char *id) noexcept;
 
-	void StyleColorsClassic(ImGuiStyle *dst = nullptr) noexcept;
-	void StyleColors1(ImGuiStyle *dst = nullptr) noexcept;
-	void StyleColors2(ImGuiStyle *dst = nullptr) noexcept;
-	void StyleColors3(ImGuiStyle *dst = nullptr) noexcept;
-	void StyleColors4(ImGuiStyle *dst = nullptr) noexcept;
-	void StyleColors5(ImGuiStyle *dst = nullptr) noexcept;
-	void StyleColors6(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColorsNEPS(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColorsAlwayslose(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColorsAimwhen(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColorsCocaCola(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColorsTwotap(ImGuiStyle *dst = nullptr) noexcept;
+	void StyleColorsCherry(ImGuiStyle *dst = nullptr) noexcept;
 
 	void StyleSizesRounded(ImGuiStyle *dst = nullptr);
 
