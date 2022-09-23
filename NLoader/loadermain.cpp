@@ -52,8 +52,10 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR cmdLine
 					{
 						if (!dllModuleHandle)
 							MessageBoxA(0, "Failed to load NEPS.\nDllMain returned false or load library failed.", "NEPS", MB_OK | MB_ICONERROR);
+						#ifndef NEPS_DEBUG
 						else
 							MessageBoxA(0, "Success! NEPS is now loaded.", "NEPS", MB_OK | MB_ICONINFORMATION);
+						#endif // NEPS_DEBUG
 					}
 		
 					FreeResource(resource);
