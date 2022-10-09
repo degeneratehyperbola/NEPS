@@ -26,8 +26,7 @@
 	ImGui::TextUnformatted(l); \
 }
 
-constexpr auto windowFlags = ImGuiWindowFlags_NoResize
-| ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
+constexpr auto windowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
 
 GUI::GUI() noexcept
 {
@@ -773,12 +772,9 @@ void GUI::renderBacktrackWindow() noexcept
 	ImGui::Begin("Backtrack", &window.backtrack, windowFlags);
 
 	ImGui::Checkbox("Enabled", &config->backtrack.enabled);
-	ImGui::SameLine(90);
+	ImGui::SameLine(0, 20);
 	ImGui::Checkbox("Ignore smoke", &config->backtrack.ignoreSmoke);
-	ImGui::PushItemWidth(180);
 	ImGui::SliderInt("##time", &config->backtrack.timeLimit, 1, 200, "Time limit %dms");
-
-	ImGui::PopItemWidth();
 
 	ImGui::End();
 }
