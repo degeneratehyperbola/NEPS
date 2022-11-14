@@ -9,6 +9,8 @@
 #include "Hooks/VmtHook.h"
 #include "Hooks/VmtSwap.h"
 
+#include "FootprintCleaner.hpp"
+
 struct SoundInfo;
 struct Vector;
 
@@ -49,4 +51,5 @@ private:
 	HWND window;
 };
 
+inline std::unique_ptr<FootprintCleaner> footprintCleaner;
 inline std::unique_ptr<Hooks> hooks;
