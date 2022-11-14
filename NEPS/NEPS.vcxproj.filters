@@ -185,6 +185,9 @@
     <ClCompile Include="Debug.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="FootprintCleaner.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.h">
@@ -518,6 +521,9 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="Debug.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="FootprintCleaner.hpp">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

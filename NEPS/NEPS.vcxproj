@@ -24,6 +24,7 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="EventListener.cpp" />
+    <ClCompile Include="FootprintCleaner.cpp" />
     <ClCompile Include="GameData.cpp" />
     <ClCompile Include="Hacks\Aimbot.cpp" />
     <ClCompile Include="Hacks\Animations.cpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="ConfigStructs.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="EventListener.h" />
+    <ClInclude Include="FootprintCleaner.hpp" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="Hacks\Aimbot.h" />
     <ClInclude Include="Hacks\Animations.h" />
