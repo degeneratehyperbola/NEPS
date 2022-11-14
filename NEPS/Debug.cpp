@@ -6,6 +6,7 @@
 
 #include "lib/ImguiCustom.hpp"
 #include "GameData.h"
+#include "Hooks.h"
 #include "Hacks/Animations.h"
 
 #include "SDK/Client.h"
@@ -318,7 +319,7 @@ void Debug::drawAdditionalContextMenuItems() noexcept
 
 void Debug::drawOverlay() noexcept
 {
-	static Texture debugNotice = { IDB_PNG2, L"PNG" };
+	static Texture debugNotice = { hooks->getDllHandle(), IDB_PNG2, L"PNG"};
 	if (debugNotice.get())
 		ImGui::GetBackgroundDrawList()->AddImage(debugNotice.get(), { 0, 0 }, { 256, 256 });
 }

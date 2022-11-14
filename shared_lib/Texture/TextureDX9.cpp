@@ -1,7 +1,6 @@
 #include "TextureDX9.h"
 #include <shared_lib/imgui/imgui_impl_dx9.h>
 #include <shared_lib/stb/image.h>
-#include <NEPS/Hooks.h>
 
 #include <memory>
 #include <d3d9.h>
@@ -16,16 +15,15 @@ Texture::Texture(const char *path) noexcept
 	stbi_image_free(data);
 }
 
-Texture::Texture(int resource, const wchar_t *type) noexcept
+Texture::Texture(HMODULE hModule, int resource, const wchar_t *type) noexcept
 {
 	if (!resource || !type) return;
 
-	auto dllHandle = hooks->getDllHandle();
-	auto resourceHandle = FindResourceW(dllHandle, MAKEINTRESOURCEW(resource), type);
+	auto resourceHandle = FindResourceW(hModule, MAKEINTRESOURCEW(resource), type);
 	if (resourceHandle)
 	{
-		int resourceSize = SizeofResource(dllHandle, resourceHandle);
-		auto resourceData = LoadResource(dllHandle, resourceHandle);
+		int resourceSize = SizeofResource(hModule, resourceHandle);
+		auto resourceData = LoadResource(hModule, resourceHandle);
 		if (resourceData)
 		{
 			void *buffer = LockResource(resourceData);

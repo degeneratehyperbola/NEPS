@@ -2,13 +2,14 @@
 
 #include <vector>
 #include <memory>
+#include <windows.h>
 
 struct IDirect3DTexture9;
 
 struct Texture
 {
 	Texture(const char *path) noexcept;
-	Texture(int resource, const wchar_t *type) noexcept;
+	Texture(HMODULE hModule, int resource, const wchar_t *type) noexcept;
 	Texture(std::size_t size, const void *data) noexcept;
 	Texture(unsigned int width, unsigned int height, const void *rawData) noexcept;
 
