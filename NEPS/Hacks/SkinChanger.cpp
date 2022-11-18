@@ -356,12 +356,12 @@ static bool hudUpdateRequired = false;
 
 static void updateHud() noexcept
 {
-	if (auto hud_weapons = memory->findHudElement(memory->hud, "CCSGO_HudWeaponSelection") - 0x28)
+	/*if (auto hud_weapons = memory->findHudElement(memory->hud, "CCSGO_HudWeaponSelection") - 0x28)
 	{
 		for (int i = 0; i < *(hud_weapons + 32); i++)
 			i = memory->clearHudWeapon(hud_weapons, i);
 	}
-	hudUpdateRequired = false;
+	hudUpdateRequired = false;*/
 }
 
 void SkinChanger::run(FrameStage stage) noexcept
