@@ -31,14 +31,14 @@ void Animations::getDesyncedBoneMatrices(Matrix3x4 *out) noexcept
 void Animations::localComputeDesync(const UserCmd &cmd, bool sendPacket) noexcept
 {
 	assert(desyncedState);
+	
+	if (!localPlayer || !localPlayer->isAlive()) return;
 
 	auto &poseParams = localPlayer->poseParams();
 	const auto layers = localPlayer->animLayers();
 	if (!desyncedState || !layers)
 		return;
-
-	if (!localPlayer || !localPlayer->isAlive()) return;
-
+	
 	if (!memory->input->isCameraInThirdPerson) return;
 
 	if (static auto spawnTime = 0.0f; !interfaces->engine->isInGame() || spawnTime != localPlayer->spawnTime())
