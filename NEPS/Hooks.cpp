@@ -230,6 +230,12 @@ void createMoveCallback(UserCmd *cmd, bool &sendPacket) noexcept
 
 	previousViewAngles = cmd->viewangles;
 
+	cmd->viewanglesBackup.x = cmd->viewangles.x;
+	cmd->viewanglesBackup.y = cmd->viewangles.y;
+	cmd->viewanglesBackup.z = cmd->viewangles.z;
+
+	cmd->buttonsBackup = cmd->buttons;
+
 	previousCmd = *cmd;
 
 	if (fakePitchPerformed)
