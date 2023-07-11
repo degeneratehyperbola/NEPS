@@ -36,7 +36,9 @@ struct UserCmd
 	short mousedx;
 	short mousedy;
 	bool hasBeenPredicted;
-	PAD(24)
+	Vector viewanglesBackup;
+	int buttonsBackup;
+	PAD(8)
 
 	uint32_t computeCRC() const noexcept;
 };

@@ -19,6 +19,8 @@ uint32_t UserCmd::computeCRC() const noexcept
 	crc.process(&randomSeed, sizeof(randomSeed));
 	crc.process(&mousedx, sizeof(mousedx));
 	crc.process(&mousedy, sizeof(mousedy));
+	crc.process(&viewanglesBackup, sizeof(viewanglesBackup));
+	crc.process(&buttonsBackup, sizeof(buttonsBackup));
 
 	return crc;
 }
