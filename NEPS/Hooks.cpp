@@ -704,13 +704,14 @@ Hooks::Hooks(HMODULE moduleHandle) noexcept
 
 void Hooks::install() noexcept
 {
-	originalPresent = **reinterpret_cast<decltype(originalPresent) **>(memory->present);
-	**reinterpret_cast<decltype(present) ***>(memory->present) = present;
-	originalReset = **reinterpret_cast<decltype(originalReset) **>(memory->reset);
-	**reinterpret_cast<decltype(reset) ***>(memory->reset) = reset;
-
 	if constexpr (std::is_same_v<HookType, MinHook>)
 		MH_Initialize();
+
+	if (memory->device)
+	{
+		MH_CreateHook((*reinterpret_cast<void***>(memory->device))[17], present, reinterpret_cast<void**>(&originalPresent));
+		MH_CreateHook((*reinterpret_cast<void***>(memory->device))[16], reset, reinterpret_cast<void**>(&originalReset));
+	}
 
 	bspQuery.init(interfaces->engine->getBSPTreeQuery());
 	bspQuery.hookAt(6, listLeavesInBox);
@@ -825,8 +826,6 @@ void Hooks::uninstall() noexcept
 	Glow::clearCustomObjects();
 
 	SetWindowLongPtrW(window, GWLP_WNDPROC, LONG_PTR(originalWndProc));
-	**reinterpret_cast<void ***>(memory->present) = originalPresent;
-	**reinterpret_cast<void ***>(memory->reset) = originalReset;
 
 	if (DWORD oldProtection; VirtualProtect(memory->dispatchSound, 4, PAGE_EXECUTE_READWRITE, &oldProtection))
 	{
